@@ -1,0 +1,9 @@
+Project Resources:
+Python 3.6.4:   https://www.python.org/downloads/
+To install MySqldb libraries
+	<python directory>/scripts/pip install mysqlclient
+MySQLdb API: http://mysql-python.sourceforge.net/MySQLdb.html
+
+Python Tutorial: https://docs.python.org/3/tutorial/
+Tkinter Tutorial: https://docs.python.org/3/library/tk.html
+
