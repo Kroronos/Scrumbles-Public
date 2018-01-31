@@ -1,3 +1,6 @@
+USing MYSQL Workbench @ 173.230.136.241:3306 to test tables and db
+
+
 
 add a row
 INSERT INTO test.CardTable (CardType,CardPriority,CardTitle,CardDescription,Status) 
