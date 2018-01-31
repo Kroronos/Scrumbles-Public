@@ -1,0 +1,7 @@
+INSERT INTO test.CardTable (CardType,CardPriority,CardTitle,CardDescription,Status) 
+                values('test',
+                1,
+                'First Test Card',
+                'This is the first test of adding a card',
+                0);
+                
