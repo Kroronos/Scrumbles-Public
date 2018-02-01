@@ -19,6 +19,12 @@ resultMap                           # -->  ({'UserID': 1},)
 resultMap[0]['UserID']              # -->    1
                                     #resultMap[row]['ColumnName']  --> value
 
+
+
+##Adding DATA
+conn.query("""INSERT INTO UserTable (userName,UserEmailAddress,UserPassword,UserRole) VALUES (%s,%s,%s,%s)"""%(userName,userEmailAddress,userPassword,userRole))
+conn.commit()
+
 >>> help(MySQLdb)
 Help on package MySQLdb:
 
