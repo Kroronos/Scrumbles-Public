@@ -3,6 +3,22 @@ http://mysql-python.sourceforge.net/MySQLdb.html
 
 import MySQLdb
 conn = MySQLdb.connect('173.230.136.241','test_user','testPassword','test')
+
+conn.query("""SELECT UserID FROM UserTable WHERE UserName = 'TestUser'""")
+result = conn.store_result()        # this will remove the result query from the conn object
+resultsTuple = result.fetch_row()   # returns one row and also removes the row from the result object
+resultsTuple  # --> ((1,),)
+
+conn.query("""SELECT UserID FROM UserTable WHERE UserName = 'TestUser'""")
+result = conn.store_result()        # this will remove the result query from the conn object
+maxrows = 0 #returns all rows
+how = 0                             # returns a tuple of tuples
+how = 1                             # returns a map in a tuple
+resultMap = result.fetch_row(maxrows,how)
+resultMap                           # -->  ({'UserID': 1},)
+resultMap[0]['UserID']              # -->    1
+                                    #resultMap[row]['ColumnName']  --> value
+
 >>> help(MySQLdb)
 Help on package MySQLdb:
 
