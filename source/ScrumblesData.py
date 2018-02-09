@@ -8,6 +8,11 @@ class Query:
     getAllSprintsQuery = 'SELECT * FROM SprintTable'
     getAllCardsQuery = 'SELECT * FROM CardTable'
     getAllCommentsQuery = 'SELECT * FROM CommentTable'
+    def getUserIdByUsernameAndPassword(username, password):
+        query ='SELECT UserID from UserTable WHERE (BINARY UserName=\'%s\') AND (BINARY UserPassword=\'%s\')'%(username,password)
+        return query
+    
+    
 
 class ScrumblesData:
     def __init__(self, dbLoginInfo):
