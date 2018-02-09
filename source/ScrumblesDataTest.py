@@ -1,5 +1,8 @@
 from ScrumblesData import *
 
+username = 'TestUser'
+password = 'PASSWORD'
+
 
 dbLoginInfo = DataBaseLoginInfo()
 dbLoginInfo.userID = 'test_user'
@@ -14,7 +17,17 @@ users = dataConnection.getData(Query.getAllUsersQuery)
 sprints = dataConnection.getData(Query.getAllSprintsQuery)
 cards = dataConnection.getData(Query.getAllCardsQuery)
 comments = dataConnection.getData(Query.getAllCommentsQuery)
+
+result = dataConnection.getData(Query.getUserIdByUsernameAndPassword(username,password))
+
+if result == ():
+    userID = 'cannot authenticate user'
+else:
+    userID = result[0]['UserID']
+
 dataConnection.close()
+
+
 
 for user in users:
     print(user)
@@ -24,3 +37,5 @@ for card in cards:
     print(card)
 for comment in comments:
     print(comment)
+
+print(userID)
