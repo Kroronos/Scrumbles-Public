@@ -56,18 +56,20 @@ class LoginDialog(Frame):
     def loginButtonClicked(self):
         username = self.usernameEntry.get()
         password = self.passwordEntry.get()
-        dbLoginInfo = DataBaseLoginInfo()
 
+        dbLoginInfo = DataBaseLoginInfo()
+        dbLoginInfo.userID = 'test_user'
+        dbLoginInfo.password = 'testPassword'
+        dbLoginInfo.ipaddress = '173.230.136.241'
+        dbLoginInfo.defaultDB = 'test'
+        
         try:
             authenticateUser(username, password, dbLoginInfo)
         except Exception as error:
             print(repr(error))
             return False
 
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
+        
 
 
         print('Successful login')
