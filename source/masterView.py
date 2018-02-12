@@ -84,7 +84,3 @@ def exitProgram():
 
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
-
-app = masterView()
-
-app.mainloop()

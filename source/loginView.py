@@ -1,5 +1,6 @@
-from mainView import *
+from tkinter import *
 from masterView import *
+from mainView import *
 from ScrumblesData import *
 
 def authenticateUser(username, password, dbLoginInfo):
