@@ -1,9 +1,11 @@
-from ScrumblesData import *
-from masterView import *
-from tkinter import *
+import tkinter as tk
+import ScrumblesData
+import masterView
 
-class mainView(Frame):
+class mainView(tk.Frame):
     def __init__(self, parent, controller):
         self.controller = controller
-        Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent)
+        self.usernameLabel = tk.Label(self, text="This is a thing")
+        self.usernameLabel.pack()
 

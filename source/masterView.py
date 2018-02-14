@@ -1,13 +1,13 @@
-from tkinter import *
-from mainView import *
-from loginView import *
+import tkinter as tk
+import mainView 
+import loginView 
 
-class masterView(Tk):
+class masterView(tk.Tk):
     def __init__(self):
         self.frames = {}
 
-        Tk.__init__(self)
-        self.container = Frame(self)
+        tk.Tk.__init__(self)
+        self.container = tk.Frame(self)
 
         self.container.pack(side="top", fill="both", expand=True)
 
@@ -15,10 +15,13 @@ class masterView(Tk):
         self.container.grid_columnconfigure(0, weight=1)
 
         self.menuBar = self.generateMenuBar()
-        self.hiddenMenu = Menu(self)
+        self.hiddenMenu = tk.Menu(self)
 
-        loginFrame = loginView(self.container, self)
+        loginFrame = loginView.loginView(self.container, self)
+        #mainFrame = mainView.mainView(self.container, self)
 
+       # self.add_frame(mainFrame, mainView)
+        
         self.add_frame(loginFrame, loginView)
 
         self.show_frame(loginView)
@@ -29,6 +32,7 @@ class masterView(Tk):
 
 
     def show_frame(self, cont):
+        #print("Dictionary issue")
         frame = self.frames[cont]
         print("Switching Views")
         frame.tkraise()
@@ -43,19 +47,19 @@ class masterView(Tk):
         addedFrame.grid(row=0, column=0, sticky="nsew")
 
     def generateMenuBar(self):
-        menuBar = Menu(self)
+        menuBar = tk.Menu(self)
 
-        fileMenu = Menu(menuBar, tearoff=0)
+        fileMenu = tk.Menu(menuBar, tearoff=0)
         fileMenu.add_command(label="Exit", command=exitProgram)
 
-        profileMenu = Menu(menuBar, tearoff=0)
+        profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
 
-        viewMenu = Menu(menuBar, tearoff=0)
+        viewMenu = tk.Menu(menuBar, tearoff=0)
         viewMenu.add_command(label="Main Menu", command=lambda: self.show_frame(mainView))
         viewMenu.add_command(label="Sprint View", command=lambda: self.show_frame(mainView))
 
-        helpMenu = Menu(menuBar, tearoff=0)
+        helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label="Getting Started", command=showGettingStartedText)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
@@ -74,7 +78,7 @@ class masterView(Tk):
 def logOut(controller):
     print("Log Me Out Scotty")
     #Do Some Stuff Here To Clear States
-    loginFrame = loginView(controller.container, controller)
+    loginFrame = loginView.loginView(controller.container, controller)
     controller.add_frame(loginFrame, loginView)
     controller.show_frame(loginView)
 

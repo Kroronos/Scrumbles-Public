@@ -1,5 +1,5 @@
-from masterView import *
+import masterView
 
-app = masterView()
+app = masterView.masterView()
 
 app.mainloop()

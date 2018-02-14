@@ -1,13 +1,18 @@
-from tkinter import *
-from masterView import *
-from mainView import *
-from ScrumblesData import *
+#from tkinter import *
+#from masterView import *
+#from mainView import *
+#from ScrumblesData import *
+
+import tkinter as tk
+import masterView
+import mainView
+import ScrumblesData
 
 def authenticateUser(username, password, dbLoginInfo):
     userID = None
-    dataConnection = ScrumblesData(dbLoginInfo)
+    dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
     dataConnection.connect()
-    result = dataConnection.getData(Query.getUserIdByUsernameAndPassword(username, password))
+    result = dataConnection.getData(ScrumblesData.Query.getUserIdByUsernameAndPassword(username, password))
     dataConnection.close()
     if result == ():
         raise Exception('Invalid USERNAME PASSWORD combo')
@@ -28,33 +33,35 @@ def viewUserWindow():
     print("View user called")
 
 
-class loginView(Frame):
+class loginView(tk.Frame):
     def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent)
 
-        self.inputFrame = Frame(self)
+        self.inputFrame = tk.Frame(self)
         self.controller = controller
 
-        self.usernameLabel = Label(self.inputFrame, text="Username")
-        self.passwordLabel = Label(self.inputFrame, text="Password")
-        self.usernameEntry = Entry(self.inputFrame)
-        self.passwordEntry = Entry(self.inputFrame, show='*')
-        self.loginButton = Button(self.inputFrame, text='Login', command=lambda: self.loginProcess())
 
-        self.usernameLabel.grid(row=3, column=2, sticky=EW)
-        self.usernameEntry.grid(row=3, column=3, columnspan=2, sticky=EW)
-        self.passwordLabel.grid(row=4, column=2, sticky=EW)
-        self.passwordEntry.grid(row=4, column=3, columnspan=2, sticky=EW)
-        self.loginButton.grid(row=6, column=3, sticky=EW)
+
+        self.usernameLabel = tk.Label(self.inputFrame, text="Username")
+        self.passwordLabel = tk.Label(self.inputFrame, text="Password")
+        self.usernameEntry = tk.Entry(self.inputFrame)
+        self.passwordEntry = tk.Entry(self.inputFrame, show='*')
+        self.loginButton = tk.Button(self.inputFrame, text='Login', command=lambda: self.loginProcess())
+
+        self.usernameLabel.grid(row=3, column=2, sticky=tk.EW)
+        self.usernameEntry.grid(row=3, column=3, columnspan=2, sticky=tk.EW)
+        self.passwordLabel.grid(row=4, column=2, sticky=tk.EW)
+        self.passwordEntry.grid(row=4, column=3, columnspan=2, sticky=tk.EW)
+        self.loginButton.grid(row=6, column=3, sticky=tk.EW)
 
         for x in range(0, 7):
             self.inputFrame.grid_rowconfigure(x, weight=1, pad=5)
             self.inputFrame.grid_columnconfigure(x, weight=1)
 
-        self.title = Label(self, text="Time to Scrumble: Login", font=("Verdana", 12))
+        self.title = tk.Label(self, text="Time to Scrumble: Login", font=("Verdana", 12))
 
-        self.title.grid(row=0, column=2, columnspan=1, sticky=NSEW)
-        self.inputFrame.grid(row=1, column=2, columnspan=1, sticky=EW)
+        self.title.grid(row=0, column=2, columnspan=1, sticky=tk.NSEW)
+        self.inputFrame.grid(row=1, column=2, columnspan=1, sticky=tk.EW)
 
         for x in range(0, 5):
             self.grid_rowconfigure(x, weight=1)
@@ -63,7 +70,7 @@ class loginView(Frame):
     def loginProcess(self):
         validation = self.loginButtonClicked()
         if (validation):
-            mainFrame = mainView(self.controller.container, self.controller)
+            mainFrame = mainView.mainView(self.controller.container, self.controller)
             self.controller.add_frame(mainFrame, mainView)
             self.controller.show_frame(mainView)
 
@@ -71,7 +78,7 @@ class loginView(Frame):
         username = self.usernameEntry.get()
         password = self.passwordEntry.get()
 
-        dbLoginInfo = DataBaseLoginInfo()
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
         dbLoginInfo.userID = 'test_user'
         dbLoginInfo.password = 'testPassword'
         dbLoginInfo.ipaddress = '173.230.136.241'
