@@ -4,6 +4,8 @@ class User:
     userEmailAddress = None
     userID = None
     userRole = None
+    listOfAssignedItems = []
+    
 
 class Item:
     itemID = None
@@ -17,13 +19,10 @@ class Item:
     itemSprintID = None
     itemUserID = None
     itemStatus = None
+    listOfComments = []
 
-    def assignToUser(self,user):
+    def assignToUser(self, user):
         self.itemUserID = user.userID
-
-    def assignToSprint(self,sprint):
-        self.itemSprintID = sprint.sprintID
-        self.itemDueDate = sprint.sprintDueDate
 
     def modifyStatus(self, status):
         self.itemStatus = status
@@ -31,11 +30,28 @@ class Item:
     def modifyPriority(self, priority):
         self.itemPriority = priority
 
+    def addComment(self, comment):
+        self.listOfComments.append(comment)
+
+
 class Sprint:
     sprintID = None
     sprintStartDate = None
     sprintDueDate = None
     sprintName = None
+    listOfAssignedItems = []
+
+    def assignItemToSprint(self, item):
+        item.itemSprintID = self.sprintID
+        if item not in listOfAssignedItems:
+            listOfAssignedItems.append(item)
+
+    def removeItemFromSprint(self, item):
+        if item in listOfAssignedItems:
+            item.sprintID = None
+            listOfAssignedItems.remove(item)
+        else:
+            raise Exception('Item does not exist in Sprint')
 
 class Comment:
     commentID = None
