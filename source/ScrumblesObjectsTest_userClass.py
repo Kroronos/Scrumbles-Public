@@ -6,6 +6,7 @@ def printUserDetails(user):
     print(user.userName)
     print(user.userEmailAddress)
     print(user.userRole)
+    print()
     
 
 
@@ -22,12 +23,7 @@ dataConnection.close()
 
 listOfAllUsers = []
 for row in userTable:
-    user = ScrumblesObjects.User()
-    user.userID = row['UserID']
-    user.userName = row['UserName']
-    user.userEmailAddress = row['UserEmailAddress']
-    user.userRole = row['UserRole']
-    
+    user = ScrumblesObjects.User(row)
     listOfAllUsers.append(user)
 
 for user in listOfAllUsers:

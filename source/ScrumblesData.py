@@ -30,6 +30,16 @@ class Query:
             str(sprint.sprintStartDate),str(sprint.sprintDueDate),sprint.sprintName)
         return query
 
+    def assignItemToSprintQuery(item,sprint):
+        assert item.itemID is not None
+        assert sprint.sprintID is not None
+        query = 'UPDATE CardTable SET CardDueDate = ( ' \
+                'SELECT DueDate FROM SprintTable WHERE SprintID=%i), ' \
+                'SprintID = %i where CardID = %i' % (sprint.sprintID,
+                                                     sprint.sprintID,
+                                                     item.itemID)
+        return query
+
 class ScrumblesData:
     def __init__(self, dbLoginInfo):
         self.ipaddress = dbLoginInfo.ipaddress

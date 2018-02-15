@@ -27,17 +27,7 @@ dataConnection.close()
 
 listOfAllItems = []
 for row in itemTable:
-    item = ScrumblesObjects.Item()
-    item.itemID = row['CardID']
-    item.itemType = row['CardType']
-    item.itemTitle = row['CardTitle']
-    item.itemDescription = row['CardDescription']
-    item.itemCreationDate = row['CardCreatedDate']
-    item.itemDueDate = row['CardDueDate']
-    item.itemCodeLink = row['CardCodeLink']
-    item.itemSprintID = row['SprintID']
-    item.itemUserID = row['UserID']
-    item.itemStatus = row['Status']
+    item = ScrumblesObjects.Item(row)
     listOfAllItems.append(item)
 
 for item in listOfAllItems:
