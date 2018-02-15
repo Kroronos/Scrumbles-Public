@@ -1,5 +1,5 @@
 import MySQLdb
-
+import ScrumblesObjects
 class DataBaseLoginInfo:
     pass
 
@@ -22,6 +22,33 @@ class Query:
                 'SprintID = %i, Status=1 WHERE CardID = %i' % (sprint.sprintID,
                                                      sprint.sprintID,
                                                      item.itemID)
+        return query
+
+    def createObject(obj):
+        query = ''
+        if type(obj) == ScrumblesObjects.User:
+            query = UserQuery.createUser(obj)
+        elif type(obj) == ScrumblesObjects.Sprint:
+            query = SprintQuery.createSprint(obj)
+        elif type(obj) == ScrumblesObjects.Item:
+            query = CardQuery.createCard(obj)
+        elif type(obj) == ScrumblesObjects.Comment:
+            query = CommentQuery.createComment(obj)
+        else:
+            raise Exception('Invalid Object Type')
+        return query
+    def deleteObject(obj):
+        query = ''
+        if type(obj) == ScrumblesObjects.User:
+            query = UserQuery.deleteUser(obj)
+        elif type(obj) == ScrumblesObjects.Comment:
+            query = CommentQuery.deleteComment(obj)
+        elif type(obj) == ScrumblesObjects.Sprint:
+            query = SprintQuery.deleteSprint(obj)
+        elif type(obj) == ScrumblesObjects.Item:
+            query = CardQuery.deleteCard(obj)
+        else:
+            raise Exception('Invalid Object Type')
         return query
 
 class SprintQuery(Query):
@@ -47,6 +74,11 @@ class SprintQuery(Query):
     def getSprintBySprintID(sprintID):
         assert sprintID is not None
         query = 'SELECT * FROM SprintTable WHERE SprintID=%i' % (sprintID)
+        return query
+
+    def deleteSprint(sprint):
+        assert sprint is not None
+        query = 'DELETE FROM SprintTable WHERE SprintID=%i' % (sprint.sprintID)
         return query
 
 class CardQuery(Query):
@@ -110,6 +142,11 @@ class CardQuery(Query):
         query = 'SELECT * FROM CardTable WHERE SprintID=%i' % (sprint.sprintID)
         return query
 
+    def deleteCard(item):
+        assert item is not None
+        query = 'DELETE FROM CardTable WHERE CardID=%i' % (item.itemID)
+        return query
+
 class UserQuery(Query):
     def getUserByUsername(username):
         query = 'SELECT * from UserTable WHERE UserName=\'%s\'' % (username)
@@ -140,6 +177,11 @@ class UserQuery(Query):
             user.userRole,
             user.userID
         )
+        return query
+
+    def deleteUser(user):
+        assert user is not None
+        query = 'DELETE FROM UserTable WHERE UserID=%i' % (user.userID)
         return query
 
 class CommentQuery(Query):
@@ -178,6 +220,11 @@ class CommentQuery(Query):
         assert item is not None
         assert item.itemID is not None
         query = 'SELECT * FROM CommentTable WHERE CardID=%i' % (item.itemID)
+        return query
+
+    def deleteComment(comment):
+        assert comment is not None
+        query = 'DELETE FROM CommentTable WHERE CommentID=%i' % (comment.commentID)
         return query
 
 class ScrumblesData:

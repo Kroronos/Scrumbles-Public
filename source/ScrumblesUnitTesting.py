@@ -5,40 +5,6 @@ import datetime
 ScrumblesUser_username = 'TestUser'
 ScrumblesUser_password = 'PASSWORD'
 
-def deleteUserQuery(user):
-    assert user is not None
-    query = 'DELETE FROM UserTable WHERE UserID=%i' % (user.userID)
-    return query
-
-def deleteCommentQuery(comment):
-    assert comment is not None
-    query = 'DELETE FROM CommentTable WHERE CommentID=%i' % (comment.commentID)
-    return query
-
-def deleteSprintQuery(sprint):
-    assert sprint is not None
-    query = 'DELETE FROM SprintTable WHERE SprintID=%i' % (sprint.sprintID)
-    return query
-
-def deleteCardQuery(item):
-    assert item is not None
-    query = 'DELETE FROM CardTable WHERE CardID=%i' % (item.itemID)
-    return query
-
-def deleteObjectQuery(obj):
-    query = ''
-    if type(obj) == ScrumblesObjects.User:
-        query = deleteUserQuery(obj)
-    elif type(obj) == ScrumblesObjects.Comment:
-        query = deleteCommentQuery(obj)
-    elif type(obj) == ScrumblesObjects.Sprint:
-        query = deleteSprintQuery(obj)
-    elif type(obj) == ScrumblesObjects.Item:
-        query = deleteCardQuery(obj)
-    else:
-        raise Exception('Invalid Object Type')
-    return query
-
 dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
 dbLoginInfo.userID = 'test_user'
 dbLoginInfo.password = 'testPassword'
@@ -161,8 +127,8 @@ testItem = ScrumblesObjects.Item()
 testItem.itemType = 'UNIT_TEST_2'
 testItem.itemTitle = 'UNIT_TEST_2'
 testItem.itemDescription = 'UNIT TESTING ITEM CREATION, previous test failed to delete'
-testItemCreationQuery = ScrumblesData.CardQuery.createCard(testItem)
-
+testItemCreationQuery = ScrumblesData.Query.createObject(testItem)
+assert testItemCreationQuery is not None
 dataConnection.connect()
 dataConnection.setData(testItemCreationQuery)
 
@@ -175,7 +141,7 @@ dataConnection.close()
 assert retrievedItem.itemDescription == testItem.itemDescription
 
 dataConnection.connect()
-dataConnection.setData(deleteObjectQuery(retrievedItem))
+dataConnection.setData(ScrumblesData.Query.deleteObject(retrievedItem))
 itemAfterDeletionQueryResult = dataConnection.getData(ScrumblesData.CardQuery.getCardByCardID(retrievedItem.itemID))
 dataConnection.close()
 assert itemAfterDeletionQueryResult == ()
