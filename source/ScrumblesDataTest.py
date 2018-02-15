@@ -94,7 +94,7 @@ print(userID)
 # print(itemQuery)
 # try:
 #     dataConnection.connect()
-#     dataConnection.setData(Query.createItemQuery(item))
+#     dataConnection.setData(CardQuery.createCardQuery(item))
 #     dataConnection.close()
 # except Exception as e:
 #     print(str(e))
@@ -103,19 +103,19 @@ print(userID)
 # testSprint.sprintStartDate = datetime.date(2018,2,13)
 # testSprint.sprintDueDate = datetime.date(2018,3,26)
 # testSprint.sprintName = 'Sprint 3: Final Release'
-# testSprintQuery = Query.createSprintQuery(testSprint)
+# testSprintQuery = SprintQuery.createSprintQuery(testSprint)
 # print(testSprintQuery)
 # dataConnection.connect()
 # try:
-#     dataConnection.setData(Query.createSprintQuery(testSprint))
+#     dataConnection.setData(SprintQuery.createSprintQuery(testSprint))
 # except Exception as e:
 #     print(str(e))
 # dataConnection.close()
 
 dataConnection.connect()
-userQueryResult = dataConnection.getData(Query.getUserByUsername('bfallin'))
-itemQueryResult = dataConnection.getData(Query.getCardByCardID(2))
-sprintQueryResult = dataConnection.getData(Query.getSprintBySprintID(6))
+userQueryResult = dataConnection.getData(UserQuery.getUserByUsername('bfallin'))
+itemQueryResult = dataConnection.getData(CardQuery.getCardByCardID(2))
+sprintQueryResult = dataConnection.getData(SprintQuery.getSprintBySprintID(6))
 dataConnection.close()
 print(userQueryResult)
 print(itemQueryResult)
@@ -134,9 +134,9 @@ sprint = Sprint(sprintQueryResult[0])
 # newComment.commentUserID = bfallin.userID
 # newComment.commentItemID = item.itemID
 #
-# createCommentQuery = Query.createCommentQuery(newComment)
+# createCommentQuery = CommentQuery.createCommentQuery(newComment)
 # print(createCommentQuery)
 # dataConnection.connect()
-# dataConnection.setData(Query.createCommentQuery(newComment))
+# dataConnection.setData(CommentQuery.createCommentQuery(newComment))
 # dataConnection.close()
 
