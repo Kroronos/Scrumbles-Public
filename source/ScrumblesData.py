@@ -100,6 +100,10 @@ class CardQuery(Query):
         query = 'SELECT * from CardTable WHERE CardID=%i' % (cardID)
         return query
 
+    def getCardByCardTitle(cardTitle):
+        query = 'SELECT * FROM CardTable WHERE CardTitle=\'%s\'' % (cardTitle)
+        return query
+
     def getCardsBySprint(sprint):
         assert sprint is not None
         assert sprint.sprintID is not None

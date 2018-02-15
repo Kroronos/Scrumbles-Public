@@ -155,4 +155,30 @@ authUser = ScrumblesObjects.User(authUserQueryResult[0])
 dataConnection.close()
 assert authUser.userName == ScrumblesUser_username
 
+
+## Test Item Creation
+testItem = ScrumblesObjects.Item()
+testItem.itemType = 'UNIT_TEST_2'
+testItem.itemTitle = 'UNIT_TEST_2'
+testItem.itemDescription = 'UNIT TESTING ITEM CREATION, previous test failed to delete'
+testItemCreationQuery = ScrumblesData.CardQuery.createCard(testItem)
+
+dataConnection.connect()
+dataConnection.setData(testItemCreationQuery)
+
+testItemSearchQuery = ScrumblesData.CardQuery.getCardByCardTitle(testItem.itemTitle)
+testItemSearchResult = dataConnection.getData(testItemSearchQuery)
+retrievedItem = ScrumblesObjects.Item(testItemSearchResult[0])
+
+dataConnection.close()
+
+assert retrievedItem.itemDescription == testItem.itemDescription
+
+dataConnection.connect()
+dataConnection.setData(deleteObjectQuery(retrievedItem))
+itemAfterDeletionQueryResult = dataConnection.getData(ScrumblesData.CardQuery.getCardByCardID(retrievedItem.itemID))
+dataConnection.close()
+assert itemAfterDeletionQueryResult == ()
+
+
 print('All Tests pass')
