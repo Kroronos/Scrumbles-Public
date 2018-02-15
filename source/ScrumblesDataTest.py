@@ -44,6 +44,16 @@ for sprint in sprints:
     print('Due\t\t\t', str(sprint['DueDate']))
     print()
 for card in cards:
+    status = {0:'Unassigned',1:'Assigned',2:'In Progress',3:'Submitted',4:'Approved'}
+    assignedUser = 'Not assigned to user'
+    assignedSprint = 'Not assigned to Sprint'
+    for sprint in sprints:
+        if card['SprintID'] == sprint['SprintID']:
+            assignedSprint = sprint['SprintName']
+    for user in users:
+        if card['UserID'] == user['UserID']:
+            assignedUser = user['UserName']
+
     print('Card ID\t\t', card['CardID'])
     print('Type\t\t', card['CardType'])
     print('Priority\t', card['CardPriority'])
@@ -52,40 +62,81 @@ for card in cards:
     print('Created on\t', str(card['CardCreatedDate']))
     print('Due Date\t', str(card['CardDueDate']))
     print('CodeLink\t', card['CardCodeLink'])
-    print('SprintID\t', card['SprintID'])
-    print('UserID\t\t', card['UserID'])
-    print('Status\t\t', card['Status'])
+    print('SprintID\t', assignedSprint)
+    print('UserID\t\t', assignedUser)
+    print('Status\t\t', status[card['Status']])
     print()
 for comment in comments:
-    print(comment)
+    print('Comment ID\t', comment['CommentID'])
+    print('TimeStamp\t',str(comment['CommentTimeStamp']))
+    print('Content\t',comment['CommentContent'])
+    username = ''
+    for user in users:
+        if user['UserID'] == comment['UserID']:
+            username = user['UserName']
+    print('User\t', username)
+    cardTitle = ''
+    for card in cards:
+        if card['CardID'] == comment['CardID']:
+            cardTitle = card['CardTitle']
+    print('Item\t',cardTitle)
+    print()
 
 print(userID)
 
-# The following test case passed
-# bfallin = User()
-# bfallin.userName = 'bfallin'
-# bfallin.userEmailAddress = 'fallinbryan@ufl.edu'
-# bfallin.userRole = 'Scrum Master'
-# bfallin.userPassword = 'ITrustNo1'
-# createBfallinQuery = Query.createUserQuery(bfallin)
-# print(createBfallinQuery)
-#
-# dataConnection.connect()
+# Below is a successful test to create an Item
+# Follow the procedure below for item creation
+# item = Item()
+# item.itemType = 'Story'
+# item.itemTitle = 'User Clicks View Sprints'
+# item.itemDescription = 'User will click a view sprints button or menu item and the application will show the Sprint View'
+# itemQuery = Query.createItemQuery(item)
+# print(itemQuery)
 # try:
-#     dataConnection.setData(Query.createUserQuery(bfallin))
+#     dataConnection.connect()
+#     dataConnection.setData(Query.createItemQuery(item))
+#     dataConnection.close()
 # except Exception as e:
 #     print(str(e))
-# dataConnection.close()
 
-testSprint = Sprint()
-testSprint.sprintStartDate = datetime.date(2018,2,12)
-testSprint.sprintDueDate = datetime.date(2018,2,25)
-testSprint.sprintName = 'Sprint 1: Make me Pretty'
-testSprintQuery = Query.createSprintQuery(testSprint)
-print(testSprintQuery)
+# testSprint = Sprint()
+# testSprint.sprintStartDate = datetime.date(2018,2,13)
+# testSprint.sprintDueDate = datetime.date(2018,3,26)
+# testSprint.sprintName = 'Sprint 3: Final Release'
+# testSprintQuery = Query.createSprintQuery(testSprint)
+# print(testSprintQuery)
 # dataConnection.connect()
 # try:
 #     dataConnection.setData(Query.createSprintQuery(testSprint))
 # except Exception as e:
 #     print(str(e))
 # dataConnection.close()
+
+dataConnection.connect()
+userQueryResult = dataConnection.getData(Query.getUserByUsername('bfallin'))
+itemQueryResult = dataConnection.getData(Query.getCardByCardID(2))
+sprintQueryResult = dataConnection.getData(Query.getSprintBySprintID(6))
+dataConnection.close()
+print(userQueryResult)
+print(itemQueryResult)
+print(sprintQueryResult)
+
+bfallin = User(userQueryResult[0])
+item = Item(itemQueryResult[0])
+sprint = Sprint(sprintQueryResult[0])
+
+# dataConnection.connect()
+# dataConnection.setData(Query.assignCardToSprintQuery(item,sprint))
+# dataConnection.close()
+
+# newComment = Comment()
+# newComment.commentContent = 'This item is nearly finished after the latest push'
+# newComment.commentUserID = bfallin.userID
+# newComment.commentItemID = item.itemID
+#
+# createCommentQuery = Query.createCommentQuery(newComment)
+# print(createCommentQuery)
+# dataConnection.connect()
+# dataConnection.setData(Query.createCommentQuery(newComment))
+# dataConnection.close()
+

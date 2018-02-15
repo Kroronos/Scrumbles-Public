@@ -4,7 +4,7 @@ class User:
     userEmailAddress = None
     userID = None
     userRole = None
-    listOfAssignedItemID = []
+    listOfAssignedItems = []
 
     #Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -18,6 +18,13 @@ class User:
         self.userPassword = queryResultDict['UserPassword']
         self.userRole = queryResultDict['UserRole']
         self.userID = queryResultDict['UserID']
+
+    def populateListOfAssignedItemsBySprint(self,sprint):
+        assert sprint is not None
+        if len(sprint.listOfAssignedItems) > 0:
+            for item in sprint.listOfAssignedItems:
+                if item.itemUserID == self.userID:
+                    self.listOfAssignedItems.append(item)
 
 class Item:
     itemID = None
@@ -50,6 +57,14 @@ class Item:
         self.itemSprintID = queryResultDict['SprintID']
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
+    #NOTE This functions takes in the whole list from a query result
+
+    def populateItemCommentsByQuery(self,queryResultList):
+        assert len(queryResultList) > 0
+        assert 'CommentID' in queryResultList[0]
+        for row in queryResultList:
+            comment = Comment(row)
+            self.listOfComments.append(comment)
 
     def assignToUser(self, user):
         self.itemUserID = user.userID
@@ -82,6 +97,13 @@ class Sprint:
         self.sprintDueDate = queryResultDict['DueDate']
         self.sprintName = queryResultDict['SprintName']
 
+    def populateAssignedItems(self,queryResultList):
+        assert len(queryResultList) > 0
+        assert 'ItemType' in queryResultList[0]
+        for row in queryResultList:
+            item = Item(row)
+            self.listOfAssignedItems.append(item)
+
     def assignItemToSprint(self, item):
         item.itemSprintID = self.sprintID
         if item not in self.listOfAssignedItems:
@@ -98,7 +120,7 @@ class Comment:
     commentID = None
     commentTimeStamp = None
     commentContent = None
-    commentCardID = None
+    commentItemID = None
     commentUserID = None
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
@@ -110,5 +132,5 @@ class Comment:
         self.commentID = queryResultDict['CommentID']
         self.commentTimeStamp = queryResultDict['CommentTimeStamp']
         self.commentContent = queryResultDict['CommentContent']
-        self.commentCardID = queryResultDict['CardID']
+        self.commentItemID = queryResultDict['CardID']
         self.commentUserID = queryResultDict['UserID']
