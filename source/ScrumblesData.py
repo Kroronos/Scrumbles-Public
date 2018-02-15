@@ -10,7 +10,7 @@ class Query:
     getAllComments = 'SELECT * FROM CommentTable'
 
     def getUserIdByUsernameAndPassword(username, password):
-        query = 'SELECT UserID from UserTable WHERE (BINARY UserName=\'%s\') AND (BINARY UserPassword=\'%s\')' % (
+        query = 'SELECT * from UserTable WHERE (BINARY UserName=\'%s\') AND (BINARY UserPassword=\'%s\')' % (
         username, password)
         return query
 

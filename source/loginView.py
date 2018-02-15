@@ -7,9 +7,10 @@ import tkinter as tk
 import masterView
 import mainView
 import ScrumblesData
+import ScrumblesObjects
 
 def authenticateUser(username, password, dbLoginInfo):
-    userID = None
+    user = None
     dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
     dataConnection.connect()
     result = dataConnection.getData(ScrumblesData.Query.getUserIdByUsernameAndPassword(username, password))
@@ -17,8 +18,8 @@ def authenticateUser(username, password, dbLoginInfo):
     if result == ():
         raise Exception('Invalid USERNAME PASSWORD combo')
     else:
-        userId = result[0]['UserID']
-    return userId
+        user = ScrumblesObjects.User(result[0])
+    return user
 
 
 def viewSprintWindow():
@@ -68,16 +69,16 @@ class loginView(tk.Frame):
             self.grid_columnconfigure(x, weight=1)
 
     def loginProcess(self):
-        validation = self.loginButtonClicked()
-        if (validation):
-            mainFrame = mainView.mainView(self.controller.container, self.controller)
+        loggedInUser = self.loginButtonClicked()
+        if (loggedInUser is not None):
+            mainFrame = mainView.mainView(self.controller.container, self.controller, loggedInUser)
             self.controller.add_frame(mainFrame, mainView)
             self.controller.show_frame(mainView)
 
     def loginButtonClicked(self):
         username = self.usernameEntry.get()
         password = self.passwordEntry.get()
-
+        loggedInUser = None
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
         dbLoginInfo.userID = 'test_user'
         dbLoginInfo.password = 'testPassword'
@@ -85,11 +86,11 @@ class loginView(tk.Frame):
         dbLoginInfo.defaultDB = 'test'
 
         try:
-            authenticateUser(username, password, dbLoginInfo)
+           loggedInUser = authenticateUser(username, password, dbLoginInfo)
         except Exception as error:
             print(repr(error))
             return False
 
         print('Successful login')
         self.destroy()
-        return True
+        return loggedInUser

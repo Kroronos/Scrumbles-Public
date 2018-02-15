@@ -147,6 +147,12 @@ for element in allCommentsQueryResult:
     listOfComments.append(comment)
 assert len(listOfComments) == len(allCommentsQueryResult)
 
-
+## Test Authentication Query
+dataConnection.connect()
+authUserQuery = ScrumblesData.Query.getUserIdByUsernameAndPassword(ScrumblesUser_username,ScrumblesUser_password)
+authUserQueryResult = dataConnection.getData(authUserQuery)
+authUser = ScrumblesObjects.User(authUserQueryResult[0])
+dataConnection.close()
+assert authUser.userName == ScrumblesUser_username
 
 print('All Tests pass')
