@@ -26,6 +26,7 @@ class User:
                 if item.itemUserID == self.userID:
                     self.listOfAssignedItems.append(item)
 
+
 class Item:
     itemID = None
     itemType = None

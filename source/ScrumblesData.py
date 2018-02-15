@@ -4,17 +4,17 @@ class DataBaseLoginInfo:
     pass
 
 class Query:
-    getAllUsersQuery = 'SELECT * FROM UserTable'
-    getAllSprintsQuery = 'SELECT * FROM SprintTable'
-    getAllCardsQuery = 'SELECT * FROM CardTable'
-    getAllCommentsQuery = 'SELECT * FROM CommentTable'
+    getAllUsers = 'SELECT * FROM UserTable'
+    getAllSprints = 'SELECT * FROM SprintTable'
+    getAllCards = 'SELECT * FROM CardTable'
+    getAllComments = 'SELECT * FROM CommentTable'
 
     def getUserIdByUsernameAndPassword(username, password):
         query = 'SELECT UserID from UserTable WHERE (BINARY UserName=\'%s\') AND (BINARY UserPassword=\'%s\')' % (
         username, password)
         return query
 
-    def assignCardToSprintQuery(item,sprint):
+    def assignCardToSprint(item,sprint):
         assert item.itemID is not None
         assert sprint.sprintID is not None
         query = 'UPDATE CardTable SET CardDueDate = ( ' \
@@ -25,25 +25,32 @@ class Query:
         return query
 
 class SprintQuery(Query):
-    def getSprintBySprintID(sprintID):
-        assert sprintID is not None
-        query = 'SELECT * FROM SprintTable WHERE SprintID=%i' % (sprintID)
-        return query
-
-    def createSprintQuery(sprint):
-        assert sprint.sprintStartDate is not None
-        assert sprint.sprintDueDate is not None
+    def createSprint(sprint):
         assert sprint.sprintName is not None
         query = 'INSERT INTO SprintTable (StartDate,DueDate,SprintName) VALUES (\'%s\',\'%s\',\'%s\')' % (
             str(sprint.sprintStartDate), str(sprint.sprintDueDate), sprint.sprintName)
         return query
 
-class CardQuery(Query):
-    def getCardByCardID(cardID):
-        query = 'SELECT * from CardTable WHERE CardID=%i' % (cardID)
+    def updateSprint(sprint):
+        assert sprint is not None
+        assert sprint.sprintID is not None
+
+        query = 'UPDATE SprintTable SET StartDate=%s,' \
+                'DueDate=\'%s\', SprintName=\'%s\' WHERE SprintID=%i'%(
+            sprint.sprintStartDate,
+            sprint.sprintDueDate,
+            sprint.sprintName,
+            sprint.sprintID
+        )
         return query
 
-    def createCardQuery(item):
+    def getSprintBySprintID(sprintID):
+        assert sprintID is not None
+        query = 'SELECT * FROM SprintTable WHERE SprintID=%i' % (sprintID)
+        return query
+
+class CardQuery(Query):
+    def createCard(item):
         assert item is not None
         assert item.itemType is not None
         assert item.itemTitle is not None
@@ -63,6 +70,36 @@ class CardQuery(Query):
         )
         return query
 
+    def updateCard(item):
+        assert item is not None
+        assert item.itemID is not None
+        query = 'UPDATE CardTable SET ' \
+                'CardType=\'%s\',' \
+                'CardPriority=%i,' \
+                'CardTitle=\'%s\',' \
+                'CardDescription=\'%s\',' \
+                'CardDueDate=\'%s\',' \
+                'CardCodeLink=\'%s\',' \
+                'SprintID=%i,' \
+                'UserID=%i,' \
+                'Status=%i WHERE CardID=%i'% (
+            item.itemType,
+            item.itemPriority,
+            item.itemTitle,
+            item.itemDescription,
+            item.itemDueDate,
+            item.itemCodeLink,
+            item.itemSprintID,
+            item.itemUserID,
+            item.itemStatus,
+            item.itemID
+        )
+        return query
+
+    def getCardByCardID(cardID):
+        query = 'SELECT * from CardTable WHERE CardID=%i' % (cardID)
+        return query
+
     def getCardsBySprint(sprint):
         assert sprint is not None
         assert sprint.sprintID is not None
@@ -74,7 +111,7 @@ class UserQuery(Query):
         query = 'SELECT * from UserTable WHERE UserName=\'%s\'' % (username)
         return query
 
-    def createUserQuery(user):
+    def createUser(user):
         assert user.userName is not None
         assert user.userEmailAddress is not None
         assert user.userPassword is not None
@@ -84,8 +121,25 @@ class UserQuery(Query):
             user.userName, user.userEmailAddress, user.userPassword, user.userRole)
         return query
 
+    def updateUser(user):
+        assert user is not None
+        assert user.userID is not None
+        query = 'UPDATE UserTable SET ' \
+                'UserName=\'%s\',' \
+                'UserEmailAddress=\'%s\',' \
+                'UserPassword=\'%s\',' \
+                'UserRole=\'%s\' WHERE ' \
+                'UserID=%i' % (
+            user.userName,
+            user.userEmailAddress,
+            user.userPassword,
+            user.userRole,
+            user.userID
+        )
+        return query
+
 class CommentQuery(Query):
-    def createCommentQuery(comment):
+    def createComment(comment):
         assert comment is not None
         assert comment.commentContent is not None
         assert comment.commentItemID is not None
@@ -99,6 +153,16 @@ class CommentQuery(Query):
                     comment.commentUserID
                 )
         return query
+
+    def updateComment(comment):
+        assert comment is not None
+        assert comment.commentID is not None
+        query = 'UPDATE CommentTable SET ' \
+                'CommentContent=\'%s\' WHERE' \
+                'CommentID=%i' % (
+            comment.commentContent,
+            comment.commentID
+        )
 
     def getCommentsByUser(user):
         assert user is not None
