@@ -1,6 +1,8 @@
 import MySQLdb
 import ScrumblesObjects
+
 class DataBaseLoginInfo:
+    #todo def __init__(self,file) Load login info from an encrypted file
     pass
 
 class Query:
@@ -47,6 +49,19 @@ class Query:
             query = SprintQuery.deleteSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.deleteCard(obj)
+        else:
+            raise Exception('Invalid Object Type')
+        return query
+    def updateObject(obj):
+        query = ''
+        if type(obj) == ScrumblesObjects.User:
+            query = UserQuery.updateUser(obj)
+        elif type(obj) == ScrumblesObjects.Comment:
+            query = CommentQuery.updateComment(obj)
+        elif type(obj) == ScrumblesObjects.Sprint:
+            query = SprintQuery.updateSprint(obj)
+        elif type(obj) == ScrumblesObjects.Item:
+            query = CardQuery.updateCard(obj)
         else:
             raise Exception('Invalid Object Type')
         return query
@@ -209,6 +224,7 @@ class CommentQuery(Query):
             comment.commentContent,
             comment.commentID
         )
+        return query
 
     def getCommentsByUser(user):
         assert user is not None
