@@ -89,7 +89,7 @@ class loginView(tk.Frame):
            loggedInUser = authenticateUser(username, password, dbLoginInfo)
         except Exception as error:
             print(repr(error))
-            return False
+            return loggedInUser
 
         print('Successful login')
         self.destroy()

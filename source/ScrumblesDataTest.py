@@ -14,10 +14,10 @@ dbLoginInfo.defaultDB = 'test'
 
 dataConnection = ScrumblesData(dbLoginInfo)
 dataConnection.connect()
-users = dataConnection.getData(Query.getAllUsersQuery)
-sprints = dataConnection.getData(Query.getAllSprintsQuery)
-cards = dataConnection.getData(Query.getAllCardsQuery)
-comments = dataConnection.getData(Query.getAllCommentsQuery)
+users = dataConnection.getData(Query.getAllUsers)
+sprints = dataConnection.getData(Query.getAllSprints)
+cards = dataConnection.getData(Query.getAllCards)
+comments = dataConnection.getData(Query.getAllComments)
 
 result = dataConnection.getData(Query.getUserIdByUsernameAndPassword(username, password))
 

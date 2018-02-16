@@ -1,6 +1,8 @@
 import tkinter as tk
 import mainView 
-import loginView 
+import loginView
+import Dialogs
+import ScrumblesData
 
 class masterView(tk.Tk):
     def __init__(self):
@@ -50,6 +52,7 @@ class masterView(tk.Tk):
         menuBar = tk.Menu(self)
 
         fileMenu = tk.Menu(menuBar, tearoff=0)
+        fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
         fileMenu.add_command(label="Exit", command=exitProgram)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
@@ -74,6 +77,17 @@ class masterView(tk.Tk):
 
     def hideMenuBar(self):
         self.configure(menu=self.hiddenMenu)
+
+    def showCreateUserDialog(self):
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
+        dbLoginInfo.userID = 'test_user'
+        dbLoginInfo.password = 'testPassword'
+        dbLoginInfo.ipaddress = '173.230.136.241'
+        dbLoginInfo.defaultDB = 'test'
+        dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+        createUserDialog = Dialogs.CreateUserDialog(self,dataConnection)
+        self.wait_window(createUserDialog.top)
+
 
 def logOut(controller):
     print("Log Me Out Scotty")
