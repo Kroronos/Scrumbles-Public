@@ -23,8 +23,9 @@ class User:
         assert sprint is not None
         if len(sprint.listOfAssignedItems) > 0:
             for item in sprint.listOfAssignedItems:
-                if item.itemUserID == self.userID:
-                    self.listOfAssignedItems.append(item)
+                if item not in self.listOfAssignedItems:
+                    if item.itemUserID == self.userID:
+                        self.listOfAssignedItems.append(item)
 
 
 class Item:
@@ -65,7 +66,8 @@ class Item:
         assert 'CommentID' in queryResultList[0]
         for row in queryResultList:
             comment = Comment(row)
-            self.listOfComments.append(comment)
+            if comment not in self.listOfComments:
+                self.listOfComments.append(comment)
 
     def assignToUser(self, user):
         self.itemUserID = user.userID
@@ -75,9 +77,6 @@ class Item:
 
     def modifyPriority(self, priority):
         self.itemPriority = priority
-
-    def addComment(self, comment):
-        self.listOfComments.append(comment)
 
 
 class Sprint:

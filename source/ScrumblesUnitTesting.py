@@ -32,7 +32,7 @@ assert len(allUsersQueryResult) > 0
 assert len(allSprintsQueryResult) > 0
 assert len(allItemsQueryResult) > 0
 assert len(allCommentsQueryResult) > 0
-
+print('Data Download Successful')
 listOfUsers = []
 listOfSprints = []
 listOfItems = []
@@ -113,6 +113,8 @@ for element in allCommentsQueryResult:
     listOfComments.append(comment)
 assert len(listOfComments) == len(allCommentsQueryResult)
 
+print('Scrumbles Objects created successfully')
+
 ## Test Authentication Query
 dataConnection.connect()
 authUserQuery = ScrumblesData.Query.getUserIdByUsernameAndPassword(ScrumblesUser_username,ScrumblesUser_password)
@@ -121,6 +123,7 @@ authUser = ScrumblesObjects.User(authUserQueryResult[0])
 dataConnection.close()
 assert authUser.userName == ScrumblesUser_username
 
+print('Authentication pass')
 
 ## Test Item Creation and deletion
 testItem = ScrumblesObjects.Item()
@@ -145,6 +148,7 @@ dataConnection.setData(ScrumblesData.Query.deleteObject(retrievedItem))
 itemAfterDeletionQueryResult = dataConnection.getData(ScrumblesData.CardQuery.getCardByCardID(retrievedItem.itemID))
 dataConnection.close()
 assert itemAfterDeletionQueryResult == ()
+print('Item Data successfully created and deleted on remote server')
 
 ### test creation and deletion of a User object
 testUser = ScrumblesObjects.User()
@@ -169,6 +173,35 @@ dataConnection.setData(ScrumblesData.Query.deleteObject(foundUser))
 foundTestuserResult = dataConnection.getData(testUserSearchQuery)
 dataConnection.close()
 assert foundTestuserResult == ()
+print('User Data successfully created and deleted on remote server')
 
+### test creation and deletion of a Sprint object
+testSprint = ScrumblesObjects.Sprint()
+testSprint.SprintName = 'UnitTestSprint'
+testSprint.sprintStartDate = datetime.date(2018,1,31)
+testSprint.sprintDueDate = datetime.date(2018,2,27)
+
+testSprintCreationQuery = ScrumblesData.Query.createObject(testSprint)
+assert testSprintCreationQuery is not None
+dataConnection.connect()
+dataConnection.setData(testSprintCreationQuery)
+allNewSprintsQueryResult = dataConnection.getData(getAllSprintsQuery)
+dataConnection.close()
+
+assert len(allNewSprintsQueryResult) != len(allSprintsQueryResult)
+
+testSprintSearchQuery = ScrumblesData.SprintQuery.getSprintBySprintID(testSprintID)
+assert testSprintSearchQuery is not None
+dataConnection.connect()
+foundTestSprintResult = dataConnection.getData(testSprintSearchQuery)
+dataConnection.close()
+foundSprint = ScrumblesObjects.Sprint(foundTestSprintResult[0])
+assert foundSprint.SprintName == testSprint.SprintName
+dataConnection.connect()
+dataConnection.setData(ScrumblesData.Query.deleteObject(foundSprint))
+foundTestSprintResult = dataConnection.getData(testSprintSearchQuery)
+dataConnection.close()
+assert foundTestSprintResult == ()
+print('Sprint Data successfully created and deleted on remote server')
 
 print('All Tests pass')
