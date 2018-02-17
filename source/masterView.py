@@ -1,6 +1,7 @@
 import tkinter as tk
 import mainView 
 import loginView
+import developerHomeView
 import Dialogs
 import ScrumblesData
 
@@ -61,6 +62,7 @@ class masterView(tk.Tk):
 
         viewMenu = tk.Menu(menuBar, tearoff=0)
         viewMenu.add_command(label="Main Menu", command=lambda: self.show_frame(mainView))
+        viewMenu.add_command(label="Developer Home View", command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Sprint View", command=lambda: self.show_frame(mainView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
@@ -89,6 +91,7 @@ class masterView(tk.Tk):
         createUserDialog = Dialogs.CreateUserDialog(self,dataConnection)
         self.wait_window(createUserDialog.top)
 
+
     def showCreateSprintDialog(self):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
         dbLoginInfo.userID = 'test_user'
@@ -98,6 +101,17 @@ class masterView(tk.Tk):
         dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
         createSprintDialog = Dialogs.CreateSprintDialog(self, dataConnection)
         self.wait_window(createSprintDialog.top)
+
+    def generateViews(self, loggedInUser):
+        mainFrame = mainView.mainView(self.container, self, loggedInUser)
+        self.add_frame(mainFrame, mainView)
+
+        developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
+        self.add_frame(developerHomeFrame, developerHomeView)
+        self.show_frame(mainView)
+
+
+
 
 
 def logOut(controller):
