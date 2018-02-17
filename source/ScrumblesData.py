@@ -76,7 +76,7 @@ class Query:
 class SprintQuery(Query):
     @staticmethod
     def createSprint(sprint):
-        assert sprint.sprintName is not None
+        ObjectValidator.validate(sprint)
         query = 'INSERT INTO SprintTable (StartDate,DueDate,SprintName) VALUES (\'%s\',\'%s\',\'%s\')' % (
             str(sprint.sprintStartDate), str(sprint.sprintDueDate), sprint.sprintName)
         return query
@@ -110,10 +110,7 @@ class SprintQuery(Query):
 class CardQuery(Query):
     @staticmethod
     def createCard(item):
-        assert item is not None
-        assert item.itemType is not None
-        assert item.itemTitle is not None
-        assert item.itemDescription is not None
+        ObjectValidator.validate(item)
         query = 'INSERT INTO CardTable (' \
                 'CardType,' \
                 'CardPriority,' \
@@ -219,11 +216,9 @@ class UserQuery(Query):
         return query
 
 class CommentQuery(Query):
+    @staticmethod
     def createComment(comment):
-        assert comment is not None
-        assert comment.commentContent is not None
-        assert comment.commentItemID is not None
-        assert comment.commentUserID is not None
+
         query = 'INSERT INTO CommentTable (CommentTimeStamp,' \
                 'CommentContent,' \
                 'CardID,' \
@@ -234,6 +229,7 @@ class CommentQuery(Query):
                 )
         return query
 
+    @staticmethod
     def updateComment(comment):
         assert comment is not None
         assert comment.commentID is not None
@@ -245,18 +241,21 @@ class CommentQuery(Query):
         )
         return query
 
+    @staticmethod
     def getCommentsByUser(user):
         assert user is not None
         assert user.userID is not None
         query = 'SELECT * FROM CommentTable WHERE UserID=%i' % (user.userID)
         return query
 
+    @staticmethod
     def getCommentsByItem(item):
         assert item is not None
         assert item.itemID is not None
         query = 'SELECT * FROM CommentTable WHERE CardID=%i' % (item.itemID)
         return query
 
+    @staticmethod
     def deleteComment(comment):
         assert comment is not None
         query = 'DELETE FROM CommentTable WHERE CommentID=%i' % (comment.commentID)
@@ -334,6 +333,14 @@ class ObjectValidator:
     def validate(obj):
         if type(obj) == ScrumblesObjects.User:
             ObjectValidator.validateUser(obj)
+        elif type(obj) == ScrumblesObjects.Item:
+            ObjectValidator.validateCard(obj)
+        elif type(obj) == ScrumblesObjects.Sprint:
+            ObjectValidator.validateSprint(obj)
+        elif type(obj) == ScrumblesObjects.Comment:
+            ObjectValidator.validateComment(obj)
+        else:
+            raise Exception('Invalid Object')
 
     @staticmethod
     def validateUser(user):
@@ -354,3 +361,28 @@ class ObjectValidator:
         if user.userRole not in userRoles:
             raise Exception('Invalid User Role')
 
+    @staticmethod
+    def validateCard(item):
+        assert item is not None
+        assert item.itemType is not None
+        assert item.itemTitle is not None
+        assert item.itemDescription is not None
+        if item.itemType == '':
+            raise Exception('Item Type cannot be Blank')
+        if item.itemTitle == '':
+            raise Exception('Item Title cannot be Blank')
+        if item.itemDescription == '':
+            raise Exception('Item Description cannot be Blank')
+
+    @staticmethod
+    def validateSprint(sprint):
+        assert sprint.sprintName is not None
+        if sprint.sprintName == '':
+            raise Exception('Sprint Name cannot be blank')
+
+    @staticmethod
+    def validateComment(comment):
+        assert comment is not None
+        assert comment.commentContent is not None
+        assert comment.commentItemID is not None
+        assert comment.commentUserID is not None
