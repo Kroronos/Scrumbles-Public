@@ -70,7 +70,7 @@ class loginView(tk.Frame):
     def loginProcess(self):
         loggedInUser = self.loginButtonClicked()
         if (loggedInUser is not None):
-            self.controller.generateViews(loggedInUser);
+            self.controller.generateViews(loggedInUser)
 
     def loginButtonClicked(self):
         username = self.usernameEntry.get()

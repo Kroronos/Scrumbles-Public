@@ -22,7 +22,7 @@ login_info.defaultDB = 'test'
 
 dataConnection = ScrumblesData.ScrumblesData(login_info)
 dataConnection.connect()
-itemTable = dataConnection.getData(ScrumblesData.Query.getAllCardsQuery)
+itemTable = dataConnection.getData(ScrumblesData.Query.getAllCards)
 dataConnection.close()
 
 listOfAllItems = []

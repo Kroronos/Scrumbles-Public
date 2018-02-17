@@ -44,7 +44,8 @@ class CreateUserDialog:
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
         cancelButton.grid(row=8,column=1,pady=5)
 
-    def validatePasswordMatch(self,password1,password2):
+    @staticmethod
+    def validatePasswordMatch(password1, password2):
         if password1 != password2:
             raise Exception('Passwords do not Match')
         return
