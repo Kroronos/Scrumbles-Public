@@ -64,9 +64,8 @@ class CreateUserDialog:
             self.dbConnector.setData(ScrumblesData.Query.createObject(user))
             self.dbConnector.close()
 
-        except IntegrityError:
-            messagebox.showerror('Error', 'Username already in use')
-
+        except IntegrityError as e:
+            messagebox.showerror('Error', 'Username already in use\n'+str(e))
         except Exception as e:
             messagebox.showerror('Error',str(e))
 
@@ -74,12 +73,14 @@ class CreateUserDialog:
             messagebox.showinfo('Info', 'New User Successfully Created')
             self.exit()
         finally:
-            if self.dbConnector.isConnected():
-                self.dbConnector.close()
+            if self.dbConnector is not None:
+                if self.dbConnector.isConnected():
+                    self.dbConnector.close()
 
 
     def exit(self):
-        assert self.dbConnector.isConnected() == False
+        if self.dbConnector is not None:
+            assert self.dbConnector.isConnected() == False
         self.top.destroy()
 
 ## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
