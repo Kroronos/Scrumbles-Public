@@ -270,6 +270,7 @@ class ScrumblesData:
         assert self.dbConnection is not None
         self.dbConnection.close()
 
-
+    def isConnected(self):
+        return self.dbConnection.open == 1
 
 

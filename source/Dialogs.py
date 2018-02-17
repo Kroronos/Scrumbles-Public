@@ -1,6 +1,7 @@
 import tkinter as Tk
 from tkinter import ttk
 from tkinter import messagebox
+from MySQLdb import IntegrityError
 import ScrumblesData
 import ScrumblesObjects
 
@@ -43,43 +44,59 @@ class CreateUserDialog:
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
         cancelButton.grid(row=8,column=1,pady=5)
 
+    def validatePasswordMatch(self,password1,password2):
+        if password1 != password2:
+            raise Exception('Passwords do not Match')
+        return
+
     def ok(self):
 
-        if self.passwordEntry.get() != self.reEnterPasswordEntry.get():
-            messagebox.showerror('Error','Passwords do not Match')
-            return
+        try:
+            self.validatePasswordMatch(self.passwordEntry.get(),self.reEnterPasswordEntry.get())
 
-        user = ScrumblesObjects.User()
-        user.userName = self.userNameEntry.get()
-        user.userPassword = self.passwordEntry.get()
-        user.userEmailAddress = self.emailEntry.get()
-        user.userRole = self.roleCombobox.get()
+            user = ScrumblesObjects.User()
+            user.userName = self.userNameEntry.get()
+            user.userPassword = self.passwordEntry.get()
+            user.userEmailAddress = self.emailEntry.get()
+            user.userRole = self.roleCombobox.get()
 
-        self.dbConnector.connect()
-        self.dbConnector.setData(ScrumblesData.Query.createObject(user))
-        self.dbConnector.close()
+            self.dbConnector.connect()
+            self.dbConnector.setData(ScrumblesData.Query.createObject(user))
+            self.dbConnector.close()
 
+        except IntegrityError:
+            messagebox.showerror('Error', 'Username already in use')
 
-        self.exit()
+        except Exception as e:
+            messagebox.showerror('Error',str(e))
+
+        else:
+            messagebox.showinfo('Info', 'New User Successfully Created')
+            self.exit()
+        finally:
+            if self.dbConnector.isConnected():
+                self.dbConnector.close()
+
 
     def exit(self):
+        assert self.dbConnector.isConnected() == False
         self.top.destroy()
 
 ## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
 ##  UNCOMMENT ONLY FOR TESTING.
 ##  KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
-# dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-# dbLoginInfo.userID = 'test_user'
-# dbLoginInfo.password = 'testPassword'
-# dbLoginInfo.ipaddress = '173.230.136.241'
-# dbLoginInfo.defaultDB = 'test'
-# dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
-#
-#
-# root = Tk.Tk()
-# Tk.Button(root, text="Hello!").pack()
-# root.update()
-#
-# d = CreateUserDialog(root,dataConnection)
-#
-# root.wait_window(d.top)
+dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
+dbLoginInfo.userID = 'test_user'
+dbLoginInfo.password = 'testPassword'
+dbLoginInfo.ipaddress = '173.230.136.241'
+dbLoginInfo.defaultDB = 'test'
+dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+
+
+root = Tk.Tk()
+Tk.Button(root, text="Hello!").pack()
+root.update()
+
+d = CreateUserDialog(root,dataConnection)
+
+root.wait_window(d.top)
