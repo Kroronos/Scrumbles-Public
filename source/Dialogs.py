@@ -118,10 +118,8 @@ class CreateSprintDialog:
 
         try:
 
-
             sprint = ScrumblesObjects.Sprint()
             sprint.sprintName = self.sprintNameEntry.get()
-
 
             self.dbConnector.connect()
             self.dbConnector.setData(ScrumblesData.Query.createObject(sprint))
@@ -136,7 +134,7 @@ class CreateSprintDialog:
             messagebox.showerror('Error',str(type(e))+'\n'+str(e))
 
         else:
-            messagebox.showinfo('Info', 'New User Successfully Created')
+            messagebox.showinfo('Info', 'New Sprint Successfully Created')
             self.exit()
         finally:
             if self.dbConnector is not None:
@@ -152,19 +150,19 @@ class CreateSprintDialog:
 ## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
 ##  UNCOMMENT ONLY FOR TESTING.
 ##  KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
-dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-dbLoginInfo.userID = 'test_user'
-dbLoginInfo.password = 'testPassword'
-dbLoginInfo.ipaddress = '173.230.136.241'
-dbLoginInfo.defaultDB = 'test'
-dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
-
-
-root = Tk.Tk()
-Tk.Button(root, text="Hello!").pack()
-root.update()
-
-#d = CreateUserDialog(root,dataConnection)
-d = CreateSprintDialog(root, dataConnection)
-
-root.wait_window(d.top)
+# dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
+# dbLoginInfo.userID = 'test_user'
+# dbLoginInfo.password = 'testPassword'
+# dbLoginInfo.ipaddress = '173.230.136.241'
+# dbLoginInfo.defaultDB = 'test'
+# dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+#
+#
+# root = Tk.Tk()
+# Tk.Button(root, text="Hello!").pack()
+# root.update()
+#
+# u = CreateUserDialog(root,dataConnection)
+# s = CreateSprintDialog(root, dataConnection)
+#
+# root.wait_window(s.top)
