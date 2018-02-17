@@ -1,6 +1,7 @@
 import MySQLdb
 import ScrumblesObjects
 import re
+import hashlib
 
 class DataBaseLoginInfo:
     #todo def __init__(self,file) Load login info from an encrypted file
@@ -13,8 +14,10 @@ class Query:
     getAllComments = 'SELECT * FROM CommentTable'
     @staticmethod
     def getUserIdByUsernameAndPassword(username, password):
+        hashedPassword = Password(password)
+        hashedPassword.encrypt()
         query = 'SELECT * from UserTable WHERE (BINARY UserName=\'%s\') AND (BINARY UserPassword=\'%s\')' % (
-        username, password)
+        username, str(hashedPassword))
         return query
 
     @staticmethod
@@ -186,7 +189,7 @@ class UserQuery(Query):
     def createUser(user):
         ObjectValidator.validate(user)
         password = Password(user.userPassword)
-
+        password.encrypt()
         query = 'INSERT INTO UserTable (userName,UserEmailAddress,UserPassword,UserRole) VALUES (\'%s\',\'%s\',\'%s\',\'%s\')' % (
             user.userName, user.userEmailAddress, str(password), user.userRole)
         return query
@@ -321,11 +324,9 @@ class Password:
 
 
     def encrypt(self):
-        #todo create function that will actually encrypt self.password
-        pass
-    def decrypt(self):
-        #todo create function that will decrypt self.password
-        pass
+        self.password = self.password.encode('utf-8')
+        self.password = hashlib.sha256(self.password).hexdigest()
+    
     __repr__ = __str__
 
 class ObjectValidator:
