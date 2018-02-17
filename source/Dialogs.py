@@ -88,21 +88,83 @@ class CreateUserDialog:
             assert self.dbConnector.isConnected() == False
         self.top.destroy()
 
+
+class CreateSprintDialog:
+
+    def __init__(self, parent, dbConnector):
+
+        self.dbConnector = dbConnector
+
+        popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.geometry('300x250')
+        popUPDialog.title('Create a New Sprint')
+
+        Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
+
+
+        self.sprintNameEntry = Tk.Entry(popUPDialog)
+        self.sprintNameEntry.grid(row=2, column=2, pady=5)
+
+
+
+        createButton = Tk.Button(popUPDialog, text="Create Sprint", command=self.ok)
+        createButton.grid(row=8,column=2,pady=5)
+        cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
+        cancelButton.grid(row=8,column=1,pady=5)
+
+
+
+    def ok(self):
+
+        try:
+
+
+            sprint = ScrumblesObjects.Sprint()
+            sprint.sprintName = self.sprintNameEntry.get()
+
+
+            self.dbConnector.connect()
+            self.dbConnector.setData(ScrumblesData.Query.createObject(sprint))
+            self.dbConnector.close()
+
+        except IntegrityError as e:
+            if 'SprintName' in str(e):
+                messagebox.showerror('Error', 'Sprint Must have unique Name')
+            else:
+                messagebox.showerror('Error', str(type(e)) + '\n' + str(e))
+        except Exception as e:
+            messagebox.showerror('Error',str(type(e))+'\n'+str(e))
+
+        else:
+            messagebox.showinfo('Info', 'New User Successfully Created')
+            self.exit()
+        finally:
+            if self.dbConnector is not None:
+                if self.dbConnector.isConnected():
+                    self.dbConnector.close()
+
+
+    def exit(self):
+        if self.dbConnector is not None:
+            assert self.dbConnector.isConnected() == False
+        self.top.destroy()
+
 ## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
 ##  UNCOMMENT ONLY FOR TESTING.
 ##  KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
-# dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-# dbLoginInfo.userID = 'test_user'
-# dbLoginInfo.password = 'testPassword'
-# dbLoginInfo.ipaddress = '173.230.136.241'
-# dbLoginInfo.defaultDB = 'test'
-# dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
-#
-#
-# root = Tk.Tk()
-# Tk.Button(root, text="Hello!").pack()
-# root.update()
-#
-# d = CreateUserDialog(root,dataConnection)
-#
-# root.wait_window(d.top)
+dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
+dbLoginInfo.userID = 'test_user'
+dbLoginInfo.password = 'testPassword'
+dbLoginInfo.ipaddress = '173.230.136.241'
+dbLoginInfo.defaultDB = 'test'
+dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+
+
+root = Tk.Tk()
+Tk.Button(root, text="Hello!").pack()
+root.update()
+
+#d = CreateUserDialog(root,dataConnection)
+d = CreateSprintDialog(root, dataConnection)
+
+root.wait_window(d.top)

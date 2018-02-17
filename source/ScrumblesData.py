@@ -80,8 +80,8 @@ class SprintQuery(Query):
     @staticmethod
     def createSprint(sprint):
         ObjectValidator.validate(sprint)
-        query = 'INSERT INTO SprintTable (StartDate,DueDate,SprintName) VALUES (\'%s\',\'%s\',\'%s\')' % (
-            str(sprint.sprintStartDate), str(sprint.sprintDueDate), sprint.sprintName)
+
+        query = 'INSERT INTO SprintTable (SprintName) VALUES (\'%s\')' % (sprint.sprintName)
         return query
 
     @staticmethod
