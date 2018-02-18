@@ -70,6 +70,7 @@ class loginView(tk.Frame):
     def loginProcess(self):
         loggedInUser = self.loginButtonClicked()
         if (loggedInUser is not None):
+            self.controller.setDatabaseConnection()
             self.controller.generateViews(loggedInUser)
 
     def loginButtonClicked(self):
@@ -85,7 +86,7 @@ class loginView(tk.Frame):
         try:
            loggedInUser = authenticateUser(username, password, dbLoginInfo)
         except Exception as error:
-            messagebox.showerror('Invalid Login','Username and Password do not match')
+            messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUser
 
         print('Successful login')
