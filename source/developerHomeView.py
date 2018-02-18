@@ -11,19 +11,23 @@ class developerHomeView(tk.Frame):
         self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ')
         self.usernameLabel.pack()
 
+        self.sprintGraph = ScrumblesFrames.SLineGraph(self)
+        self.sprintGraph.setAxes("Sprint Day", "Cards Completed")
+        self.sprintGraph.displayGraph()
+
         self.productBacklogList = ScrumblesFrames.SList(self, "PRODUCT BACKLOG")
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
         self.assignedItemList = ScrumblesFrames.SList(self, "ASSIGNED ITEMS")
 
         controller.dataConnection.connect()
-        backlog = ScrumblesData.ScrumblesData.getData(controller.dataConnection, 'SELECT * FROM CardTable')
+        backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
         backlog = [card['CardTitle'] for card in backlog]
 
 
-        teamMembers = ScrumblesData.ScrumblesData.getData(controller.dataConnection, 'SELECT UserName FROM UserTable')
+        teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
         teamMembers = [member['UserName'] for member in teamMembers]
 
-        assignedItem = ScrumblesData.ScrumblesData.getData(controller.dataConnection, 'SELECT * FROM CardTable')
+        assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
         assignedItem = [card['CardTitle'] for card in assignedItem]
         controller.dataConnection.close()
 
@@ -34,3 +38,4 @@ class developerHomeView(tk.Frame):
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
         self.teamMemberList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)

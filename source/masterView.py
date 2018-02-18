@@ -82,23 +82,11 @@ class masterView(tk.Tk):
         self.configure(menu=self.hiddenMenu)
 
     def showCreateUserDialog(self):
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
-        dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
-        createUserDialog = Dialogs.CreateUserDialog(self, dataConnection)
+        createUserDialog = Dialogs.CreateUserDialog(self, self.dataConnection)
         self.wait_window(createUserDialog.top)
 
     def showCreateSprintDialog(self):
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
-        dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
-        createSprintDialog = Dialogs.CreateSprintDialog(self, dataConnection)
+        createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataConnection)
         self.wait_window(createSprintDialog.top)
 
     def generateViews(self, loggedInUser):
