@@ -8,7 +8,7 @@ class developerHomeView(tk.Frame):
     def __init__(self, parent, controller, user):
         self.controller = controller
         tk.Frame.__init__(self, parent)
-        self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ')
+        self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ',font=("Verdana", 12))
         self.usernameLabel.pack()
 
         self.sprintGraph = ScrumblesFrames.SLineGraph(self)

@@ -2,81 +2,49 @@ import tkinter as tk
 import tkcalendar
 import ScrumblesData
 import masterView
+import ScrumblesFrames
 
 from tkinter import ttk
 class mainView(tk.Frame):
     def __init__(self, parent, controller,user):
         tk.Frame.__init__(self, parent)
 
+        self.usernameLabel = tk.Label(self, text='Welcome to the Main View ', font=("Verdana", 12))
+        self.usernameLabel.pack()
+        self.productBacklogList = ScrumblesFrames.SList(self, "PRODUCT BACKLOG")
+        self.scrumTeamList = ScrumblesFrames.SList(self, "SCRUM TEAMS")
+        self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
+        self.assignedItemList = ScrumblesFrames.SList(self, "ASSIGNED ITEMS")
+        self.cal = tkcalendar.Calendar(self,font="Arial 14", selectmode='day',cursor="hand1", year=2018, month=2, day=5)
+
+        self.sprintGraph = ScrumblesFrames.SLineGraph(self)
+        self.sprintGraph.setAxes("Sprint Day", "Cards Completed")
+        self.sprintGraph.displayGraph()
 
 
+        controller.dataConnection.connect()
+        backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
+        backlog = [card['CardTitle'] for card in backlog]
 
-        self.ProductBacklogFrame = tk.Frame(self)
-        self.CalendarFrame = tk.Frame(self)
-        self.ScrumTeamFrame = tk.Frame(self)
-        self.TeamMemberFrame = tk.Frame(self)
-        self.AssignmentsFrame = tk.Frame(self)
+        scrumTeams = [] #needs database query
 
-        self.controller = controller
+        teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
+        teamMembers = [member['UserName'] for member in teamMembers]
 
-        self.Lb1 = tk.Listbox(self.ProductBacklogFrame)
-        self.button1 = ttk.Button(self.ProductBacklogFrame,text='Click!')
-
-        self.Lb2 = tk.Listbox(self.ScrumTeamFrame)
-        self.button2 = ttk.Button(self.ScrumTeamFrame,text='Click!')
+        assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
+        assignedItem = [card['CardTitle'] for card in assignedItem]
         
-        self.Lb3 = tk.Listbox(self.TeamMemberFrame)
-        self.button3 = ttk.Button(self.TeamMemberFrame,text='Click!')
 
-        self.Lb4 = tk.Listbox(self.AssignmentsFrame)
-        self.button4 = ttk.Button(self.AssignmentsFrame,text='Click!')
-        
-        self.ProductBacklogFrame.grid_rowconfigure(0, weight=1)
-        self.ProductBacklogFrame.grid_rowconfigure(1, weight=1)
-        self.ProductBacklogFrame.grid_columnconfigure(1, weight=1)
+        controller.dataConnection.close()
 
-        self.CalendarFrame.grid_rowconfigure(0, weight=1)
-        self.CalendarFrame.grid_rowconfigure(1, weight=1)
-        self.CalendarFrame.grid_columnconfigure(1, weight=1)
+        self.productBacklogList.importList(backlog)
+        self.scrumTeamList.importList(scrumTeams)
+        self.teamMemberList.importList(teamMembers)
+        self.assignedItemList.importList(assignedItem)
 
-        self.ScrumTeamFrame.grid_rowconfigure(0, weight=1)
-        self.ScrumTeamFrame.grid_rowconfigure(1, weight=1)
-        self.ScrumTeamFrame.grid_columnconfigure(1, weight=1)
-
-        self.TeamMemberFrame.grid_rowconfigure(0, weight=1)
-        self.TeamMemberFrame.grid_rowconfigure(1, weight=1)
-        self.TeamMemberFrame.grid_columnconfigure(1, weight=1)
-
-        self.AssignmentsFrame.grid_rowconfigure(0, weight=1)
-        self.AssignmentsFrame.grid_rowconfigure(1, weight=1)
-        self.AssignmentsFrame.grid_columnconfigure(1, weight=1)
-
-        cal = tkcalendar.Calendar(self.CalendarFrame,font="Arial 14", selectmode='day',cursor="hand1", year=2018, month=2, day=5)
-        cal.pack()
-
-        self.Lb1.grid(row=0,column=0,rowspan=2,sticky=tk.NSEW)
-        self.button1.grid(row=1,column=0, sticky=tk.S+tk.E+tk.W)
-
-        self.Lb2.grid(row=0,column=0,rowspan=2,sticky=tk.NSEW)
-        self.button2.grid(row=1,column=0, sticky=tk.S+tk.E+tk.W)
-        
-        self.Lb3.grid(row=0,column=0,rowspan=2,sticky=tk.NSEW)
-        self.button3.grid(row=1,column=0, sticky=tk.S+tk.E+tk.W)
-
-        self.Lb4.grid(row=0,column=0,rowspan=2,sticky=tk.NSEW)
-        self.button4.grid(row=1,column=0, sticky=tk.S+tk.E+tk.W)
-        
-        self.grid_rowconfigure(0,weight=1)
-        self.grid_rowconfigure(1,weight=1)
-
-        for x in range(0,4):
-            self.grid_columnconfigure(x,weight=1)
-
-
-        self.ProductBacklogFrame.grid(row=0, column=0, rowspan=2, sticky=tk.NSEW)#tk.W+tk.N+tk.S)
-        self.CalendarFrame.grid(row=0, column=1, rowspan=2, sticky=tk.NSEW)#tk.W+tk.N+tk.S)
-        self.ScrumTeamFrame.grid(row=0, column=2, rowspan=2, sticky=tk.NSEW)#tk.E+tk.N+tk.S)
-        self.TeamMemberFrame.grid(row=0, column=3, rowspan=2, sticky=tk.NSEW)#tk.E+tk.N+tk.S)
-        self.AssignmentsFrame.grid(row=0, column=4, rowspan=2, sticky=tk.NSEW)#tk.E+tk.N+tk.S)
-
-
+        self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
+        self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.teamMemberList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.scrumTeamList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.cal.pack(side=tk.TOP, fill=tk.BOTH)
+        self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)

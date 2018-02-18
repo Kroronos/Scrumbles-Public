@@ -30,7 +30,7 @@ class masterView(tk.Tk):
         self.show_frame(loginView)
         self.dataConnection = None
         self.title("Scrumbles")
-        self.geometry("800x600")
+        self.geometry("900x600")
         self.iconbitmap("logo.ico")
 
 
