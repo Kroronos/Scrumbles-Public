@@ -54,6 +54,7 @@ class masterView(tk.Tk):
 
         fileMenu = tk.Menu(menuBar, tearoff=0)
         fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
+        fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog())
         fileMenu.add_command(label="Exit", command=exitProgram)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
@@ -89,6 +90,16 @@ class masterView(tk.Tk):
         dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
         createUserDialog = Dialogs.CreateUserDialog(self,dataConnection)
         self.wait_window(createUserDialog.top)
+
+    def showCreateSprintDialog(self):
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
+        dbLoginInfo.userID = 'test_user'
+        dbLoginInfo.password = 'testPassword'
+        dbLoginInfo.ipaddress = '173.230.136.241'
+        dbLoginInfo.defaultDB = 'test'
+        dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+        createSprintDialog = Dialogs.CreateSprintDialog(self, dataConnection)
+        self.wait_window(createSprintDialog.top)
 
     def generateViews(self, loggedInUser):
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
