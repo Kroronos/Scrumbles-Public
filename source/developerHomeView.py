@@ -5,7 +5,7 @@ import masterView
 
 
 class developerHomeView(tk.Frame):
-    def __init__(self, parent, controller,user):
+    def __init__(self, parent, controller, user):
         self.controller = controller
         tk.Frame.__init__(self, parent)
         self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ')
@@ -15,12 +15,20 @@ class developerHomeView(tk.Frame):
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
         self.assignedItemList = ScrumblesFrames.SList(self, "ASSIGNED ITEMS")
 
-        backlog = ["GUI", "Styling File", "Hashing", "Encrypted Database", "Global Macros"]
-        teamMember = ["Anthony", "Kathy", "Liu", "Dave", "Josh", "Kayla"]
-        assignedItem = ["Processing", "Statistics", "UML Diagram", "Use Cases", "Refactor", "User Stories"]
+        controller.dataConnection.connect()
+        backlog = ScrumblesData.ScrumblesData.getData(controller.dataConnection, 'SELECT * FROM CardTable')
+        backlog = [card['CardTitle'] for card in backlog]
+
+
+        teamMembers = ScrumblesData.ScrumblesData.getData(controller.dataConnection, 'SELECT UserName FROM UserTable')
+        teamMembers = [member['UserName'] for member in teamMembers]
+
+        assignedItem = ScrumblesData.ScrumblesData.getData(controller.dataConnection, 'SELECT * FROM CardTable')
+        assignedItem = [card['CardTitle'] for card in assignedItem]
+        controller.dataConnection.close()
 
         self.productBacklogList.importList(backlog)
-        self.teamMemberList.importList(teamMember)
+        self.teamMemberList.importList(teamMembers)
         self.assignedItemList.importList(assignedItem)
 
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)

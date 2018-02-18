@@ -4,7 +4,6 @@
 #from ScrumblesData import *
 
 import tkinter as tk
-from tkinter import messagebox
 import masterView
 import mainView
 import ScrumblesData
@@ -70,6 +69,7 @@ class loginView(tk.Frame):
     def loginProcess(self):
         loggedInUser = self.loginButtonClicked()
         if (loggedInUser is not None):
+            self.controller.setDatabaseConnection()
             self.controller.generateViews(loggedInUser)
 
     def loginButtonClicked(self):
@@ -85,7 +85,7 @@ class loginView(tk.Frame):
         try:
            loggedInUser = authenticateUser(username, password, dbLoginInfo)
         except Exception as error:
-            messagebox.showerror('Invalid Login','Username and Password do not match')
+            print(repr(error))
             return loggedInUser
 
         print('Successful login')

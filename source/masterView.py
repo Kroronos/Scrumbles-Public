@@ -28,7 +28,7 @@ class masterView(tk.Tk):
         self.add_frame(loginFrame, loginView)
 
         self.show_frame(loginView)
-
+        self.dataConnection = None
         self.title("Scrumbles")
         self.geometry("800x600")
         self.iconbitmap("logo.ico")
@@ -54,7 +54,6 @@ class masterView(tk.Tk):
 
         fileMenu = tk.Menu(menuBar, tearoff=0)
         fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
-        fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
         fileMenu.add_command(label="Exit", command=exitProgram)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
@@ -91,17 +90,6 @@ class masterView(tk.Tk):
         createUserDialog = Dialogs.CreateUserDialog(self,dataConnection)
         self.wait_window(createUserDialog.top)
 
-
-    def showCreateSprintDialog(self):
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
-        dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
-        createSprintDialog = Dialogs.CreateSprintDialog(self, dataConnection)
-        self.wait_window(createSprintDialog.top)
-
     def generateViews(self, loggedInUser):
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         self.add_frame(mainFrame, mainView)
@@ -110,8 +98,13 @@ class masterView(tk.Tk):
         self.add_frame(developerHomeFrame, developerHomeView)
         self.show_frame(mainView)
 
-
-
+    def setDatabaseConnection(self):
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
+        dbLoginInfo.userID = 'test_user'
+        dbLoginInfo.password = 'testPassword'
+        dbLoginInfo.ipaddress = '173.230.136.241'
+        dbLoginInfo.defaultDB = 'test'
+        self.dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
 
 
 def logOut(controller):

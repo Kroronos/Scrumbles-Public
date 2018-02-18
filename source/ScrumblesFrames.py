@@ -1,23 +1,20 @@
 import tkinter as tk
+from styling import styling as style
 
 class SList(tk.Frame):
     def __init__(self, controller, title):
         tk.Frame.__init__(self, controller)
 
-        self.titleFrame = tk.Frame(self, bg="light steel blue", relief=tk.SOLID, borderwidth=1)
-        self.titleLabel = tk.Label(self.titleFrame, text=title, bg="light steel blue", relief=tk.FLAT)
+        self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)
+        self.titleLabel = tk.Label(self.titleFrame, text=title, bg=style.scrumbles_blue, relief=tk.FLAT)
         self.listFrame = tk.Frame(self)
         self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL)
         self.listbox = tk.Listbox(self.listFrame, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
         self.listScrollbar.config(command=self.listbox.yview)
 
-        #define symbols, should ideally be done in styling file
         self.typeSort = "none"
-        self.updown = u'\u2B0D'
-        self.up = u'\u2B06'
-        self.down = u'\u2B07'
 
-        self.sortButton = tk.Button(self.titleFrame, text=self.updown, bg="light steel blue", command=lambda: self.decideSort(), relief=tk.FLAT)
+        self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT)
         self.titleLabel.pack(side=tk.LEFT)
         self.sortButton.pack(side=tk.RIGHT)
         self.listbox.pack(side=tk.LEFT, fill=tk.BOTH)
@@ -67,15 +64,15 @@ class SList(tk.Frame):
     def decideSort(self):
         if self.typeSort == "none":
            self.typeSort = "forward"
-           self.sortButton["text"] = self.up
+           self.sortButton["text"] = style.up_arrow
            self.sortForward()
         elif self.typeSort == "forward":
             self.typeSort = "reverse"
-            self.sortButton["text"] = self.down
+            self.sortButton["text"] = style.down_arrow
             self.sortReverse()
         else:
             self.typeSort = "forward"
-            self.sortButton["text"] = self.up
+            self.sortButton["text"] = style.up_arrow
             self.sortForward()
 
     def enforceSort(self):
