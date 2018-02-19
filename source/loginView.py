@@ -53,9 +53,11 @@ class loginView(tk.Frame):
 
         self.usernameLabel.grid(row=3, column=2, sticky=tk.EW)
         self.usernameEntry.grid(row=3, column=3, columnspan=2, sticky=tk.EW)
+
         self.passwordLabel.grid(row=4, column=2, sticky=tk.EW)
         self.passwordEntry.grid(row=4, column=3, columnspan=2, sticky=tk.EW)
         self.loginButton.grid(row=6, column=3, sticky=tk.EW)
+
 
         for x in range(0, 7):
             self.inputFrame.grid_rowconfigure(x, weight=1, pad=5)
@@ -69,6 +71,10 @@ class loginView(tk.Frame):
         for x in range(0, 5):
             self.grid_rowconfigure(x, weight=1)
             self.grid_columnconfigure(x, weight=1)
+
+        self.passwordEntry.bind('<Return>', lambda event: self.loginProcess())
+        self.usernameEntry.bind('<Return>', lambda event: self.loginProcess())
+
 
     def loginProcess(self):
         loggedInUser = self.loginButtonClicked()
