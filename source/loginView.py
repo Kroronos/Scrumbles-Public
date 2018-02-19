@@ -74,6 +74,7 @@ class loginView(tk.Frame):
 
         self.passwordEntry.bind('<Return>', lambda event: self.loginProcess())
         self.usernameEntry.bind('<Return>', lambda event: self.loginProcess())
+        self.loginButton.bind('<Return>', lambda event: self.loginProcess())
 
 
     def loginProcess(self):
