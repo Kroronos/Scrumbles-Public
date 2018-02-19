@@ -3,6 +3,7 @@ import tkcalendar
 import ScrumblesData
 import masterView
 import ScrumblesFrames
+import threading
 
 from tkinter import ttk
 class mainView(tk.Frame):
@@ -21,27 +22,30 @@ class mainView(tk.Frame):
         self.sprintGraph.setAxes("Sprint Day", "Cards Completed")
         self.sprintGraph.displayGraph()
 
+        def updateLists():
+            threading.Timer(5.0,updateLists).start()
+            controller.dataConnection.connect()
+            backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
+            backlog = [card['CardTitle'] for card in backlog]
 
-        controller.dataConnection.connect()
-        backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
-        backlog = [card['CardTitle'] for card in backlog]
+            scrumTeams = [] #needs database query
 
-        scrumTeams = [] #needs database query
+            teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
+            teamMembers = [member['UserName'] for member in teamMembers]
 
-        teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
-        teamMembers = [member['UserName'] for member in teamMembers]
+            assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
+            assignedItem = [card['CardTitle'] for card in assignedItem]
+            
 
-        assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
-        assignedItem = [card['CardTitle'] for card in assignedItem]
+            controller.dataConnection.close()
+
+            self.productBacklogList.importList(backlog)
+            self.scrumTeamList.importList(scrumTeams)
+            self.teamMemberList.importList(teamMembers)
+            self.assignedItemList.importList(assignedItem)
+
+        updateLists()
         
-
-        controller.dataConnection.close()
-
-        self.productBacklogList.importList(backlog)
-        self.scrumTeamList.importList(scrumTeams)
-        self.teamMemberList.importList(teamMembers)
-        self.assignedItemList.importList(assignedItem)
-
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
         self.teamMemberList.pack(side=tk.RIGHT, fill=tk.Y)
