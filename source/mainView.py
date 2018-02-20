@@ -3,7 +3,6 @@ import tkcalendar
 import ScrumblesData
 import masterView
 import ScrumblesFrames
-import threading
 
 from tkinter import ttk
 class mainView(tk.Frame):
@@ -23,7 +22,7 @@ class mainView(tk.Frame):
         self.sprintGraph.displayGraph()
 
         def updateLists():
-            threading.Timer(5.0,updateLists).start()
+            self.after(5000,updateLists)
             controller.dataConnection.connect()
             backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
             backlog = [card['CardTitle'] for card in backlog]

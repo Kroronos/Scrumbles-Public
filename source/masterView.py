@@ -5,6 +5,7 @@ import developerHomeView
 import Dialogs
 import ScrumblesData
 
+
 class masterView(tk.Tk):
     def __init__(self):
         self.frames = {}
