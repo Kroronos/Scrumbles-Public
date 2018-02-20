@@ -20,20 +20,54 @@ class developerHomeView(tk.Frame):
         self.assignedItemList = ScrumblesFrames.SList(self, "ASSIGNED ITEMS")
 
         controller.dataConnection.connect()
-        backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
-        backlog = [card['CardTitle'] for card in backlog]
+        self.backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
+        self.backlog = [card['CardTitle'] for card in self.backlog]
 
 
-        teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
-        teamMembers = [member['UserName'] for member in teamMembers]
+        self.teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
+        self.teamMembers = [member['UserName'] for member in self.teamMembers]
 
-        assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
-        assignedItem = [card['CardTitle'] for card in assignedItem]
+        self.assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
+        self.assignedItem = [card['CardTitle'] for card in self.assignedItem]
         controller.dataConnection.close()
 
-        self.productBacklogList.importList(backlog)
-        self.teamMemberList.importList(teamMembers)
-        self.assignedItemList.importList(assignedItem)
+        self.productBacklogList.importList(self.backlog)
+        self.teamMemberList.importList(self.teamMembers)
+        self.assignedItemList.importList(self.assignedItem)
+
+
+
+        self.productBacklogList.importList(self.backlog)
+        self.teamMemberList.importList(self.teamMembers)
+        self.assignedItemList.importList(self.assignedItem)
+
+        def updateLists():
+            self.after(30000,updateLists)
+            controller.dataConnection.connect()
+            backlogCheck = controller.dataConnection.getData('SELECT * FROM CardTable')
+            backlogCheck = [card['CardTitle'] for card in backlogCheck]
+
+            teamMembersCheck = controller.dataConnection.getData('SELECT UserName FROM UserTable')
+            teamMembersCheck = [member['UserName'] for member in teamMembersCheck]
+
+            assignedItemCheck = controller.dataConnection.getData('SELECT * FROM CardTable')
+            assignedItemCheck = [card['CardTitle'] for card in assignedItemCheck]
+            
+            controller.dataConnection.close()
+
+            if (set(self.backlog) != set(backlogCheck)):
+                self.backlog=backlogCheck
+                self.productBacklogList.importList(self.backlog)
+
+            if (set(self.teamMembers) != set(teamMembersCheck)):
+                self.teamMembers=teamMembersCheck
+                self.teamMemberList.importList(self.teamMembers)
+
+            if (set(self.assignedItem) != set(assignedItemCheck)):
+                self.assignedItem=assignedItemCheck
+                self.assignedItemList.importList(self.assignedItem)
+
+        updateLists()
 
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
