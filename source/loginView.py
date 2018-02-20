@@ -50,6 +50,7 @@ class loginView(tk.Frame):
         self.usernameEntry = tk.Entry(self.inputFrame)
         self.passwordEntry = tk.Entry(self.inputFrame, show='*')
         self.loginButton = tk.Button(self.inputFrame, text='Login', command=lambda: self.loginProcess())
+        self.loginButtonBypass = tk.Button(self.inputFrame, text='Bypass as TestUser', command=lambda: self.loginProcessBypass())
 
         self.usernameLabel.grid(row=3, column=2, sticky=tk.EW)
         self.usernameEntry.grid(row=3, column=3, columnspan=2, sticky=tk.EW)
@@ -57,6 +58,8 @@ class loginView(tk.Frame):
         self.passwordLabel.grid(row=4, column=2, sticky=tk.EW)
         self.passwordEntry.grid(row=4, column=3, columnspan=2, sticky=tk.EW)
         self.loginButton.grid(row=6, column=3, sticky=tk.EW)
+        self.loginButtonBypass.grid(row=7, column=3, sticky=tk.EW)
+
 
 
         for x in range(0, 7):
@@ -93,6 +96,7 @@ class loginView(tk.Frame):
         dbLoginInfo.ipaddress = '173.230.136.241'
         dbLoginInfo.defaultDB = 'test'
 
+
         try:
            loggedInUser = authenticateUser(username, password, dbLoginInfo)
         except Exception as error:
@@ -102,3 +106,34 @@ class loginView(tk.Frame):
         print('Successful login')
         self.destroy()
         return loggedInUser
+
+
+
+        ############################################
+
+    def loginProcessBypass(self):
+        loggedInUser = self.loginButtonClickedBypass()
+        if (loggedInUser is not None):
+            self.controller.setDatabaseConnection()
+            self.controller.generateViews(loggedInUser)
+
+    def loginButtonClickedBypass(self):
+        username = "TestUser"#self.usernameEntry.get()
+        password = "Password1"#self.passwordEntry.get()
+        loggedInUser = None
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
+        dbLoginInfo.userID = 'test_user'
+        dbLoginInfo.password = 'testPassword'
+        dbLoginInfo.ipaddress = '173.230.136.241'
+        dbLoginInfo.defaultDB = 'test'
+
+        try:
+           loggedInUser = authenticateUser(username, password, dbLoginInfo)
+        except Exception as error:
+            messagebox.showerror('Invalid Login', 'Username and Password do not match')
+            return loggedInUser
+
+        print('Successful login')
+        self.destroy()
+        return loggedInUser
+        ##################################################
