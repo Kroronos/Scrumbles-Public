@@ -21,27 +21,61 @@ class mainView(tk.Frame):
         self.sprintGraph.setAxes("Sprint Day", "Cards Completed")
         self.sprintGraph.displayGraph()
 
+
+
+
+        controller.dataConnection.connect()
+        self.backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
+        self.backlog = [card['CardTitle'] for card in self.backlog]
+
+        self.scrumTeams = [] #needs database query
+        
+        self.teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
+        self.teamMembers = [member['UserName'] for member in self.teamMembers]
+
+        self.assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
+        self.assignedItem = [card['CardTitle'] for card in self.assignedItem]
+
+        controller.dataConnection.close()
+
+
+
+        self.productBacklogList.importList(self.backlog)
+        self.scrumTeamList.importList(self.scrumTeams)
+        self.teamMemberList.importList(self.teamMembers)
+        self.assignedItemList.importList(self.assignedItem)
+
         def updateLists():
-            self.after(5000,updateLists)
+            self.after(30000,updateLists)
             controller.dataConnection.connect()
-            backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
-            backlog = [card['CardTitle'] for card in backlog]
+            backlogCheck = controller.dataConnection.getData('SELECT * FROM CardTable')
+            backlogCheck = [card['CardTitle'] for card in backlogCheck]
 
-            scrumTeams = [] #needs database query
+            scrumTeamsCheck = [] #needs database query
 
-            teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
-            teamMembers = [member['UserName'] for member in teamMembers]
+            teamMembersCheck = controller.dataConnection.getData('SELECT UserName FROM UserTable')
+            teamMembersCheck = [member['UserName'] for member in teamMembersCheck]
 
-            assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
-            assignedItem = [card['CardTitle'] for card in assignedItem]
+            assignedItemCheck = controller.dataConnection.getData('SELECT * FROM CardTable')
+            assignedItemCheck = [card['CardTitle'] for card in assignedItemCheck]
             
-
             controller.dataConnection.close()
 
-            self.productBacklogList.importList(backlog)
-            self.scrumTeamList.importList(scrumTeams)
-            self.teamMemberList.importList(teamMembers)
-            self.assignedItemList.importList(assignedItem)
+            if (set(self.backlog) != set(backlogCheck)):
+                self.backlog=backlogCheck
+                self.productBacklogList.importList(self.backlog)
+
+            if (set(self.scrumTeams) != set(scrumTeamsCheck)):
+                self.scrumTeams=scrumTeamsCheck
+                self.scrumTeamList.importList(self.scrumTeams)
+
+            if (set(self.teamMembers) != set(teamMembersCheck)):
+                self.teamMembers=teamMembersCheck
+                self.teamMemberList.importList(self.teamMembers)
+
+            if (set(self.assignedItem) != set(assignedItemCheck)):
+                self.assignedItem=assignedItemCheck
+                self.assignedItemList.importList(self.assignedItem)
 
         updateLists()
         
