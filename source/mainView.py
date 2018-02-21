@@ -15,7 +15,7 @@ class mainView(tk.Frame):
         self.scrumTeamList = ScrumblesFrames.SList(self, "SCRUM TEAMS")
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
         self.assignedItemList = ScrumblesFrames.SList(self, "ASSIGNED ITEMS")
-        self.cal = tkcalendar.Calendar(self,font="Arial 14", selectmode='day',cursor="hand1", year=2018, month=2, day=5)
+        self.cal = ScrumblesFrames.SCalendar(self)
 
         self.sprintGraph = ScrumblesFrames.SLineGraph(self)
         self.sprintGraph.setAxes("Sprint Day", "Cards Completed")

@@ -6,6 +6,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 import csv
+import tkcalendar
+import datetime
 
 from styling import styling as style
 
@@ -129,3 +131,10 @@ class SLineGraph(tk.Frame):
 
     def changeBackgroundColor(self, color):
         self.graph.set_facecolor(facecolor=color)
+
+class SCalendar(tk.Frame):
+    def __init__(self, controller):
+        tk.Frame.__init__(self, controller)
+        now = datetime.datetime.now()
+        self.cal = tkcalendar.Calendar(self, font="Arial 14", selectmode='day', year=now.year, month=now.month, day=now.day)
+        self.cal.pack(side=tk.TOP, fill=tk.BOTH)

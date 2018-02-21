@@ -2,14 +2,19 @@ import tkinter as tk
 import ScrumblesFrames
 import ScrumblesData
 import masterView
+import tkcalendar
+import datetime
 
 
 class developerHomeView(tk.Frame):
     def __init__(self, parent, controller, user):
         self.controller = controller
         tk.Frame.__init__(self, parent)
+
         self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ',font=("Verdana", 12))
         self.usernameLabel.pack()
+
+        self.cal = ScrumblesFrames.SCalendar(self)
 
         self.sprintGraph = ScrumblesFrames.SLineGraph(self)
         self.sprintGraph.setAxes("Sprint Day", "Cards Completed")
@@ -72,4 +77,5 @@ class developerHomeView(tk.Frame):
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
         self.teamMemberList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.cal.pack(side=tk.TOP, fill=tk.BOTH)
         self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)
