@@ -7,27 +7,17 @@ import base64
 class DataBaseLoginInfo:
     def __init__(self,file):
         loginFile = open(file, 'r')
-        self.userID = loginFile.readline()
-        self.userID = self.userID.rstrip("\n\r")
-        self.userID = base64.standard_b64decode(self.userID)
-        self.userID = self.userID.decode('utf8')
-
-        self.password = loginFile.readline()
-        self.password = self.password.rstrip("\n\r")
-        self.password = base64.standard_b64decode(self.password)
-        self.password = self.password.decode('utf8')
-
-        self.ipaddress = loginFile.readline()
-        self.ipaddress = self.ipaddress.rstrip("\n\r")
-        self.ipaddress = base64.standard_b64decode(self.ipaddress)
-        self.ipaddress = self.ipaddress.decode('utf8')
-
-        self.defaultDB = loginFile.readline()
-        self.defaultDB = self.defaultDB.rstrip("\n\r")
-        self.defaultDB= base64.standard_b64decode(self.defaultDB)
-        self.defaultDB = self.defaultDB.decode('utf8')
-
+        self.userID = self.getFromFile(loginFile)
+        self.password = self.getFromFile(loginFile)
+        self.ipaddress = self.getFromFile(loginFile)
+        self.defaultDB = self.getFromFile(loginFile)
         loginFile.close()
+    def getFromFile(self, openFile):
+        item = openFile.readline()
+        item = item.rstrip("\n\r")
+        item = base64.standard_b64decode(item)
+        item = item.decode('utf8')
+        return item
 
 class Query:
     getAllUsers = 'SELECT * FROM UserTable'
