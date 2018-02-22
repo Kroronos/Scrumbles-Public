@@ -99,7 +99,7 @@ class masterView(tk.Tk):
         self.show_frame(mainView)
 
     def setDatabaseConnection(self):
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         dbLoginInfo.userID = 'test_user'
         dbLoginInfo.password = 'testPassword'
         dbLoginInfo.ipaddress = '173.230.136.241'
