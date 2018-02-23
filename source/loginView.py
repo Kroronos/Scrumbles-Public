@@ -90,11 +90,9 @@ class loginView(tk.Frame):
         username = self.usernameEntry.get()
         password = self.passwordEntry.get()
         loggedInUser = None
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
+
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+
 
 
         try:
@@ -121,11 +119,11 @@ class loginView(tk.Frame):
         username = "TestUser"#self.usernameEntry.get()
         password = "Password1"#self.passwordEntry.get()
         loggedInUser = None
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+        print(dbLoginInfo.userID)
+        print(dbLoginInfo.password)
+        print(dbLoginInfo.ipaddress)
+        print(dbLoginInfo.defaultDB)
 
         try:
            loggedInUser = authenticateUser(username, password, dbLoginInfo)
