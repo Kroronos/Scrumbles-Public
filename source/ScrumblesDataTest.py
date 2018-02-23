@@ -13,7 +13,7 @@ sprints = dataConnection.getData(Query.getAllSprints)
 cards = dataConnection.getData(Query.getAllCards)
 comments = dataConnection.getData(Query.getAllComments)
 
-result = dataConnection.getData(Query.getUserIdByUsernameAndPassword(username, password))
+result = dataConnection.getData(Query.getUserByUsernameAndPassword(username, password))
 
 if result == ():
     userID = 'cannot authenticate user'

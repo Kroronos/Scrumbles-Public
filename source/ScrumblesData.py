@@ -25,7 +25,7 @@ class Query:
     getAllCards = 'SELECT * FROM CardTable'
     getAllComments = 'SELECT * FROM CommentTable'
     @staticmethod
-    def getUserIdByUsernameAndPassword(username, password):
+    def getUserByUsernameAndPassword(username, password):
         hashedPassword = Password(password)
         hashedPassword.encrypt()
         query = 'SELECT * from UserTable WHERE (BINARY UserName=\'%s\') AND (BINARY UserPassword=\'%s\')' % (

@@ -117,7 +117,7 @@ print('Scrumbles Objects created successfully')
 
 ## Test Authentication Query
 dataConnection.connect()
-authUserQuery = ScrumblesData.Query.getUserIdByUsernameAndPassword(ScrumblesUser_username,ScrumblesUser_password)
+authUserQuery = ScrumblesData.Query.getUserByUsernameAndPassword(ScrumblesUser_username,ScrumblesUser_password)
 authUserQueryResult = dataConnection.getData(authUserQuery)
 authUser = ScrumblesObjects.User(authUserQueryResult[0])
 dataConnection.close()

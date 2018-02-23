@@ -17,7 +17,7 @@ def authenticateUser(username, password, dbLoginInfo):
     user = None
     dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
     dataConnection.connect()
-    result = dataConnection.getData(ScrumblesData.Query.getUserIdByUsernameAndPassword(username, password))
+    result = dataConnection.getData(ScrumblesData.Query.getUserByUsernameAndPassword(username, password))
     dataConnection.close()
     if result == ():
         raise Exception('Invalid USERNAME PASSWORD combo')
@@ -90,9 +90,7 @@ class loginView(tk.Frame):
         username = self.usernameEntry.get()
         password = self.passwordEntry.get()
         loggedInUser = None
-
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
-
 
 
         try:
@@ -120,11 +118,6 @@ class loginView(tk.Frame):
         password = "Password1"#self.passwordEntry.get()
         loggedInUser = None
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
-        print(dbLoginInfo.userID)
-        print(dbLoginInfo.password)
-        print(dbLoginInfo.ipaddress)
-        print(dbLoginInfo.defaultDB)
-
         try:
            loggedInUser = authenticateUser(username, password, dbLoginInfo)
         except Exception as error:
