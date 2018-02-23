@@ -100,11 +100,8 @@ class masterView(tk.Tk):
 
     def setDatabaseConnection(self):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
-        self.dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+
+
 
 
 def logOut(controller):
@@ -121,3 +118,5 @@ def exitProgram(mainwindow):
 
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
+
+

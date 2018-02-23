@@ -338,7 +338,7 @@ class Password:
     def encrypt(self):
         self.password = self.password.encode('utf-8')
         self.password = hashlib.sha256(self.password).hexdigest()
-
+        
     __repr__ = __str__
 
 class ObjectValidator:

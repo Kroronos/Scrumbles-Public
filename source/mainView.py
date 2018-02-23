@@ -86,3 +86,4 @@ class mainView(tk.Frame):
         self.cal.pack(side=tk.TOP, fill=tk.BOTH)
         self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)
         
+

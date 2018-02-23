@@ -90,7 +90,9 @@ class loginView(tk.Frame):
         username = self.usernameEntry.get()
         password = self.passwordEntry.get()
         loggedInUser = None
+
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+
 
 
         try:
@@ -122,6 +124,7 @@ class loginView(tk.Frame):
         print(dbLoginInfo.password)
         print(dbLoginInfo.ipaddress)
         print(dbLoginInfo.defaultDB)
+
         try:
            loggedInUser = authenticateUser(username, password, dbLoginInfo)
         except Exception as error:

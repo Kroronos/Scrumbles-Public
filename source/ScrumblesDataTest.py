@@ -4,7 +4,6 @@ import datetime
 username = 'TestUser'
 password = 'PASSWORD'
 
-
 dbLoginInfo = DataBaseLoginInfo("login.txt")
 
 dataConnection = ScrumblesData(dbLoginInfo)
