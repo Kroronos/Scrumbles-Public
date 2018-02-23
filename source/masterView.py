@@ -1,6 +1,7 @@
 import tkinter as tk
 import mainView 
 import loginView
+import backlogView
 import developerHomeView
 import Dialogs
 import ScrumblesData
