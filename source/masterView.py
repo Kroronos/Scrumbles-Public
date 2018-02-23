@@ -67,6 +67,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Main Menu", command=lambda: self.show_frame(mainView))
         viewMenu.add_command(label="Developer Home View", command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Sprint View", command=lambda: self.show_frame(mainView))
+        viewMenu.add_command(label="Projects Backlog View", command=lambda: self.show_frame(backlogView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label="Getting Started", command=showGettingStartedText)
@@ -101,7 +102,9 @@ class masterView(tk.Tk):
         self.add_frame(mainFrame, mainView)
 
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
+        backlogViewFrame = backlogView.backlogView(self.container, self, loggedInUser)
         self.add_frame(developerHomeFrame, developerHomeView)
+        self.add_frame(backlogViewFrame, backlogView)
         self.show_frame(mainView)
 
     def setDatabaseConnection(self):
