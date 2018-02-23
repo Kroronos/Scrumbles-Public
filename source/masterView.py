@@ -106,6 +106,7 @@ class masterView(tk.Tk):
 
     def setDatabaseConnection(self):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+        self.dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
 
 
 
