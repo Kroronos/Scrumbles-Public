@@ -148,7 +148,78 @@ class CreateSprintDialog:
             assert self.dbConnector.isConnected() == False
         self.top.destroy()
 
-## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
+
+class CreateItemDialog:
+
+    def __init__(self, parent, dbConnector):
+
+        self.dbConnector = dbConnector
+
+        popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.geometry('300x250')
+        popUPDialog.title('Create a New Item')
+
+        Tk.Label(popUPDialog, text="Item Title").grid(row=2,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Item Description").grid(row=3,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Item Type").grid(row=6,column=1,pady=5,sticky='E')
+        
+
+        self.itemTitleEntry = Tk.Entry(popUPDialog,width=27)
+        self.itemTitleEntry.grid(row=2,column=2,pady=5,sticky='W')
+
+        self.itemDescriptionEntry = Tk.Text(popUPDialog,height=6,width=20,wrap=Tk.WORD)
+        self.itemDescriptionEntry.grid(row=3,column=2,pady=5)
+
+        
+
+       
+        ItemTypeVar = Tk.StringVar()
+        items = ('User Story', 'Epic', 'Bug','Chore','Feature')
+        self.ItemTypebox = ttk.Combobox(popUPDialog,textvariable=ItemTypeVar,state='readonly',values=items)
+        self.ItemTypebox.grid(row=6, column=2,sticky='W')
+        self.ItemTypebox.selection_clear()
+
+
+        createButton = Tk.Button(popUPDialog, text="Create Item", command=self.ok)
+        createButton.grid(row=8,column=2,pady=5)
+        cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
+        cancelButton.grid(row=8,column=1,pady=5)
+
+    
+    def ok(self):
+
+        try:
+
+
+            item = ScrumblesObjects.Item()
+
+            item.itemTitle = self.itemTitleEntry.get()
+            item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
+            item.itemType = self.ItemTypebox.get()
+
+            self.dbConnector.connect()
+            self.dbConnector.setData(ScrumblesData.Query.createObject(item))
+            self.dbConnector.close()
+
+
+        except Exception as e:
+            messagebox.showerror('Error',str(e))
+
+        else:
+            messagebox.showinfo('Info', 'New Item Successfully Created')
+            self.exit()
+        finally:
+            if self.dbConnector is not None:
+                if self.dbConnector.isConnected():
+                    self.dbConnector.close()
+
+
+    def exit(self):
+        if self.dbConnector is not None:
+            assert self.dbConnector.isConnected() == False
+        self.top.destroy()
+		
+		## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
 ##  UNCOMMENT ONLY FOR TESTING.
 ##  KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
 # dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
@@ -163,7 +234,7 @@ class CreateSprintDialog:
 # Tk.Button(root, text="Hello!").pack()
 # root.update()
 #
-# u = CreateUserDialog(root,dataConnection)
-# s = CreateSprintDialog(root, dataConnection)
-#
-# root.wait_window(s.top)
+# # u = CreateUserDialog(root,dataConnection)
+# # s = CreateSprintDialog(root, dataConnection)
+# i = CreateItemDialog(root, dataConnection)
+# root.wait_window(i.top)
