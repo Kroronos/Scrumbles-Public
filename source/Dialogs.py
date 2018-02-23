@@ -150,7 +150,8 @@ class CreateSprintDialog:
 
 
 class CreateItemDialog:
-def __init__(self, parent, dbConnector):
+
+    def __init__(self, parent, dbConnector):
 
         self.dbConnector = dbConnector
 
@@ -160,21 +161,22 @@ def __init__(self, parent, dbConnector):
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2,column=1,pady=5,sticky='E')
         Tk.Label(popUPDialog, text="Item Description").grid(row=3,column=1,pady=5,sticky='E')
-        Tk.Label(popUPDialog, text="Item Type").grid(row=4,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Item Type").grid(row=6,column=1,pady=5,sticky='E')
         
 
-        self.itemTitleEntry = Tk.Entry(popUPDialog)
-        self.itemTitleEntry.grid(row=2,column=2,pady=5)
+        self.itemTitleEntry = Tk.Entry(popUPDialog,width=27)
+        self.itemTitleEntry.grid(row=2,column=2,pady=5,sticky='W')
 
-        self.itemDescriptionEntry = Tk.Entry(popUPDialog,show='*')
+        self.itemDescriptionEntry = Tk.Text(popUPDialog,height=6,width=20,wrap=Tk.WORD)
         self.itemDescriptionEntry.grid(row=3,column=2,pady=5)
+
         
 
        
         ItemTypeVar = Tk.StringVar()
-        items = ('User Story', 'Epic', 'Bug',')
-        self.ItemTypebox = ttk.Combobox(popUPDialog,textvariable=roleVar,state='readonly',values=items)
-        self.ItemTypebox.grid(row=6, column=2)
+        items = ('User Story', 'Epic', 'Bug','Chore','Feature')
+        self.ItemTypebox = ttk.Combobox(popUPDialog,textvariable=ItemTypeVar,state='readonly',values=items)
+        self.ItemTypebox.grid(row=6, column=2,sticky='W')
         self.ItemTypebox.selection_clear()
 
 
@@ -187,30 +189,24 @@ def __init__(self, parent, dbConnector):
     def ok(self):
 
         try:
-            self.validatePasswordMatch(self.passwordEntry.get(),self.reEnterPasswordEntry.get())
+
 
             item = ScrumblesObjects.Item()
-            user.userName = self.userNameEntry.get()
-            user.userPassword = self.passwordEntry.get()
-            user.userEmailAddress = self.emailEntry.get()
-            user.userRole = self.roleCombobox.get()
+
+            item.itemTitle = self.itemTitleEntry.get()
+            item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
+            item.itemType = self.ItemTypebox.get()
 
             self.dbConnector.connect()
-            self.dbConnector.setData(ScrumblesData.Query.createObject(user))
+            self.dbConnector.setData(ScrumblesData.Query.createObject(item))
             self.dbConnector.close()
 
-        except IntegrityError as e:
-            if 'UserName' in str(e):
-                messagebox.showerror('Error', 'Username already in use')
-            elif "EmailAddress" in str(e):
-                messagebox.showerror('Error', "Email address already in use")
-            else:
-                messagebox.showerror('Error',str(e))
+
         except Exception as e:
             messagebox.showerror('Error',str(e))
 
         else:
-            messagebox.showinfo('Info', 'New User Successfully Created')
+            messagebox.showinfo('Info', 'New Item Successfully Created')
             self.exit()
         finally:
             if self.dbConnector is not None:
@@ -238,7 +234,7 @@ def __init__(self, parent, dbConnector):
 # Tk.Button(root, text="Hello!").pack()
 # root.update()
 #
-# u = CreateUserDialog(root,dataConnection)
-# s = CreateSprintDialog(root, dataConnection)
+# # u = CreateUserDialog(root,dataConnection)
+# # s = CreateSprintDialog(root, dataConnection)
 # i = CreateItemDialog(root, dataConnection)
-# root.wait_window(s.top)
+# root.wait_window(i.top)

@@ -56,6 +56,7 @@ class masterView(tk.Tk):
         fileMenu = tk.Menu(menuBar, tearoff=0)
         fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
         fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
+        fileMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
         fileMenu.add_command(label="Exit", command=exitProgram)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
@@ -89,6 +90,10 @@ class masterView(tk.Tk):
     def showCreateSprintDialog(self):
         createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataConnection)
         self.wait_window(createSprintDialog.top)
+
+    def showCreateItemDialog(self):
+        createItemDialog = Dialogs.CreateItemDialog(self,self.dataConnection)
+        self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
