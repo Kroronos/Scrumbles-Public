@@ -2,10 +2,22 @@ import MySQLdb
 import ScrumblesObjects
 import re
 import hashlib
+import base64
 
 class DataBaseLoginInfo:
-    #todo def __init__(self,file) Load login info from an encrypted file
-    pass
+    def __init__(self,file):
+        loginFile = open(file, 'r')
+        self.userID = self.getFromFile(loginFile)
+        self.password = self.getFromFile(loginFile)
+        self.ipaddress = self.getFromFile(loginFile)
+        self.defaultDB = self.getFromFile(loginFile)
+        loginFile.close()
+    def getFromFile(self, openFile):
+        item = openFile.readline()
+        item = item.rstrip("\n\r")
+        item = base64.standard_b64decode(item)
+        item = item.decode('utf8')
+        return item
 
 class Query:
     getAllUsers = 'SELECT * FROM UserTable'
@@ -326,7 +338,7 @@ class Password:
     def encrypt(self):
         self.password = self.password.encode('utf-8')
         self.password = hashlib.sha256(self.password).hexdigest()
-    
+        
     __repr__ = __str__
 
 class ObjectValidator:

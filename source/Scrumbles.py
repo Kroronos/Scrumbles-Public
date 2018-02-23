@@ -18,7 +18,6 @@ assert tkinter.TkVersion == 8.6, 'Version requirement tkinter version 8.6'
 #
 # if 'win' in sys.platform:
 #         ctypes.windll.shcore.SetProcessDpiAwareness(1)
-#
 
 app = masterView.masterView()
 

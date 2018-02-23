@@ -85,3 +85,5 @@ class mainView(tk.Frame):
         self.scrumTeamList.pack(side=tk.RIGHT, fill=tk.Y)
         self.cal.pack(side=tk.TOP, fill=tk.BOTH)
         self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)
+        
+

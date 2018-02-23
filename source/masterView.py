@@ -56,8 +56,9 @@ class masterView(tk.Tk):
         fileMenu = tk.Menu(menuBar, tearoff=0)
         fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
         fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
-        fileMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
-        fileMenu.add_command(label="Exit", command=exitProgram)
+
+        fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
+
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
@@ -104,12 +105,9 @@ class masterView(tk.Tk):
         self.show_frame(mainView)
 
     def setDatabaseConnection(self):
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo()
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
-        self.dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+
+
 
 
 def logOut(controller):
@@ -119,9 +117,12 @@ def logOut(controller):
     controller.add_frame(loginFrame, loginView)
     controller.show_frame(loginView)
 
-def exitProgram():
+def exitProgram(mainwindow):
+    mainwindow.destroy()
     print("Exiting Program")
     exit()
 
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
+
+
