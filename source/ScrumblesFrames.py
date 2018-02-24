@@ -16,41 +16,68 @@ from tkinter import ttk
 class BaseList(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
+        self.fullList = []
 
-    def importList(self, list):
+    def showPartialList(self, list):
         self.clearList()
         for item in list:
+            self.listbox.insert(tk.END, item)
+        self.enforceSort()
+
+    def showFullList(self):
+        self.clearList()
+        for item in self.fullList:
+            self.listbox.insert(tk.END, item)
+        self.enforceSort()
+
+
+    def importList(self, list):
+        self.deleteList()
+        self.fullList = list
+        for item in self.fullList:
             self.listbox.insert(tk.END, item)
         self.enforceSort()
 
     def importListSorted(self, list):
-        self.clearList()
-        for item in list:
+        self.deleteList()
+        self.fullList = list
+        for item in self.fullList:
             self.listbox.insert(tk.END, item)
 
     def appendList(self, list):
         for item in list:
+            self.fullList.append(item)
             self.listbox.insert(tk.END, item)
         self.enforceSort()
 
     def addItem(self, item):
+        self.fullList.append(item)
         self.listbox.insert(tk.END, item)
         self.enforceSort()
 
     def sortForward(self):
         items = self.listbox.get(0, tk.END)
         items = sorted(items)
+        self.fullList = sorted(self.fullList)
         self.importListSorted(items)
 
     def sortReverse(self):
         items = self.listbox.get(0, tk.END)
         items = sorted(items, reverse=True)
+        self.fullList = sorted(self.fullList, reverse=True)
         self.importListSorted(items)
 
     def clearList(self):
         self.listbox.delete(0, tk.END)
 
+    def deleteList(self):
+        self.listbox.delete(0, tk.END)
+        self.fullList = []
+
     def deleteSelectedItem(self):
+
+        deleteIndex = self.listbox.get(0, tk.END).index(tk.ANCHOR)
+        del self.fullList[deleteIndex]
         self.listbox.delete(tk.ANCHOR)
         self.enforceSorting()
 
@@ -75,6 +102,14 @@ class BaseList(tk.Frame):
             self.sortForward()
         else:
             self.sortReverse()
+
+    def search(self, str):
+        def fulfillsCondition(item,str):
+            return item[:len(str)] == str
+        
+        matches = [x for x in self.fullList if fulfillsCondition(x, str)]
+        self.showPartialList(matches)
+        
 
 
 class SComboList(BaseList):
@@ -103,9 +138,27 @@ class SBacklogList(BaseList):
         tk.Frame.__init__(self, controller)
 
         self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)
-        self.titleLabel = tk.Label(self.titleFrame, text="Backlog", bg=style.scrumbles_blue, relief=tk.FLAT)
-        self.titleLabel.pack(side = tk.LEFT)
+        self.searchFrame = tk.Frame(self.titleFrame, relief=tk.SOLID, bg=style.scrumbles_blue)
 
+        self.searchLabel = tk.Label(self.searchFrame, text="Search:", bg=style.scrumbles_blue)
+        self.searchEntry = tk.Entry(self.searchFrame)
+        self.searchButton = tk.Button(self.searchFrame, text=style.right_enter_arrow, bg=style.scrumbles_blue, command=lambda: self.search(self.searchEntry.get()), relief=tk.FLAT)
+        self.undoSearchButton = tk.Button(self.searchFrame, text=style.cancel_button, bg=style.scrumbles_blue, command=lambda: self.showFullList(), relief=tk.FLAT)
+
+        self.searchEntry.bind('<Return>', lambda event: self.search(self.searchEntry.get()))
+        self.undoSearchButton.pack(side = tk.RIGHT)
+        self.searchButton.pack(side = tk.RIGHT)
+        self.searchEntry.pack(side = tk.RIGHT)
+        self.searchLabel.pack(side = tk.RIGHT)
+       
+
+        self.titleLabel = tk.Label(self.titleFrame, text="Backlog", bg=style.scrumbles_blue, relief=tk.FLAT)
+        self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT)
+    
+        self.titleLabel.pack(side = tk.LEFT)
+        self.sortButton.pack(side = tk.RIGHT)
+        self.searchFrame.pack(side = tk.RIGHT)
+    
         self.listFrame = tk.Frame(self)
         self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL)
         self.listbox = tk.Listbox(self.listFrame, width = 80, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)

@@ -19,13 +19,12 @@ class backlogView(tk.Frame):
 
 
         controller.dataConnection.connect()
-        self.productListData = []
-        self.backlogData = [] 
+        self.productListData = ["1","2","3","4","5","6","7",]
+        self.backlogData = ["a","b","c","bee","e","f","g",] 
         
         controller.dataConnection.close()
 
-
-
-        
+        self.productList.importList(self.productListData)
+        self.backlog.importList(self.backlogData)
         self.productList.pack(side=tk.LEFT, fill=tk.Y)
         self.backlog.pack(side=tk.LEFT, fill=tk.Y)
