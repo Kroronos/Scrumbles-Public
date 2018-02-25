@@ -48,9 +48,4 @@ class ItemManagerView(ttk.Frame):
 
 	def go_to_git():
 		#do things
-		print("gittt")
-
-
-Item = ItemManagerView(root)
-
-root.mainloop()
+		print("git opened")
