@@ -57,7 +57,7 @@ class masterView(tk.Tk):
         fileMenu = tk.Menu(menuBar, tearoff=0)
         fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
         fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
-
+        fileMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
         fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
 
 
