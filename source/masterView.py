@@ -5,7 +5,7 @@ import backlogView
 import developerHomeView
 import Dialogs
 import ScrumblesData
-
+import itemMangerView
 
 class masterView(tk.Tk):
     def __init__(self):
@@ -69,7 +69,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Developer Home View", command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Sprint View", command=lambda: self.show_frame(mainView))
         viewMenu.add_command(label="Projects Backlog View", command=lambda: self.show_frame(backlogView))
-        #viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemManagerView))
+        viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemMangerView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label="Getting Started", command=showGettingStartedText)
@@ -103,10 +103,12 @@ class masterView(tk.Tk):
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         backlogViewFrame = backlogView.backlogView(self.container, self, loggedInUser)
+        itemMangerFrame = itemMangerView.ItemManagerView(self.container, self)
 
         self.add_frame(mainFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(backlogViewFrame, backlogView)
+        self.add_frame(itemMangerFrame,itemMangerView)
         
         self.show_frame(mainView)
 
