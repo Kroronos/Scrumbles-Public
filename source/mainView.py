@@ -1,131 +1,89 @@
-#
-from ScrumblesData import *
-from tkinter import *
+import tkinter as tk
+import tkcalendar
+import ScrumblesData
+import masterView
+import ScrumblesFrames
+
+from tkinter import ttk
+class mainView(tk.Frame):
+    def __init__(self, parent, controller,user):
+        tk.Frame.__init__(self, parent)
+
+        self.usernameLabel = tk.Label(self, text='Welcome to the Main View ', font=("Verdana", 12))
+        self.usernameLabel.pack()
+        self.productBacklogList = ScrumblesFrames.SList(self, "PRODUCT BACKLOG")
+        self.scrumTeamList = ScrumblesFrames.SList(self, "SCRUM TEAMS")
+        self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
+        self.assignedItemList = ScrumblesFrames.SList(self, "ASSIGNED ITEMS")
+        self.cal = ScrumblesFrames.SCalendar(self)
+
+        self.sprintGraph = ScrumblesFrames.SLineGraph(self)
+        self.sprintGraph.setAxes("Sprint Day", "Cards Completed")
+        self.sprintGraph.displayGraph()
 
 
-def authenticateUser(username, password, dbLoginInfo):
-    userID = None
-    dataConnection = ScrumblesData(dbLoginInfo)
-    dataConnection.connect()
-    result = dataConnection.getData(Query.getUserIdByUsernameAndPassword(username, password))
-    dataConnection.close()
-    if result == ():
-        raise Exception('Invalid USERNAME PASSWORD combo')
-    else:
-        userId = result[0]['UserID']
-    return userId
 
 
-def viewSprintWindow():
-    print("View Sprint Called")
+        controller.dataConnection.connect()
+        self.backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
+        self.backlog = [card['CardTitle'] for card in self.backlog]
+
+        self.scrumTeams = [] #needs database query
+        
+        self.teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
+        self.teamMembers = [member['UserName'] for member in self.teamMembers]
+
+        self.assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
+        self.assignedItem = [card['CardTitle'] for card in self.assignedItem]
+
+        controller.dataConnection.close()
 
 
-def viewBacklogWindow():
-    print("View Backlog Called")
 
+        self.productBacklogList.importList(self.backlog)
+        self.scrumTeamList.importList(self.scrumTeams)
+        self.teamMemberList.importList(self.teamMembers)
+        self.assignedItemList.importList(self.assignedItem)
 
-def viewUserWindow():
-    print("View user called")
+        def updateLists():
+            self.after(30000,updateLists)
+            controller.dataConnection.connect()
+            backlogCheck = controller.dataConnection.getData('SELECT * FROM CardTable')
+            backlogCheck = [card['CardTitle'] for card in backlogCheck]
 
+            scrumTeamsCheck = [] #needs database query
 
-class LoginDialog(Frame):
-    def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
+            teamMembersCheck = controller.dataConnection.getData('SELECT UserName FROM UserTable')
+            teamMembersCheck = [member['UserName'] for member in teamMembersCheck]
 
-        self.inputFrame = Frame(self)
-        self.controller = controller
+            assignedItemCheck = controller.dataConnection.getData('SELECT * FROM CardTable')
+            assignedItemCheck = [card['CardTitle'] for card in assignedItemCheck]
+            
+            controller.dataConnection.close()
 
-        self.usernameLabel = Label(self.inputFrame, text="Username")
-        self.passwordLabel = Label(self.inputFrame, text="Password")
-        self.usernameEntry = Entry(self.inputFrame)
-        self.passwordEntry = Entry(self.inputFrame, show='*')
-        self.loginButton = Button(self.inputFrame, text='Login', command=lambda: self.loginProcess())
+            if (set(self.backlog) != set(backlogCheck)):
+                self.backlog=backlogCheck
+                self.productBacklogList.importList(self.backlog)
 
-        self.usernameLabel.grid(row=3, column=2, sticky=EW)
-        self.usernameEntry.grid(row=3, column=3, columnspan=2, sticky=EW)
-        self.passwordLabel.grid(row=4, column=2, sticky=EW)
-        self.passwordEntry.grid(row=4, column=3, columnspan=2, sticky=EW)
-        self.loginButton.grid(row=6, column=3, sticky=EW)
+            if (set(self.scrumTeams) != set(scrumTeamsCheck)):
+                self.scrumTeams=scrumTeamsCheck
+                self.scrumTeamList.importList(self.scrumTeams)
 
-        for x in range(0, 7):
-            self.inputFrame.grid_rowconfigure(x, weight=1, pad=5)
-            self.inputFrame.grid_columnconfigure(x, weight=1)
+            if (set(self.teamMembers) != set(teamMembersCheck)):
+                self.teamMembers=teamMembersCheck
+                self.teamMemberList.importList(self.teamMembers)
 
-        self.title = Label(self, text="Time to Scrumble: Login", font=("Verdana", 12))
+            if (set(self.assignedItem) != set(assignedItemCheck)):
+                self.assignedItem=assignedItemCheck
+                self.assignedItemList.importList(self.assignedItem)
 
-        self.title.grid(row=0, column=2, columnspan=1, sticky=NSEW)
-        self.inputFrame.grid(row=1, column=2, columnspan=1, sticky=EW)
+        updateLists()
+        
+        self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
+        self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.teamMemberList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.scrumTeamList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.cal.pack(side=tk.TOP, fill=tk.BOTH)
+        self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)
+        
 
-        for x in range(0, 5):
-            self.grid_rowconfigure(x, weight=1)
-            self.grid_columnconfigure(x, weight=1)
-
-    def loginProcess(self):
-        validation = self.loginButtonClicked()
-        if (validation):
-            mainFrame = mainView(self.controller.container, self.controller)
-            self.controller.add_frame(mainFrame, mainView)
-            self.controller.show_frame(mainView)
-
-    def loginButtonClicked(self):
-        username = self.usernameEntry.get()
-        password = self.passwordEntry.get()
-
-        dbLoginInfo = DataBaseLoginInfo()
-        dbLoginInfo.userID = 'test_user'
-        dbLoginInfo.password = 'testPassword'
-        dbLoginInfo.ipaddress = '173.230.136.241'
-        dbLoginInfo.defaultDB = 'test'
-
-        try:
-            authenticateUser(username, password, dbLoginInfo)
-        except Exception as error:
-            print(repr(error))
-            return False
-
-        print('Successful login')
-        self.destroy()
-        return True
-
-
-class masterView(Tk):
-    def __init__(self):
-        self.frames = {}
-
-        Tk.__init__(self)
-        self.container = Frame(self)
-
-        self.container.pack(side="top", fill="both", expand=True)
-
-        self.container.grid_rowconfigure(0, weight=1)
-        self.container.grid_columnconfigure(0, weight=1)
-
-        loginFrame = LoginDialog(self.container, self)
-
-        self.add_frame(loginFrame, LoginDialog)
-
-        self.show_frame(LoginDialog)
-
-        self.title("Scrumbles")
-        self.geometry("800x600")
-        self.iconbitmap("logo.ico")
-
-    def show_frame(self, cont):
-        frame = self.frames[cont]
-        frame.tkraise()
-
-    def add_frame(self, addedFrame, addedFrameClass):
-        self.frames[addedFrameClass] = addedFrame
-        addedFrame.grid(row=0, column=0, sticky="nsew")
-
-
-class mainView(Frame):
-    def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
-        label = Label(self, text="Time to Scrumble: Main View", font=("Verdana", 12))
-        label.grid(row=0, column=0, sticky="nsew")
-
-
-app = masterView()
-
-app.mainloop()
