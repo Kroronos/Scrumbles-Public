@@ -101,13 +101,13 @@ class masterView(tk.Tk):
 
     def generateViews(self, loggedInUser):
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
-        self.add_frame(mainFrame, mainView)
-
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         backlogViewFrame = backlogView.backlogView(self.container, self, loggedInUser)
 
+        self.add_frame(mainFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(backlogViewFrame, backlogView)
+        
         self.show_frame(mainView)
 
     def setDatabaseConnection(self):
