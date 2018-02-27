@@ -6,6 +6,7 @@ import developerHomeView
 import Dialogs
 import ScrumblesData
 import itemMangerView
+import webbrowser
 
 class masterView(tk.Tk):
     def __init__(self):
@@ -72,7 +73,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemMangerView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
-        helpMenu.add_command(label="Getting Started", command=showGettingStartedText)
+        helpMenu.add_command(label="Getting Started", command=openHelpContext)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Profile", menu=profileMenu)
@@ -134,4 +135,5 @@ def exitProgram(mainwindow):
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
 
-
+def openHelpContext():
+    webbrowser.open('https://github.com/CEN3031-group16/GroupProject/wiki')
