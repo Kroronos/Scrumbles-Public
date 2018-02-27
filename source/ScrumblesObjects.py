@@ -149,7 +149,7 @@ class Project:
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
             return
-        assert 'projectName' in queryResultDict
+        assert 'ProjectName' in queryResultDict
         self.projectID = queryResultDict['ProjectID']
         self.projectName = queryResultDict['ProjectName']
 

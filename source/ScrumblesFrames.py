@@ -38,6 +38,29 @@ class BaseList(tk.Frame):
             self.listbox.insert(tk.END, item)
         self.enforceSort()
 
+
+    def importItemList(self, items):
+        self.deleteList()
+        listofnames = []
+        for item in items:
+            listofnames.append(item.itemTitle)
+        self.fullList = listofnames
+        for item in self.fullList:
+            self.listbox.insert(tk.END, item)
+        self.enforceSort()
+
+    def importProjectList(self, projects):
+        self.deleteList()
+        listOfnames = []
+        for project in projects:
+            listOfnames.append(project.projectName)
+        self.fullList = listOfnames
+        for item in self.fullList:
+            self.listbox.insert(tk.END, item)
+        self.enforceSort()
+
+
+
     def importListSorted(self, list):
         self.deleteList()
         self.fullList = list

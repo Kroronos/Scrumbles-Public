@@ -24,7 +24,7 @@ class Query:
     getAllSprints = 'SELECT * FROM SprintTable'
     getAllCards = 'SELECT * FROM CardTable'
     getAllComments = 'SELECT * FROM CommentTable'
-    getAllProjects = 'SELECT * FROM ProjectTable'
+    getAllProjects = 'SELECT * FROM ProjectsTable'
     @staticmethod
     def getUserByUsernameAndPassword(username, password):
         hashedPassword = Password(password)
@@ -90,6 +90,8 @@ class Query:
             query = SprintQuery.updateSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.updateCard(obj)
+        elif type(obj) == ScrumblesObjects.Project:
+            query = ProjectQuery.updateProject(obj)
         else:
             raise Exception('Invalid Object Type')
         return query
@@ -98,15 +100,21 @@ class ProjectQuery(Query):
     @staticmethod
     def createProject(project):
         ObjectValidator.validate(project)
-        query = 'INSERT INTO ProjectTable (ProjectName) VALUES (\'%s\')' % (project.projectName)
+        query = 'INSERT INTO ProjectsTable (ProjectName) VALUES (\'%s\')' % (project.projectName)
         return query
 
     @staticmethod
     def deleteProject(project):
         assert project is not None
-        query = 'DELETE FROM ProjectTable WHERE ProjectID=%i' % (project.projectID)
+        query = 'DELETE FROM ProjectsTable WHERE ProjectID=%i' % (project.projectID)
         return query
 
+    @staticmethod
+    def updateProject(project):
+        assert project is not None
+        query = 'UPDATE ProjectsTable SET ProjectName=\'%s\' WHERE ProjectID = %i' % (project.projectName,
+                                                                                      project.projectID)
+        return query
 class SprintQuery(Query):
     @staticmethod
     def createSprint(sprint):
@@ -120,7 +128,7 @@ class SprintQuery(Query):
         assert sprint is not None
         assert sprint.sprintID is not None
 
-        query = 'UPDATE SprintTable SET StartDate=%s,' \
+        query = 'UPDATE SprintTable SET StartDate=\'%s\',' \
                 'DueDate=\'%s\', SprintName=\'%s\' WHERE SprintID=%i'%(
             sprint.sprintStartDate,
             sprint.sprintDueDate,
