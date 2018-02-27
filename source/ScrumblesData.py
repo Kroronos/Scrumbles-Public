@@ -24,6 +24,7 @@ class Query:
     getAllSprints = 'SELECT * FROM SprintTable'
     getAllCards = 'SELECT * FROM CardTable'
     getAllComments = 'SELECT * FROM CommentTable'
+    getAllProjects = 'SELECT * FROM ProjectTable'
     @staticmethod
     def getUserByUsernameAndPassword(username, password):
         hashedPassword = Password(password)
@@ -54,6 +55,9 @@ class Query:
             query = CardQuery.createCard(obj)
         elif type(obj) == ScrumblesObjects.Comment:
             query = CommentQuery.createComment(obj)
+        elif type(obj) == ScrumblesObjects.Project:
+            query = ProjectQuery.createProject(obj)
+
         else:
             raise Exception('Invalid Object Type')
         return query
@@ -69,6 +73,8 @@ class Query:
             query = SprintQuery.deleteSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.deleteCard(obj)
+        elif type(obj) == ScrumblesObjects.Project:
+            query = ProjectQuery.deleteProject(obj)
         else:
             raise Exception('Invalid Object Type')
         return query
@@ -86,6 +92,19 @@ class Query:
             query = CardQuery.updateCard(obj)
         else:
             raise Exception('Invalid Object Type')
+        return query
+
+class ProjectQuery(Query):
+    @staticmethod
+    def createProject(project):
+        ObjectValidator.validate(project)
+        query = 'INSERT INTO ProjectTable (ProjectName) VALUES (\'%s\')' % (project.projectName)
+        return query
+
+    @staticmethod
+    def deleteProject(project):
+        assert project is not None
+        query = 'DELETE FROM ProjectTable WHERE ProjectID=%i' % (project.projectID)
         return query
 
 class SprintQuery(Query):
@@ -352,8 +371,16 @@ class ObjectValidator:
             ObjectValidator.validateSprint(obj)
         elif type(obj) == ScrumblesObjects.Comment:
             ObjectValidator.validateComment(obj)
+        elif type(obj) == ScrumblesObjects.Project:
+            ObjectValidator.validateProject(obj)
         else:
             raise Exception('Invalid Object')
+
+    @staticmethod
+    def validateProject(project):
+        if len(project.projectName) < 1:
+            raise Exception('Project Name too short')
+        return
 
     @staticmethod
     def validateUser(user):
