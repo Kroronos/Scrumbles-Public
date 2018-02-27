@@ -84,6 +84,7 @@ class Sprint:
     sprintStartDate = None
     sprintDueDate = None
     sprintName = None
+    projectID = None
     listOfAssignedItems = []
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
@@ -96,6 +97,7 @@ class Sprint:
         self.sprintStartDate = queryResultDict['StartDate']
         self.sprintDueDate = queryResultDict['DueDate']
         self.sprintName = queryResultDict['SprintName']
+        self.projectID = queryResultDict['ProjectID']
 
     def populateAssignedItems(self,queryResultList):
         assert len(queryResultList) > 0
@@ -122,6 +124,7 @@ class Comment:
     commentContent = None
     commentItemID = None
     commentUserID = None
+    listOfTags = []
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -134,3 +137,24 @@ class Comment:
         self.commentContent = queryResultDict['CommentContent']
         self.commentItemID = queryResultDict['CardID']
         self.commentUserID = queryResultDict['UserID']
+
+    def getTags(self,queryResult):
+        assert 'TagName' in queryResult[0]
+        for dictionary in queryResult:
+            self.listOfTags.append(dictionary['TagName'])
+class Project:
+    projectID = None
+    projectName = None
+    listOfAssignedSprints = []
+    def __init__(self, queryResultDict=None):
+        if queryResultDict is None:
+            return
+        assert 'ProjectName' in queryResultDict
+        self.projectID = queryResultDict['ProjectID']
+        self.projectName = queryResultDict['ProjectName']
+
+    def populateAssignedSprints(self, ListOfSprints):
+        for sprint in ListOfSprints:
+            if sprint.projectID == self.projectID:
+                self.listOfAssignedSprints.append(sprint)
+
