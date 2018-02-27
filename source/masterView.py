@@ -33,7 +33,7 @@ class masterView(tk.Tk):
         self.dataConnection = None
         self.title("Scrumbles")
         self.geometry("1000x600")
-        self.iconbitmap("logo.ico")
+        #self.iconbitmap("logo.ico")
 
 
     def show_frame(self, cont):

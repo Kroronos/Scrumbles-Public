@@ -7,28 +7,43 @@ import ScrumblesData
 
 
 class ItemManagerView(tk.Frame):
-	def __init__(self, parent, controller):#, parent, controller):
+	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
+		self.controller =  controller
 
 		self.usernameLabel = tk.Label(self, text = "Item Manager", font = ("Verdana", 12))
-		self.usernameLabel.pack()
+		self.usernameLabel.pack(side = tk.TOP, fill = tk.X)
 
 		self.itemList = ScrumblesFrames.SList(self, "ITEMS")
+		# self.grid(row = 1, column = 0)
 
-		# controller.dataConnection.connect()
-		# self.items = controller.dataConnection.getData('SELECT * FROM ItemTable')
-		# self.items = [item['ItemTitle'] for item in self.itemList]
+		controller.dataConnection.connect()
 
-		# controller.dataConnection.close()
+		self.items = controller.dataConnection.getData('SELECT * FROM CardTable')
+		self.items = [card['CardTitle'] for card in self.items]
 
-		#self.itemList.importList(self.items)
+		controller.dataConnection.close()
 
+		self.itemList.importList(self.items)
 		self.itemList.pack(side = tk.LEFT, fill = tk.Y)
-		
 
-		#self.commentBox = Entry(self)
+		self.commentsTitle = tk.Label(self, text = "Comments", font = ("Verdana",12))
+		self.commentsTitle.pack(side = tk.RIGHT, anchor = "n")
+		# self.commentsTitle.grid(row = 0, column = 0)
+		#self.commentsTitle.pack(side = tk.RIGHT)
+		# self.comments = ScrumblesFrames.SList(self,"COMMENTS")
+		self.commentsField = tk.Entry(self)
+		# self.commentsField.grid(row = 1)
+		# self.comments.importList([self.commentsField])
+		#self.commentsField.pack(side = tk.RIGHT)
 
-		#self.commentBox.pack(side = tk.RIGHT, fill = tk.Y )
+		self.commentsField.pack(side = tk.RIGHT, fill = tk.Y, anchor = "s")
+
+		self.dataTest = tk.Label(self, text="First")
+		# self.dataTest.pack(padx = 300, pady = 150, side = tk.LEFT)
+
+		self.dataEntry = tk.Entry(width = 10)
+
 	# def load_items(self):
 	# 	#do things
 	# 	print("Items Loaded")
