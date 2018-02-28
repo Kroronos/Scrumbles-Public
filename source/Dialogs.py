@@ -4,6 +4,7 @@ from tkinter import messagebox
 from MySQLdb import IntegrityError
 import ScrumblesData
 import ScrumblesObjects
+import sys, traceback
 
 class CreateProjectDialog:
     def __init__(self, parent, dbConnector):
@@ -275,7 +276,7 @@ class CreateItemDialog:
 
 class EditItemDialog():
     def __init__(self, parent, dbConnector, Item):
-
+        self.item = Item
         self.dbConnector = dbConnector
         ItemTypeVar = Tk.StringVar()
         itemUserVar = Tk.StringVar()
@@ -335,9 +336,9 @@ class EditItemDialog():
 
 
         self.itemCodeLinkEntry = Tk.Entry(popUPDialog, width=27)
-        self.itemCodeLinkEntry.grid(row=9, column=2, pady=5, sticky='W')
+        self.itemCodeLinkEntry.grid(row=10, column=2, pady=5, sticky='W')
         self.itemPriorityEntry = Tk.Entry(popUPDialog, width=27)
-        self.itemPriorityEntry.grid(row=10, column=2, pady=5, sticky='W')
+        self.itemPriorityEntry.grid(row=9, column=2, pady=5, sticky='W')
 
         createButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
         createButton.grid(row=12, column=2, pady=5)
@@ -348,41 +349,56 @@ class EditItemDialog():
 
         try:
 
-            item = ScrumblesObjects.Item()
+
+            item = self.item
 
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
-            sprintID = 0
+            selectedSprint = None
             userID = 0
             isAssignedToSprint = False
-            if self.sprintsComboBox.get() != '':
-                isAssignedToSprint = True
+
             for sprint in self.listOfSprints:
                 if sprint.sprintName == self.sprintsComboBox.get():
-                    sprintID = sprint.sprintID
+                    selectedSprint = sprint
             for user in self.listOfUsers:
                 if user.userName == self.usersComboBox.get():
                     userID = user.userID
 
+            if self.sprintsComboBox.get() != '':
+                isAssignedToSprint = True
+                item.itemSprintID = selectedSprint.sprintID
 
             item.itemType = self.ItemTypebox.get()
-            item.itemSprintID = sprintID
+
             item.itemUserID = userID
 
 
             item.itemCodeLink = self.itemCodeLinkEntry.get()
-            item.itemPriority = self.itemPriorityEntry.get()
+            if self.itemPriorityEntry.get() == '':
+                item.itemPriority = 0
+            else:
+                item.itemPriority = int(self.itemPriorityEntry.get())
+
 
             self.dbConnector.connect()
             if isAssignedToSprint:
-                self.dbConnector.setData(ScrumblesData.CardQuery.assignCardToSprint(item,sprintID))
+                self.dbConnector.setData(ScrumblesData.CardQuery.assignCardToSprint(item,selectedSprint))
             self.dbConnector.setData(ScrumblesData.Query.updateObject(item))
             self.dbConnector.close()
 
 
+
+
+
         except Exception as e:
             messagebox.showerror('Error', str(e))
-
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
         else:
             messagebox.showinfo('Info', 'New Item Successfully Created')
             self.exit()
