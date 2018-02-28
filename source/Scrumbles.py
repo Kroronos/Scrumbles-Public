@@ -2,6 +2,8 @@ import masterView
 import subprocess
 import sys
 import tkinter
+
+# The following can be removed
 # pyver = sys.version_info
 # assert pyver[0] == 3, 'Python version must be 3.6.4'
 # assert pyver[1] == 6, 'Python version must be 3.6.4'

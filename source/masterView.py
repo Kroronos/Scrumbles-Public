@@ -58,6 +58,7 @@ class masterView(tk.Tk):
         fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
         fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
         fileMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
+        fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
         fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
 
 
@@ -86,6 +87,10 @@ class masterView(tk.Tk):
 
     def hideMenuBar(self):
         self.configure(menu=self.hiddenMenu)
+
+    def showCreateProjectDialog(self):
+        createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataConnection)
+        self.wait_window(createProjectDialog.top)
 
     def showCreateUserDialog(self):
         createUserDialog = Dialogs.CreateUserDialog(self, self.dataConnection)
