@@ -74,7 +74,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemMangerView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
-        helpMenu.add_command(label="Getting Started", command=openHelpContext)
+        helpMenu.add_command(label="Scrumbles Wiki", command=openHelpContext)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Profile", menu=profileMenu)
