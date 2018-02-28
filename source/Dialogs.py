@@ -419,28 +419,28 @@ class EditItemDialog():
 ## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
 ##  UNCOMMENT ONLY FOR TESTING.
 ##  KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
-dbLoginInfo = ScrumblesData.DataBaseLoginInfo('login.txt')
+# dbLoginInfo = ScrumblesData.DataBaseLoginInfo('login.txt')
+# #
+# dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+# #
+# #
+# root = Tk.Tk()
+# Tk.Button(root, text="Hello!").pack()
+# root.update()
+# #
+# # # u = CreateUserDialog(root,dataConnection)
+# # # s = CreateSprintDialog(root, dataConnection)
+# # # i = CreateItemDialog(root, dataConnection)
+# # p = CreateProjectDialog(root, dataConnection)
 #
-dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+# items = []
+# dataConnection.connect()
+# for dic in dataConnection.getData(ScrumblesData.Query.getAllCards):
+#     items.append(ScrumblesObjects.Item(dic))
+# dataConnection.close()
+# edit = EditItemDialog(root, dataConnection, items[0])
 #
-#
-root = Tk.Tk()
-Tk.Button(root, text="Hello!").pack()
-root.update()
-#
-# # u = CreateUserDialog(root,dataConnection)
-# # s = CreateSprintDialog(root, dataConnection)
-# # i = CreateItemDialog(root, dataConnection)
-# p = CreateProjectDialog(root, dataConnection)
-
-items = []
-dataConnection.connect()
-for dic in dataConnection.getData(ScrumblesData.Query.getAllCards):
-    items.append(ScrumblesObjects.Item(dic))
-dataConnection.close()
-edit = EditItemDialog(root, dataConnection, items[0])
-
-root.wait_window(edit.top)
+# root.wait_window(edit.top)
 
 
 
