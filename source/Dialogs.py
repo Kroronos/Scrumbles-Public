@@ -210,10 +210,11 @@ class CreateItemDialog:
         popUPDialog.geometry('300x250')
         popUPDialog.title('Create a New Item')
 
+
         Tk.Label(popUPDialog, text="Item Title").grid(row=2,column=1,pady=5,sticky='E')
         Tk.Label(popUPDialog, text="Item Description").grid(row=3,column=1,pady=5,sticky='E')
         Tk.Label(popUPDialog, text="Item Type").grid(row=6,column=1,pady=5,sticky='E')
-        
+
 
         self.itemTitleEntry = Tk.Entry(popUPDialog,width=27)
         self.itemTitleEntry.grid(row=2,column=2,pady=5,sticky='W')
@@ -221,9 +222,9 @@ class CreateItemDialog:
         self.itemDescriptionEntry = Tk.Text(popUPDialog,height=6,width=20,wrap=Tk.WORD)
         self.itemDescriptionEntry.grid(row=3,column=2,pady=5)
 
-        
 
-       
+
+
         ItemTypeVar = Tk.StringVar()
         items = ('User Story', 'Epic', 'Bug','Chore','Feature')
         self.ItemTypebox = ttk.Combobox(popUPDialog,textvariable=ItemTypeVar,state='readonly',values=items)
@@ -236,7 +237,7 @@ class CreateItemDialog:
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
         cancelButton.grid(row=8,column=1,pady=5)
 
-    
+
     def ok(self):
 
         try:
@@ -270,20 +271,161 @@ class CreateItemDialog:
             assert self.dbConnector.isConnected() == False
         self.top.destroy()
 		
-		## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
+
+
+class EditItemDialog():
+    def __init__(self, parent, dbConnector, Item):
+
+        self.dbConnector = dbConnector
+        ItemTypeVar = Tk.StringVar()
+        itemUserVar = Tk.StringVar()
+        sprintVar = Tk.StringVar()
+        self.dbConnector.connect()
+        userQueryResult = self.dbConnector.getData(ScrumblesData.Query.getAllUsers)
+        sprintQueryResult = self.dbConnector.getData(ScrumblesData.Query.getAllSprints)
+        #tagQueryResult = self.dbConnector.getData(ScrumblesData.Query.getAllTags)
+        self.dbConnector.close()
+        self.listOfUsers = []
+        self.listOfSprints = []
+        userNames = []
+        sprintNames = []
+        for dictionary in userQueryResult:
+            self.listOfUsers.append(ScrumblesObjects.User(dictionary))
+            userNames.append(dictionary['UserName'])
+        for dictionary in sprintQueryResult:
+            self.listOfSprints.append(ScrumblesObjects.Sprint(dictionary))
+            sprintNames.append(dictionary['SprintName'])
+        popUPDialog = self.top = Tk.Toplevel(parent)
+        #popUPDialog.geometry('300x250')
+        popUPDialog.title('Edit %s' % Item.itemTitle)
+
+        Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
+        Tk.Label(popUPDialog, text="Item Description").grid(row=3, column=1, pady=5, sticky='E')
+        Tk.Label(popUPDialog, text="Item Type").grid(row=6, column=1, pady=5, sticky='E')
+        Tk.Label(popUPDialog, text='Assign To User').grid(row=7,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text='Assign to Sprint').grid(row=8,column=1,pady=5,sticky='E')
+
+        Tk.Label(popUPDialog, text="Set Priority").grid(row=9,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Set link to Code").grid(row=10,column=1,pady=5,sticky='E')
+        self.itemTitleEntry = Tk.Entry(popUPDialog, width=27)
+        self.itemTitleEntry.insert(0,Item.itemTitle)
+        self.itemTitleEntry.grid(row=2, column=2, pady=5, sticky='W')
+
+        self.itemDescriptionEntry = Tk.Text(popUPDialog, height=6, width=20, wrap=Tk.WORD)
+
+        self.itemDescriptionEntry.insert(Tk.END,Item.itemDescription)
+        self.itemDescriptionEntry.grid(row=3, column=2, pady=5)
+
+
+        items = ('User Story', 'Epic', 'Bug', 'Chore', 'Feature')
+        self.ItemTypebox = ttk.Combobox(popUPDialog, textvariable=ItemTypeVar, state='readonly', values=items)
+        self.ItemTypebox.grid(row=6, column=2, sticky='W')
+        #self.ItemTypebox.selection_clear()
+        self.ItemTypebox.current(items.index(Item.itemType))
+
+        users = tuple(userNames)
+        sprints = tuple(sprintNames)
+        self.usersComboBox = ttk.Combobox(popUPDialog, textvariable=itemUserVar, state='readonly',values=users)
+        self.usersComboBox.current(0)
+        self.usersComboBox.grid(row=7,column=2, sticky='W')
+
+        self.sprintsComboBox = ttk.Combobox(popUPDialog, textvariable=sprintVar, state='readonly',values=sprints)
+        self.sprintsComboBox.current(0)
+        self.sprintsComboBox.grid(row=8,column=2, sticky='W')
+
+
+        self.itemCodeLinkEntry = Tk.Entry(popUPDialog, width=27)
+        self.itemCodeLinkEntry.grid(row=9, column=2, pady=5, sticky='W')
+        self.itemPriorityEntry = Tk.Entry(popUPDialog, width=27)
+        self.itemPriorityEntry.grid(row=10, column=2, pady=5, sticky='W')
+
+        createButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
+        createButton.grid(row=12, column=2, pady=5)
+        cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
+        cancelButton.grid(row=12, column=1, pady=5)
+
+    def ok(self):
+
+        try:
+
+            item = ScrumblesObjects.Item()
+
+            item.itemTitle = self.itemTitleEntry.get()
+            item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
+            sprintID = 0
+            userID = 0
+            isAssignedToSprint = False
+            if self.sprintsComboBox.get() != '':
+                isAssignedToSprint = True
+            for sprint in self.listOfSprints:
+                if sprint.sprintName == self.sprintsComboBox.get():
+                    sprintID = sprint.sprintID
+            for user in self.listOfUsers:
+                if user.userName == self.usersComboBox.get():
+                    userID = user.userID
+
+
+            item.itemType = self.ItemTypebox.get()
+            item.itemSprintID = sprintID
+            item.itemUserID = userID
+
+
+            item.itemCodeLink = self.itemCodeLinkEntry.get()
+            item.itemPriority = self.itemPriorityEntry.get()
+
+            self.dbConnector.connect()
+            if isAssignedToSprint:
+                self.dbConnector.setData(ScrumblesData.CardQuery.assignCardToSprint(item,sprintID))
+            self.dbConnector.setData(ScrumblesData.Query.updateObject(item))
+            self.dbConnector.close()
+
+
+        except Exception as e:
+            messagebox.showerror('Error', str(e))
+
+        else:
+            messagebox.showinfo('Info', 'New Item Successfully Created')
+            self.exit()
+        finally:
+            if self.dbConnector is not None:
+                if self.dbConnector.isConnected():
+                    self.dbConnector.close()
+
+    def exit(self):
+        if self.dbConnector is not None:
+            assert self.dbConnector.isConnected() == False
+        self.top.destroy()
+
+
+
+
+
+## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
 ##  UNCOMMENT ONLY FOR TESTING.
 ##  KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
-# dbLoginInfo = ScrumblesData.DataBaseLoginInfo('login.txt')
+dbLoginInfo = ScrumblesData.DataBaseLoginInfo('login.txt')
 #
-# dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
+dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
 #
 #
-# root = Tk.Tk()
-# Tk.Button(root, text="Hello!").pack()
-# root.update()
+root = Tk.Tk()
+Tk.Button(root, text="Hello!").pack()
+root.update()
 #
 # # u = CreateUserDialog(root,dataConnection)
 # # s = CreateSprintDialog(root, dataConnection)
 # # i = CreateItemDialog(root, dataConnection)
 # p = CreateProjectDialog(root, dataConnection)
+
+items = []
+dataConnection.connect()
+for dic in dataConnection.getData(ScrumblesData.Query.getAllCards):
+    items.append(ScrumblesObjects.Item(dic))
+dataConnection.close()
+edit = EditItemDialog(root, dataConnection, items[0])
+
+root.wait_window(edit.top)
+
+
+
 # root.wait_window(p.top)
