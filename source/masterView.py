@@ -6,7 +6,7 @@ import developerHomeView
 import Dialogs
 import ScrumblesData
 import itemMangerView
-import webbrowser
+
 
 class masterView(tk.Tk):
     def __init__(self):
@@ -74,7 +74,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemMangerView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
-        helpMenu.add_command(label="Scrumbles Wiki", command=openHelpContext)
+        helpMenu.add_command(label="About", command=self.openAboutDialog)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Profile", menu=profileMenu)
@@ -122,7 +122,9 @@ class masterView(tk.Tk):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         self.dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
 
-
+    def openAboutDialog(self):
+        helpBox = Dialogs.AboutDialog(self)
+        self.wait_window(helpBox.top)
 
 
 def logOut(controller):
@@ -140,5 +142,3 @@ def exitProgram(mainwindow):
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
 
-def openHelpContext():
-    webbrowser.open('https://github.com/CEN3031-group16/GroupProject/wiki')
