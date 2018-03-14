@@ -4,6 +4,13 @@ import re
 import hashlib
 import base64
 
+class QueryException(Exception):
+    def __init__(selfs,message):
+        super().__init__(message)
+
+
+
+
 class DataBaseLoginInfo:
     def __init__(self,file):
         loginFile = open(file, 'r')
@@ -35,8 +42,12 @@ class Query:
 
     @staticmethod
     def assignCardToSprint(item,sprint):
-        assert item.itemID is not None
-        assert sprint.sprintID is not None
+        if item is None or sprint is None:
+            raise QueryException('Item or Sprint is None type')
+        if item.itemID is None:
+            raise QueryException('ItemID is None type')
+        if sprint.sprintID is None:
+            raise QueryException('SprintID is None type')
         query = 'UPDATE CardTable SET CardDueDate = ( ' \
                 'SELECT DueDate FROM SprintTable WHERE SprintID=%i), ' \
                 'SprintID = %i, Status=1 WHERE CardID = %i' % (sprint.sprintID,
@@ -172,16 +183,17 @@ class CardQuery(Query):
     def updateCard(item):
         assert item is not None
         assert item.itemID is not None
+
         query = 'UPDATE CardTable SET ' \
                 'CardType=\'%s\',' \
-                'CardPriority=%i,' \
+                'CardPriority=%s,' \
                 'CardTitle=\'%s\',' \
                 'CardDescription=\'%s\',' \
                 'CardDueDate=\'%s\',' \
                 'CardCodeLink=\'%s\',' \
-                'SprintID=%i,' \
-                'UserID=%i,' \
-                'Status=%i WHERE CardID=%i'% (
+                'SprintID=%s,' \
+                'UserID=%s,' \
+                'Status=%s WHERE CardID=%s'% (
             item.itemType,
             item.itemPriority,
             item.itemTitle,
@@ -193,6 +205,7 @@ class CardQuery(Query):
             item.itemStatus,
             item.itemID
         )
+        print(query)
         return query
 
     @staticmethod
