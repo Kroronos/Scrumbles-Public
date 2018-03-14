@@ -4,8 +4,8 @@ from tkinter import messagebox
 from MySQLdb import IntegrityError
 import ScrumblesData
 import ScrumblesObjects
+import webbrowser
 import sys, traceback
-
 class CreateProjectDialog:
     def __init__(self, parent, dbConnector):
 
@@ -271,7 +271,30 @@ class CreateItemDialog:
         if self.dbConnector is not None:
             assert self.dbConnector.isConnected() == False
         self.top.destroy()
-		
+
+
+
+class AboutDialog:
+    def __init__(self, parent):
+        self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
+
+        popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.geometry('550x200')
+        popUPDialog.title('About Scrumbles')
+
+        Tk.Label(popUPDialog, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
+        linkLabel = Tk.Label(popUPDialog, text=self.apiLink,fg='blue')
+        linkLabel.grid(row=2,pady=5)
+        linkLabel.bind('<Button-1>',self.openPage)
+
+        okayButton = Tk.Button(popUPDialog, text="Okay", command=self.exit)
+        okayButton.grid(row=3, pady=5)
+
+    def openPage(self, *args, **kwargs):
+        webbrowser.open(self.apiLink)
+
+    def exit(self):
+        self.top.destroy()
 
 
 class EditItemDialog():
@@ -417,13 +440,13 @@ class EditItemDialog():
 
 
 ## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
+
 ##  UNCOMMENT ONLY FOR TESTING.
 ##  KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
 # dbLoginInfo = ScrumblesData.DataBaseLoginInfo('login.txt')
 # #
 # dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
-# #
-# #
+
 # root = Tk.Tk()
 # Tk.Button(root, text="Hello!").pack()
 # root.update()
@@ -433,6 +456,14 @@ class EditItemDialog():
 # # # i = CreateItemDialog(root, dataConnection)
 # # p = CreateProjectDialog(root, dataConnection)
 #
+
+# # u = CreateUserDialog(root,dataConnection)
+# # s = CreateSprintDialog(root, dataConnection)
+# # i = CreateItemDialog(root, dataConnection)
+# # p = CreateProjectDialog(root, dataConnection)
+# h = AboutDialog(root)
+# root.wait_window(h.top)
+
 # items = []
 # dataConnection.connect()
 # for dic in dataConnection.getData(ScrumblesData.Query.getAllCards):
@@ -445,3 +476,4 @@ class EditItemDialog():
 
 
 # root.wait_window(p.top)
+
