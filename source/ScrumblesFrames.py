@@ -240,3 +240,46 @@ class SCalendar(tk.Frame):
         now = datetime.datetime.now()
         self.cal = tkcalendar.Calendar(self, font="Arial 14", selectmode='day', year=now.year, month=now.month, day=now.day)
         self.cal.pack(side=tk.TOP, fill=tk.BOTH)
+
+class itemPicker(tk.Frame):
+    def __init__(self, controller):
+        tk.Frame.__init__(self, controller)
+       
+        self.itemNumberLabel = tk.Label(self, text = "Item Number: ", justify = tk.LEFT).grid(row = 0)
+
+
+        self.itemNameLabel = tk.Label(self, text = "Name: ", justify = tk.LEFT).grid(row = 1)
+        self.itemNameEntry = tk.Entry(self).grid(row = 1, column = 1)
+
+        self.itemDescriptionLabel =  tk.Label(self, text = "Description: ", justify = tk.LEFT).grid(row = 2)
+        self.itemDescriptionEntry = tk.Entry(self).grid(row = 2, column = 1)
+
+
+        self.itemWeightLabel = tk.Label( self, text = "Weight: ", justify = tk.LEFT, anchor = tk.W).grid(row = 3)
+        # self.
+        #self.itemWeightScroller = tk.Scrollbar 
+
+        self.itemStatusLabel = tk.Label(self, text = "Status: ", justify = tk.LEFT).grid(row = 4)
+        self.itemStatusFrame = tk.Frame(self)
+        #self.item
+
+    
+    def selectItem(text):
+        self.itemNumberLabel.text = text
+
+class commentsField(tk.Frame):
+    def __init__(self,controller):
+        tk.Frame.__init__(self, controller)
+
+        # self.commentTitle = tk.Label(self, text = "Comments")
+        # self.commentTitle.pack(side = tk.TOP)
+
+        # self.commentField = tk.Entry(self, width = 150)
+        # self.commentField.pack(side = tk.BOTTOM, fill = tk.Y)
+
+        self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
+        
+        # self.commentField = Tk.Text(
+        self.commentField = tk.Entry(self).grid(row = 1, rowspan = 50, columnspan = 30)
+
+

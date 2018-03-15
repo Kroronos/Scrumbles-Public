@@ -50,12 +50,12 @@ class ItemManagerView(tk.Frame):
 		# self.commentsTitle.grid(row = 0, column = 0)
 		#self.commentsTitle.pack(side = tk.RIGHT)
 		# self.comments = ScrumblesFrames.SList(self,"COMMENTS")
-		self.commentsField = tk.Entry(self)
-		# self.commentsField.grid(row = 1)
-		# self.comments.importList([self.commentsField])
-		#self.commentsField.pack(side = tk.RIGHT)
 
-		self.commentsField.pack(side = tk.RIGHT, fill = tk.Y, anchor = "s")
+		self.commentField = ScrumblesFrames.commentsField(self)
+		self.commentField.pack(side = tk.RIGHT, fill = tk.Y)
+
+		self.itemEditor = ScrumblesFrames.itemPicker(self)
+		self.itemEditor.pack(side = tk.LEFT, fill = tk.Y)
 
 		#self.dataTest = tk.Label(self, text="First")
 		# self.dataTest.pack(padx = 300, pady = 150, side = tk.LEFT)
