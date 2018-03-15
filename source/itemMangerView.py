@@ -45,17 +45,17 @@ class ItemManagerView(tk.Frame):
 		#self.data = dataForm.__init__(self)
 		#self.data.pack(side = tk.LEFT, fill = tk.Y)
 
-		#self.commentsTitle = tk.Label(self, text = "Comments", font = ("Verdana",12))
-		#self.commentsTitle.pack(side = tk.RIGHT, anchor = "n")
-		# self.commentsTitle.grid(row = 0, column = 0)
+		# self.commentsTitle = tk.Label(self, text = "Comments", font = ("Verdana",12))
+		# self.commentsTitle.pack(side = tk.RIGHT, fill = tk.Y, padx = 20, pady = 20)
+		#self.commentsTitle.grid(row = 0, column = 0)
 		#self.commentsTitle.pack(side = tk.RIGHT)
-		# self.comments = ScrumblesFrames.SList(self,"COMMENTS")
+		#self.comments = ScrumblesFrames.SList(self,"COMMENTS")
 
 		self.commentField = ScrumblesFrames.commentsField(self)
-		self.commentField.pack(side = tk.RIGHT, fill = tk.Y)
+		self.commentField.pack(side = tk.RIGHT, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
 		self.itemEditor = ScrumblesFrames.itemPicker(self)
-		self.itemEditor.pack(side = tk.LEFT, fill = tk.Y)
+		self.itemEditor.pack(side = tk.LEFT, fill = tk.Y, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
 		#self.dataTest = tk.Label(self, text="First")
 		# self.dataTest.pack(padx = 300, pady = 150, side = tk.LEFT)

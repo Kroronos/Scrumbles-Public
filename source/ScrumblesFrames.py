@@ -243,7 +243,7 @@ class SCalendar(tk.Frame):
 
 class itemPicker(tk.Frame):
     def __init__(self, controller):
-        tk.Frame.__init__(self, controller)
+        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
        
         self.itemNumberLabel = tk.Label(self, text = "Item Number: ", justify = tk.LEFT).grid(row = 0)
 
@@ -269,7 +269,7 @@ class itemPicker(tk.Frame):
 
 class commentsField(tk.Frame):
     def __init__(self,controller):
-        tk.Frame.__init__(self, controller)
+        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
 
         # self.commentTitle = tk.Label(self, text = "Comments")
         # self.commentTitle.pack(side = tk.TOP)
@@ -280,6 +280,6 @@ class commentsField(tk.Frame):
         self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
         
         # self.commentField = Tk.Text(
-        self.commentField = tk.Entry(self).grid(row = 1, rowspan = 50, columnspan = 30)
+        self.commentField = tk.Entry(self).grid(row = 1, rowspan = 20)
 
 
