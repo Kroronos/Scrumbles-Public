@@ -256,6 +256,7 @@ class itemPicker(tk.Frame):
 
 
         self.itemWeightLabel = tk.Label( self, text = "Weight: ", justify = tk.LEFT, anchor = tk.W).grid(row = 3)
+        self.itemWeightSelector = 
         # self.
         #self.itemWeightScroller = tk.Scrollbar 
 
@@ -269,7 +270,7 @@ class itemPicker(tk.Frame):
 
 class commentsField(tk.Frame):
     def __init__(self,controller):
-        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
+        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth = 1)
 
         # self.commentTitle = tk.Label(self, text = "Comments")
         # self.commentTitle.pack(side = tk.TOP)
