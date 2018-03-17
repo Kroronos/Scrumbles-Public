@@ -123,13 +123,11 @@ assert authUser.userName == ScrumblesUser_username
 
 print('Authentication pass')
 
-## Test Item Creation and deletion
+
 from testing import itemUnitTest, userUnitTest, sprintUnitTest
 
 itemUnitTest.testItems(dataConnection)
-
 userUnitTest.testUsers(dataConnection)
-
 sprintUnitTest.testSprints(dataConnection)
 
 
