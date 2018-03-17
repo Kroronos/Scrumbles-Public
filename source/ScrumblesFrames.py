@@ -279,7 +279,7 @@ class itemPicker(tk.Frame):
 
 
         self.itemWeightLabel = tk.Label( self, text = "Weight: ", justify = tk.LEFT, anchor = tk.W).grid(row = 3)
-        self.itemWeightSelector = 
+        #self.itemWeightSelector =
         # self.
         #self.itemWeightScroller = tk.Scrollbar 
 

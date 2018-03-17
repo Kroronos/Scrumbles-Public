@@ -36,7 +36,11 @@ class CreateProjectDialog:
             project.projectName = self.projectTitleEntry.get()
 
             self.dbConnector.connect()
-            self.dbConnector.setData(ScrumblesData.Query.createObject(project))
+            try:
+                self.dbConnector.setData(ScrumblesData.Query.createObject(project))
+            except IntegrityError:
+                project.projectID = ScrumblesObjects.generateRowID()
+                self.dbConnector.setData(ScrumblesData.Query.createObject(project))
             self.dbConnector.close()
 
 
@@ -114,7 +118,11 @@ class CreateUserDialog:
             user.userRole = self.roleCombobox.get()
 
             self.dbConnector.connect()
-            self.dbConnector.setData(ScrumblesData.Query.createObject(user))
+            try:
+                self.dbConnector.setData(ScrumblesData.Query.createObject(user))
+            except IntegrityError:
+                user.userID = ScrumblesObjects.generateRowID()
+                self.dbConnector.setData(ScrumblesData.Query.createObject(user))
             self.dbConnector.close()
 
         except IntegrityError as e:
@@ -175,7 +183,11 @@ class CreateSprintDialog:
             sprint.sprintName = self.sprintNameEntry.get()
 
             self.dbConnector.connect()
-            self.dbConnector.setData(ScrumblesData.Query.createObject(sprint))
+            try:
+                self.dbConnector.setData(ScrumblesData.Query.createObject(sprint))
+            except IntegrityError:
+                sprint.sprintID = ScrumblesObjects.generateRowID()
+                self.dbConnector.setData(ScrumblesData.Query.createObject(sprint))
             self.dbConnector.close()
 
         except IntegrityError as e:
@@ -251,7 +263,11 @@ class CreateItemDialog:
             item.itemType = self.ItemTypebox.get()
 
             self.dbConnector.connect()
-            self.dbConnector.setData(ScrumblesData.Query.createObject(item))
+            try:
+                self.dbConnector.setData(ScrumblesData.Query.createObject(item))
+            except IntegrityError:
+                item.itemID = ScrumblesObjects.generateRowID()
+                self.dbConnector.setData(ScrumblesData.Query.createObject(item))
             self.dbConnector.close()
 
 
@@ -297,7 +313,7 @@ class AboutDialog:
         self.top.destroy()
 
 
-class EditItemDialog():
+class EditItemDialog:
     def __init__(self, parent, dbConnector, Item):
         self.item = Item
         self.dbConnector = dbConnector

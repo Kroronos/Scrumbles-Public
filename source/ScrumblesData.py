@@ -111,7 +111,8 @@ class ProjectQuery(Query):
     @staticmethod
     def createProject(project):
         ObjectValidator.validate(project)
-        query = 'INSERT INTO ProjectsTable (ProjectName) VALUES (\'%s\')' % (project.projectName)
+        query = 'INSERT INTO ProjectsTable (ProjectID ProjectName) VALUES (\'%s\',\'%s\')' % (
+            str(project.projectID),project.projectName)
         return query
 
     @staticmethod
@@ -131,7 +132,7 @@ class SprintQuery(Query):
     def createSprint(sprint):
         ObjectValidator.validate(sprint)
 
-        query = 'INSERT INTO SprintTable (SprintName) VALUES (\'%s\')' % (sprint.sprintName)
+        query = 'INSERT INTO SprintTable (SprintID, SprintName) VALUES (\'%s\',\'%s\')' % (str(sprint.sprintID),sprint.sprintName)
         return query
 
     @staticmethod
@@ -165,14 +166,16 @@ class CardQuery(Query):
     def createCard(item):
         ObjectValidator.validate(item)
         query = 'INSERT INTO CardTable (' \
+                'CardId,'\
                 'CardType,' \
                 'CardPriority,' \
                 'CardTitle,' \
                 'CardDescription,' \
                 'CardCreatedDate,' \
                 'Status) VALUES (' \
-                '\'%s\',0,\'%s\',\'%s\',' \
+                '\'%s\',\'%s\',0,\'%s\',\'%s\',' \
                 'NOW(),0)' % (
+            str(item.itemID),
             item.itemType,
             item.itemTitle,
             item.itemDescription
@@ -242,8 +245,8 @@ class UserQuery(Query):
         ObjectValidator.validate(user)
         password = Password(user.userPassword)
         password.encrypt()
-        query = 'INSERT INTO UserTable (userName,UserEmailAddress,UserPassword,UserRole) VALUES (\'%s\',\'%s\',\'%s\',\'%s\')' % (
-            user.userName, user.userEmailAddress, str(password), user.userRole)
+        query = 'INSERT INTO UserTable (UserID, userName,UserEmailAddress,UserPassword,UserRole) VALUES (\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
+            str(user.userID), user.userName, user.userEmailAddress, str(password), user.userRole)
         return query
 
     @staticmethod
@@ -274,10 +277,11 @@ class CommentQuery(Query):
     @staticmethod
     def createComment(comment):
 
-        query = 'INSERT INTO CommentTable (CommentTimeStamp,' \
+        query = 'INSERT INTO CommentTable (CommentID, CommentTimeStamp,' \
                 'CommentContent,' \
                 'CardID,' \
-                'UserID) VALUES ( NOW(), \'%s\',%i,%i)' % (
+                'UserID) VALUES ( \'%s\',NOW(), \'%s\',%i,%i)' % (
+                    str(comment.commentID),
                     comment.commentContent,
                     comment.commentItemID,
                     comment.commentUserID
