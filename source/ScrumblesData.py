@@ -111,7 +111,8 @@ class ProjectQuery(Query):
     @staticmethod
     def createProject(project):
         ObjectValidator.validate(project)
-        query = 'INSERT INTO ProjectsTable (ProjectName) VALUES (\'%s\')' % (project.projectName)
+        query = 'INSERT INTO ProjectsTable (ProjectID ProjectName) VALUES (\'%s\',\'%s\')' % (
+            str(project.projectID),project.projectName)
         return query
 
     @staticmethod
@@ -276,10 +277,11 @@ class CommentQuery(Query):
     @staticmethod
     def createComment(comment):
 
-        query = 'INSERT INTO CommentTable (CommentTimeStamp,' \
+        query = 'INSERT INTO CommentTable (CommentID, CommentTimeStamp,' \
                 'CommentContent,' \
                 'CardID,' \
-                'UserID) VALUES ( NOW(), \'%s\',%i,%i)' % (
+                'UserID) VALUES ( \'%s\',NOW(), \'%s\',%i,%i)' % (
+                    str(comment.commentID),
                     comment.commentContent,
                     comment.commentItemID,
                     comment.commentUserID
