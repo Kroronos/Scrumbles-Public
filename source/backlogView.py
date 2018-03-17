@@ -48,7 +48,7 @@ class backlogView(tk.Frame):
         self.productList.importProjectList(self.productListData)
 
         self.backlog.importItemList(self.backlogData)
-        self.backlog.listbox.bind('<2>' if self.aqua else '<3>', lambda e: self.context_menu(e,self.contextMenu))
+        self.backlog.listbox.bind('<2>' if self.aqua else '<3>', lambda event: self.context_menu(event,self.contextMenu))
         self.productList.pack(side=tk.LEFT, fill=tk.Y)
         self.backlog.pack(side=tk.LEFT, fill=tk.Y)
 
