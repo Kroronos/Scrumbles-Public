@@ -1,3 +1,32 @@
+import hashlib, random, threading, os
+
+#Thread local storage
+thread_local = threading.local()
+
+
+#Row ID Range; with highest bit always set
+ID_RANGE = (2**62,2**63)
+
+def generateRowID():
+
+    try:
+        thread_local_random = thread_local.random
+    except AttributeError:
+        thread_local_random = _init_thread_local_random()
+
+    return thread_local_random.randrange(*ID_RANGE)
+
+def _init_thread_local_random():
+    rng = random.SystemRandom()
+    hash_object = hashlib.sha1(hex(os.getpid()).encode())
+    hash_object.update(hex(rng.randrange(*ID_RANGE)).encode())
+    seed = int(hash_object.hexdigest(), 16)
+
+    thread_local.random = random.Random(seed)
+
+    return thread_local.random
+
+
 
 class User:
     userName = None
@@ -10,6 +39,7 @@ class User:
     # This initializer accepts a DICT not a List
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
+            self.userID = generateRowID()
             return
         assert 'UserName' in queryResultDict
 
@@ -46,6 +76,7 @@ class Item:
     # This initializer accepts a DICT not a List
     def __init__(self,queryResultDict=None):
         if queryResultDict is None:
+            self.itemID = generateRowID()
             return
         assert 'CardType' in queryResultDict
         self.itemID = queryResultDict['CardID']
@@ -91,6 +122,7 @@ class Sprint:
     # This initializer accepts a DICT not a List
     def __init__(self,queryResultDict=None):
         if queryResultDict is None:
+            self.sprintID = generateRowID()
             return
         assert 'SprintName' in queryResultDict
         self.sprintID = queryResultDict['SprintID']
@@ -130,6 +162,7 @@ class Comment:
     # This initializer accepts a DICT not a List
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
+            self.commentID =  generateRowID()
             return
         assert 'CommentContent' in queryResultDict
         self.commentID = queryResultDict['CommentID']
@@ -148,6 +181,7 @@ class Project:
     listOfAssignedSprints = []
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
+            self.projectID = generateRowID()
             return
         assert 'ProjectName' in queryResultDict
         self.projectID = queryResultDict['ProjectID']
