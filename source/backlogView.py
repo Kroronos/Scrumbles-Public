@@ -58,7 +58,7 @@ class backlogView(tk.Frame):
     def updateItem(self):
         self.controller.dataConnection.connect()
         itemResultQuery = self.controller.dataConnection.getData(ScrumblesData.CardQuery.getCardByCardTitle(self.itemTitle))
-        self.controller.close()
+        self.controller.dataConnection.close()
         item = ScrumblesObjects.Item(itemResultQuery[0])
         editUserDialog = Dialogs.EditItemDialog(self, self.controller.dataConnection,item)
         self.wait_window(editUserDialog.top)
