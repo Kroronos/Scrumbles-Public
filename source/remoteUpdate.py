@@ -21,7 +21,7 @@ class RemoteUpdate:
         self.alive = True
 
     def __del__(self):
-        print('Destroy message recieved')
+
         self.stop()
     def keepAlive(self):
         while self.alive:
@@ -37,7 +37,7 @@ class RemoteUpdate:
     def getMessages(self):
         try:
             data = self.socket.recv(self.BUFF)
-            print(data.decode('ascii'))
+            
             if data == b'CHANGE':
                 self.isDBChanged = True
         except:
