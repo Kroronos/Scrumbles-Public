@@ -57,7 +57,6 @@ class User:
                     if item.itemUserID == self.userID:
                         self.listOfAssignedItems.append(item)
 
-
 class Item:
     itemID = None
     itemType = None
@@ -71,6 +70,7 @@ class Item:
     itemUserID = None
     itemStatus = None
     listOfComments = []
+    statusEquivalents = {}
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -90,6 +90,7 @@ class Item:
         self.itemSprintID = queryResultDict['SprintID']
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
+        self.statusEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
     #NOTE This functions takes in the whole list from a query result
 
     def populateItemCommentsByQuery(self,queryResultList):
@@ -108,6 +109,9 @@ class Item:
 
     def modifyPriority(self, priority):
         self.itemPriority = priority
+
+    def getPriority(self):
+        return self.statusEquivalents[self.itemPriority]
 
 
 class Sprint:

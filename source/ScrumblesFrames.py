@@ -13,10 +13,17 @@ import datetime
 from styling import styling as style
 from tkinter import ttk
 
-class BaseList(tk.Frame):
+class BaseList(tk.Frame,tk.Listbox):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
         self.fullList = []
+
+    # def get(self,*args,**kwargs):
+    #     return self.listbox.get(*args,**kwargs)
+    #
+    # def curselection(self,*args,**kwargs):
+    #     print('debug curselection',self.listbox.curselection(*args,**kwargs))
+    #     return self.listbox.curselection(*args,**kwargs)
 
     def showPartialList(self, list):
         self.clearList()
@@ -37,6 +44,7 @@ class BaseList(tk.Frame):
         for item in self.fullList:
             self.listbox.insert(tk.END, item)
         self.enforceSort()
+
 
 
     def importItemList(self, items):

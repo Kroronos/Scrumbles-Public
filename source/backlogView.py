@@ -1,13 +1,14 @@
 import tkinter as tk
-import tkcalendar
+
 import ScrumblesData
 import ScrumblesObjects
-import masterView
+
 import ScrumblesFrames
 import Dialogs
 
 
-from tkinter import ttk
+#from tkinter import ttk
+
 class backlogView(tk.Frame):
     def __init__(self, parent, controller,user):
         tk.Frame.__init__(self, parent)
@@ -24,19 +25,10 @@ class backlogView(tk.Frame):
 
 
 
-        controller.dataConnection.connect()
-        productQueryResult = controller.dataConnection.getData(ScrumblesData.Query.getAllProjects)
-        itemListQueryResult = controller.dataConnection.getData(ScrumblesData.Query.getAllCards)
-        controller.dataConnection.close()
 
-        listofProducts = []
-        for dictionary in productQueryResult:
-            listofProducts.append(ScrumblesObjects.Project(dictionary))
-        listofItems = []
-        for dictionary in itemListQueryResult:
-            listofItems.append(ScrumblesObjects.Item(dictionary))
-        self.productListData = listofProducts
-        self.backlogData = listofItems
+        self.productListData = self.controller.dataBlock.projects
+        self.backlogData = self.controller.dataBlock.items
+        self.controller.dataBlock.packCallback(self.updateBacklogViewData)
 
         #todo Not sure if it was Projects that was supposed to be displayed under Products...
 
@@ -74,3 +66,9 @@ class backlogView(tk.Frame):
          self.itemTitle = widget.get(index)
          #print('do something')
          menu.post(event.x_root, event.y_root)
+
+    def updateBacklogViewData(self):
+        self.productListData.clear()
+        self.backlogData.clear()
+        self.productListData = self.controller.dataBlock.projects
+        self.backlogData = self.controller.dataBlock.items
