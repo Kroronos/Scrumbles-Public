@@ -1,15 +1,6 @@
-#from tkinter import *
-#from masterView import *
-#from mainView import *
-#from ScrumblesData import *
-
-#comment fake a branch split
-
 
 import tkinter as tk
 from tkinter import messagebox
-import masterView
-import mainView
 import ScrumblesData
 import ScrumblesObjects
 

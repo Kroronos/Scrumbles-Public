@@ -11,8 +11,9 @@ import itemMangerView
 class masterView(tk.Tk):
     def __init__(self):
         self.frames = {}
-
+        self.dataBlock = ScrumblesData.DataBlock()
         tk.Tk.__init__(self)
+        self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
 
         self.container.pack(side="top", fill="both", expand=True)
@@ -135,6 +136,7 @@ def logOut(controller):
     controller.show_frame(loginView)
 
 def exitProgram(mainwindow):
+    mainwindow.dataBlock.shutdown()
     mainwindow.destroy()
     print("Exiting Program")
     exit()
