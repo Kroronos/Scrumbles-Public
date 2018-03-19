@@ -3,12 +3,89 @@ import ScrumblesObjects
 import re
 import hashlib
 import base64
+import threading
+import remoteUpdate
+
 
 class QueryException(Exception):
-    def __init__(selfs,message):
+    def __init__(self,message):
         super().__init__(message)
 
+class DataBlock:
+    users = []
+    items = []
+    projects = []
+    comments = []
+    tags = []
+    sprints = []
+    updaterCallbacks = []
+    def __init__(self):
+        self.alive = True
+        self.dbLogin = DataBaseLoginInfo('login.txt')
+        self.conn = ScrumblesData(self.dbLogin)
+        self.listener = remoteUpdate.RemoteUpdate()
+        self.lock = threading.Lock()
+        self.updateAllObjects()
+        self.updaterThread = threading.Thread(target = self.updater, args=())
 
+        self.updaterThread.start()
+
+    def __del__(self):
+        self.shutdown()
+        del self.listener
+
+    def updateAllObjects(self):
+        self.lock.acquire()
+        self.users.clear()
+        self.items.clear()
+        self.projects.clear()
+        self.comments.clear()
+        self.tags.clear()
+        self.sprints.clear()
+        self.conn.connect()
+        userTable = self.conn.getData(Query.getAllUsers)
+        itemTable = self.conn.getData(Query.getAllCards)
+        projectTable = self.conn.getData(Query.getAllProjects)
+        commentTable = self.conn.getData(Query.getAllComments)
+        sprintTable = self.conn.getData(Query.getAllSprints)
+        self.conn.close()
+
+        for user in userTable:
+            self.users.append(ScrumblesObjects.User(user))
+        for item in itemTable:
+            self.items.append(ScrumblesObjects.Item(item))
+        for project in projectTable:
+            self.projects.append(ScrumblesObjects.Project(project))
+        for comment in commentTable:
+            self.comments.append(ScrumblesObjects.Comment(comment))
+        for sprint in sprintTable:
+            self.comments.append(ScrumblesObjects.Sprint(sprint))
+
+        self.lock.release()
+
+    def updater(self):
+
+        threading.Thread(target=self.listener.start,args=()).start()
+
+        while self.alive:
+            if self.listener.isDBChanged:
+
+                self.updateAllObjects()
+                self.executeUpdaterCallbacks()
+                self.listener.isDBChanged = False
+
+
+    def packCallback(self,callback):
+        self.updaterCallbacks.append(callback)
+
+    def executeUpdaterCallbacks(self):
+        if len(self.updaterCallbacks) > 0:
+            for func in self.updaterCallbacks:
+                func()
+
+    def shutdown(self):
+        self.alive = False
+        self.listener.stop()
 
 
 class DataBaseLoginInfo:
