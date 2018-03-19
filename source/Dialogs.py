@@ -313,6 +313,7 @@ class AboutDialog:
         self.top.destroy()
 
 
+#todo get dataBlock from caller
 class EditItemDialog:
     def __init__(self, parent, dbConnector, Item):
         self.item = Item
@@ -325,7 +326,7 @@ class EditItemDialog:
         sprintQueryResult = self.dbConnector.getData(ScrumblesData.Query.getAllSprints)
         #tagQueryResult = self.dbConnector.getData(ScrumblesData.Query.getAllTags)
         self.dbConnector.close()
-        self.listOfUsers = []
+        self.listOfUsers = [] #parent.dataBlock.users
         self.listOfSprints = []
         userNames = []
         sprintNames = []

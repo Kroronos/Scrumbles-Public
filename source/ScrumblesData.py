@@ -3,7 +3,7 @@ import ScrumblesObjects
 import re
 import hashlib
 import base64
-import threading
+import threading,time
 import remoteUpdate
 
 
@@ -68,6 +68,7 @@ class DataBlock:
         threading.Thread(target=self.listener.start,args=()).start()
 
         while self.alive:
+            time.sleep(5)
             if self.listener.isDBChanged:
 
                 self.updateAllObjects()

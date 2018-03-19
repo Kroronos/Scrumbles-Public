@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import ScrumblesFrames
-import ScrumblesData
+
 
 # class dataForm(tk.Frame):
 # 	def __init__(self):
@@ -33,12 +33,12 @@ class ItemManagerView(tk.Frame):
 		self.itemList = ScrumblesFrames.SList(self, "ITEMS")
 		# self.grid(row = 1, column = 0)
 
-		controller.dataConnection.connect()
 
-		self.items = controller.dataConnection.getData('SELECT * FROM CardTable')
-		self.items = [card['CardTitle'] for card in self.items]
 
-		controller.dataConnection.close()
+
+		self.items =[item.itemTitle for item in self.controller.dataBlock.items]
+
+
 
 		self.itemList.importList(self.items)
 		self.itemList.pack(side = tk.LEFT, fill = tk.Y)
