@@ -106,4 +106,6 @@ class ThreadedServer(object):
                         self.dbMon.threadDone(threading.get_ident())
                         return False
 
-        
+      
+    #Special thanks to @rpg711 on StackOverflow.com for helping get this running right.
+    # https://stackoverflow.com/questions/49344582/python-how-do-i-lock-an-object-until-all-threads-have-done-a-thing
