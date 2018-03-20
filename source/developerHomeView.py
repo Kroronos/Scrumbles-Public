@@ -20,18 +20,20 @@ class developerHomeView(tk.Frame):
         self.productBacklogList = ScrumblesFrames.SList(self, "PRODUCT BACKLOG")
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
         self.assignedItemList = ScrumblesFrames.SList(self, "ASSIGNED ITEMS")
-        #todo Fix this *BLEEPING* Binding -_-
-        self.assignedItemList.listbox.bind('<<ListboxSelect>>', lambda event: self.getItemsAssignedToUser(event))
-        #self.assignedItemList.bind('<<ListboxSelect>>', lambda event: self.getItemsAssignedToUser(event)) doesn't work
+
         self.backlog = []
         self.teamMembers = []
         self.assignedItems = []
         self.controller.dataBlock.packCallback(self.updateLists)
         self.updateLists()
 
-        sources = [self.productBacklogList.listbox, self.teamMemberList.listbox, self.assignedItemList.listbox]
+        #Append Any Sources for Dynamic Events to this List
+        dynamicSources = [self.productBacklogList.listbox, self.teamMemberList.listbox, self.assignedItemList.listbox]
         queryType = ['Item', 'User', 'Item']
-        self.descriptionManager = ScrumblesFrames.SCardDescription(self, sources, queryType)
+        self.descriptionManager = ScrumblesFrames.SCardDescription(self, dynamicSources, queryType)
+        #Bind Sources
+        for source in dynamicSources:
+            source.bind('<<ListboxSelect>>', lambda event: self.dynamicEventHandler(event))
 
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
@@ -79,3 +81,13 @@ class developerHomeView(tk.Frame):
 
 
 
+    def dynamicEventHandler(self, event):
+        if event.widget is self.teamMemberList.listbox:
+            self.getItemsAssignedToUser(event)
+            self.descriptionManager.changeDescription(event)
+
+        if event.widget is self.productBacklogList.listbox:
+            self.descriptionManager.changeDescription(event)
+
+        if event.widget is self.assignedItemList.listbox:
+            self.descriptionManager.changeDescription(event)

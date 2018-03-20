@@ -331,8 +331,6 @@ class SCardDescription(tk.Frame):
 
         # Reference datatype with widget code as key, allowing data calls from ScrumblesFrames
         self.datatype = dict((source, table) for source, table in zip(sources, datatype))
-        for source in sources:
-            source.bind('<<ListboxSelect>>', lambda event: self.changeDescription(event))
 
         self.cardDescriptions = {}
         self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self)
