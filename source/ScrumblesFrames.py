@@ -1,9 +1,5 @@
 import tkinter as tk
-<<<<<<< HEAD
 import webbrowser
-=======
->>>>>>> b06219745907bf9cee896d752778d2a9f1d44d8c
-
 import matplotlib
 matplotlib.use("TKAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
