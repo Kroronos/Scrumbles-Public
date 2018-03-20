@@ -29,9 +29,14 @@ class developerHomeView(tk.Frame):
         self.controller.dataBlock.packCallback(self.updateLists)
         self.updateLists()
 
+        sources = [self.productBacklogList.listbox, self.teamMemberList.listbox, self.assignedItemList.listbox]
+        queryType = ['Item', 'User', 'Item']
+        self.descriptionManager = ScrumblesFrames.SCardDescription(self, sources, queryType)
+
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
         self.teamMemberList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.descriptionManager.pack(side=tk.TOP, fill=tk.BOTH, expand=True, ipadx=10, ipady=10)
         self.cal.pack(side=tk.TOP, fill=tk.BOTH)
         self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)
 

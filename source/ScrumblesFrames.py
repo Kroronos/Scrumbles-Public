@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 import matplotlib
 matplotlib.use("TKAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -9,6 +8,8 @@ from matplotlib.figure import Figure
 import csv
 import tkcalendar
 import datetime
+import ScrumblesData
+import ScrumblesObjects
 
 from styling import styling as style
 from tkinter import ttk
@@ -137,10 +138,10 @@ class BaseList(tk.Frame,tk.Listbox):
     def search(self, str):
         def fulfillsCondition(item,str):
             return item[:len(str)] == str
-        
+
         matches = [x for x in self.fullList if fulfillsCondition(x, str)]
         self.showPartialList(matches)
-        
+
 
 
 class SComboList(BaseList):
@@ -181,15 +182,15 @@ class SBacklogList(BaseList):
         self.searchButton.pack(side = tk.RIGHT)
         self.searchEntry.pack(side = tk.RIGHT)
         self.searchLabel.pack(side = tk.RIGHT)
-       
+
 
         self.titleLabel = tk.Label(self.titleFrame, text="Backlog", bg=style.scrumbles_blue, relief=tk.FLAT)
         self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT)
-    
+
         self.titleLabel.pack(side = tk.LEFT)
         self.sortButton.pack(side = tk.RIGHT)
         self.searchFrame.pack(side = tk.RIGHT)
-    
+
         self.listFrame = tk.Frame(self)
         self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL)
         self.listbox = tk.Listbox(self.listFrame, width = 80, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
@@ -275,7 +276,7 @@ class SCalendar(tk.Frame):
 class itemPicker(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
-       
+
         self.itemNumberLabel = tk.Label(self, text = "Item Number: ", justify = tk.LEFT).grid(row = 0)
 
 
@@ -289,13 +290,13 @@ class itemPicker(tk.Frame):
         self.itemWeightLabel = tk.Label( self, text = "Weight: ", justify = tk.LEFT, anchor = tk.W).grid(row = 3)
         #self.itemWeightSelector =
         # self.
-        #self.itemWeightScroller = tk.Scrollbar 
+        #self.itemWeightScroller = tk.Scrollbar
 
         self.itemStatusLabel = tk.Label(self, text = "Status: ", justify = tk.LEFT).grid(row = 4)
         self.itemStatusFrame = tk.Frame(self)
         #self.item
 
-    
+
     def selectItem(text):
         self.itemNumberLabel.text = text
 
@@ -310,8 +311,234 @@ class commentsField(tk.Frame):
         # self.commentField.pack(side = tk.BOTTOM, fill = tk.Y)
 
         self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
-        
+
         # self.commentField = Tk.Text(
         self.commentField = tk.Entry(self).grid(row = 1, rowspan = 20)
 
 
+class SCardDescription(tk.Frame):
+    def __init__(self, controller, sources, datatype):
+        tk.Frame.__init__(self, controller)
+        self.controller = controller
+        self.dataBlock = controller.controller.dataBlock
+        self.config(relief=tk.SUNKEN, borderwidth=5)
+
+        self.titleText = tk.StringVar()
+        self.titleText.set("Item Description")
+        self.title = tk.Label(self, textvariable=self.titleText,
+                              font=(style.header_family, style.header_size, style.header_weight))
+        self.title.pack(fill=tk.BOTH)
+
+        # Reference datatype with widget code as key, allowing data calls from ScrumblesFrames
+        self.datatype = dict((source, table) for source, table in zip(sources, datatype))
+        for source in sources:
+            source.bind('<<ListboxSelect>>', lambda event: self.changeDescription(event))
+
+        self.cardDescriptions = {}
+        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self)
+        self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self)
+        self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self)
+        self.cardDescriptions['Active'] = self.cardDescriptions['Start']
+        self.cardDescriptions['Active'].pack(side=tk.BOTTOM)
+
+        self.descriptionLock = False
+        self.oldWidget = None
+
+    class cardDescriptionStartFrame(tk.Frame):
+        def __init__(self, controller):
+            tk.Frame.__init__(self, controller)
+            tk.helpMeLabel = tk.Label(self, text="Click on a card to obtain information about it!")
+            tk.helpMeLabel.pack()
+
+    class cardDescriptionItemFrame(tk.Frame):
+        def __init__(self, controller):
+            tk.Frame.__init__(self, controller)
+
+            self.itemTypeF = tk.Frame(self)
+            self.itemTypeT = tk.Label(self.itemTypeF, text="Type: ")
+            self.itemType = tk.Label(self.itemTypeF, text="")
+
+            self.itemPriorityF = tk.Frame(self)
+            self.itemPriorityT = tk.Label(self.itemPriorityF, text="Priority: ")
+            self.itemPriority = tk.Label(self.itemPriorityF, text="")
+
+            self.itemDueDateF = tk.Frame(self)
+            self.itemDueDateT = tk.Label(self.itemDueDateF , text="Due Date: ")
+            self.itemDueDate = tk.Label(self.itemDueDateF , text="")
+
+            self.itemStatusF = tk.Frame(self)
+            self.itemStatusT = tk.Label(self.itemStatusF, text="Status: ")
+            self.itemStatus = tk.Label(self.itemStatusF, text="")
+
+            self.itemDescriptionF = tk.Frame(self)
+            self.itemDescriptionT = tk.Label(self.itemDescriptionF, text="Description: ")
+            self.itemDescription = tk.Label(self.itemDescriptionF, text="")
+
+            self.itemTypeT.pack(side=tk.LEFT)
+            self.itemType.pack(side=tk.LEFT)
+            self.itemPriorityT.pack(side=tk.LEFT)
+            self.itemPriority.pack(side=tk.LEFT)
+            self.itemDueDateT.pack(side=tk.LEFT)
+            self.itemDueDate.pack(side=tk.LEFT)
+            self.itemStatusT.pack(side=tk.LEFT)
+            self.itemStatus.pack(side=tk.LEFT)
+            self.itemDescriptionT.pack(side=tk.LEFT)
+            self.itemDescription.pack(side=tk.LEFT)
+
+            self.itemTypeF.pack(side=tk.TOP)
+            self.itemPriorityF.pack(side=tk.TOP)
+            self.itemDueDateF.pack(side=tk.TOP)
+            self.itemStatusF.pack(side=tk.TOP)
+            self.itemDescriptionF.pack(side=tk.TOP)
+
+        def repack(self):
+            self.itemTypeT.pack_forget()
+            self.itemType.pack_forget()
+            self.itemPriorityT.pack_forget()
+            self.itemPriority.pack_forget()
+            self.itemDueDateT.pack_forget()
+            self.itemDueDate.pack_forget()
+            self.itemStatusT.pack_forget()
+            self.itemStatus.pack_forget()
+            self.itemDescriptionT.pack_forget()
+            self.itemDescription.pack_forget()
+
+            self.itemTypeF.pack_forget()
+            self.itemPriorityF.pack_forget()
+            self.itemDueDateF.pack_forget()
+            self.itemStatusF.pack_forget()
+            self.itemDescriptionF.pack_forget()
+
+            self.itemTypeT.pack(side=tk.LEFT)
+            self.itemType.pack(side=tk.LEFT)
+            self.itemPriorityT.pack(side=tk.LEFT)
+            self.itemPriority.pack(side=tk.LEFT)
+            self.itemDueDateT.pack(side=tk.LEFT)
+            self.itemDueDate.pack(side=tk.LEFT)
+            self.itemStatusT.pack(side=tk.LEFT)
+            self.itemStatus.pack(side=tk.LEFT)
+            self.itemDescriptionT.pack(side=tk.LEFT)
+            self.itemDescription.pack(side=tk.LEFT)
+
+            self.itemTypeF.pack(side=tk.TOP)
+            self.itemPriorityF.pack(side=tk.TOP)
+            self.itemDueDateF.pack(side=tk.TOP)
+            self.itemStatusF.pack(side=tk.TOP)
+            self.itemDescriptionF.pack(side=tk.TOP)
+
+    class cardDescriptionUserFrame(tk.Frame):
+        def __init__(self, controller):
+            tk.Frame.__init__(self, controller)
+
+
+            self.userRoleF = tk.Frame(self)
+            self.userRoleT = tk.Label(self.userRoleF, text="Role: ")
+            self.userRole = tk.Label(self.userRoleF, text="")
+
+            self.userEmailF = tk.Frame(self)
+            self.userEmailT = tk.Label(self.userEmailF, text="Email: ")
+            self.userEmail = tk.Label(self.userEmailF, text="")
+
+
+            self.userRoleT.pack(side=tk.LEFT)
+            self.userRole.pack(side=tk.LEFT)
+            self.userEmailT.pack(side=tk.LEFT)
+            self.userEmail.pack(side=tk.LEFT)
+
+            self.userRoleF.pack(side=tk.TOP)
+            self.userEmailF.pack(side=tk.TOP)
+
+        def repack(self):
+            self.userRoleT.pack_forget()
+            self.userRole.pack_forget()
+            self.userEmailT.pack_forget()
+            self.userEmail.pack_forget()
+
+            self.userRoleF.pack_forget()
+            self.userEmailF.pack_forget()
+
+            self.userRoleT.pack(side=tk.LEFT)
+            self.userRole.pack(side=tk.LEFT)
+            self.userEmailT.pack(side=tk.LEFT)
+            self.userEmail.pack(side=tk.LEFT)
+
+            self.userRoleF.pack(side=tk.TOP)
+            self.userEmailF.pack(side=tk.TOP)
+
+
+    def repack(self):
+        self.title.pack(fill=tk.BOTH)
+        self.cardDescriptions['Active'].pack(side=tk.BOTTOM, fill=tk.BOTH)
+
+
+    def changeDescription(self, event):
+        widget = event.widget
+
+        widgetChanged = False
+
+        if self.oldWidget is None:
+            self.oldWidget = widget
+
+        if self.oldWidget != widget and self.descriptionLock == False:
+            self.oldWidget = widget
+            widgetChanged = True
+
+        if self.descriptionLock is False:
+            self.eventSetTitle(widget)
+            self.generateAdditionalFields(widget)
+            self.repack()
+
+        if self.descriptionLock is True:
+            self.descriptionLock = False
+
+        if widgetChanged:
+            self.descriptionLock = True
+
+
+    def setTitle(self, title):
+        self.titleText.set(title)
+
+
+    def eventSetTitle(self, widget):
+        selection = widget.get(tk.ANCHOR)
+        self.setTitle(selection)
+
+
+    def generateAdditionalFields(self, widget):
+        match = None
+
+        if self.datatype[widget] == 'User':
+            for user in self.dataBlock.users:
+                if user.userName == widget.get(tk.ANCHOR):
+                    match = user
+
+            self.generateUserFields(match)
+
+        if self.datatype[widget] == 'Item':
+            for item in self.dataBlock.items:
+                if item.itemTitle == widget.get(tk.ANCHOR):
+                    match = item
+
+            self.generateItemFields(match)
+
+    def generateUserFields(self, selectedUser):
+        self.cardDescriptions["User"].userRole.configure(text=selectedUser.userRole, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["User"].userEmail.configure(text=selectedUser.userEmailAddress, justify=tk.LEFT,
+                                                          wraplength=300)
+
+        self.cardDescriptions["User"].repack()
+
+        self.cardDescriptions["Active"].pack_forget()
+        self.cardDescriptions["Active"] = self.cardDescriptions["User"]
+
+    def generateItemFields(self, selectedItem):
+        self.cardDescriptions["Item"].itemType.configure(text=selectedItem.itemType, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.itemPriority, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemStatus, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDescription, justify=tk.LEFT, wraplength=300)
+
+        self.cardDescriptions["Item"].repack()
+
+        self.cardDescriptions["Active"].pack_forget()
+        self.cardDescriptions["Active"] = self.cardDescriptions["Item"]
