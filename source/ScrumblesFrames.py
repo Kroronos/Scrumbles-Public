@@ -1,5 +1,5 @@
 import tkinter as tk
-
+import webbrowser
 
 import matplotlib
 matplotlib.use("TKAgg")
@@ -13,17 +13,10 @@ import datetime
 from styling import styling as style
 from tkinter import ttk
 
-class BaseList(tk.Frame,tk.Listbox):
+class BaseList(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
         self.fullList = []
-
-    # def get(self,*args,**kwargs):
-    #     return self.listbox.get(*args,**kwargs)
-    #
-    # def curselection(self,*args,**kwargs):
-    #     print('debug curselection',self.listbox.curselection(*args,**kwargs))
-    #     return self.listbox.curselection(*args,**kwargs)
 
     def showPartialList(self, list):
         self.clearList()
@@ -44,7 +37,6 @@ class BaseList(tk.Frame,tk.Listbox):
         for item in self.fullList:
             self.listbox.insert(tk.END, item)
         self.enforceSort()
-
 
 
     def importItemList(self, items):
@@ -140,6 +132,8 @@ class BaseList(tk.Frame,tk.Listbox):
         
         matches = [x for x in self.fullList if fulfillsCondition(x, str)]
         self.showPartialList(matches)
+
+
         
 
 
@@ -276,31 +270,63 @@ class itemPicker(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
        
-        self.itemNumberLabel = tk.Label(self, text = "Item Number: ", justify = tk.LEFT).grid(row = 0)
+        self.itemNumberLabel = tk.Label(self, text = "Item Number: ", anchor = 'w').grid(row = 0, column = 0)
 
 
-        self.itemNameLabel = tk.Label(self, text = "Name: ", justify = tk.LEFT).grid(row = 1)
+        self.itemNameLabel = tk.Label(self, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
         self.itemNameEntry = tk.Entry(self).grid(row = 1, column = 1)
 
-        self.itemDescriptionLabel =  tk.Label(self, text = "Description: ", justify = tk.LEFT).grid(row = 2)
+        self.itemDescriptionLabel =  tk.Label(self, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
         self.itemDescriptionEntry = tk.Entry(self).grid(row = 2, column = 1)
 
 
-        self.itemWeightLabel = tk.Label( self, text = "Weight: ", justify = tk.LEFT, anchor = tk.W).grid(row = 3)
-        #self.itemWeightSelector =
+        self.itemWeightLabel = tk.Label( self, text = "Weight: ", anchor = 'w').grid(row = 3, column = 0)
+        self.itemWeightSelector = ttk.Combobox(self, textvariable = "Test").grid(row = 3, column = 1)
         # self.
         #self.itemWeightScroller = tk.Scrollbar 
 
-        self.itemStatusLabel = tk.Label(self, text = "Status: ", justify = tk.LEFT).grid(row = 4)
-        self.itemStatusFrame = tk.Frame(self)
+        self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
+        self.itemStatusSelector = ttk.Combobox(self, textvariable = "Test").grid(row = 4, column = 1)
+        # self.itemStatusFrame = tk.Frame(self)
         #self.item
+
+        # self.box = ttk.Combobox(self, textvariable=self.box_value)
+        # self.box['values'] = (products)
+        # self.box.current(0)
+        # self.box.pack(fill = tk.X)
+       
 
     
     def selectItem(text):
         self.itemNumberLabel.text = text
 
 class commentsField(tk.Frame):
-    def __init__(self,controller):
+   
+    def load_items(self):
+        #do things
+        print("Items Loaded")
+    
+    def add_item(self):
+        #do things
+        print("Items added")
+    
+    def remove_item(self):
+        #do things
+        print("Items remove")
+    
+    def update_item(self):
+        #do things
+        print("Items updated")
+    
+    def go_to_git(self):
+        #do things
+        print("git opened")
+        webbrowser.open("github.com")
+# webbrowser.open(url[, new=0[, autoraise=True]])
+
+        
+
+    def __init__(self, controller):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth = 1)
 
         # self.commentTitle = tk.Label(self, text = "Comments")
@@ -310,8 +336,6 @@ class commentsField(tk.Frame):
         # self.commentField.pack(side = tk.BOTTOM, fill = tk.Y)
 
         self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
-        
-        # self.commentField = Tk.Text(
-        self.commentField = tk.Entry(self).grid(row = 1, rowspan = 20)
-
+        self.commentField = tk.Entry(self).grid(row = 1)
+        self.openGit = tk.Button(self, text="Github", command = self.go_to_git).grid( row = 2 )
 

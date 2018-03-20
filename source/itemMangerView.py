@@ -34,8 +34,6 @@ class ItemManagerView(tk.Frame):
 		# self.grid(row = 1, column = 0)
 
 
-
-
 		self.items =[item.itemTitle for item in self.controller.dataBlock.items]
 
 
@@ -53,32 +51,14 @@ class ItemManagerView(tk.Frame):
 		#self.comments = ScrumblesFrames.SList(self,"COMMENTS")
 
 		self.commentField = ScrumblesFrames.commentsField(self)
-		self.commentField.pack(side = tk.RIGHT, padx = 20, pady = 20, ipadx = 5, ipady = 5)
+		self.commentField.pack(side = tk.RIGHT, fill = tk.Y, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
 		self.itemEditor = ScrumblesFrames.itemPicker(self)
-		self.itemEditor.pack(side = tk.LEFT, fill = tk.Y, padx = 20, pady = 20, ipadx = 5, ipady = 5)
+		self.itemEditor.pack(side = tk.LEFT, fill = tk.BOTH, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
 		#self.dataTest = tk.Label(self, text="First")
 		# self.dataTest.pack(padx = 300, pady = 150, side = tk.LEFT)
 
 		#self.dataEntry = tk.Entry(width = 10)
 
-	# def load_items(self):
-	# 	#do things
-	# 	print("Items Loaded")
-    #
-	# def add_item(self):
-	# 	#do things
-	# 	print("Items added")
-    #
-	# def remove_item(self):
-	# 	#do things
-	# 	print("Items remove")
-    #
-	# def update_item(self):
-	# 	#do things
-	# 	print("Items updated")
-    #
-	# def go_to_git(self):
-	# 	#do things
-	# 	print("git opened")
+	
