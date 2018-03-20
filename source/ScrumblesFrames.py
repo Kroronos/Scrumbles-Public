@@ -137,7 +137,7 @@ class BaseList(tk.Frame,tk.Listbox):
 
     def search(self, str):
         def fulfillsCondition(item,str):
-            return item[:len(str)] == str
+            return item[:len(str)].lower() == str.lower()
 
         matches = [x for x in self.fullList if fulfillsCondition(x, str)]
         self.showPartialList(matches)
