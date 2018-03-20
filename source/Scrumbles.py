@@ -24,5 +24,3 @@ import tkinter
 app = masterView.masterView()
 
 app.mainloop()
-
-

@@ -6,7 +6,7 @@ import developerHomeView
 import Dialogs
 import ScrumblesData
 import itemMangerView
-
+import sprintManagerView
 
 class masterView(tk.Tk):
     def __init__(self):
@@ -26,7 +26,7 @@ class masterView(tk.Tk):
         loginFrame = loginView.loginView(self.container, self)
         #mainFrame = mainView.mainView(self.container, self)
 
-       # self.add_frame(mainFrame, mainView)
+        #self.add_frame(mainFrame, mainView)
         
         self.add_frame(loginFrame, loginView)
 
@@ -69,9 +69,9 @@ class masterView(tk.Tk):
         viewMenu = tk.Menu(menuBar, tearoff=0)
         viewMenu.add_command(label="Main Menu", command=lambda: self.show_frame(mainView))
         viewMenu.add_command(label="Developer Home View", command=lambda: self.show_frame(developerHomeView))
-        viewMenu.add_command(label="Sprint View", command=lambda: self.show_frame(mainView))
+        viewMenu.add_command(label="Sprint Manager View", command=lambda: self.show_frame(sprintManagerView))
         viewMenu.add_command(label="Projects Backlog View", command=lambda: self.show_frame(backlogView))
-        viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemMangerView))
+        viewMenu.add_command(label="Item Manager View", command = lambda: self.show_frame(itemMangerView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label="About", command=self.openAboutDialog)
@@ -110,11 +110,13 @@ class masterView(tk.Tk):
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         backlogViewFrame = backlogView.backlogView(self.container, self, loggedInUser)
         itemMangerFrame = itemMangerView.ItemManagerView(self.container, self)
+        sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self)
 
         self.add_frame(mainFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(backlogViewFrame, backlogView)
         self.add_frame(itemMangerFrame,itemMangerView)
+        self.add_frame(sprintManagerFrame, sprintManagerView)
         
         self.show_frame(mainView)
 
