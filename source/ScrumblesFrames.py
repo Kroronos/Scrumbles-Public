@@ -289,10 +289,11 @@ class itemPicker(tk.Frame):
         #self.item
 
     def selectItem(text):
-        self.itemNumberLabel.text = text
+        #l.config(text = "Hello World", width = "50" , )
+        self.itemNameEntry.config(text = "Item Selected" )
+        print("Item Selected")
 
-class commentsField(tk.Frame):
-   
+
     def load_items(self):
         #do things
         print("Items Loaded")
@@ -308,14 +309,15 @@ class commentsField(tk.Frame):
     def update_item(self):
         #do things
         print("Items updated")
+
+class commentsField(tk.Frame):
     
     def go_to_git(self):
         #do things
         print("git opened")
         webbrowser.open("github.com")
-# webbrowser.open(url[, new=0[, autoraise=True]])
 
-        
+
 
     def __init__(self, controller):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth = 1)

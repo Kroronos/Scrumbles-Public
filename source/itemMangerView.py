@@ -3,25 +3,6 @@ from tkinter import ttk
 import ScrumblesFrames
 
 
-# class dataForm(tk.Frame):
-# 	def __init__(self):
-# 		self.nameLabel = tk.Label(self, text="Name: ").grid(row=0)
-# 		self.descriptionLabel = tk.Label(self, text="Description: ").grid(row=1)
-
-# 		self.weightLabel = tk.Label(self, text = "Weight: ").grid(row = 2)
-# 		self.statusLabel = tk.Label(self, text = "Status: ").grid(row = 3)
-
-# 		self.name = tk.Entry(self)
-# 		self.description = tk.Entry(self)
-# 		self.weight = tk.Entry(self)
-# 		self.status = tk.Entry(self)
-
-# 		self.name.grid(row = 0, column = 1)
-# 		self.description.grid(row = 1, column = 1)
-# 		self.weight.grid(row = 2, column = 1)
-# 		self.status.grid(row = 3, column = 1)
-
-
 class ItemManagerView(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
@@ -31,6 +12,8 @@ class ItemManagerView(tk.Frame):
 		self.usernameLabel.pack(side = tk.TOP, fill = tk.X)
 
 		self.itemList = ScrumblesFrames.SList(self, "ITEMS")
+		self.itemList.listbox.bind('<<ListboxSelect>>', lambda event: self.dynamicEventHandler(event))
+
 		# self.grid(row = 1, column = 0)
 
 
@@ -41,14 +24,7 @@ class ItemManagerView(tk.Frame):
 		self.itemList.importList(self.items)
 		self.itemList.pack(side = tk.LEFT, fill = tk.Y)
 
-		#self.data = dataForm.__init__(self)
-		#self.data.pack(side = tk.LEFT, fill = tk.Y)
 
-		# self.commentsTitle = tk.Label(self, text = "Comments", font = ("Verdana",12))
-		# self.commentsTitle.pack(side = tk.RIGHT, fill = tk.Y, padx = 20, pady = 20)
-		#self.commentsTitle.grid(row = 0, column = 0)
-		#self.commentsTitle.pack(side = tk.RIGHT)
-		#self.comments = ScrumblesFrames.SList(self,"COMMENTS")
 
 		self.commentField = ScrumblesFrames.commentsField(self)
 		self.commentField.pack(side = tk.RIGHT, fill = tk.Y, padx = 20, pady = 20, ipadx = 5, ipady = 5)
@@ -56,9 +32,54 @@ class ItemManagerView(tk.Frame):
 		self.itemEditor = ScrumblesFrames.itemPicker(self)
 		self.itemEditor.pack(side = tk.LEFT, fill = tk.BOTH, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
+	def dynamicEventHandler(self, event):
+		self.itemEditor.load_items()
+		index = self.itemList.listbox.curselection()
+		print(self.itemList.listbox.get(index[0]))
+		print(self.itemList.listbox.get(index))
+
+        # def selection(self, val):
+        #  sender = val.Listbox1
+        #  index = listbox1.curselection()
+        #  value = Listbox1.get(index[0])
+        #  if index == 1 or index == 4:
+        #      seltext = software
+        #  elif index == 2 or index == 5:
+        #      seltext = hardware
+        #  elif index == 3:
+        #      seltext = mobile
+        #  elif index == 6:
+        #      seltext = wireless
+        #  elif index == 7:
+        #      seltext = AD
+        #  elif index == 8:
+        #      seltext = printer
+        # if event.widget is self.teamMemberList.listbox:
+        #     self.getItemsAssignedToUser(event)
+        #     self.descriptionManager.changeDescription(event)
+
+        # if event.widget is self.productBacklogList.listbox:
+        #     self.descriptionManager.changeDescription(event)
+
+        # if event.widget is self.assignedItemList.listbox:
+        #     self.descriptionManager.changeDescription(event)
+		print("item Selected")
+
 		#self.dataTest = tk.Label(self, text="First")
 		# self.dataTest.pack(padx = 300, pady = 150, side = tk.LEFT)
 
 		#self.dataEntry = tk.Entry(width = 10)
 
 	
+
+        # #Append Any Sources for Dynamic Events to this List
+        # dynamicSources = [self.productBacklogList.fx, self.teamMemberList.listbox, self.assignedItemList.listbox]
+        # queryType = ['Item', 'User', 'Item']
+        # self.descriptionManager = ScrumblesFrames.SCardDescription(self, dynamicSources, queryType)
+        # #Bind Sources
+        # for source in dynamicSources:
+            
+		
+
+
+   
