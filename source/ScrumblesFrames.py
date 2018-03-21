@@ -363,7 +363,7 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self)
         self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self)
         self.cardDescriptions['Active'] = self.cardDescriptions['Start']
-        self.cardDescriptions['Active'].pack(side=tk.BOTTOM)
+        self.cardDescriptions['Active'].pack(side=tk.TOP)
 
     class cardDescriptionStartFrame(tk.Frame):
         def __init__(self, controller):
@@ -488,8 +488,8 @@ class SCardDescription(tk.Frame):
 
 
     def repack(self):
-        self.title.pack(fill=tk.BOTH)
-        self.cardDescriptions['Active'].pack(side=tk.BOTTOM, fill=tk.BOTH)
+        self.title.pack(fill=tk.X)
+        self.cardDescriptions['Active'].pack(side=tk.TOP, fill=tk.BOTH)
 
 
     def changeDescription(self, event):
@@ -556,7 +556,7 @@ class SCardDescription(tk.Frame):
         self.titleText.set("Item Description")
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions['Start']
-        self.cardDescriptions['Active'].pack(side=tk.BOTTOM)
+        self.cardDescriptions['Active'].pack(side=tk.TOP)
 
 class SUserItemInspection(tk.Frame):
     def __init__(self, controller):
