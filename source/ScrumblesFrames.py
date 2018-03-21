@@ -538,23 +538,47 @@ class SUserItemInspection(tk.Frame):
         self.controller = controller
         self.dataBlock = controller.controller.dataBlock
 
-        self.nametag = tk.Frame(self)
-        self.roletag = tk.Frame(self)
-        self.itembox = tk.Frame(self)
+        self.textbox = tk.Frame(self)
 
+        self.nametag = tk.Frame(self.textbox, relief=tk.SOLID, borderwidth=1)
+        self.nameLabel = tk.Label(self.nametag, text="Name")
+        self.nameString = tk.StringVar()
+        self.nameText = tk.Label(self.nametag, textvariable=self.nameString)
+
+        self.roletag = tk.Frame(self.textbox, relief=tk.SOLID, borderwidth=1)
+        self.roleLabel = tk.Label(self.roletag, text="Role")
+        self.roleString = tk.StringVar()
+        self.roleText = tk.Label(self.roletag, textvariable=self.roleString)
+
+        self.itembox = tk.Frame(self)
         self.inProgressItemsList = SList(self.itembox, "In Progress Items")
         self.submittedItemsList = SList(self.itembox, "Submitted Items")
         self.completedItemsList = SList(self.itembox, "Completed Items")
 
-        self.nametag.pack()
-        self.roletag.pack()
-        self.itembox.pack()
+        self.nameLabel.pack(fill=tk.X)
+        self.nameText.pack(fill=tk.X)
+        self.roleLabel.pack(fill=tk.X)
+        self.roleText.pack(fill=tk.X)
 
-        self.inProgressItemsList.pack()
-        self.submittedItemsList.pack()
-        self.completedItemsList.pack()
+        self.nametag.pack(side=tk.LEFT, fill=tk.X, expand=1)
+        self.roletag.pack(side=tk.LEFT, fill=tk.X, expand=1)
 
-    def update(self, assignedItems):
+        self.inProgressItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.submittedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.completedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.textbox.pack(side=tk.TOP, fill=tk.X)
+        self.itembox.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+
+
+
+    def update(self, user):
+        self.nameString.set(user.userName)
+        self.roleString.set(user.userRole)
+        self.updateItems(user.listOfAssignedItems)
+
+    def updateItems(self, assignedItems):
         inProgressItems = []
         submittedItems = []
         completedItems = []

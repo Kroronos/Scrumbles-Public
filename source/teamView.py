@@ -31,9 +31,7 @@ class teamView(tk.Frame):
 
     def updateFrame(self):
         self.teamMembers.clear()
-
         self.teamMembers = [user.userName for user in self.controller.dataBlock.users]
-        print(self.teamMembers)
         self.memberList.importList(self.teamMembers)
 
     def listboxEvents(self, event):
@@ -41,7 +39,7 @@ class teamView(tk.Frame):
             self.descriptionManager.resetToStart()
             for user in self.controller.dataBlock.users:
                 if user.userName == event.widget.get(tk.ANCHOR):
-                    self.assignedItemInspect.update(user.listOfAssignedItems)
+                    self.assignedItemInspect.update(user)
 
         for source in self.dynamicSources:
             if event.widget is source:
