@@ -50,11 +50,13 @@ class backlogView(tk.Frame):
         #todo click and drag on items in backlog to change priority variable of an item so that sort will be user defined
 
     def updateItem(self):
-        self.controller.dataConnection.connect()
-        itemResultQuery = self.controller.dataConnection.getData(ScrumblesData.CardQuery.getCardByCardTitle(self.itemTitle))
-        self.controller.dataConnection.close()
-        item = ScrumblesObjects.Item(itemResultQuery[0])
-        editUserDialog = Dialogs.EditItemDialog(self, self.controller.dataConnection,item)
+        item = None
+        title = self.itemTitle
+        for i in self.backlogData:
+            if i.itemTitle == title:
+               item = i
+
+        editUserDialog = Dialogs.EditItemDialog(self, self.controller.dataBlock ,item)
         self.wait_window(editUserDialog.top)
 
 
