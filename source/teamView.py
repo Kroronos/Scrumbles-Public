@@ -9,11 +9,14 @@ class teamView(tk.Frame):
 
         self.teamMembers = []
 
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Team View")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
+
         self.memberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
-        self.assignedItemInspect = ScrumblesFrames.SUserItemInspection(self)
+        self.assignedItemInspect = ScrumblesFrames.SUserItemInspection(self, controller)
 
         self.dynamicSources, queryType = self.assignedItemInspect.getSCardDescriptionExport()
-        self.descriptionManager = ScrumblesFrames.SCardDescription(self, self.dynamicSources, queryType)
+        self.descriptionManager = ScrumblesFrames.SCardDescription(self, controller, self.dynamicSources, queryType)
         self.recentComments = ScrumblesFrames.commentsField(self)
 
         # To Prevent Duplicate Tkinter Events

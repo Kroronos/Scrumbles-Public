@@ -88,16 +88,12 @@ class BaseList(tk.Frame,tk.Listbox):
         self.enforceSort()
 
     def sortForward(self):
-        items = self.listbox.get(0, tk.END)
-        items = sorted(items)
         self.fullList = sorted(self.fullList, key=lambda s: self.processSort(s))
-        self.importListSorted(items)
+        self.importListSorted(self.fullList)
 
     def sortReverse(self):
-        items = self.listbox.get(0, tk.END)
-        items = sorted(items, reverse=True)
         self.fullList = sorted(self.fullList, key=lambda s: self.processSort(s), reverse=True)
-        self.importListSorted(items)
+        self.importListSorted(self.fullList)
 
     def processSort(self, string):
         string = string.lower()
@@ -343,10 +339,11 @@ class commentsField(tk.Frame):
 
 
 class SCardDescription(tk.Frame):
-    def __init__(self, controller, sources, datatype):
+    def __init__(self, controller, master, sources, datatype):
         tk.Frame.__init__(self, controller)
+        self.master = master
         self.controller = controller
-        self.dataBlock = controller.controller.dataBlock
+        self.dataBlock = master.dataBlock
         self.config(relief=tk.SUNKEN, borderwidth=5)
 
         self.titleText = tk.StringVar()
@@ -460,7 +457,6 @@ class SCardDescription(tk.Frame):
             self.userEmailT = tk.Label(self.userEmailF, text="Email: ")
             self.userEmail = tk.Label(self.userEmailF, text="")
 
-
             self.userRoleT.pack(side=tk.LEFT)
             self.userRole.pack(side=tk.LEFT)
             self.userEmailT.pack(side=tk.LEFT)
@@ -559,10 +555,12 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions['Active'].pack(side=tk.TOP)
 
 class SUserItemInspection(tk.Frame):
-    def __init__(self, controller):
+
+    def __init__(self, controller, master):
         tk.Frame.__init__(self, controller)
+        self.master = master
         self.controller = controller
-        self.dataBlock = controller.controller.dataBlock
+        self.dataBlock = self.master.dataBlock
 
         self.textbox = tk.Frame(self)
 
@@ -630,3 +628,32 @@ class SUserItemInspection(tk.Frame):
 
     def getSCardDescriptionExport(self):
         return [self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']
+
+class STabs(tk.Frame):
+    def __init__(self, controller, master, viewName):
+        tk.Frame.__init__(self, controller)
+        self.master = master
+        self.controller = controller
+        self.viewName = viewName
+        self.buttonList = []
+        self.generateButtons()
+
+    class viewButton(tk.Button):
+        def __init__(self, controller, viewName, view, event):
+            if viewName == controller.viewName:
+                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_offwhite, relief=tk.SOLID, borderwidth=1)
+            else:
+                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_grey, relief=tk.SOLID, borderwidth=1)
+
+    def generateButtons(self):
+        self.buttonList.clear()
+        views, viewNames = self.master.getViews()
+        for view, viewName in zip(views, viewNames):
+            viewButton = self.viewButton(self, viewName, view, self.tabEvent)
+            self.buttonList.append(viewButton)
+            viewButton.pack(side=tk.LEFT)
+
+    def tabEvent(self, selectedView):
+        self.master.show_frame(selectedView)
+
+

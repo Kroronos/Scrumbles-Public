@@ -95,6 +95,25 @@ class masterView(tk.Tk):
     def hideMenuBar(self):
         self.configure(menu=self.hiddenMenu)
 
+    def getViews(self):
+        views = []
+        viewNames = []
+        views.append(mainView)
+        viewNames.append("Main View")
+
+        views.append(developerHomeView)
+        viewNames.append("Developer Home View")
+
+        views.append(teamView)
+        viewNames.append("Team View")
+
+        views.append(backlogView)
+        viewNames.append("Backlog View")
+
+        views.append(itemMangerView)
+        viewNames.append("Item Manager View")
+        return views, viewNames
+
     def showCreateProjectDialog(self):
         createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataConnection)
         self.wait_window(createProjectDialog.top)

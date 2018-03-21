@@ -8,8 +8,11 @@ class developerHomeView(tk.Frame):
         self.controller = controller
         tk.Frame.__init__(self, parent)
         self.firstCall = True
-        self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ',font=("Verdana", 12))
+        self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ', font=("Verdana", 12))
         self.usernameLabel.pack()
+
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home View")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.cal = ScrumblesFrames.SCalendar(self)
 
@@ -30,7 +33,7 @@ class developerHomeView(tk.Frame):
         #Append Any Sources for Dynamic Events to this List
         dynamicSources = [self.productBacklogList.listbox, self.teamMemberList.listbox, self.assignedItemList.listbox]
         queryType = ['Item', 'User', 'Item']
-        self.descriptionManager = ScrumblesFrames.SCardDescription(self, dynamicSources, queryType)
+        self.descriptionManager = ScrumblesFrames.SCardDescription(self, controller, dynamicSources, queryType)
 
         # To Prevent Duplicate Tkinter Events
         self.eventHandler = listboxEventHandler.listboxEventHandler()

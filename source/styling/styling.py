@@ -13,6 +13,8 @@ logo_path = "styling/logo.ico"
 scrumbles_blue = '#3899f4'
 scrumbles_orange = '#ff8b2d'
 scrumbles_brown = '#663E1A'
+scrumbles_grey = '#D3D3D3'
+scrumbles_offwhite = '#f5f5f5'
 
 #unicode icons
 updown_arrow = u'\u2B0D'

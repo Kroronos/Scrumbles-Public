@@ -16,6 +16,8 @@ class backlogView(tk.Frame):
         self.controller = controller
         self.usernameLabel = tk.Label(self, text='Welcome to the Projects Backlog View ', font=("Verdana", 12))
         self.usernameLabel.pack()
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog View")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
         self.productList = ScrumblesFrames.SComboList(self, "PRODUCT BACKLOG", products)
         self.backlog = ScrumblesFrames.SBacklogList(self)
 
