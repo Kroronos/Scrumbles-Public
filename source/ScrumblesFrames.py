@@ -224,7 +224,7 @@ class SList(BaseList):
         self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT)
         self.titleLabel.pack(side=tk.LEFT)
         self.sortButton.pack(side=tk.RIGHT)
-        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH,expand=True)
         self.listScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.titleFrame.pack(fill=tk.X, expand=False)
@@ -307,18 +307,39 @@ class itemPicker(tk.Frame):
 
 class commentsField(tk.Frame):
     def __init__(self,controller):
-        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth = 1)
+        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
 
-        # self.commentTitle = tk.Label(self, text = "Comments")
-        # self.commentTitle.pack(side = tk.TOP)
+        self.titleText = tk.StringVar()
+        self.titleText.set("Comments")
+        self.commentTitleF = tk.Frame(self,relief=tk.SOLID, borderwidth=1)
+        self.commentTitle = tk.Label(self.commentTitleF, textvariable=self.titleText)
+        self.commentField = tk.Frame(self)
+        self.comments = []
+        self.commentTextElements = []
 
-        # self.commentField = tk.Entry(self, width = 150)
-        # self.commentField.pack(side = tk.BOTTOM, fill = tk.Y)
+        self.commentTitle.pack(side=tk.TOP, fill=tk.X)
+        self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
+        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
 
-        self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
+    def updateFromListOfCommentsObject(self, listOfCommentsObject, objectName):
+        self.clearCommentField()
+        for comment in listOfCommentsObject.listOfComments:
+            self.comments.append(comment)
+        self.titleText.set("Comments from " + objectName)
+        self.renderCommentField()
 
-        # self.commentField = Tk.Text(
-        self.commentField = tk.Entry(self).grid(row = 1, rowspan = 20)
+    def renderCommentField(self):
+        self.comments = sorted(self.comments, key=lambda s: s.commentTimeStamp)
+        for comment in self.comments:
+            commentLabel = tk.Label(self.commentField, comment.commentContent)
+            self.commentTextElements.append(commentLabel)
+            commentLabel.pack(side=tk.top, fill=tk.X)
+        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
+
+    def clearCommentField(self):
+        self.comments.clear()
+        self.commentField.pack_forget()
+        self.commentTextElements.clear()
 
 
 class SCardDescription(tk.Frame):

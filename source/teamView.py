@@ -14,6 +14,7 @@ class teamView(tk.Frame):
 
         self.dynamicSources, queryType = self.assignedItemInspect.getSCardDescriptionExport()
         self.descriptionManager = ScrumblesFrames.SCardDescription(self, self.dynamicSources, queryType)
+        self.recentComments = ScrumblesFrames.commentsField(self)
 
         # To Prevent Duplicate Tkinter Events
         self.eventHandler = listboxEventHandler.listboxEventHandler()
@@ -25,9 +26,10 @@ class teamView(tk.Frame):
 
         self.updateFrame()
 
-        self.memberList.pack(side=tk.LEFT, fill=tk.Y)
-        self.assignedItemInspect.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.descriptionManager.pack(side=tk.LEFT)
+        self.memberList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.assignedItemInspect.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.descriptionManager.pack(side=tk.LEFT, expand=True)
+        self.recentComments.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def updateFrame(self):
         self.teamMembers.clear()
@@ -40,8 +42,12 @@ class teamView(tk.Frame):
             for user in self.controller.dataBlock.users:
                 if user.userName == event.widget.get(tk.ANCHOR):
                     self.assignedItemInspect.update(user)
+                    self.recentComments.updateFromListOfCommentsObject(user, user.userName)
 
         for source in self.dynamicSources:
             if event.widget is source:
                 self.descriptionManager.changeDescription(event)
+                for item in self.controller.dataBlock.items:
+                    if item.itemTitle == event.widget.get(tk.ANCHOR):
+                        self.recentComments.updateFromListOfCommentsObject(item, item.itemTitle)
 
