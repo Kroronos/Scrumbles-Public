@@ -34,6 +34,7 @@ class User:
     userID = None
     userRole = None
     listOfAssignedItems = []
+    listOfComments = []
 
     #Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -49,13 +50,7 @@ class User:
         self.userRole = queryResultDict['UserRole']
         self.userID = queryResultDict['UserID']
 
-    def populateListOfAssignedItemsBySprint(self,sprint):
-        assert sprint is not None
-        if len(sprint.listOfAssignedItems) > 0:
-            for item in sprint.listOfAssignedItems:
-                if item not in self.listOfAssignedItems:
-                    if item.itemUserID == self.userID:
-                        self.listOfAssignedItems.append(item)
+
 
 class Item:
     itemID = None
@@ -70,7 +65,7 @@ class Item:
     itemUserID = None
     itemStatus = None
     listOfComments = []
-    statusEquivalents = {}
+    statusEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -90,16 +85,8 @@ class Item:
         self.itemSprintID = queryResultDict['SprintID']
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
-        self.statusEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
-    #NOTE This functions takes in the whole list from a query result
 
-    def populateItemCommentsByQuery(self,queryResultList):
-        assert len(queryResultList) > 0
-        assert 'CommentID' in queryResultList[0]
-        for row in queryResultList:
-            comment = Comment(row)
-            if comment not in self.listOfComments:
-                self.listOfComments.append(comment)
+    #NOTE This functions takes in the whole list from a query result
 
     def assignToUser(self, user):
         self.itemUserID = user.userID
@@ -121,6 +108,7 @@ class Sprint:
     sprintName = None
     projectID = None
     listOfAssignedItems = []
+    listOfAssignedUsers = []
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -135,12 +123,7 @@ class Sprint:
         self.sprintName = queryResultDict['SprintName']
         self.projectID = queryResultDict['ProjectID']
 
-    def populateAssignedItems(self,queryResultList):
-        assert len(queryResultList) > 0
-        assert 'ItemType' in queryResultList[0]
-        for row in queryResultList:
-            item = Item(row)
-            self.listOfAssignedItems.append(item)
+
 
     def assignItemToSprint(self, item):
         item.itemSprintID = self.sprintID
@@ -160,7 +143,7 @@ class Comment:
     commentContent = None
     commentItemID = None
     commentUserID = None
-    listOfTags = []
+    #todo listOfTags = []
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -175,10 +158,7 @@ class Comment:
         self.commentItemID = queryResultDict['CardID']
         self.commentUserID = queryResultDict['UserID']
 
-    def getTags(self,queryResult):
-        assert 'TagName' in queryResult[0]
-        for dictionary in queryResult:
-            self.listOfTags.append(dictionary['TagName'])
+
 class Project:
     projectID = None
     projectName = None
@@ -191,8 +171,4 @@ class Project:
         self.projectID = queryResultDict['ProjectID']
         self.projectName = queryResultDict['ProjectName']
 
-    def populateAssignedSprints(self, ListOfSprints):
-        for sprint in ListOfSprints:
-            if sprint.projectID == self.projectID:
-                self.listOfAssignedSprints.append(sprint)
-
+#todo class Tag:

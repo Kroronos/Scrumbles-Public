@@ -36,6 +36,7 @@ class DataBlock:
 
     def updateAllObjects(self):
         self.lock.acquire()
+
         self.users.clear()
         self.items.clear()
         self.projects.clear()
@@ -50,18 +51,45 @@ class DataBlock:
         sprintTable = self.conn.getData(Query.getAllSprints)
         self.conn.close()
 
-        for user in userTable:
-            self.users.append(ScrumblesObjects.User(user))
-        for item in itemTable:
-            self.items.append(ScrumblesObjects.Item(item))
-        for project in projectTable:
-            self.projects.append(ScrumblesObjects.Project(project))
         for comment in commentTable:
-            self.comments.append(ScrumblesObjects.Comment(comment))
+            Comment = ScrumblesObjects.Comment(comment)
+            self.comments.append(Comment)
+
+        for item in itemTable:
+            Item = ScrumblesObjects.Item(item)
+            Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
+            self.items.append(Item)
+
+        for user in userTable:
+            User = ScrumblesObjects.User(user)
+            User.listOfAssignedItems = [ I for I in self.items if I.itemUserID == User.userID ]
+            User.listOfComments = [ C for C in self.comments if C.commentUserID == User.userID ]
+            self.users.append(User)
+
         for sprint in sprintTable:
-            self.comments.append(ScrumblesObjects.Sprint(sprint))
+            Sprint = ScrumblesObjects.Sprint(sprint)
+            Sprint.listOfAssignedItems = [I for I in self.items if I.itemSprintID == Sprint.sprintID]
+            Sprint.listOfAssignedUsers = [U for U in self.users if U.userID in [I.itemUserID for I in Sprint.listOfAssignedItems]]
+            self.sprints.append(Sprint)
+
+        for project in projectTable:
+            Project = ScrumblesObjects.Project(project)
+            Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
+            self.projects.append(Project)
 
         self.lock.release()
+
+    def addNewScrumblesObject(self,obj):
+        self.conn.connect()
+        self.conn.setData(Query.createObject(obj))
+        self.conn.close()
+
+    def updateScrumblesObject(self,obj):
+        self.conn.connect()
+        self.conn.setData(Query.updateObject(obj))
+        self.conn.close()
+
+
 
     def updater(self):
 
