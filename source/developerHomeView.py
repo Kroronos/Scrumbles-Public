@@ -72,7 +72,7 @@ class developerHomeView(tk.Frame):
             self.assignedItemList = self.selectedUser.listOfAssignedItems
         self.productBacklogList.importList(self.backlog)
         self.teamMemberList.importList(self.teamMembers)
-        self.assignedItemList.importList(self.assignedItems)
+        self.assignedItemList.importItemList(self.assignedItems)
 
     def listboxEvents(self, event):
         if event.widget is self.teamMemberList.listbox:
