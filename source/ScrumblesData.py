@@ -76,9 +76,19 @@ class DataBlock:
             Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
             self.projects.append(Project)
 
+            self.lock.release()
+
+    def addNewScrumblesObject(self,obj):
+        self.conn.connect()
+        self.conn.setData(Query.createObject(obj))
+        self.conn.close()
+
+    def updateScrumblesObject(self,obj):
+        self.conn.connect()
+        self.conn.setData(Query.updateObject(obj))
+        self.conn.close()
 
 
-        self.lock.release()
 
     def updater(self):
 
