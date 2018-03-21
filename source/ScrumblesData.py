@@ -36,6 +36,7 @@ class DataBlock:
 
     def updateAllObjects(self):
         self.lock.acquire()
+
         self.users.clear()
         self.items.clear()
         self.projects.clear()
@@ -76,7 +77,7 @@ class DataBlock:
             Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
             self.projects.append(Project)
 
-            self.lock.release()
+        self.lock.release()
 
     def addNewScrumblesObject(self,obj):
         self.conn.connect()

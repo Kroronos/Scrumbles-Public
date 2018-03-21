@@ -88,14 +88,6 @@ class Item:
 
     #NOTE This functions takes in the whole list from a query result
 
-    def populateItemCommentsByQuery(self,queryResultList):
-        assert len(queryResultList) > 0
-        assert 'CommentID' in queryResultList[0]
-        for row in queryResultList:
-            comment = Comment(row)
-            if comment not in self.listOfComments:
-                self.listOfComments.append(comment)
-
     def assignToUser(self, user):
         self.itemUserID = user.userID
 
@@ -178,10 +170,5 @@ class Project:
         assert 'ProjectName' in queryResultDict
         self.projectID = queryResultDict['ProjectID']
         self.projectName = queryResultDict['ProjectName']
-
-    def populateAssignedSprints(self, ListOfSprints):
-        for sprint in ListOfSprints:
-            if sprint.projectID == self.projectID:
-                self.listOfAssignedSprints.append(sprint)
 
 #todo class Tag:
