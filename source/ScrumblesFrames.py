@@ -339,9 +339,6 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions['Active'] = self.cardDescriptions['Start']
         self.cardDescriptions['Active'].pack(side=tk.BOTTOM)
 
-        self.descriptionLock = False
-        self.oldWidget = None
-
     class cardDescriptionStartFrame(tk.Frame):
         def __init__(self, controller):
             tk.Frame.__init__(self, controller)
@@ -471,27 +468,9 @@ class SCardDescription(tk.Frame):
 
     def changeDescription(self, event):
         widget = event.widget
-
-        widgetChanged = False
-
-        if self.oldWidget is None:
-            self.oldWidget = widget
-
-        if self.oldWidget != widget and self.descriptionLock == False:
-            self.oldWidget = widget
-            widgetChanged = True
-
-        if self.descriptionLock is False:
-            self.eventSetTitle(widget)
-            self.generateAdditionalFields(widget)
-            self.repack()
-
-        if self.descriptionLock is True:
-            self.descriptionLock = False
-
-        if widgetChanged:
-            self.descriptionLock = True
-
+        self.eventSetTitle(widget)
+        self.generateAdditionalFields(widget)
+        self.repack()
 
     def setTitle(self, title):
         self.titleText.set(title)
@@ -509,15 +488,21 @@ class SCardDescription(tk.Frame):
             for user in self.dataBlock.users:
                 if user.userName == widget.get(tk.ANCHOR):
                     match = user
-
-            self.generateUserFields(match)
+            #If ListBox Select Isn't Properly Handled
+            if match is None:
+                self.resetToStart()
+            else:
+                self.generateUserFields(match)
 
         if self.datatype[widget] == 'Item':
             for item in self.dataBlock.items:
                 if item.itemTitle == widget.get(tk.ANCHOR):
                     match = item
-
-            self.generateItemFields(match)
+            # If ListBox Select Isn't Properly Handled
+            if match is None:
+                self.resetToStart()
+            else:
+                self.generateItemFields(match)
 
     def generateUserFields(self, selectedUser):
         self.cardDescriptions["User"].userRole.configure(text=selectedUser.userRole, justify=tk.LEFT, wraplength=300)
@@ -540,3 +525,58 @@ class SCardDescription(tk.Frame):
 
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions["Item"]
+
+    def resetToStart(self):
+        self.titleText.set("Item Description")
+        self.cardDescriptions["Active"].pack_forget()
+        self.cardDescriptions["Active"] = self.cardDescriptions['Start']
+        self.cardDescriptions['Active'].pack(side=tk.BOTTOM)
+
+class SUserItemInspection(tk.Frame):
+    def __init__(self, controller):
+        tk.Frame.__init__(self, controller)
+        self.controller = controller
+        self.dataBlock = controller.controller.dataBlock
+
+        self.nametag = tk.Frame(self)
+        self.roletag = tk.Frame(self)
+        self.itembox = tk.Frame(self)
+
+        self.inProgressItemsList = SList(self.itembox, "In Progress Items")
+        self.submittedItemsList = SList(self.itembox, "Submitted Items")
+        self.completedItemsList = SList(self.itembox, "Completed Items")
+
+        self.nametag.pack()
+        self.roletag.pack()
+        self.itembox.pack()
+
+        self.inProgressItemsList.pack()
+        self.submittedItemsList.pack()
+        self.completedItemsList.pack()
+
+    def update(self, assignedItems):
+        inProgressItems = []
+        submittedItems = []
+        completedItems = []
+        for item in assignedItems:
+            if item.itemStatus == 1:
+                inProgressItems.append(item)
+            if item.itemStatus == 2:
+                submittedItems.append(item)
+            if item.itemStatus == 3:
+                completedItems.append(item)
+        self.updateInProgessItems(inProgressItems)
+        self.updateSubmittedItems(submittedItems)
+        self.updateCompletedItems(completedItems)
+
+    def updateInProgessItems(self, inProgressItems):
+        self.inProgressItemsList.importItemList(inProgressItems)
+
+    def updateSubmittedItems(self, submittedItems):
+        self.submittedItemsList.importItemList(submittedItems)
+
+    def updateCompletedItems(self, completedItems):
+        self.completedItemsList.importItemList(completedItems)
+
+    def getSCardDescriptionExport(self):
+        return [self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']

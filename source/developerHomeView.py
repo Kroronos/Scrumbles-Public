@@ -1,6 +1,6 @@
 import tkinter as tk
 import ScrumblesFrames
-
+import listboxEventHandler
 
 
 class developerHomeView(tk.Frame):
@@ -31,9 +31,14 @@ class developerHomeView(tk.Frame):
         dynamicSources = [self.productBacklogList.listbox, self.teamMemberList.listbox, self.assignedItemList.listbox]
         queryType = ['Item', 'User', 'Item']
         self.descriptionManager = ScrumblesFrames.SCardDescription(self, dynamicSources, queryType)
+
+        # To Prevent Duplicate Tkinter Events
+        self.eventHandler = listboxEventHandler.listboxEventHandler()
+        self.eventHandler.setEventToHandle(self.listboxEvents)
+
         #Bind Sources
         for source in dynamicSources:
-            source.bind('<<ListboxSelect>>', lambda event: self.dynamicEventHandler(event))
+            source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
@@ -64,9 +69,7 @@ class developerHomeView(tk.Frame):
 
 
     def updateLists(self):
-
         selectedUserName = self.controller.dataBlock.users[0].userName
-
 
         self.backlog.clear()
         self.teamMembers.clear()
@@ -79,9 +82,7 @@ class developerHomeView(tk.Frame):
         self.teamMemberList.importList(self.teamMembers)
         self.assignedItemList.importList(self.assignedItems)
 
-
-
-    def dynamicEventHandler(self, event):
+    def listboxEvents(self, event):
         if event.widget is self.teamMemberList.listbox:
             self.getItemsAssignedToUser(event)
             self.descriptionManager.changeDescription(event)
