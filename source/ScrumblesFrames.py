@@ -90,14 +90,19 @@ class BaseList(tk.Frame,tk.Listbox):
     def sortForward(self):
         items = self.listbox.get(0, tk.END)
         items = sorted(items)
-        self.fullList = sorted(self.fullList)
+        self.fullList = sorted(self.fullList, key=lambda s: self.processSort(s))
         self.importListSorted(items)
 
     def sortReverse(self):
         items = self.listbox.get(0, tk.END)
         items = sorted(items, reverse=True)
-        self.fullList = sorted(self.fullList, reverse=True)
+        self.fullList = sorted(self.fullList, key=lambda s: self.processSort(s), reverse=True)
         self.importListSorted(items)
+
+    def processSort(self, string):
+        string = string.lower()
+        string = "".join(string.split())
+        return string
 
     def clearList(self):
         self.listbox.delete(0, tk.END)
