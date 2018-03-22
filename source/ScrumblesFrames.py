@@ -281,11 +281,13 @@ class itemPicker(tk.Frame):
         self.itemDescriptionEntry = tk.Entry(self, textvariable = self.itemDescriptionEntryText).grid(row = 2, column = 1)
 
 
-        self.itemWeightLabel = tk.Label( self, text = "Weight: ", anchor = 'w').grid(row = 3, column = 0)
-        self.itemWeightSelector = ttk.Combobox(self, textvariable = "Test").grid(row = 3, column = 1)
+        self.itemPriorityLabel = tk.Label( self, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
+        self.itemPriorities = ("Low Priority", "Medium Priority", "High Priority")
+        self.itemPrioritySelector = ttk.Combobox(self, values = self.itemPriorities).grid(row = 3, column = 1)
 
         self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
-        self.itemStatusSelector = ttk.Combobox(self, textvariable = "Test").grid(row = 4, column = 1)
+        self.statuses = ("Not started", "In Progress", "Done") 
+        self.itemStatusSelector = ttk.Combobox(self, values = self.statuses).grid(row = 4, column = 1)
         
 
         self.submitButton = tk.Button(self, text="Submit Changes", command = self.update_item).grid( row = 5, column = 1 )

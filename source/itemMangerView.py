@@ -32,13 +32,12 @@ class ItemManagerView(tk.Frame):
 
 	def dynamicEventHandler(self, event):
 		index = self.itemList.listbox.curselection()
-		print(index)
-		print(self.itemList.listbox.get(index))
-		# print(self.itemList.listbox.get(index).itemTitle)
-		print(self.items[0].itemType)
-		print(self.items[0].getTitle())
+		# print(self.itemList.listbox.get(index))
+		# # print(self.itemList.listbox.get(index).itemTitle)
+		# print(self.items[0].itemType)
+		# print(self.items[0].getTitle())
 
-		self.itemEditor.load_items(self.itemList.listbox.get(index), "descriptionManager")
+		self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription() )
 
         # def selection(self, val):
         #  sender = val.Listbox1
