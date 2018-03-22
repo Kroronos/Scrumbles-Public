@@ -316,6 +316,7 @@ class AboutDialog:
 #todo get dataBlock from caller
 class EditItemDialog:
     def __init__(self, parent, dataBlock, Item):
+        print(Item)
         self.item = Item
         self.dataBlock = dataBlock
         ItemTypeVar = Tk.StringVar()
@@ -353,8 +354,10 @@ class EditItemDialog:
         self.ItemTypebox = ttk.Combobox(popUPDialog, textvariable=ItemTypeVar, state='readonly', values=items)
         self.ItemTypebox.grid(row=6, column=2, sticky='W')
         #self.ItemTypebox.selection_clear()
-        self.ItemTypebox.current(items.index(Item.itemType))
-
+        if Item.itemType in items:
+            self.ItemTypebox.current(items.index(Item.itemType))
+        else:
+            self.ItemTypebox.current(0)
         users = tuple(userNames)
         sprints = tuple(sprintNames)
         self.usersComboBox = ttk.Combobox(popUPDialog, textvariable=itemUserVar, state='readonly',values=users)
@@ -392,6 +395,8 @@ class EditItemDialog:
             for sprint in self.listOfSprints:
                 if sprint.sprintName == self.sprintsComboBox.get():
                     selectedSprint = sprint
+                    if selectedSprint.sprintDueDate is None:
+                        raise Exception('Corrupted Sprint Data, contact your database admin')
             for user in self.listOfUsers:
                 if user.userName == self.usersComboBox.get():
                     userID = user.userID

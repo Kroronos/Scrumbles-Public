@@ -56,6 +56,15 @@ class backlogView(tk.Frame):
             if i.itemTitle == title:
                item = i
 
+        if item is None:
+            print('Item Title:',title)
+            print('backlogData:')
+            for i in self.backlogData:
+                print(i.itemTitle)
+            raise Exception('Error Loading item from title')
+
+
+
         editUserDialog = Dialogs.EditItemDialog(self, self.controller.dataBlock ,item)
         self.wait_window(editUserDialog.top)
 
