@@ -37,50 +37,9 @@ class ItemManagerView(tk.Frame):
 		# print(self.items[0].itemType)
 		# print(self.items[0].getTitle())
 
-		self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription() )
+		self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription(), self.items[index[0]].getStatus(), self.items[index[0]].getPriority() )
 
-        # def selection(self, val):
-        #  sender = val.Listbox1
-        #  index = listbox1.curselection()
-        #  value = Listbox1.get(index[0])
-        #  if index == 1 or index == 4:
-        #      seltext = software
-        #  elif index == 2 or index == 5:
-        #      seltext = hardware
-        #  elif index == 3:
-        #      seltext = mobile
-        #  elif index == 6:
-        #      seltext = wireless
-        #  elif index == 7:
-        #      seltext = AD
-        #  elif index == 8:
-        #      seltext = printer
-        # if event.widget is self.teamMemberList.listbox:
-        #     self.getItemsAssignedToUser(event)
-        #     self.descriptionManager.changeDescription(event)
 
-        # if event.widget is self.productBacklogList.listbox:
-        #     self.descriptionManager.changeDescription(event)
-
-        # if event.widget is self.assignedItemList.listbox:
-        #     self.descriptionManager.changeDescription(event)
 		print("item Selected")
 
-		#self.dataTest = tk.Label(self, text="First")
-		# self.dataTest.pack(padx = 300, pady = 150, side = tk.LEFT)
-
-		#self.dataEntry = tk.Entry(width = 10)
-
-	
-
-        # #Append Any Sources for Dynamic Events to this List
-        # dynamicSources = [self.productBacklogList.fx, self.teamMemberList.listbox, self.assignedItemList.listbox]
-        # queryType = ['Item', 'User', 'Item']
-        # self.descriptionManager = ScrumblesFrames.SCardDescription(self, dynamicSources, queryType)
-        # #Bind Sources
-        # for source in dynamicSources:
-            
 		
-
-
-   

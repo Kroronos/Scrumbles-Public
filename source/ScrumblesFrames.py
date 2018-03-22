@@ -282,13 +282,17 @@ class itemPicker(tk.Frame):
 
 
         self.itemPriorityLabel = tk.Label( self, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
-        self.itemPriorities = ("Low Priority", "Medium Priority", "High Priority")
-        self.itemPrioritySelector = ttk.Combobox(self, values = self.itemPriorities).grid(row = 3, column = 1)
-
-        self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
-        self.statuses = ("Not started", "In Progress", "Done") 
-        self.itemStatusSelector = ttk.Combobox(self, values = self.statuses).grid(row = 4, column = 1)
+        self.itemPriorityValue = tk.StringVar()
+        self.priorities = ("Low Priority", "Medium Priority", "High Priority")
+        self.itemPrioritySelector = ttk.Combobox(self, textvariable = self.itemPriorityValue, values = self.priorities).grid(row = 3, column = 1)
         
+
+ 
+        self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
+        self.itemStatusValue = tk.StringVar()
+        self.statuses = ("Not started", "In Progress", "Done")
+        self.itemStatusSelector = ttk.Combobox(self, textvariable = self.itemStatusValue, values = self.statuses).grid(row = 4, column = 1) 
+ 
 
         self.submitButton = tk.Button(self, text="Submit Changes", command = self.update_item).grid( row = 5, column = 1 )
 
@@ -297,14 +301,40 @@ class itemPicker(tk.Frame):
         print("Item Selected")
 
 
-    def load_items(self, name, description):
+    def load_items(self, name, description, status, priority):
         #do things
         print("Items Loaded")
         self.itemNameEntryText.set(name)
         self.itemDescriptionEntryText.set(description)
+        self.itemStatusValue.set(status)
+        self.itemPriorityValue.set(priority)
 
-    def add_item(self):
+    def add_item(self, item_type, item_priority, item_description):
         #do things
+
+        # #Suppose we want to store a new user in the database
+        # #First we create a user object
+        # import ScrumblesObjects
+        # user = ScrumblesObjects.User()
+        # user.userName = 'tUser'
+        # user.userPassword = 'ImAp@ssw0rd'
+        # user.userEmailAddress = 'CodeSamuri@gmail.com'
+        # user.userRole = 'developer'
+
+        # #Now that we have a our new user created, we can store him in the database
+        # dbConnection.connect()
+        # dbConnection.setData(ScrumblesData.Query.createObj(user))
+        # dbConnection.close()
+        # # And now our new user is stored in the database and he can successfully login to the 
+        
+        item = ScrumblesObjects.Item()
+        item.itemType = item_type
+        item.itemPriority = item_priority
+        item.itemDescription = item_description
+        
+        dbConnection.connect()
+        dbConnection.setData(ScrumblesData.Query.createObj(item))
+        dbConnection.close()
         print("Items added")
     
     def remove_item(self):
