@@ -6,6 +6,7 @@ import ScrumblesObjects
 import ScrumblesFrames
 import Dialogs
 
+import threading
 
 #from tkinter import ttk
 
@@ -16,6 +17,8 @@ class backlogView(tk.Frame):
         self.controller = controller
         self.usernameLabel = tk.Label(self, text='Welcome to the Projects Backlog View ', font=("Verdana", 12))
         self.usernameLabel.pack()
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog View")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
         self.productList = ScrumblesFrames.SComboList(self, "PRODUCT BACKLOG", products)
         self.backlog = ScrumblesFrames.SBacklogList(self)
 
@@ -29,6 +32,9 @@ class backlogView(tk.Frame):
         self.productListData = self.controller.dataBlock.projects
         self.backlogData = self.controller.dataBlock.items
         self.controller.dataBlock.packCallback(self.updateBacklogViewData)
+
+
+
 
         #todo Not sure if it was Projects that was supposed to be displayed under Products...
 
@@ -48,11 +54,22 @@ class backlogView(tk.Frame):
         #todo click and drag on items in backlog to change priority variable of an item so that sort will be user defined
 
     def updateItem(self):
-        self.controller.dataConnection.connect()
-        itemResultQuery = self.controller.dataConnection.getData(ScrumblesData.CardQuery.getCardByCardTitle(self.itemTitle))
-        self.controller.dataConnection.close()
-        item = ScrumblesObjects.Item(itemResultQuery[0])
-        editUserDialog = Dialogs.EditItemDialog(self, self.controller.dataConnection,item)
+        item = None
+        title = self.itemTitle
+        for i in self.backlogData:
+            if i.itemTitle == title:
+               item = i
+
+        if item is None:
+            print('Item Title:',title)
+            print('backlogData:')
+            for i in self.backlogData:
+                print(i.itemTitle)
+            raise Exception('Error Loading item from title')
+
+
+
+        editUserDialog = Dialogs.EditItemDialog(self, self.controller.dataBlock ,item)
         self.wait_window(editUserDialog.top)
 
 
@@ -67,8 +84,28 @@ class backlogView(tk.Frame):
          #print('do something')
          menu.post(event.x_root, event.y_root)
 
+
+
+
     def updateBacklogViewData(self):
-        self.productListData.clear()
-        self.backlogData.clear()
-        self.productListData = self.controller.dataBlock.projects
-        self.backlogData = self.controller.dataBlock.items
+        self.productList.clearList()
+        self.backlog.clearList()
+        self.productList.importProjectList(self.productListData)
+        self.backlog.importItemList(self.backlogData)
+
+
+        #######################################################################
+        ###Five freaking hours of troublshooting... I am a F@$%ing moron
+        # right here.. Python PASSES OBJECTS AROUND BY REFERENCE
+        #self.productListData.clear()  # <--- This clears dataBlock.projects GLOBALLY
+        #self.backlogData.clear()      # <--- This clears dataBlock.items GLOBALLY
+        #####################################################################
+
+        ############### Below is completely Stupid,  these need to repack the frames
+        # NEED CODE BELOW TO REPACK FRAMES NOT this
+        #self.productListData = DB.projects # <-- this does nothing, this is the same as a = a
+        #self.backlogData = DB.items #<-- this does nothing, this is the same as a = a
+        #############################################################################
+        #  This is why sleep deprivation and programming do not mix well
+        ##############################################################################
+

@@ -8,6 +8,8 @@ class mainView(tk.Frame):
         self.controller = controller
         self.usernameLabel = tk.Label(self, text='Welcome to the Main View ', font=("Verdana", 12))
         self.usernameLabel.pack()
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Main View")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
         self.productBacklogList = ScrumblesFrames.SList(self, "PRODUCT BACKLOG")
         self.scrumTeamList = ScrumblesFrames.SList(self, "SCRUM TEAMS")
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")

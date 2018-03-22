@@ -26,8 +26,6 @@ def _init_thread_local_random():
 
     return thread_local.random
 
-
-
 class User:
     userName = None
     userEmailAddress = None
