@@ -32,13 +32,19 @@ class DataBlock:
         self.listener = remoteUpdate.RemoteUpdate()
         self.lock = threading.Lock()
         self.updateAllObjects()
+        self.size = self.getLen()
         self.updaterThread = threading.Thread(target = self.updater, args=())
+        self.cv = threading.Condition()
 
         self.updaterThread.start()
 
     def __del__(self):
         self.shutdown()
         del self.listener
+
+    def getLen(self):
+        rv = len(self.items)
+        return rv
 
     def updateAllObjects(self):
 
@@ -88,7 +94,7 @@ class DataBlock:
 
 
     def validateData(self):
-        pass
+        return self.getLen() > 0
 
 
     def addNewScrumblesObject(self,obj):
@@ -110,10 +116,12 @@ class DataBlock:
         while self.alive:
             time.sleep(5)
             if self.listener.isDBChanged:
-
                 self.updateAllObjects()
-                self.executeUpdaterCallbacks()
-                self.listener.isDBChanged = False
+                with self.cv:
+                    self.cv.wait_for(self.validateData)
+
+                    self.executeUpdaterCallbacks()
+                    self.listener.isDBChanged = False
 
 
     def packCallback(self,callback):
@@ -122,10 +130,8 @@ class DataBlock:
     def executeUpdaterCallbacks(self):
         if len(self.updaterCallbacks) > 0:
             for func in self.updaterCallbacks:
-                time.sleep(1)
-                print('size of items before updater callback', func, ':', len(self.items))
                 func()
-                print('size of items after updater callback',func,':', len(self.items))
+
     def shutdown(self):
         self.alive = False
         self.listener.stop()

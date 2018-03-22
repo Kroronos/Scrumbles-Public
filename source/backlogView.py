@@ -6,6 +6,7 @@ import ScrumblesObjects
 import ScrumblesFrames
 import Dialogs
 
+import threading
 
 #from tkinter import ttk
 
@@ -30,9 +31,10 @@ class backlogView(tk.Frame):
 
         self.productListData = self.controller.dataBlock.projects
         self.backlogData = self.controller.dataBlock.items
-        #self.controller.dataBlock.packCallback(self.updateBacklogViewData)
-        self.controller.dataBlock.packCallback(self.U)
-        print('DataBlock in __init__:',self.controller.dataBlock)
+        self.controller.dataBlock.packCallback(self.updateBacklogViewData)
+
+
+
 
         #todo Not sure if it was Projects that was supposed to be displayed under Products...
 
@@ -83,22 +85,27 @@ class backlogView(tk.Frame):
          menu.post(event.x_root, event.y_root)
 
 
-    def U(self):
-        self.updateBacklogViewData(self.controller.dataBlock)
-
-    def updateBacklogViewData(self,DB):
 
 
-
-        self.productListData.clear()
-        self.backlogData.clear()
-
-        self.productListData = DB.projects
-        self.backlogData = DB.items
-
+    def updateBacklogViewData(self):
+        self.productList.clearList()
+        self.backlog.clearList()
+        self.productList.importProjectList(self.productListData)
+        self.backlog.importItemList(self.backlogData)
 
 
+        #######################################################################
+        ###Five freaking hours of troublshooting... I am a F@$%ing moron
+        # right here.. Python PASSES OBJECTS AROUND BY REFERENCE
+        #self.productListData.clear()  # <--- This clears dataBlock.projects GLOBALLY
+        #self.backlogData.clear()      # <--- This clears dataBlock.items GLOBALLY
+        #####################################################################
 
+        ############### Below is completely Stupid,  these need to repack the frames
+        # NEED CODE BELOW TO REPACK FRAMES NOT this
+        #self.productListData = DB.projects # <-- this does nothing, this is the same as a = a
+        #self.backlogData = DB.items #<-- this does nothing, this is the same as a = a
+        #############################################################################
+        #  This is why sleep deprivation and programming do not mix well
+        ##############################################################################
 
-        if len(self.backlogData) < 1:
-            raise Exception('Data Update Failed')
