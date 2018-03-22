@@ -6,6 +6,12 @@ import base64
 import threading,time
 import remoteUpdate
 
+def debug_ObjectdumpList(L):
+    if type(L[0]) == ScrumblesObjects.Item:
+        for I in L:
+            print(I.itemTitle)
+
+
 
 class QueryException(Exception):
     def __init__(self,message):
@@ -35,7 +41,7 @@ class DataBlock:
         del self.listener
 
     def updateAllObjects(self):
-        self.lock.acquire()
+
 
         self.users.clear()
         self.items.clear()
@@ -60,6 +66,7 @@ class DataBlock:
             Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
             self.items.append(Item)
 
+
         for user in userTable:
             User = ScrumblesObjects.User(user)
             User.listOfAssignedItems = [ I for I in self.items if I.itemUserID == User.userID ]
@@ -77,7 +84,12 @@ class DataBlock:
             Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
             self.projects.append(Project)
 
-        self.lock.release()
+
+
+
+    def validateData(self):
+        pass
+
 
     def addNewScrumblesObject(self,obj):
         self.conn.connect()
@@ -110,8 +122,10 @@ class DataBlock:
     def executeUpdaterCallbacks(self):
         if len(self.updaterCallbacks) > 0:
             for func in self.updaterCallbacks:
+                time.sleep(1)
+                print('size of items before updater callback', func, ':', len(self.items))
                 func()
-
+                print('size of items after updater callback',func,':', len(self.items))
     def shutdown(self):
         self.alive = False
         self.listener.stop()

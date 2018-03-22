@@ -30,7 +30,9 @@ class backlogView(tk.Frame):
 
         self.productListData = self.controller.dataBlock.projects
         self.backlogData = self.controller.dataBlock.items
-        self.controller.dataBlock.packCallback(self.updateBacklogViewData)
+        #self.controller.dataBlock.packCallback(self.updateBacklogViewData)
+        self.controller.dataBlock.packCallback(self.U)
+        print('DataBlock in __init__:',self.controller.dataBlock)
 
         #todo Not sure if it was Projects that was supposed to be displayed under Products...
 
@@ -80,8 +82,23 @@ class backlogView(tk.Frame):
          #print('do something')
          menu.post(event.x_root, event.y_root)
 
-    def updateBacklogViewData(self):
+
+    def U(self):
+        self.updateBacklogViewData(self.controller.dataBlock)
+
+    def updateBacklogViewData(self,DB):
+
+
+
         self.productListData.clear()
         self.backlogData.clear()
-        self.productListData = self.controller.dataBlock.projects
-        self.backlogData = self.controller.dataBlock.items
+
+        self.productListData = DB.projects
+        self.backlogData = DB.items
+
+
+
+
+
+        if len(self.backlogData) < 1:
+            raise Exception('Data Update Failed')
