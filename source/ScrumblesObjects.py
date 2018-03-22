@@ -113,6 +113,12 @@ class Item:
     def getPriority(self):
         return self.statusEquivalents[self.itemPriority]
 
+    def getDescription(self):
+        return self.itemDescription
+
+    def getTitle(self):
+        return self.itemTitle 
+
 
 class Sprint:
     sprintID = None

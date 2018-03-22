@@ -265,6 +265,7 @@ class SCalendar(tk.Frame):
         self.cal.pack(side=tk.TOP, fill=tk.BOTH)
 
 class itemPicker(tk.Frame):
+
     def __init__(self, controller):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
        
@@ -272,32 +273,34 @@ class itemPicker(tk.Frame):
 
 
         self.itemNameLabel = tk.Label(self, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
-        self.itemNameEntry = tk.Entry(self).grid(row = 1, column = 1)
+        self.itemNameEntryText = tk.StringVar()
+        self.itemNameEntry = tk.Entry(self, textvariable = self.itemNameEntryText).grid(row = 1, column = 1)
 
         self.itemDescriptionLabel =  tk.Label(self, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
-        self.itemDescriptionEntry = tk.Entry(self).grid(row = 2, column = 1)
+        self.itemDescriptionEntryText = tk.StringVar()
+        self.itemDescriptionEntry = tk.Entry(self, textvariable = self.itemDescriptionEntryText).grid(row = 2, column = 1)
 
 
         self.itemWeightLabel = tk.Label( self, text = "Weight: ", anchor = 'w').grid(row = 3, column = 0)
         self.itemWeightSelector = ttk.Combobox(self, textvariable = "Test").grid(row = 3, column = 1)
-        # self.
-        #self.itemWeightScroller = tk.Scrollbar
 
         self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
         self.itemStatusSelector = ttk.Combobox(self, textvariable = "Test").grid(row = 4, column = 1)
-        # self.itemStatusFrame = tk.Frame(self)
-        #self.item
+        
+
+        self.submitButton = tk.Button(self, text="Submit Changes", command = self.update_item).grid( row = 5, column = 1 )
 
     def selectItem(text):
         #l.config(text = "Hello World", width = "50" , )
-        self.itemNameEntry.config(text = "Item Selected" )
         print("Item Selected")
 
 
-    def load_items(self):
+    def load_items(self, name, description):
         #do things
         print("Items Loaded")
-    
+        self.itemNameEntryText.set(name)
+        self.itemDescriptionEntryText.set(description)
+
     def add_item(self):
         #do things
         print("Items added")
@@ -308,7 +311,18 @@ class itemPicker(tk.Frame):
     
     def update_item(self):
         #do things
+        # self.itemNameEntry.select_clear()
+        # self.itemNameEntry.insert(0, "Item Updated")
+        # self.itemNameEntry.config(text = "Item Selected")
         print("Items updated")
+        # res.configure(text = "Ergebnis: " + str(eval(entry.get())))
+        # self.itemNameEntry.configure(text = "changed")
+        # self.itemNameEntry.text = "Configure"
+        self.itemDescriptionEntryText.set("Updated")
+
+        # self.itemNameEntry.delete(0,END)
+        # self.itemNameEntry.insert(0, "new text")
+
 
 class commentsField(tk.Frame):
     

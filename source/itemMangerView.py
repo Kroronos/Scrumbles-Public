@@ -16,12 +16,10 @@ class ItemManagerView(tk.Frame):
 
 		# self.grid(row = 1, column = 0)
 
+		self.items = self.controller.dataBlock.items
+		self.itemNames =[item.itemTitle for item in self.controller.dataBlock.items]
 
-		self.items =[item.itemTitle for item in self.controller.dataBlock.items]
-
-
-
-		self.itemList.importList(self.items)
+		self.itemList.importList(self.itemNames)
 		self.itemList.pack(side = tk.LEFT, fill = tk.Y)
 
 
@@ -33,10 +31,14 @@ class ItemManagerView(tk.Frame):
 		self.itemEditor.pack(side = tk.LEFT, fill = tk.BOTH, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
 	def dynamicEventHandler(self, event):
-		self.itemEditor.load_items()
 		index = self.itemList.listbox.curselection()
-		print(self.itemList.listbox.get(index[0]))
+		print(index)
 		print(self.itemList.listbox.get(index))
+		# print(self.itemList.listbox.get(index).itemTitle)
+		print(self.items[0].itemType)
+		print(self.items[0].getTitle())
+
+		self.itemEditor.load_items(self.itemList.listbox.get(index), "descriptionManager")
 
         # def selection(self, val):
         #  sender = val.Listbox1
