@@ -315,27 +315,19 @@ class AboutDialog:
 
 #todo get dataBlock from caller
 class EditItemDialog:
-    def __init__(self, parent, dbConnector, Item):
+    def __init__(self, parent, dataBlock, Item):
+        print(Item)
         self.item = Item
-        self.dbConnector = dbConnector
+        self.dataBlock = dataBlock
         ItemTypeVar = Tk.StringVar()
         itemUserVar = Tk.StringVar()
         sprintVar = Tk.StringVar()
-        self.dbConnector.connect()
-        userQueryResult = self.dbConnector.getData(ScrumblesData.Query.getAllUsers)
-        sprintQueryResult = self.dbConnector.getData(ScrumblesData.Query.getAllSprints)
-        #tagQueryResult = self.dbConnector.getData(ScrumblesData.Query.getAllTags)
-        self.dbConnector.close()
-        self.listOfUsers = [] #parent.dataBlock.users
-        self.listOfSprints = []
-        userNames = []
-        sprintNames = []
-        for dictionary in userQueryResult:
-            self.listOfUsers.append(ScrumblesObjects.User(dictionary))
-            userNames.append(dictionary['UserName'])
-        for dictionary in sprintQueryResult:
-            self.listOfSprints.append(ScrumblesObjects.Sprint(dictionary))
-            sprintNames.append(dictionary['SprintName'])
+
+        self.listOfUsers = self.dataBlock.users
+        self.listOfSprints = self.dataBlock.sprints
+        userNames = [user.userName for user in self.listOfUsers]
+        sprintNames = [sprint.sprintName for sprint in self.listOfSprints]
+
         popUPDialog = self.top = Tk.Toplevel(parent)
         #popUPDialog.geometry('300x250')
         popUPDialog.title('Edit %s' % Item.itemTitle)
@@ -362,8 +354,10 @@ class EditItemDialog:
         self.ItemTypebox = ttk.Combobox(popUPDialog, textvariable=ItemTypeVar, state='readonly', values=items)
         self.ItemTypebox.grid(row=6, column=2, sticky='W')
         #self.ItemTypebox.selection_clear()
-        self.ItemTypebox.current(items.index(Item.itemType))
-
+        if Item.itemType in items:
+            self.ItemTypebox.current(items.index(Item.itemType))
+        else:
+            self.ItemTypebox.current(0)
         users = tuple(userNames)
         sprints = tuple(sprintNames)
         self.usersComboBox = ttk.Combobox(popUPDialog, textvariable=itemUserVar, state='readonly',values=users)
@@ -396,18 +390,20 @@ class EditItemDialog:
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
             selectedSprint = None
             userID = 0
-            isAssignedToSprint = False
+
 
             for sprint in self.listOfSprints:
                 if sprint.sprintName == self.sprintsComboBox.get():
                     selectedSprint = sprint
+                    if selectedSprint.sprintDueDate is None:
+                        raise Exception('Corrupted Sprint Data, contact your database admin')
             for user in self.listOfUsers:
                 if user.userName == self.usersComboBox.get():
                     userID = user.userID
 
             if self.sprintsComboBox.get() != '':
-                isAssignedToSprint = True
                 item.itemSprintID = selectedSprint.sprintID
+                item.itemDueDate = selectedSprint.sprintDueDate
 
             item.itemType = self.ItemTypebox.get()
 
@@ -421,12 +417,8 @@ class EditItemDialog:
                 item.itemPriority = int(self.itemPriorityEntry.get())
 
 
-            self.dbConnector.connect()
-            if isAssignedToSprint:
-                self.dbConnector.setData(ScrumblesData.CardQuery.assignCardToSprint(item,selectedSprint))
-            self.dbConnector.setData(ScrumblesData.Query.updateObject(item))
-            self.dbConnector.close()
 
+            self.dataBlock.updateScrumblesObject(item)
 
 
 
@@ -442,14 +434,10 @@ class EditItemDialog:
         else:
             messagebox.showinfo('Info', 'New Item Successfully Created')
             self.exit()
-        finally:
-            if self.dbConnector is not None:
-                if self.dbConnector.isConnected():
-                    self.dbConnector.close()
+
 
     def exit(self):
-        if self.dbConnector is not None:
-            assert self.dbConnector.isConnected() == False
+
         self.top.destroy()
 
 

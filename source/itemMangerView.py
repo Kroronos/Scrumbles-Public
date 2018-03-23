@@ -11,6 +11,9 @@ class ItemManagerView(tk.Frame):
 		self.usernameLabel = tk.Label(self, text = "Item Manager", font = ("Verdana", 12))
 		self.usernameLabel.pack(side = tk.TOP, fill = tk.X)
 
+		self.tabButtons = ScrumblesFrames.STabs(self, controller, "Item Manager View")
+		self.tabButtons.pack(side=tk.TOP, fill=tk.X)
+
 		self.itemList = ScrumblesFrames.SList(self, "ITEMS")
 		self.itemList.listbox.bind('<<ListboxSelect>>', lambda event: self.dynamicEventHandler(event))
 
