@@ -80,16 +80,17 @@ class BaseList(tk.Frame):
         self.enforceSort()
 
     def sortForward(self):
-        items = self.listbox.get(0, tk.END)
-        items = sorted(items)
-        self.fullList = sorted(self.fullList)
-        self.importListSorted(items)
+        self.fullList = sorted(self.fullList, key=lambda s: self.processSort(s))
+        self.importListSorted(self.fullList)
 
     def sortReverse(self):
-        items = self.listbox.get(0, tk.END)
-        items = sorted(items, reverse=True)
-        self.fullList = sorted(self.fullList, reverse=True)
-        self.importListSorted(items)
+        self.fullList = sorted(self.fullList, key=lambda s: self.processSort(s), reverse=True)
+        self.importListSorted(self.fullList)
+
+    def processSort(self, string):
+        string = string.lower()
+        string = "".join(string.split())
+        return string
 
     def clearList(self):
         self.listbox.delete(0, tk.END)
@@ -129,7 +130,7 @@ class BaseList(tk.Frame):
 
     def search(self, str):
         def fulfillsCondition(item,str):
-            return item[:len(str)] == str
+            return item[:len(str)].lower() == str.lower()
 
         matches = [x for x in self.fullList if fulfillsCondition(x, str)]
         self.showPartialList(matches)
@@ -210,7 +211,7 @@ class SList(BaseList):
         self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT)
         self.titleLabel.pack(side=tk.LEFT)
         self.sortButton.pack(side=tk.RIGHT)
-        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH,expand=True)
         self.listScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.titleFrame.pack(fill=tk.X, expand=False)
@@ -292,51 +293,47 @@ class itemPicker(tk.Frame):
         self.itemNumberLabel.text = text
 
 class commentsField(tk.Frame):
-   
-    def load_items(self):
-        #do things
-        print("Items Loaded")
-    
-    def add_item(self):
-        #do things
-        print("Items added")
-    
-    def remove_item(self):
-        #do things
-        print("Items remove")
-    
-    def update_item(self):
-        #do things
-        print("Items updated")
-    
-    def go_to_git(self):
-        #do things
-        print("git opened")
-        webbrowser.open("github.com")
-# webbrowser.open(url[, new=0[, autoraise=True]])
+    def __init__(self,controller):
+        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
 
-        
+        self.titleText = tk.StringVar()
+        self.titleText.set("Comments")
+        self.commentTitleF = tk.Frame(self,relief=tk.SOLID, borderwidth=1)
+        self.commentTitle = tk.Label(self.commentTitleF, textvariable=self.titleText)
+        self.commentField = tk.Frame(self)
+        self.comments = []
+        self.commentTextElements = []
 
-    def __init__(self, controller):
-        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth = 1)
+        self.commentTitle.pack(side=tk.TOP, fill=tk.X)
+        self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
+        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
 
-        # self.commentTitle = tk.Label(self, text = "Comments")
-        # self.commentTitle.pack(side = tk.TOP)
+    def updateFromListOfCommentsObject(self, listOfCommentsObject, objectName):
+        self.clearCommentField()
+        for comment in listOfCommentsObject.listOfComments:
+            self.comments.append(comment)
+        self.titleText.set("Comments from " + objectName)
+        self.renderCommentField()
 
-        # self.commentField = tk.Entry(self, width = 150)
-        # self.commentField.pack(side = tk.BOTTOM, fill = tk.Y)
+    def renderCommentField(self):
+        self.comments = sorted(self.comments, key=lambda s: s.commentTimeStamp)
+        for comment in self.comments:
+            commentLabel = tk.Label(self.commentField, comment.commentContent)
+            self.commentTextElements.append(commentLabel)
+            commentLabel.pack(side=tk.top, fill=tk.X)
+        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
 
-        self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
-
-        self.commentField = tk.Entry(self).grid(row = 1)
-        self.openGit = tk.Button(self, text="Github", command = self.go_to_git).grid( row = 2 )
-
+    def clearCommentField(self):
+        self.comments.clear()
+        self.commentField.pack_forget()
+        self.commentTextElements.clear()
 
 class SCardDescription(tk.Frame):
-    def __init__(self, controller, sources, datatype):
+    def __init__(self, controller, master, sources, datatype):
         tk.Frame.__init__(self, controller)
+        self.master = master
         self.controller = controller
-        self.dataBlock = controller.controller.dataBlock
+        self.dataBlock = master.dataBlock
         self.config(relief=tk.SUNKEN, borderwidth=5)
 
         self.titleText = tk.StringVar()
@@ -353,10 +350,7 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self)
         self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self)
         self.cardDescriptions['Active'] = self.cardDescriptions['Start']
-        self.cardDescriptions['Active'].pack(side=tk.BOTTOM)
-
-        self.descriptionLock = False
-        self.oldWidget = None
+        self.cardDescriptions['Active'].pack(side=tk.TOP)
 
     class cardDescriptionStartFrame(tk.Frame):
         def __init__(self, controller):
@@ -388,22 +382,22 @@ class SCardDescription(tk.Frame):
             self.itemDescriptionT = tk.Label(self.itemDescriptionF, text="Description: ")
             self.itemDescription = tk.Label(self.itemDescriptionF, text="")
 
-            self.itemTypeT.pack(side=tk.LEFT)
-            self.itemType.pack(side=tk.LEFT)
-            self.itemPriorityT.pack(side=tk.LEFT)
-            self.itemPriority.pack(side=tk.LEFT)
-            self.itemDueDateT.pack(side=tk.LEFT)
-            self.itemDueDate.pack(side=tk.LEFT)
-            self.itemStatusT.pack(side=tk.LEFT)
-            self.itemStatus.pack(side=tk.LEFT)
-            self.itemDescriptionT.pack(side=tk.LEFT)
-            self.itemDescription.pack(side=tk.LEFT)
+            self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemType.pack(side=tk.LEFT, fill=tk.X)
+            self.itemPriorityT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemPriority.pack(side=tk.LEFT, fill=tk.X)
+            self.itemDueDateT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemDueDate.pack(side=tk.LEFT, fill=tk.X)
+            self.itemStatusT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemStatus.pack(side=tk.LEFT, fill=tk.X)
+            self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
 
-            self.itemTypeF.pack(side=tk.TOP)
-            self.itemPriorityF.pack(side=tk.TOP)
-            self.itemDueDateF.pack(side=tk.TOP)
-            self.itemStatusF.pack(side=tk.TOP)
-            self.itemDescriptionF.pack(side=tk.TOP)
+            self.itemTypeF.pack(side=tk.TOP, fill=tk.X)
+            self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
+            self.itemDueDateF.pack(side=tk.TOP, fill=tk.X)
+            self.itemStatusF.pack(side=tk.TOP, fill=tk.X)
+            self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
 
         def repack(self):
             self.itemTypeT.pack_forget()
@@ -423,22 +417,22 @@ class SCardDescription(tk.Frame):
             self.itemStatusF.pack_forget()
             self.itemDescriptionF.pack_forget()
 
-            self.itemTypeT.pack(side=tk.LEFT)
-            self.itemType.pack(side=tk.LEFT)
-            self.itemPriorityT.pack(side=tk.LEFT)
-            self.itemPriority.pack(side=tk.LEFT)
-            self.itemDueDateT.pack(side=tk.LEFT)
-            self.itemDueDate.pack(side=tk.LEFT)
-            self.itemStatusT.pack(side=tk.LEFT)
-            self.itemStatus.pack(side=tk.LEFT)
-            self.itemDescriptionT.pack(side=tk.LEFT)
-            self.itemDescription.pack(side=tk.LEFT)
+            self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemType.pack(side=tk.LEFT, fill=tk.X)
+            self.itemPriorityT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemPriority.pack(side=tk.LEFT, fill=tk.X)
+            self.itemDueDateT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemDueDate.pack(side=tk.LEFT, fill=tk.X)
+            self.itemStatusT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemStatus.pack(side=tk.LEFT, fill=tk.X)
+            self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
 
-            self.itemTypeF.pack(side=tk.TOP)
-            self.itemPriorityF.pack(side=tk.TOP)
-            self.itemDueDateF.pack(side=tk.TOP)
-            self.itemStatusF.pack(side=tk.TOP)
-            self.itemDescriptionF.pack(side=tk.TOP)
+            self.itemTypeF.pack(side=tk.TOP, fill=tk.X)
+            self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
+            self.itemDueDateF.pack(side=tk.TOP, fill=tk.X)
+            self.itemStatusF.pack(side=tk.TOP, fill=tk.X)
+            self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
 
     class cardDescriptionUserFrame(tk.Frame):
         def __init__(self, controller):
@@ -452,7 +446,6 @@ class SCardDescription(tk.Frame):
             self.userEmailF = tk.Frame(self)
             self.userEmailT = tk.Label(self.userEmailF, text="Email: ")
             self.userEmail = tk.Label(self.userEmailF, text="")
-
 
             self.userRoleT.pack(side=tk.LEFT)
             self.userRole.pack(side=tk.LEFT)
@@ -481,33 +474,15 @@ class SCardDescription(tk.Frame):
 
 
     def repack(self):
-        self.title.pack(fill=tk.BOTH)
-        self.cardDescriptions['Active'].pack(side=tk.BOTTOM, fill=tk.BOTH)
+        self.title.pack(fill=tk.X)
+        self.cardDescriptions['Active'].pack(side=tk.TOP, fill=tk.BOTH)
 
 
     def changeDescription(self, event):
         widget = event.widget
-
-        widgetChanged = False
-
-        if self.oldWidget is None:
-            self.oldWidget = widget
-
-        if self.oldWidget != widget and self.descriptionLock == False:
-            self.oldWidget = widget
-            widgetChanged = True
-
-        if self.descriptionLock is False:
-            self.eventSetTitle(widget)
-            self.generateAdditionalFields(widget)
-            self.repack()
-
-        if self.descriptionLock is True:
-            self.descriptionLock = False
-
-        if widgetChanged:
-            self.descriptionLock = True
-
+        self.eventSetTitle(widget)
+        self.generateAdditionalFields(widget)
+        self.repack()
 
     def setTitle(self, title):
         self.titleText.set(title)
@@ -525,15 +500,21 @@ class SCardDescription(tk.Frame):
             for user in self.dataBlock.users:
                 if user.userName == widget.get(tk.ANCHOR):
                     match = user
-
-            self.generateUserFields(match)
+            #If ListBox Select Isn't Properly Handled
+            if match is None:
+                self.resetToStart()
+            else:
+                self.generateUserFields(match)
 
         if self.datatype[widget] == 'Item':
             for item in self.dataBlock.items:
                 if item.itemTitle == widget.get(tk.ANCHOR):
                     match = item
-
-            self.generateItemFields(match)
+            # If ListBox Select Isn't Properly Handled
+            if match is None:
+                self.resetToStart()
+            else:
+                self.generateItemFields(match)
 
     def generateUserFields(self, selectedUser):
         self.cardDescriptions["User"].userRole.configure(text=selectedUser.userRole, justify=tk.LEFT, wraplength=300)
@@ -556,3 +537,113 @@ class SCardDescription(tk.Frame):
 
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions["Item"]
+
+    def resetToStart(self):
+        self.titleText.set("Item Description")
+        self.cardDescriptions["Active"].pack_forget()
+        self.cardDescriptions["Active"] = self.cardDescriptions['Start']
+        self.cardDescriptions['Active'].pack(side=tk.TOP)
+
+class SUserItemInspection(tk.Frame):
+
+    def __init__(self, controller, master):
+        tk.Frame.__init__(self, controller)
+        self.master = master
+        self.controller = controller
+        self.dataBlock = self.master.dataBlock
+
+        self.textbox = tk.Frame(self)
+
+        self.nametag = tk.Frame(self.textbox, relief=tk.SOLID, borderwidth=1)
+        self.nameLabel = tk.Label(self.nametag, text="Name")
+        self.nameString = tk.StringVar()
+        self.nameText = tk.Label(self.nametag, textvariable=self.nameString)
+
+        self.roletag = tk.Frame(self.textbox, relief=tk.SOLID, borderwidth=1)
+        self.roleLabel = tk.Label(self.roletag, text="Role")
+        self.roleString = tk.StringVar()
+        self.roleText = tk.Label(self.roletag, textvariable=self.roleString)
+
+        self.itembox = tk.Frame(self)
+        self.inProgressItemsList = SList(self.itembox, "In Progress Items")
+        self.submittedItemsList = SList(self.itembox, "Submitted Items")
+        self.completedItemsList = SList(self.itembox, "Completed Items")
+
+        self.nameLabel.pack(fill=tk.X)
+        self.nameText.pack(fill=tk.X)
+        self.roleLabel.pack(fill=tk.X)
+        self.roleText.pack(fill=tk.X)
+
+        self.nametag.pack(side=tk.LEFT, fill=tk.X, expand=1)
+        self.roletag.pack(side=tk.LEFT, fill=tk.X, expand=1)
+
+        self.inProgressItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.submittedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.completedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.textbox.pack(side=tk.TOP, fill=tk.X)
+        self.itembox.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+
+
+
+    def update(self, user):
+        self.nameString.set(user.userName)
+        self.roleString.set(user.userRole)
+        self.updateItems(user.listOfAssignedItems)
+
+    def updateItems(self, assignedItems):
+        inProgressItems = []
+        submittedItems = []
+        completedItems = []
+        for item in assignedItems:
+            if item.itemStatus == 1:
+                inProgressItems.append(item)
+            if item.itemStatus == 2:
+                submittedItems.append(item)
+            if item.itemStatus == 3:
+                completedItems.append(item)
+        self.updateInProgessItems(inProgressItems)
+        self.updateSubmittedItems(submittedItems)
+        self.updateCompletedItems(completedItems)
+
+    def updateInProgessItems(self, inProgressItems):
+        self.inProgressItemsList.importItemList(inProgressItems)
+
+    def updateSubmittedItems(self, submittedItems):
+        self.submittedItemsList.importItemList(submittedItems)
+
+    def updateCompletedItems(self, completedItems):
+        self.completedItemsList.importItemList(completedItems)
+
+    def getSCardDescriptionExport(self):
+        return [self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']
+
+class STabs(tk.Frame):
+    def __init__(self, controller, master, viewName):
+        tk.Frame.__init__(self, controller)
+        self.master = master
+        self.controller = controller
+        self.viewName = viewName
+        self.buttonList = []
+        self.generateButtons()
+
+    class viewButton(tk.Button):
+        def __init__(self, controller, viewName, view, event):
+            if viewName == controller.viewName:
+                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_offwhite, relief=tk.SOLID, borderwidth=1)
+            else:
+                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_grey, relief=tk.SOLID, borderwidth=1)
+
+    def generateButtons(self):
+        self.buttonList.clear()
+        views, viewNames = self.master.getViews()
+        for view, viewName in zip(views, viewNames):
+            viewButton = self.viewButton(self, viewName, view, self.tabEvent)
+            self.buttonList.append(viewButton)
+            viewButton.pack(side=tk.LEFT)
+
+    def tabEvent(self, selectedView):
+        self.master.show_frame(selectedView)
+
+

@@ -6,6 +6,12 @@ import base64
 import threading,time
 import remoteUpdate
 
+def debug_ObjectdumpList(L):
+    if type(L[0]) == ScrumblesObjects.Item:
+        for I in L:
+            print(I.itemTitle)
+
+
 
 class QueryException(Exception):
     def __init__(self,message):
@@ -26,7 +32,9 @@ class DataBlock:
         self.listener = remoteUpdate.RemoteUpdate()
         self.lock = threading.Lock()
         self.updateAllObjects()
+        self.size = self.getLen()
         self.updaterThread = threading.Thread(target = self.updater, args=())
+        self.cv = threading.Condition()
 
         self.updaterThread.start()
 
@@ -34,8 +42,13 @@ class DataBlock:
         self.shutdown()
         del self.listener
 
+    def getLen(self):
+        rv = len(self.items)
+        return rv
+
     def updateAllObjects(self):
-        self.lock.acquire()
+
+
         self.users.clear()
         self.items.clear()
         self.projects.clear()
@@ -50,18 +63,51 @@ class DataBlock:
         sprintTable = self.conn.getData(Query.getAllSprints)
         self.conn.close()
 
-        for user in userTable:
-            self.users.append(ScrumblesObjects.User(user))
-        for item in itemTable:
-            self.items.append(ScrumblesObjects.Item(item))
-        for project in projectTable:
-            self.projects.append(ScrumblesObjects.Project(project))
         for comment in commentTable:
-            self.comments.append(ScrumblesObjects.Comment(comment))
-        for sprint in sprintTable:
-            self.comments.append(ScrumblesObjects.Sprint(sprint))
+            Comment = ScrumblesObjects.Comment(comment)
+            self.comments.append(Comment)
 
-        self.lock.release()
+        for item in itemTable:
+            Item = ScrumblesObjects.Item(item)
+            Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
+            self.items.append(Item)
+
+
+        for user in userTable:
+            User = ScrumblesObjects.User(user)
+            User.listOfAssignedItems = [ I for I in self.items if I.itemUserID == User.userID ]
+            User.listOfComments = [ C for C in self.comments if C.commentUserID == User.userID ]
+            self.users.append(User)
+
+        for sprint in sprintTable:
+            Sprint = ScrumblesObjects.Sprint(sprint)
+            Sprint.listOfAssignedItems = [I for I in self.items if I.itemSprintID == Sprint.sprintID]
+            Sprint.listOfAssignedUsers = [U for U in self.users if U.userID in [I.itemUserID for I in Sprint.listOfAssignedItems]]
+            self.sprints.append(Sprint)
+
+        for project in projectTable:
+            Project = ScrumblesObjects.Project(project)
+            Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
+            self.projects.append(Project)
+
+
+
+
+    def validateData(self):
+        return self.getLen() > 0
+
+
+    def addNewScrumblesObject(self,obj):
+        self.conn.connect()
+        self.conn.setData(Query.createObject(obj))
+        self.conn.close()
+
+    def updateScrumblesObject(self,obj):
+        self.conn.connect()
+        self.conn.setData(Query.updateObject(obj))
+        self.conn.close()
+
+
 
     def updater(self):
 
@@ -70,10 +116,12 @@ class DataBlock:
         while self.alive:
             time.sleep(5)
             if self.listener.isDBChanged:
-
                 self.updateAllObjects()
-                self.executeUpdaterCallbacks()
-                self.listener.isDBChanged = False
+                with self.cv:
+                    self.cv.wait_for(self.validateData)
+
+                    self.executeUpdaterCallbacks()
+                    self.listener.isDBChanged = False
 
 
     def packCallback(self,callback):
