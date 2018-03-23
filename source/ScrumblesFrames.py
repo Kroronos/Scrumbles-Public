@@ -330,29 +330,25 @@ class itemPicker(tk.Frame):
         
         self.itemDescriptionEntryText.set("Updated")
 
+class commentSection(tk.Frame):
+    def __init__(self):
 
-class commentsField(tk.Frame):
-    
+        self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
+        self.commentField = tk.Entry(self).grid(row = 1)
+        self.openGit = tk.Button(self, text="Github", command = self.go_to_git).grid( row = 2 )
+
     def go_to_git(self):
         #do things
         print("git opened")
         webbrowser.open("github.com")
 
-
+class commentsField(tk.Frame):
 
     def __init__(self, controller):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth = 1)
 
-        # self.commentTitle = tk.Label(self, text = "Comments")
-        # self.commentTitle.pack(side = tk.TOP)
+    
 
-        # self.commentField = tk.Entry(self, width = 150)
-        # self.commentField.pack(side = tk.BOTTOM, fill = tk.Y)
-
-        self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
-
-        self.commentField = tk.Entry(self).grid(row = 1)
-        self.openGit = tk.Button(self, text="Github", command = self.go_to_git).grid( row = 2 )
         self.titleText = tk.StringVar()
         self.titleText.set("Comments")
         self.commentTitleF = tk.Frame(self,relief=tk.SOLID, borderwidth=1)
