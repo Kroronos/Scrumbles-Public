@@ -269,7 +269,8 @@ class itemPicker(tk.Frame):
 
     def __init__(self, controller):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
-       
+        self.controller = controller
+
         self.itemEditorLabel = tk.Label(self, text = "Item Editor", anchor = 'w').grid(row = 0, column = 0)
 
 
@@ -296,6 +297,7 @@ class itemPicker(tk.Frame):
  
 
         self.submitButton = tk.Button(self, text="Submit Changes", command = self.update_item).grid( row = 5, column = 1 )
+
 
     def selectItem(text):
         #l.config(text = "Hello World", width = "50" , )
@@ -325,41 +327,39 @@ class itemPicker(tk.Frame):
     
     def update_item(self):
 
-        self.controller.dataBlock.updateScrumblesObject()
+        # ScrumblesData.DataBlock.updateScrumblesObject()
         print("Items updated")
         
         self.itemDescriptionEntryText.set("Updated")
+     
 
-class commentSection(tk.Frame):
-    def __init__(self):
 
-        self.commentTitle = tk.Label(self, text = "Comments").grid(row = 0)
-        self.commentField = tk.Entry(self).grid(row = 1)
-        self.openGit = tk.Button(self, text="Github", command = self.go_to_git).grid( row = 2 )
+class commentsField(tk.Frame):
+
 
     def go_to_git(self):
         #do things
         print("git opened")
         webbrowser.open("github.com")
 
-class commentsField(tk.Frame):
-
     def __init__(self, controller):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth = 1)
 
-    
+        self.commentTitle = tk.Label(self, text = "Comments").pack(side = tk.TOP, fill = tk.X)
+        self.commentField = tk.Entry(self).pack(side = tk.TOP, fill = tk.X)
+        self.openGit = tk.Button(self, text="Github", command = self.go_to_git).pack(side = tk.TOP, fill = tk.X)
 
-        self.titleText = tk.StringVar()
-        self.titleText.set("Comments")
-        self.commentTitleF = tk.Frame(self,relief=tk.SOLID, borderwidth=1)
-        self.commentTitle = tk.Label(self.commentTitleF, textvariable=self.titleText)
-        self.commentField = tk.Frame(self)
-        self.comments = []
-        self.commentTextElements = []
+        # self.titleText = tk.StringVar()
+        # self.titleText.set("Comments")
+        # self.commentTitleF = tk.Frame(self,relief=tk.SOLID, borderwidth=1)
+        # self.commentTitle = tk.Label(self.commentTitleF, textvariable=self.titleText)
+        # self.commentField = tk.Frame(self)
+        # self.comments = []
+        # self.commentTextElements = []
 
-        self.commentTitle.pack(side=tk.TOP, fill=tk.X)
-        self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
-        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
+        # self.commentTitle.pack(side=tk.TOP, fill=tk.X)
+        # self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
+        # self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
 
     def updateFromListOfCommentsObject(self, listOfCommentsObject, objectName):
         self.clearCommentField()

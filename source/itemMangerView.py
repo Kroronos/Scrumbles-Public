@@ -40,7 +40,7 @@ class ItemManagerView(tk.Frame):
 		# print(self.items[0].itemType)
 		# print(self.items[0].getTitle())
 
-		self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription(), self.items[index[0]].getStatus(), self.items[index[0]].getPriority() )
+		self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription(), self.items[index[0]].getStatus(), self.items[index[0]].getEnglishPriority() )
 
 
 		print("item Selected")
