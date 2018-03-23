@@ -33,6 +33,7 @@ class User:
     userRole = None
     listOfAssignedItems = []
     listOfComments = []
+    listOfProjects = []
 
     #Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -63,6 +64,7 @@ class Item:
     itemUserID = None
     itemStatus = None
     listOfComments = []
+    projectID = 0
     statusEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
@@ -161,6 +163,8 @@ class Project:
     projectID = None
     projectName = None
     listOfAssignedSprints = []
+    listOfAssignedUsers = []
+    listOfAssignedItems = []
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
             self.projectID = generateRowID()

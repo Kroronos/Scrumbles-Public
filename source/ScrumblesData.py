@@ -25,6 +25,7 @@ class DataBlock:
     tags = []
     sprints = []
     updaterCallbacks = []
+
     def __init__(self):
         self.alive = True
         self.dbLogin = DataBaseLoginInfo('login.txt')
@@ -61,7 +62,14 @@ class DataBlock:
         projectTable = self.conn.getData(Query.getAllProjects)
         commentTable = self.conn.getData(Query.getAllComments)
         sprintTable = self.conn.getData(Query.getAllSprints)
+        userToProjectRelationTable = self.conn.getData(Query.getAllUserProject)
+        itemToProjectRelationTable = self.conn.getData(Query.getAllProjectItem)
+
         self.conn.close()
+
+
+
+
 
         for comment in commentTable:
             Comment = ScrumblesObjects.Comment(comment)
@@ -91,11 +99,51 @@ class DataBlock:
             self.projects.append(Project)
 
 
+        for user in self.users:
+            for dict in userToProjectRelationTable:
+                if dict['UserID'] == user.userID:
+                    for project in self.projects:
+                        if dict['ProjectID'] == project.projectID:
+                            user.listOfProjects.append(project)
 
+        for project in self.projects:
+            for dict in userToProjectRelationTable:
+                if dict['ProjectID'] == project.projectID:
+                    for user in self.users:
+                        if dict['UserID'] == user.userID:
+                            project.listOfAssignedUsers.append(user)
+
+            for dict in itemToProjectRelationTable:
+                if dict['ProjectID'] == project.projectID:
+                    for item in self.items:
+                        if dict['ItemID'] == item.itemID:
+                            item.projectID = project.projectID
+                            project.listOfAssignedItems.append(item)
 
     def validateData(self):
         return self.getLen() > 0
 
+    def addUserToProject(self,project,user):
+        self.conn.connect()
+        self.conn.setData(ProjectQuery.addUser(project,user))
+        self.conn.close()
+
+    def removeUserFromProject(self,project,user):
+        self.conn.connect()
+        self.conn.setData(ProjectQuery.removeUser(project,user))
+        self.conn.close()
+
+    def addItemToProject(self,project,item):
+        item.projectID = project.projectID
+        self.conn.connect()
+        self.conn.setData(ProjectQuery.addItem(project,item))
+        self.conn.close()
+
+    def removeItemFromProject(self,project,item):
+        item.projectID = 0
+        self.conn.connect()
+        self.conn.setData(ProjectQuery.removeItem(project,item))
+        self.conn.close()
 
     def addNewScrumblesObject(self,obj):
         self.conn.connect()
@@ -158,6 +206,8 @@ class Query:
     getAllCards = 'SELECT * FROM CardTable'
     getAllComments = 'SELECT * FROM CommentTable'
     getAllProjects = 'SELECT * FROM ProjectsTable'
+    getAllUserProject = 'SELECT * FROM ProjectUserTable'
+    getAllProjectItem = 'SELECT * FROM ProjectItemTable'
     @staticmethod
     def getUserByUsernameAndPassword(username, password):
         hashedPassword = Password(password)
@@ -237,14 +287,14 @@ class ProjectQuery(Query):
     @staticmethod
     def createProject(project):
         ObjectValidator.validate(project)
-        query = 'INSERT INTO ProjectsTable (ProjectID ProjectName) VALUES (\'%s\',\'%s\')' % (
+        query = 'INSERT INTO ProjectsTable (ProjectID, ProjectName) VALUES (\'%s\',\'%s\')' % (
             str(project.projectID),project.projectName)
         return query
 
     @staticmethod
     def deleteProject(project):
         assert project is not None
-        query = 'DELETE FROM ProjectsTable WHERE ProjectID=%i' % (project.projectID)
+        query = 'DELETE FROM ProjectsTable WHERE ProjectID=\'%s\'' % (str(project.projectID))
         return query
 
     @staticmethod
@@ -252,6 +302,31 @@ class ProjectQuery(Query):
         assert project is not None
         query = 'UPDATE ProjectsTable SET ProjectName=\'%s\' WHERE ProjectID = %i' % (project.projectName,
                                                                                       project.projectID)
+        return query
+
+    @staticmethod
+    def addUser(project,user):
+        query = 'INSERT INTO ProjectUserTable (UserID, ProjectID) VALUES (\'%s\',\'%s\')' % (
+            str(user.userID),str(project.projectID)
+        )
+        return query
+    @staticmethod
+    def removeUser(project,user):
+        query = 'DELETE FROM ProjectUserTable WHERE ProjectID=\'%s\' AND UserID=\'%s\'' % (
+            str(project.projectID),str(user.userID)
+        )
+        return query
+    @staticmethod
+    def addItem(project,item):
+        query = 'INSERT INTO ProjectItemTable (ItemID,ProjectID) VALUES (\'%s\',\'%s\')' % (
+            str(item.itemID),str(project.projectID)
+        )
+        return query
+    @staticmethod
+    def removeItem(project,item):
+        query = 'DELETE FROM ProjectItemTable WHERE ProjectID=\'%s\' AND ItemID=\'%s\'' % (
+            str(project.projectID),str(item.itemID)
+        )
         return query
 class SprintQuery(Query):
     @staticmethod
