@@ -86,7 +86,7 @@ class Item:
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
 
-    #NOTE This functions takes in the whole list from a query result
+  
 
     def assignToUser(self, user):
         self.itemUserID = user.userID
@@ -124,7 +124,7 @@ class Sprint:
         self.projectID = queryResultDict['ProjectID']
 
 
-
+#todo move assignments to dataBlock
     def assignItemToSprint(self, item):
         item.itemSprintID = self.sprintID
         if item not in self.listOfAssignedItems:
