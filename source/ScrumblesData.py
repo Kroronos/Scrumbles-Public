@@ -130,7 +130,14 @@ class DataBlock:
 
     def removeUserFromProject(self,project,user):
         self.conn.connect()
+        for item in self.items:
+            item.itemUserID = 0
+            self.conn.setData(Query.updateObject(item))
+
+
+
         self.conn.setData(ProjectQuery.removeUser(project,user))
+
         self.conn.close()
 
     def addItemToProject(self,project,item):
@@ -387,26 +394,40 @@ class CardQuery(Query):
     def updateCard(item):
         assert item is not None
         assert item.itemID is not None
+        itemDict = {}
+        itemDict['Type'] = "'"+item.itemType+"'"
+        itemDict['Priority'] = "'"+str(item.itemPriority)+"'"
+        itemDict['Title'] = "'"+item.itemTitle+"'"
+        itemDict['Descr'] = "'"+item.itemDescription+"'"
+        itemDict['DueDate'] = 'NULL'
+        if item.itemDueDate is not None:
+            itemDict['DueDate'] = "'"+str(item.itemDueDate)+"'"
+        itemDict['Sprint'] = "'"+str(item.itemSprintID)+"'"
+        itemDict['User'] = "'"+str(item.itemUserID)+"'"
+        itemDict['Status'] = "'"+str(item.itemStatus)+"'"
+        itemDict['CodeLink'] = 'NULL'
+        if item.itemCodeLink is not None:
+            itemDict['CodeLink'] = "'"+item.itemCodeLink+"'"
 
         query = 'UPDATE CardTable SET ' \
-                'CardType=\'%s\',' \
+                'CardType=%s,' \
                 'CardPriority=%s,' \
-                'CardTitle=\'%s\',' \
-                'CardDescription=\'%s\',' \
-                'CardDueDate=\'%s\',' \
-                'CardCodeLink=\'%s\',' \
+                'CardTitle=%s,' \
+                'CardDescription=%s,' \
+                'CardDueDate=%s,' \
+                'CardCodeLink=%s,' \
                 'SprintID=%s,' \
                 'UserID=%s,' \
                 'Status=%s WHERE CardID=%s'% (
-            item.itemType,
-            item.itemPriority,
-            item.itemTitle,
-            item.itemDescription,
-            item.itemDueDate,
-            item.itemCodeLink,
-            item.itemSprintID,
-            item.itemUserID,
-            item.itemStatus,
+            itemDict['Type'],
+            itemDict['Priority'],
+            itemDict['Title'],
+            itemDict['Descr'],
+            itemDict['DueDate'],
+            itemDict['CodeLink'],
+            itemDict['Sprint'],
+            itemDict['User'],
+            itemDict['Status'],
             item.itemID
         )
         print(query)

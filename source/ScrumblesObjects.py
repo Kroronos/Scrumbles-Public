@@ -86,7 +86,7 @@ class Item:
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
 
-  
+
 
     def assignToUser(self, user):
         self.itemUserID = user.userID
