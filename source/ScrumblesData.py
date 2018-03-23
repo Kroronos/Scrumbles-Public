@@ -131,7 +131,10 @@ class DataBlock:
     def removeUserFromProject(self,project,user):
         self.conn.connect()
         for item in self.items:
-            item.itemUserID = 0
+            if item in project.listOfAssignedItems:
+                if item.itemUserID == user.userID:
+                    item.itemUserID = 0
+
             self.conn.setData(Query.updateObject(item))
 
 
