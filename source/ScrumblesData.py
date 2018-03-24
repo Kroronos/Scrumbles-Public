@@ -11,6 +11,15 @@ def debug_ObjectdumpList(L):
         for I in L:
             print(I.itemTitle)
 
+def dbWrap(func):
+    '''
+    Decorator open then close a db connection
+    '''
+    def wrapper(self,*args):
+        self.conn.open()
+        func(self,*args)
+        self.conn.close()
+    return wrapper
 
 
 class QueryException(Exception):
@@ -47,16 +56,15 @@ class DataBlock:
         rv = len(self.items)
         return rv
 
+
     def updateAllObjects(self):
-
-
+        self.conn.connect()
         self.users.clear()
         self.items.clear()
         self.projects.clear()
         self.comments.clear()
         self.tags.clear()
         self.sprints.clear()
-        self.conn.connect()
         userTable = self.conn.getData(Query.getAllUsers)
         itemTable = self.conn.getData(Query.getAllCards)
         projectTable = self.conn.getData(Query.getAllProjects)
@@ -64,13 +72,7 @@ class DataBlock:
         sprintTable = self.conn.getData(Query.getAllSprints)
         userToProjectRelationTable = self.conn.getData(Query.getAllUserProject)
         itemToProjectRelationTable = self.conn.getData(Query.getAllProjectItem)
-
         self.conn.close()
-
-
-
-
-
         for comment in commentTable:
             Comment = ScrumblesObjects.Comment(comment)
             self.comments.append(Comment)
@@ -123,13 +125,12 @@ class DataBlock:
     def validateData(self):
         return self.getLen() > 0
 
+    @dbWrap
     def addUserToProject(self,project,user):
-        self.conn.connect()
         self.conn.setData(ProjectQuery.addUser(project,user))
-        self.conn.close()
 
+    @dbWrap
     def removeUserFromProject(self,project,user):
-        self.conn.connect()
         for item in self.items:
             if item in project.listOfAssignedItems:
                 if item.itemUserID == user.userID:
@@ -137,33 +138,51 @@ class DataBlock:
 
             self.conn.setData(Query.updateObject(item))
 
-
-
         self.conn.setData(ProjectQuery.removeUser(project,user))
 
-        self.conn.close()
-
+    @dbWrap
+    def assignUserToItem(self,user,item):
+        item.itemUserID = user.userID
+        self.conn.setData(Query.updateObject(item))
+    @dbWrap
     def addItemToProject(self,project,item):
         item.projectID = project.projectID
-        self.conn.connect()
         self.conn.setData(ProjectQuery.addItem(project,item))
-        self.conn.close()
-
+    @dbWrap
     def removeItemFromProject(self,project,item):
         item.projectID = 0
-        self.conn.connect()
         self.conn.setData(ProjectQuery.removeItem(project,item))
-        self.conn.close()
 
+    @dbWrap
     def addNewScrumblesObject(self,obj):
-        self.conn.connect()
         self.conn.setData(Query.createObject(obj))
-        self.conn.close()
 
+    @dbWrap
     def updateScrumblesObject(self,obj):
-        self.conn.connect()
         self.conn.setData(Query.updateObject(obj))
-        self.conn.close()
+
+    @dbWrap
+    def modifiyItemPriority(self,item,priority):
+        assert priority in range(1,3)
+        item.itemPriority = priority
+        self.conn.setData(Query.updateObject(item))
+
+    @dbWrap
+    def modifyItemStatus(self,item,status):
+        assert status in range(0,4)
+        item.status = status
+        self.conn.setData(Query.updateObject(item))
+
+    @dbWrap
+    def assignItemToSprint(self,item,sprint):
+        item.itemSprintID = sprint.sprintID
+        self.conn.setData(Query.updateObject(item))
+
+    @dbWrap
+    def removeItemFromSprint(self,item):
+        item.itemSprintID = 0
+        self.conn.setData(Query.updateObject(item))
+
 
 
 
