@@ -37,7 +37,7 @@ class masterView(tk.Tk):
 
         self.show_frame(loginView)
         self.dataConnection = None
-        self.activeProject = None
+        self.activeProject = self.dataBlock.projects[0]
         self.title("Scrumbles")
         self.geometry("1000x600")
 
@@ -179,6 +179,7 @@ class masterView(tk.Tk):
                 self.activeProject = P
 
         print('Active Project set to', self.activeProject.projectName)
+        self.dataBlock.executeUpdaterCallbacks()
 
 def logOut(controller):
     print("Log Me Out Scotty")

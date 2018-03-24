@@ -16,7 +16,6 @@ from tkinter import ttk
 
 class BaseList(tk.Frame,tk.Listbox):
     def __init__(self, controller):
-        tk.Frame.__init__(self, controller)
         self.fullList = []
 
     # def get(self,*args,**kwargs):
@@ -63,6 +62,16 @@ class BaseList(tk.Frame,tk.Listbox):
         listOfnames = []
         for project in projects:
             listOfnames.append(project.projectName)
+        self.fullList = listOfnames
+        for item in self.fullList:
+            self.listbox.insert(tk.END, item)
+        self.enforceSort()
+
+    def importSprintsList(self, sprints):
+        self.deleteList()
+        listOfnames = []
+        for sprints in sprints:
+            listOfnames.append(sprints.sprintName)
         self.fullList = listOfnames
         for item in self.fullList:
             self.listbox.insert(tk.END, item)
@@ -147,6 +156,7 @@ class BaseList(tk.Frame,tk.Listbox):
 
 class SComboList(BaseList):
     def __init__(self, controller, title, products):
+        BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
 
         self.box_value = tk.StringVar()
@@ -168,6 +178,7 @@ class SComboList(BaseList):
 
 class SBacklogList(BaseList):
     def __init__(self, controller):
+        BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
 
         self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)
@@ -206,6 +217,7 @@ class SBacklogList(BaseList):
 
 class SList(BaseList):
     def __init__(self, controller, title):
+        BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
 
         self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)

@@ -5,6 +5,7 @@ import ScrumblesObjects
 
 import ScrumblesFrames
 import Dialogs
+import listboxEventHandler
 
 import threading
 
@@ -13,13 +14,12 @@ import threading
 class backlogView(tk.Frame):
     def __init__(self, parent, controller,user):
         tk.Frame.__init__(self, parent)
-        products = ("PRODUCTS", "PRODUCT A", "PRODUCT B", "PRODUCT C")
         self.controller = controller
         self.usernameLabel = tk.Label(self, text='Welcome to the Projects Backlog View ', font=("Verdana", 12))
         self.usernameLabel.pack()
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog View")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
-        self.productList = ScrumblesFrames.SComboList(self, "PRODUCT BACKLOG", products)
+        self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
         self.backlog = ScrumblesFrames.SBacklogList(self)
 
         self.contextMenu = tk.Menu()
@@ -29,8 +29,7 @@ class backlogView(tk.Frame):
 
 
 
-        self.productListData = self.controller.dataBlock.projects
-        self.backlogData = self.controller.dataBlock.items
+        self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.controller.dataBlock.packCallback(self.updateBacklogViewData)
 
 
@@ -43,12 +42,27 @@ class backlogView(tk.Frame):
 
 
 
-        self.productList.importProjectList(self.productListData)
-
-        self.backlog.importItemList(self.backlogData)
+        self.sprintList.importSprintsList(self.sprintListData)
         self.backlog.listbox.bind('<2>' if self.aqua else '<3>', lambda event: self.context_menu(event,self.contextMenu))
-        self.productList.pack(side=tk.LEFT, fill=tk.Y)
+        self.sprintList.pack(side=tk.LEFT, fill=tk.Y)
         self.backlog.pack(side=tk.LEFT, fill=tk.Y)
+        self.selectedSprint = None
+
+
+
+        self.controller.dataBlock.packCallback(self.updateBacklogViewData)
+        
+
+        #Append Any Sources for Dynamic Events to this List
+        dynamicSources = [self.sprintList.listbox, self.backlog.listbox]#ADD ITEMS HERE
+
+        # To Prevent Duplicate Tkinter Events
+        self.eventHandler = listboxEventHandler.listboxEventHandler()
+        self.eventHandler.setEventToHandle(self.listboxEvents)
+
+        #Bind Sources
+        for source in dynamicSources:
+            source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
         #todo Click on project name to display items in backlog
         #todo click and drag on items in backlog to change priority variable of an item so that sort will be user defined
@@ -88,10 +102,26 @@ class backlogView(tk.Frame):
 
 
     def updateBacklogViewData(self):
-        self.productList.clearList()
+        self.sprintList.clearList()
         self.backlog.clearList()
-        self.productList.importProjectList(self.productListData)
-        self.backlog.importItemList(self.backlogData)
+        self.sprintListData = self.controller.activeProject.listOfAssignedSprints
+        self.sprintList.importSprintsList(self.sprintListData)
+
+
+
+    def assignedSprintSelectedEvent(self, event):
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            if sprint.sprintName == event.widget.get(tk.ANCHOR):
+                self.selectedSprint = sprint
+                self.assignedItems = sprint.listOfAssignedItems
+                self.backlog.importItemList(self.assignedItems)
+
+
+
+    def listboxEvents(self, event):
+        if event.widget is self.sprintList.listbox:
+            self.assignedSprintSelectedEvent(event)
+
 
 
         #######################################################################
