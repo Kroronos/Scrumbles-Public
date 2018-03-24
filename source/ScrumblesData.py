@@ -6,17 +6,29 @@ import base64
 import threading,time
 import remoteUpdate
 
+class DataBaseLoginInfo:
+    def __init__(self,file):
+        loginFile = open(file, 'r')
+        self.userID = self.getFromFile(loginFile)
+        self.password = self.getFromFile(loginFile)
+        self.ipaddress = self.getFromFile(loginFile)
+        self.defaultDB = self.getFromFile(loginFile)
+        loginFile.close()
+    def getFromFile(self, openFile):
+        item = openFile.readline()
+        item = item.rstrip("\n\r")
+        item = base64.standard_b64decode(item)
+        item = item.decode('utf8')
+        return item
+
 def debug_ObjectdumpList(L):
     if type(L[0]) == ScrumblesObjects.Item:
         for I in L:
             print(I.itemTitle)
 
 def dbWrap(func):
-    '''
-    Decorator open then close a db connection
-    '''
     def wrapper(self,*args):
-        self.conn.open()
+        self.conn.connect()
         func(self,*args)
         self.conn.close()
     return wrapper
@@ -214,20 +226,7 @@ class DataBlock:
         self.listener.stop()
 
 
-class DataBaseLoginInfo:
-    def __init__(self,file):
-        loginFile = open(file, 'r')
-        self.userID = self.getFromFile(loginFile)
-        self.password = self.getFromFile(loginFile)
-        self.ipaddress = self.getFromFile(loginFile)
-        self.defaultDB = self.getFromFile(loginFile)
-        loginFile.close()
-    def getFromFile(self, openFile):
-        item = openFile.readline()
-        item = item.rstrip("\n\r")
-        item = base64.standard_b64decode(item)
-        item = item.decode('utf8')
-        return item
+
 
 class Query:
     getAllUsers = 'SELECT * FROM UserTable'

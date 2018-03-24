@@ -47,6 +47,12 @@ class CreateProjectDialog:
 
         except Exception as e:
             messagebox.showerror('Error', str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
 
         else:
             messagebox.showinfo('Info', 'New Item Successfully Created')
@@ -130,6 +136,12 @@ class CreateUserDialog:
                 messagebox.showerror('Error',str(e))
         except Exception as e:
             messagebox.showerror('Error',str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
 
         else:
             messagebox.showinfo('Info', 'New User Successfully Created')
@@ -187,6 +199,12 @@ class CreateSprintDialog:
                 messagebox.showerror('Error', str(type(e)) + '\n' + str(e))
         except Exception as e:
             messagebox.showerror('Error',str(type(e))+'\n'+str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
 
         else:
             messagebox.showinfo('Info', 'New Sprint Successfully Created')
@@ -258,6 +276,12 @@ class CreateItemDialog:
 
         except Exception as e:
             messagebox.showerror('Error',str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
 
         else:
             messagebox.showinfo('Info', 'New Item Successfully Created')
