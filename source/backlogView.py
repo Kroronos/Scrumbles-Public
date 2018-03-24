@@ -105,6 +105,7 @@ class backlogView(tk.Frame):
 
 
     def updateBacklogViewData(self):
+        self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.sprintList.clearList()
         self.backlog.clearList()
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
