@@ -60,7 +60,7 @@ class backlogView(tk.Frame):
         
 
         #Append Any Sources for Dynamic Events to this List
-        dynamicSources = [self.sprintList.listbox, self.backlog.listbox]#ADD ITEMS HERE
+        dynamicSources = [self.sprintList.listbox, self.fullBacklog.listbox]#ADD ITEMS HERE
 
         # To Prevent Duplicate Tkinter Events
         self.eventHandler = listboxEventHandler.listboxEventHandler()
