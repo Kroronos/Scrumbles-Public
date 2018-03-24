@@ -177,7 +177,7 @@ class SComboList(BaseList):
         self.listFrame.pack(fill=tk.BOTH, expand=True)
 
 class SBacklogList(BaseList):
-    def __init__(self, controller):
+    def __init__(self, controller, title):
         BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
 
@@ -187,7 +187,7 @@ class SBacklogList(BaseList):
         self.searchLabel = tk.Label(self.searchFrame, text="Search:", bg=style.scrumbles_blue)
         self.searchEntry = tk.Entry(self.searchFrame)
         self.searchButton = tk.Button(self.searchFrame, text=style.right_enter_arrow, bg=style.scrumbles_blue, command=lambda: self.search(self.searchEntry.get()), relief=tk.FLAT)
-        self.undoSearchButton = tk.Button(self.searchFrame, text=style.cancel_button, bg=style.scrumbles_blue, command=lambda: self.showFullList(), relief=tk.FLAT)
+        self.undoSearchButton = tk.Button(self.searchFrame, text=style.cancel_button, bg=style.scrumbles_blue, command=lambda: self.clearSearchEntry(), relief=tk.FLAT)
 
         self.searchEntry.bind('<Return>', lambda event: self.search(self.searchEntry.get()))
         self.undoSearchButton.pack(side = tk.RIGHT)
@@ -196,7 +196,7 @@ class SBacklogList(BaseList):
         self.searchLabel.pack(side = tk.RIGHT)
 
 
-        self.titleLabel = tk.Label(self.titleFrame, text="Backlog", bg=style.scrumbles_blue, relief=tk.FLAT)
+        self.titleLabel = tk.Label(self.titleFrame, text=title, bg=style.scrumbles_blue, relief=tk.FLAT)
         self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT)
 
         self.titleLabel.pack(side = tk.LEFT)
@@ -205,7 +205,7 @@ class SBacklogList(BaseList):
 
         self.listFrame = tk.Frame(self)
         self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL)
-        self.listbox = tk.Listbox(self.listFrame, width = 80, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
+        self.listbox = tk.Listbox(self.listFrame, width = 50, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
         self.listScrollbar.config(command=self.listbox.yview)
 
         self.typeSort = "none"
@@ -214,6 +214,11 @@ class SBacklogList(BaseList):
         self.listScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.listFrame.pack(fill=tk.BOTH, expand=True)
+
+    def clearSearchEntry(self):
+        self.showFullList()
+        self.searchEntry.delete(0,tk.END)
+
 
 class SList(BaseList):
     def __init__(self, controller, title):

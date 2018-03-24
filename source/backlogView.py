@@ -19,8 +19,9 @@ class backlogView(tk.Frame):
         self.usernameLabel.pack()
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog View")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
-        self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
-        self.backlog = ScrumblesFrames.SBacklogList(self)
+        self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
+        self.backlog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
+        self.fullBacklog = ScrumblesFrames.SBacklogList(self,"ALL ITEMS")
 
         self.contextMenu = tk.Menu()
         self.aqua = parent.tk.call('tk','windowingsystem') == 'aqua'
@@ -43,7 +44,9 @@ class backlogView(tk.Frame):
 
 
         self.sprintList.importSprintsList(self.sprintListData)
+        self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.backlog.listbox.bind('<2>' if self.aqua else '<3>', lambda event: self.context_menu(event,self.contextMenu))
+        self.fullBacklog.pack(side=tk.LEFT, fill=tk.Y)
         self.sprintList.pack(side=tk.LEFT, fill=tk.Y)
         self.backlog.pack(side=tk.LEFT, fill=tk.Y)
         self.selectedSprint = None
@@ -115,6 +118,7 @@ class backlogView(tk.Frame):
                 self.selectedSprint = sprint
                 self.assignedItems = sprint.listOfAssignedItems
                 self.backlog.importItemList(self.assignedItems)
+
 
 
 
