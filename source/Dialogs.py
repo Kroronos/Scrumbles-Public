@@ -7,6 +7,7 @@ import ScrumblesObjects
 import webbrowser
 import sys, traceback
 
+
 class CreateProjectDialog:
     def __init__(self, parent, dataBlock):
 
