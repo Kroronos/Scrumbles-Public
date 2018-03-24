@@ -164,11 +164,15 @@ class CreateSprintDialog:
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Project").grid(row=3,column=1,pady=5,sticky='E')
 
 
         self.sprintNameEntry = Tk.Entry(popUPDialog)
         self.sprintNameEntry.grid(row=2, column=2, pady=5)
-
+        self.projectNameVar = Tk.StringVar()
+        projects = tuple([P.projectName for P in self.dataBlock.projects])
+        self.assignSprintToObject = ttk.Combobox(popUPDialog,textvariable=self.projectNameVar,state='readonly',values=projects)
+        self.assignSprintToObject.grid(row=3,column=2,pady=5)
 
 
         createButton = Tk.Button(popUPDialog, text="Create Sprint", command=self.ok)
@@ -184,6 +188,11 @@ class CreateSprintDialog:
 
             sprint = ScrumblesObjects.Sprint()
             sprint.sprintName = self.sprintNameEntry.get()
+            print('SprintDilog get sprint name;',sprint.sprintName)
+            projectName = self.assignSprintToObject.get()
+            for P in self.dataBlock.projects:
+                if P.projectName == projectName:
+                    sprint.projectID = P.projectID
 
 
             try:

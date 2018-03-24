@@ -360,8 +360,21 @@ class SprintQuery(Query):
     @staticmethod
     def createSprint(sprint):
         ObjectValidator.validate(sprint)
+        sprintMap = { 'SprintName': 'NULL','StartDate':'NULL','DueDate':'NULL', 'ProjectID':'NULL'}
+        sprintMap['SprintID'] = "'"+str(sprint.sprintID)+"'"
+        if sprint.sprintName is not None:
+            sprintMap['SprintName'] = "'"+str(sprint.sprintName)+"'"
+        if sprint.sprintStartDate is not None:
+            sprintMap['StartDate'] = "'"+str(sprint.sprintStartDate)+"'"
+        if sprint.sprintDueDate is not None:
+            sprintMap['DueDate'] = "'"+str(sprint.sprintDueDate)+"'"
+        if sprint.projectID is not None:
+            sprintMap['ProjectID'] = "'"+str(sprint.projectID)+"'"
 
-        query = 'INSERT INTO SprintTable (SprintID, SprintName) VALUES (\'%s\',\'%s\')' % (str(sprint.sprintID),sprint.sprintName)
+        query = '''INSERT INTO SprintTable (SprintID, SprintName, StartDate,DueDate,ProjectID) VALUES (
+        %s,%s,%s,%s,%s)''' % (sprintMap['SprintID'],sprintMap['SprintName'],sprintMap['StartDate']
+                              ,sprintMap['DueDate'],sprintMap['ProjectID'])
+        print(query)
         return query
 
     @staticmethod
