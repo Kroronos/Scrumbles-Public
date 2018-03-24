@@ -115,19 +115,19 @@ class masterView(tk.Tk):
         return views, viewNames
 
     def showCreateProjectDialog(self):
-        createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataConnection)
+        createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataBlock)
         self.wait_window(createProjectDialog.top)
 
     def showCreateUserDialog(self):
-        createUserDialog = Dialogs.CreateUserDialog(self, self.dataConnection)
+        createUserDialog = Dialogs.CreateUserDialog(self, self.dataBlock)
         self.wait_window(createUserDialog.top)
 
     def showCreateSprintDialog(self):
-        createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataConnection)
+        createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataBlock)
         self.wait_window(createSprintDialog.top)
 
     def showCreateItemDialog(self):
-        createItemDialog = Dialogs.CreateItemDialog(self,self.dataConnection)
+        createItemDialog = Dialogs.CreateItemDialog(self,self.dataBlock)
         self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):
