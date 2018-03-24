@@ -298,7 +298,7 @@ class itemPicker(tk.Frame):
         #self.item
 
 
-    def selectItem(text):
+    def selectItem(self,text):
         self.itemNumberLabel.text = text
 
 class commentsField(tk.Frame):

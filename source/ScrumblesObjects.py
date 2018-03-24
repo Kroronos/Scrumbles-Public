@@ -33,6 +33,7 @@ class User:
     userRole = None
     listOfAssignedItems = []
     listOfComments = []
+    listOfProjects = []
 
     #Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -63,8 +64,9 @@ class Item:
     itemUserID = None
     itemStatus = None
     listOfComments = []
-    statusEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
-
+    projectID = 0
+    priorityEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
+    statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2:'In Progress', 3:'Submitted',4:'Complete'}
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
     def __init__(self,queryResultDict=None):
@@ -84,19 +86,8 @@ class Item:
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
 
-    #NOTE This functions takes in the whole list from a query result
-
-    def assignToUser(self, user):
-        self.itemUserID = user.userID
-
-    def modifyStatus(self, status):
-        self.itemStatus = status
-
-    def modifyPriority(self, priority):
-        self.itemPriority = priority
-
     def getPriority(self):
-        return self.statusEquivalents[self.itemPriority]
+        return self.priorityEquivalents[self.itemPriority]
 
 
 class Sprint:
@@ -121,19 +112,6 @@ class Sprint:
         self.sprintName = queryResultDict['SprintName']
         self.projectID = queryResultDict['ProjectID']
 
-
-
-    def assignItemToSprint(self, item):
-        item.itemSprintID = self.sprintID
-        if item not in self.listOfAssignedItems:
-            self.listOfAssignedItems.append(item)
-
-    def removeItemFromSprint(self, item):
-        if item in self.listOfAssignedItems:
-            item.sprintID = None
-            self.listOfAssignedItems.remove(item)
-        else:
-            raise Exception('Item does not exist in Sprint')
 
 class Comment:
     commentID = None
@@ -161,6 +139,8 @@ class Project:
     projectID = None
     projectName = None
     listOfAssignedSprints = []
+    listOfAssignedUsers = []
+    listOfAssignedItems = []
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
             self.projectID = generateRowID()

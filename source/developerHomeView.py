@@ -65,11 +65,11 @@ class developerHomeView(tk.Frame):
 
         self.backlog.clear()
         self.teamMembers.clear()
-        self.assignedItems.clear()
+
         self.backlog = [item.itemTitle for item in self.controller.dataBlock.items]
         self.teamMembers = [user.userName for user in self.controller.dataBlock.users]
         if self.selectedUser is not None:
-            self.assignedItemList = self.selectedUser.listOfAssignedItems
+            self.assignedItems = self.selectedUser.listOfAssignedItems
         self.productBacklogList.importList(self.backlog)
         self.teamMemberList.importList(self.teamMembers)
         self.assignedItemList.importItemList(self.assignedItems)

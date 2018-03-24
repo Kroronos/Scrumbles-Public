@@ -37,8 +37,10 @@ class masterView(tk.Tk):
 
         self.show_frame(loginView)
         self.dataConnection = None
+        self.activeProject = None
         self.title("Scrumbles")
         self.geometry("1000x600")
+
         #self.iconbitmap("logo.ico")
 
 
@@ -61,10 +63,13 @@ class masterView(tk.Tk):
         menuBar = tk.Menu(self)
 
         fileMenu = tk.Menu(menuBar, tearoff=0)
+        self.fileMenu = fileMenu
         fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
         fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
         fileMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
         fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
+        self.setOpenProjectsMenu(fileMenu)
+        self.dataBlock.packCallback(self.updateOpenProjectsMenu)
         fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
 
 
@@ -115,19 +120,19 @@ class masterView(tk.Tk):
         return views, viewNames
 
     def showCreateProjectDialog(self):
-        createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataConnection)
+        createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataBlock)
         self.wait_window(createProjectDialog.top)
 
     def showCreateUserDialog(self):
-        createUserDialog = Dialogs.CreateUserDialog(self, self.dataConnection)
+        createUserDialog = Dialogs.CreateUserDialog(self, self.dataBlock)
         self.wait_window(createUserDialog.top)
 
     def showCreateSprintDialog(self):
-        createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataConnection)
+        createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataBlock)
         self.wait_window(createSprintDialog.top)
 
     def showCreateItemDialog(self):
-        createItemDialog = Dialogs.CreateItemDialog(self,self.dataConnection)
+        createItemDialog = Dialogs.CreateItemDialog(self,self.dataBlock)
         self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):
@@ -153,6 +158,27 @@ class masterView(tk.Tk):
         helpBox = Dialogs.AboutDialog(self)
         self.wait_window(helpBox.top)
 
+    def updateOpenProjectsMenu(self):
+        self.setOpenProjectsMenu(self.fileMenu)
+
+    def setOpenProjectsMenu(self,menu):
+        listOfProjects = [P.projectName for P in self.dataBlock.projects]
+        try:
+            menu.delete('Open Project')
+        except Exception:
+            pass
+        self.popMenu = tk.Menu(menu,tearoff=0)
+        for text in listOfProjects:
+            self.popMenu.add_command(label=text,command = lambda t=text:self.setActiveProject(t))
+
+        menu.add_cascade(label='Open Project',menu=self.popMenu,underline=0)
+
+    def setActiveProject(self,projectName):
+        for P in self.dataBlock.projects:
+            if P.projectName == projectName:
+                self.activeProject = P
+
+        print('Active Project set to', self.activeProject.projectName)
 
 def logOut(controller):
     print("Log Me Out Scotty")

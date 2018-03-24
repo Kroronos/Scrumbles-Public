@@ -6,10 +6,12 @@ import ScrumblesData
 import ScrumblesObjects
 import webbrowser
 import sys, traceback
-class CreateProjectDialog:
-    def __init__(self, parent, dbConnector):
 
-        self.dbConnector = dbConnector
+
+class CreateProjectDialog:
+    def __init__(self, parent, dataBlock):
+
+        self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('300x100')
@@ -35,37 +37,38 @@ class CreateProjectDialog:
             project = ScrumblesObjects.Project()
             project.projectName = self.projectTitleEntry.get()
 
-            self.dbConnector.connect()
+
             try:
-                self.dbConnector.setData(ScrumblesData.Query.createObject(project))
+                self.dataBlock.addNewScrumblesObject(project)
             except IntegrityError:
                 project.projectID = ScrumblesObjects.generateRowID()
-                self.dbConnector.setData(ScrumblesData.Query.createObject(project))
-            self.dbConnector.close()
+                self.dataBlock.addNewScrumblesObject(project)
+
 
 
         except Exception as e:
             messagebox.showerror('Error', str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
 
         else:
             messagebox.showinfo('Info', 'New Item Successfully Created')
             self.exit()
-        finally:
-            if self.dbConnector is not None:
-                if self.dbConnector.isConnected():
-                    self.dbConnector.close()
+
 
     def exit(self):
-        if self.dbConnector is not None:
-            assert self.dbConnector.isConnected() == False
         self.top.destroy()
 
 
 class CreateUserDialog:
 
-    def __init__(self, parent, dbConnector):
+    def __init__(self, parent, dataBlock):
 
-        self.dbConnector = dbConnector
+        self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('300x250')
@@ -117,13 +120,13 @@ class CreateUserDialog:
             user.userEmailAddress = self.emailEntry.get()
             user.userRole = self.roleCombobox.get()
 
-            self.dbConnector.connect()
+
             try:
-                self.dbConnector.setData(ScrumblesData.Query.createObject(user))
+                self.dataBlock.addNewScrumblesObject(user)
             except IntegrityError:
                 user.userID = ScrumblesObjects.generateRowID()
-                self.dbConnector.setData(ScrumblesData.Query.createObject(user))
-            self.dbConnector.close()
+                self.dataBlock.addNewScrumblesObject(user)
+
 
         except IntegrityError as e:
             if 'UserName' in str(e):
@@ -134,38 +137,43 @@ class CreateUserDialog:
                 messagebox.showerror('Error',str(e))
         except Exception as e:
             messagebox.showerror('Error',str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
 
         else:
             messagebox.showinfo('Info', 'New User Successfully Created')
             self.exit()
-        finally:
-            if self.dbConnector is not None:
-                if self.dbConnector.isConnected():
-                    self.dbConnector.close()
+
 
 
     def exit(self):
-        if self.dbConnector is not None:
-            assert self.dbConnector.isConnected() == False
         self.top.destroy()
 
 
 class CreateSprintDialog:
 
-    def __init__(self, parent, dbConnector):
+    def __init__(self, parent, dataBlock):
 
-        self.dbConnector = dbConnector
+        self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('300x250')
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Project").grid(row=3,column=1,pady=5,sticky='E')
 
 
         self.sprintNameEntry = Tk.Entry(popUPDialog)
         self.sprintNameEntry.grid(row=2, column=2, pady=5)
-
+        self.projectNameVar = Tk.StringVar()
+        projects = tuple([P.projectName for P in self.dataBlock.projects])
+        self.assignSprintToObject = ttk.Combobox(popUPDialog,textvariable=self.projectNameVar,state='readonly',values=projects)
+        self.assignSprintToObject.grid(row=3,column=2,pady=5)
 
 
         createButton = Tk.Button(popUPDialog, text="Create Sprint", command=self.ok)
@@ -181,14 +189,18 @@ class CreateSprintDialog:
 
             sprint = ScrumblesObjects.Sprint()
             sprint.sprintName = self.sprintNameEntry.get()
+            print('SprintDilog get sprint name;',sprint.sprintName)
+            projectName = self.assignSprintToObject.get()
+            for P in self.dataBlock.projects:
+                if P.projectName == projectName:
+                    sprint.projectID = P.projectID
 
-            self.dbConnector.connect()
+
             try:
-                self.dbConnector.setData(ScrumblesData.Query.createObject(sprint))
+                self.dataBlock.addNewScrumblesObject(sprint)
             except IntegrityError:
                 sprint.sprintID = ScrumblesObjects.generateRowID()
-                self.dbConnector.setData(ScrumblesData.Query.createObject(sprint))
-            self.dbConnector.close()
+                self.dataBlock.addNewScrumblesObject(sprint)
 
         except IntegrityError as e:
             if 'SprintName' in str(e):
@@ -197,27 +209,28 @@ class CreateSprintDialog:
                 messagebox.showerror('Error', str(type(e)) + '\n' + str(e))
         except Exception as e:
             messagebox.showerror('Error',str(type(e))+'\n'+str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
 
         else:
             messagebox.showinfo('Info', 'New Sprint Successfully Created')
             self.exit()
-        finally:
-            if self.dbConnector is not None:
-                if self.dbConnector.isConnected():
-                    self.dbConnector.close()
+
 
 
     def exit(self):
-        if self.dbConnector is not None:
-            assert self.dbConnector.isConnected() == False
         self.top.destroy()
 
 
 class CreateItemDialog:
 
-    def __init__(self, parent, dbConnector):
+    def __init__(self, parent, dataBlock):
 
-        self.dbConnector = dbConnector
+        self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('300x250')
@@ -262,30 +275,29 @@ class CreateItemDialog:
             item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
             item.itemType = self.ItemTypebox.get()
 
-            self.dbConnector.connect()
+
             try:
-                self.dbConnector.setData(ScrumblesData.Query.createObject(item))
+                self.dataBlock.addNewScrumblesObject(item)
             except IntegrityError:
                 item.itemID = ScrumblesObjects.generateRowID()
-                self.dbConnector.setData(ScrumblesData.Query.createObject(item))
-            self.dbConnector.close()
+                self.dataBlock.addNewScrumblesObject(item)
+
 
 
         except Exception as e:
             messagebox.showerror('Error',str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print("*** print_tb:")
+            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+            print("*** print_exception:")
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_stack(file=sys.stdout)
 
         else:
             messagebox.showinfo('Info', 'New Item Successfully Created')
             self.exit()
-        finally:
-            if self.dbConnector is not None:
-                if self.dbConnector.isConnected():
-                    self.dbConnector.close()
-
 
     def exit(self):
-        if self.dbConnector is not None:
-            assert self.dbConnector.isConnected() == False
         self.top.destroy()
 
 
