@@ -21,16 +21,11 @@ class backlogView(tk.Frame):
         self.projectNameLabel.pack()
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog View")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
-
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
         self.backlog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
         self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
-
-
-        self.fullBacklog = ScrumblesFrames.SBacklogList(self, "ALL ITEMS")
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.pack(side=tk.LEFT, fill=tk.Y)
-        self.colorizeBackLogList()
 
 
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
@@ -47,8 +42,9 @@ class backlogView(tk.Frame):
 
 
         self.contextMenu = tk.Menu()
-        self.contextMenu.add_command(label=u'Update Item',command=self.updateItem)
 
+
+        self.contextMenu.add_command(label=u'Update Item',command=self.updateItem)
 
 
 
@@ -72,6 +68,7 @@ class backlogView(tk.Frame):
         # To Prevent Duplicate Tkinter Events
         self.eventHandler = listboxEventHandler.listboxEventHandler()
         self.eventHandler.setEventToHandle(self.listboxEvents)
+        self.fullBacklog.colorCodeListboxes()
 
 
 
@@ -81,16 +78,6 @@ class backlogView(tk.Frame):
 
         #todo Click on project name to display items in sprintBacklog
         #todo click and drag on items in sprintBacklog to change priority variable of an item so that sort will be user defined
-
-    def colorizeBackLogList(self):
-        for index in range(len(self.controller.activeProject.listOfAssignedItems)):
-            for S in self.controller.activeProject.listOfAssignedSprints:
-                if self.controller.activeProject.listOfAssignedItems[index] in S.listOfAssignedItems:
-                    self.fullBacklog.listbox.itemconfig(index,{'bg': 'firebrick'})
-                    self.fullBacklog.listbox.itemconfig(index,{'fg': 'red'})
-                else:
-                    self.fullBacklog.listbox.itemconfig(index,{'bg' : 'dark green'})
-                    self.fullBacklog.listbox.itemconfig(index,{'fg' : 'lawn green'})
 
     def updateItem(self):
         item = None
@@ -135,8 +122,8 @@ class backlogView(tk.Frame):
         self.fullBacklog.clearList()
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.sprintList.importSprintsList(self.sprintListData)
+        self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
-
 
 
 

@@ -236,9 +236,11 @@ class SBacklogListColor(SBacklogList):
 
         for item in partialList:
             if item.itemSprintID == None:
-                self.listbox.itemconfig(i, {'bg':'red'})
+                self.listbox.itemconfig(i, {'bg':'firebrick'})
+                self.listbox.itemconfig(i, {'fg':'red'})
             else:
-                self.listbox.itemconfig(i, {'bg':'green'})
+                self.listbox.itemconfig(i, {'bg':'dark green'})
+                self.listbox.itemconfig(i, {'fg':'lawn green'})
             i=i+1
 
     def importListSorted(self, list):
