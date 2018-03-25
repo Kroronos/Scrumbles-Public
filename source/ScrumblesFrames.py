@@ -321,7 +321,7 @@ class commentsField(tk.Frame):
         self.clearCommentField()
         for comment in listOfCommentsObject.listOfComments:
             self.comments.append(comment)
-        self.titleText.set("Comments from " + objectName)
+        self.titleText.set("Comments\n" + objectName)
         self.renderCommentField()
 
     def renderCommentField(self):
@@ -335,6 +335,8 @@ class commentsField(tk.Frame):
     def clearCommentField(self):
         self.comments.clear()
         self.commentField.pack_forget()
+        for element in self.commentTextElements:
+            element.pack_forget()
         self.commentTextElements.clear()
 
 
