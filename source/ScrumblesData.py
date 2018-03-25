@@ -522,7 +522,7 @@ class CardQuery(Query):
         itemDict['CodeLink'] = 'NULL'
         if item.itemCodeLink is not None:
             itemDict['CodeLink'] = "'"+item.itemCodeLink+"'"
-        itemDict['Points'] = "'"+item.itemPoints+"'"
+        itemDict['Points'] = "'"+str(item.itemPoints)+"'"
 
         query = '''UPDATE CardTable SET
                 CardType=%s,
