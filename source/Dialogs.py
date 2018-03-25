@@ -6,6 +6,7 @@ import ScrumblesData
 import ScrumblesObjects
 import webbrowser
 import sys, traceback
+import datetime
 
 
 class CreateProjectDialog:
@@ -158,14 +159,35 @@ class CreateSprintDialog:
 
     def __init__(self, parent, dataBlock):
 
+        self.month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Nov','Dec']
+        self.day = [str(d) for d in range(1,32)]
+        self.year = [str(y) for y in range(2018,2100)]
+
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x250')
+        popUPDialog.geometry('330x250')
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
         Tk.Label(popUPDialog, text="Project").grid(row=3,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Start Date").grid(row=4,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Due Date").grid(row=5,column=1,pady=5,sticky='E')
+        monthVar = Tk.StringVar()
+        monthVar = 'Jan'
+        self.StartMonthCombo = ttk.Combobox(popUPDialog,textvariable=monthVar,values=self.month,state='readonly',width=5)
+        self.StartMonthCombo.grid(row=4,column=2)
+        self.StartDayCombo = ttk.Combobox(popUPDialog,values=self.day,state='readonly',width=3)
+        self.StartDayCombo.grid(row=4,column=3)
+        self.StartYearCombo = ttk.Combobox(popUPDialog,values=self.year,state='readonly',width=5)
+        self.StartYearCombo.grid(row=4,column=4)
+
+        self.DueMonthCombo = ttk.Combobox(popUPDialog, values=self.month, state='readonly',width=5)
+        self.DueMonthCombo.grid(row=5, column=2)
+        self.DueDayCombo = ttk.Combobox(popUPDialog, values=self.day, state='readonly',width=3)
+        self.DueDayCombo.grid(row=5, column=3)
+        self.DueYearCombo = ttk.Combobox(popUPDialog, values=self.year, state='readonly',width=5)
+        self.DueYearCombo.grid(row=5, column=4)
 
 
         self.sprintNameEntry = Tk.Entry(popUPDialog)
@@ -182,6 +204,26 @@ class CreateSprintDialog:
         cancelButton.grid(row=8,column=1,pady=5)
 
 
+    def getStartDate(self):
+        month = self.StartMonthCombo.get()
+        day = self.StartDayCombo.get()
+        year = self.StartYearCombo.get()
+
+        if month == '' or day == '' or year == '':
+            dateString = 'Jan 1 2100 5:00PM'
+        else:
+            dateString = month+" "+day+" "+year+" 5:00PM"
+        return datetime.datetime.strptime(dateString,'%b %d %Y %I:%M%p')
+
+    def getDueDate(self):
+        month = self.DueMonthCombo.get()
+        day = self.DueDayCombo.get()
+        year = self.DueYearCombo.get()
+        if month == '' or day == '' or year == '':
+            dateString = 'Jan 1 2100 5:00PM'
+        else:
+            dateString = month+" "+day+" "+year+" 5:00PM"
+        return datetime.datetime.strptime(dateString,'%b %d %Y %I:%M%p')
 
     def ok(self):
 
@@ -189,7 +231,12 @@ class CreateSprintDialog:
 
             sprint = ScrumblesObjects.Sprint()
             sprint.sprintName = self.sprintNameEntry.get()
+            sprint.sprintStartDate = self.getStartDate()
+            sprint.sprintDueDate = self.getDueDate()
             print('SprintDilog get sprint name;',sprint.sprintName)
+
+
+
             projectName = self.assignSprintToObject.get()
             for P in self.dataBlock.projects:
                 if P.projectName == projectName:
