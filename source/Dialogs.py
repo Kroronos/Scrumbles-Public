@@ -380,6 +380,9 @@ class EditItemDialog:
         sprintNames = [sprint.sprintName for sprint in self.listOfSprints]
 
         popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
         #popUPDialog.geometry('300x250')
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
