@@ -112,10 +112,7 @@ class DataBlock:
             Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
             self.projects.append(Project)
 
-        #todo remove debugging statements
-        print('DUMPING PROJECTS RIGHT AFTER CREATION')
-        for project in self.projects:
-            print('Project',project.projectName,'=',hex(id(project)),'has item list',hex(id(project.listOfAssignedItems)))
+
 
         for user in self.users:
             for dict in userToProjectRelationTable:
@@ -136,10 +133,7 @@ class DataBlock:
                     for item in self.items:
                         if dict['ItemID'] == item.itemID:
                             item.projectID = project.projectID
-                            #todo remove debug statement
-                            print('appending item',item.itemTitle,'to project', project.projectName)
-                            print('hexAddr',hex(id(project)))
-                            print('hexAddr itemList', hex(id(project.listOfAssignedItems)))
+
                             project.listOfAssignedItems.append(item)
 
     def validateData(self):

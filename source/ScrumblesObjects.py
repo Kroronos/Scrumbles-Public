@@ -146,4 +146,4 @@ class Project:
         self.listOfAssignedUsers = []
         self.listOfAssignedItems = []
 
-#todo implement Tagging:
+#todo implement class tag:
