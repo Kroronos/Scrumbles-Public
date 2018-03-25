@@ -43,7 +43,7 @@ class masterView(tk.Tk):
 
         #self.iconbitmap("logo.ico")
 
-
+        self.activeUser = None
     def show_frame(self, cont):
         #print("Dictionary issue")
         frame = self.frames[cont]
@@ -136,6 +136,7 @@ class masterView(tk.Tk):
         self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):
+        self.activeUser = loggedInUser
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         backlogViewFrame = backlogView.backlogView(self.container, self, loggedInUser)
@@ -156,6 +157,7 @@ class masterView(tk.Tk):
 
     def openAboutDialog(self):
         helpBox = Dialogs.AboutDialog(self)
+
         self.wait_window(helpBox.top)
 
     def updateOpenProjectsMenu(self):

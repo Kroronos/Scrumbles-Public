@@ -15,7 +15,13 @@ class CreateProjectDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
+
         popUPDialog.geometry('600x200')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+        
+
         popUPDialog.title('Create a New Project')
 
         Tk.Label(popUPDialog, text="Project Title").grid(row=2, column=1, pady=5, sticky='E')
@@ -73,6 +79,10 @@ class CreateUserDialog:
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('600x500')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+      
         popUPDialog.title('Create a New User')
 
         Tk.Label(popUPDialog, text="User Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -166,7 +176,13 @@ class CreateSprintDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
+
         popUPDialog.geometry('600x500')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+       
+
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -196,6 +212,7 @@ class CreateSprintDialog:
         projects = tuple([P.projectName for P in self.dataBlock.projects])
         self.assignSprintToObject = ttk.Combobox(popUPDialog,textvariable=self.projectNameVar,state='readonly',values=projects)
         self.assignSprintToObject.grid(row=3,column=2,pady=5)
+
 
 
         createButton = Tk.Button(popUPDialog, text="Create Sprint", command=self.ok)
@@ -276,11 +293,16 @@ class CreateSprintDialog:
 class CreateItemDialog:
 
     def __init__(self, parent, dataBlock):
-
+        self.parent = parent
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('600x500')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+      
+
         popUPDialog.title('Create a New Item')
 
 
@@ -304,11 +326,18 @@ class CreateItemDialog:
         self.ItemTypebox.grid(row=6, column=2,sticky='W')
         self.ItemTypebox.selection_clear()
 
+        self.pointsEntryLabel = Tk.Label(popUPDialog, text="Points").grid(row=7,column=1,sticky='E')
+        self.pointsEntry = Tk.Entry(popUPDialog)
+        self.pointsEntry.grid(row=7,column=2)
+
+        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Comment').grid(row=9, column=1, sticky='E')
+        self.commentTextBox = Tk.Text(popUPDialog, height=6, width=20, wrap=Tk.WORD)
+        self.commentTextBox.grid(row=9, column=2,pady=5)
 
         createButton = Tk.Button(popUPDialog, text="Create Item", command=self.ok)
-        createButton.grid(row=8,column=2,pady=5)
+        createButton.grid(row=10,column=2,pady=5)
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
-        cancelButton.grid(row=8,column=1,pady=5)
+        cancelButton.grid(row=10,column=1,pady=5)
 
 
     def ok(self):
@@ -321,15 +350,30 @@ class CreateItemDialog:
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
             item.itemType = self.ItemTypebox.get()
+            item.itemPoints = self.pointsEntry.get()
+
+            comment = ScrumblesObjects.Comment()
+            comment.commentContent = self.commentTextBox.get('1.0','end-1c')
+            comment.commentUserID = self.parent.activeUser.userID
+            comment.commentItemID = item.itemID
+
+
+            if not item.itemPoints.isdigit():
+                raise Exception('Points must be a number')
 
 
             try:
                 self.dataBlock.addNewScrumblesObject(item)
             except IntegrityError:
                 item.itemID = ScrumblesObjects.generateRowID()
+                comment.commentItemID = item.itemID
                 self.dataBlock.addNewScrumblesObject(item)
-
-
+            if len(comment.commentContent > 0):
+                try:
+                    self.dataBlock.addNewScrumblesObject(comment)
+                except IntegrityError:
+                    comment.commentID = ScrumblesObjects.generateRowID()
+                    self.dataBlock.addNewScrumblesObject(comment)
 
         except Exception as e:
             messagebox.showerror('Error',str(e))
@@ -355,7 +399,11 @@ class AboutDialog:
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('1100x400')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
         popUPDialog.title('About Scrumbles')
+
 
         Tk.Label(popUPDialog, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
         linkLabel = Tk.Label(popUPDialog, text=self.apiLink,fg='blue')
@@ -389,6 +437,9 @@ class EditItemDialog:
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('600x500')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
