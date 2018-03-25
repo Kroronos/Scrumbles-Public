@@ -1,5 +1,5 @@
 import tkinter as tk
-
+from tkinter import messagebox
 import mainView 
 import loginView
 import developerHomeView
@@ -127,16 +127,26 @@ class masterView(tk.Tk):
         return views, viewNames
 
     def showCreateProjectDialog(self):
-        createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataBlock)
-        self.wait_window(createProjectDialog.top)
+        if self.activeUser.userRole == "Admin":
+            createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataBlock)
+            self.wait_window(createProjectDialog.top)
+        else:
+            messagebox.showerror('Access Denied', 'Must Be An Administrator')
+
 
     def showCreateUserDialog(self):
-        createUserDialog = Dialogs.CreateUserDialog(self, self.dataBlock)
-        self.wait_window(createUserDialog.top)
+        if self.activeUser.userRole == "Admin":
+            createUserDialog = Dialogs.CreateUserDialog(self, self.dataBlock)
+            self.wait_window(createUserDialog.top)
+        else:
+            messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
     def showCreateSprintDialog(self):
-        createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataBlock)
-        self.wait_window(createSprintDialog.top)
+        if self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master":
+            createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataBlock)
+            self.wait_window(createSprintDialog.top)
+        else:
+            messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
     def showCreateItemDialog(self):
         createItemDialog = Dialogs.CreateItemDialog(self,self.dataBlock)
