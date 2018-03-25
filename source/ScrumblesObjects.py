@@ -31,9 +31,7 @@ class User:
     userEmailAddress = None
     userID = None
     userRole = None
-    listOfAssignedItems = []
-    listOfComments = []
-    listOfProjects = []
+
 
     #Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -48,7 +46,9 @@ class User:
         self.userPassword = queryResultDict['UserPassword']
         self.userRole = queryResultDict['UserRole']
         self.userID = queryResultDict['UserID']
-
+        self.listOfAssignedItems = []
+        self.listOfComments = []
+        self.listOfProjects = []
 
 
 class Item:
@@ -63,8 +63,7 @@ class Item:
     itemSprintID = None
     itemUserID = None
     itemStatus = None
-    listOfComments = []
-    projectID = 0
+
     priorityEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
     statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2:'In Progress', 3:'Submitted',4:'Complete'}
     statusEquivalentsReverse = {'Not Assigned' : 0, 'Assigned':1,'In Progress':2,'Submitted':3,'Complete':4}
@@ -88,6 +87,9 @@ class Item:
         self.itemStatus = queryResultDict['Status']
         self.itemPoints = queryResultDict['CardPoints']
 
+        self.listOfComments = []
+        self.projectID = 0
+
     def getPriority(self):
         #will throw key error if itemPriority is not 1,2,3
         return Item.priorityEquivalents[self.itemPriority]
@@ -108,8 +110,7 @@ class Sprint:
     sprintDueDate = None
     sprintName = None
     projectID = None
-    listOfAssignedItems = []
-    listOfAssignedUsers = []
+
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -123,14 +124,11 @@ class Sprint:
         self.sprintDueDate = queryResultDict['DueDate']
         self.sprintName = queryResultDict['SprintName']
         self.projectID = queryResultDict['ProjectID']
-
+        self.listOfAssignedItems = []
+        self.listOfAssignedUsers = []
 
 class Comment:
-    commentID = None
-    commentTimeStamp = None
-    commentContent = None
-    commentItemID = None
-    commentUserID = None
+
     #todo listOfTags = []
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
@@ -150,9 +148,7 @@ class Comment:
 class Project:
     projectID = None
     projectName = None
-    listOfAssignedSprints = []
-    listOfAssignedUsers = []
-    listOfAssignedItems = []
+
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
             self.projectID = generateRowID()
@@ -160,5 +156,8 @@ class Project:
         assert 'ProjectName' in queryResultDict
         self.projectID = queryResultDict['ProjectID']
         self.projectName = queryResultDict['ProjectName']
+        self.listOfAssignedSprints = []
+        self.listOfAssignedUsers = []
+        self.listOfAssignedItems = []
 
-#todo class Tag:
+#todo implement class tag:

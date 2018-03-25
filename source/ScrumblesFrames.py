@@ -16,8 +16,8 @@ from tkinter import ttk
 
 class BaseList(tk.Frame,tk.Listbox):
     def __init__(self, controller):
-        tk.Frame.__init__(self, controller)
         self.fullList = []
+        self.controller = controller
 
     # def get(self,*args,**kwargs):
     #     return self.listbox.get(*args,**kwargs)
@@ -63,6 +63,16 @@ class BaseList(tk.Frame,tk.Listbox):
         listOfnames = []
         for project in projects:
             listOfnames.append(project.projectName)
+        self.fullList = listOfnames
+        for item in self.fullList:
+            self.listbox.insert(tk.END, item)
+        self.enforceSort()
+
+    def importSprintsList(self, sprints):
+        self.deleteList()
+        listOfnames = []
+        for sprints in sprints:
+            listOfnames.append(sprints.sprintName)
         self.fullList = listOfnames
         for item in self.fullList:
             self.listbox.insert(tk.END, item)
@@ -147,6 +157,7 @@ class BaseList(tk.Frame,tk.Listbox):
 
 class SComboList(BaseList):
     def __init__(self, controller, title, products):
+        BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
 
         self.box_value = tk.StringVar()
@@ -167,7 +178,8 @@ class SComboList(BaseList):
         self.listFrame.pack(fill=tk.BOTH, expand=True)
 
 class SBacklogList(BaseList):
-    def __init__(self, controller):
+    def __init__(self, controller, title):
+        BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
 
         self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)
@@ -176,7 +188,7 @@ class SBacklogList(BaseList):
         self.searchLabel = tk.Label(self.searchFrame, text="Search:", bg=style.scrumbles_blue)
         self.searchEntry = tk.Entry(self.searchFrame)
         self.searchButton = tk.Button(self.searchFrame, text=style.right_enter_arrow, bg=style.scrumbles_blue, command=lambda: self.search(self.searchEntry.get()), relief=tk.FLAT)
-        self.undoSearchButton = tk.Button(self.searchFrame, text=style.cancel_button, bg=style.scrumbles_blue, command=lambda: self.showFullList(), relief=tk.FLAT)
+        self.undoSearchButton = tk.Button(self.searchFrame, text=style.cancel_button, bg=style.scrumbles_blue, command=lambda: self.clearSearchEntry(), relief=tk.FLAT)
 
         self.searchEntry.bind('<Return>', lambda event: self.search(self.searchEntry.get()))
         self.undoSearchButton.pack(side = tk.RIGHT)
@@ -185,7 +197,7 @@ class SBacklogList(BaseList):
         self.searchLabel.pack(side = tk.RIGHT)
 
 
-        self.titleLabel = tk.Label(self.titleFrame, text="Backlog", bg=style.scrumbles_blue, relief=tk.FLAT)
+        self.titleLabel = tk.Label(self.titleFrame, text=title, bg=style.scrumbles_blue, relief=tk.FLAT)
         self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT)
 
         self.titleLabel.pack(side = tk.LEFT)
@@ -194,7 +206,7 @@ class SBacklogList(BaseList):
 
         self.listFrame = tk.Frame(self)
         self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL)
-        self.listbox = tk.Listbox(self.listFrame, width = 80, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
+        self.listbox = tk.Listbox(self.listFrame, width = 50, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
         self.listScrollbar.config(command=self.listbox.yview)
 
         self.typeSort = "none"
@@ -204,8 +216,62 @@ class SBacklogList(BaseList):
 
         self.listFrame.pack(fill=tk.BOTH, expand=True)
 
+    def clearSearchEntry(self):
+        self.showFullList()
+        self.searchEntry.delete(0,tk.END)
+
+class SBacklogListColor(SBacklogList):
+    def __init__(self, controller, title):
+        SBacklogList.__init__(self, controller, title)
+
+    def sortForward(self):
+        super().sortForward()
+        self.colorCodeListboxes()
+
+    def sortRevers(self):
+        super().sortReverse()
+        self.colorCodeListboxes()
+
+    def colorCodeListboxes(self):
+        i = 0
+
+        for itemTitle in self.listbox.get(0,tk.END):
+            for item in self.controller.controller.activeProject.listOfAssignedItems:
+                if itemTitle == item.itemTitle and item.itemSprintID is None:
+                    self.listbox.itemconfig(i, {'bg': 'firebrick4'})
+                    self.listbox.itemconfig(i, {'fg':'VioletRed1'})
+                elif itemTitle == item.itemTitle and item.itemSprintID is not None:
+                    self.listbox.itemconfig(i, {'bg':'dark green'})
+                    self.listbox.itemconfig(i, {'fg':'lawn green'})
+            i += 1
+
+
+    def importListSorted(self, list):
+        self.deleteList()
+        self.fullList = list
+        for item in self.fullList:
+            self.listbox.insert(tk.END, item)
+        self.colorCodeListboxes()
+
+    def clearSearchEntry(self):
+        self.showFullList()
+        self.searchEntry.delete(0,tk.END)
+        self.colorCodeListboxes()
+
+
+    def search(self, str):
+        def fulfillsCondition(item,str):
+            return item[:len(str)].lower() == str.lower()
+
+        matches = [x for x in self.fullList if fulfillsCondition(x, str)]
+
+        self.showPartialList(matches)
+        self.colorCodeListboxes()
+
+
 class SList(BaseList):
     def __init__(self, controller, title):
+        BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
 
         self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)

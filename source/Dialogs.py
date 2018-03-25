@@ -291,6 +291,7 @@ class CreateItemDialog:
     def __init__(self, parent, dataBlock):
         self.parent = parent
         self.dataBlock = dataBlock
+        self.parent = parent
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.transient(parent)
@@ -362,12 +363,14 @@ class CreateItemDialog:
                 item.itemID = ScrumblesObjects.generateRowID()
                 comment.commentItemID = item.itemID
                 self.dataBlock.addNewScrumblesObject(item)
-            if len(comment.commentContent > 0):
+            if len(comment.commentContent) > 0:
                 try:
                     self.dataBlock.addNewScrumblesObject(comment)
                 except IntegrityError:
                     comment.commentID = ScrumblesObjects.generateRowID()
                     self.dataBlock.addNewScrumblesObject(comment)
+
+            self.dataBlock.addItemToProject(self.parent.activeProject,item)
 
         except Exception as e:
             messagebox.showerror('Error',str(e))
@@ -414,7 +417,7 @@ class AboutDialog:
         self.top.destroy()
 
 
-#todo get dataBlock from caller
+
 class EditItemDialog:
     def __init__(self, parent, dataBlock, Item):
         print(Item)
