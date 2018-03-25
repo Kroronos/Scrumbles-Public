@@ -14,6 +14,9 @@ class CreateProjectDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
         popUPDialog.geometry('300x100')
         popUPDialog.title('Create a New Project')
 
@@ -71,6 +74,9 @@ class CreateUserDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
         popUPDialog.geometry('300x250')
         popUPDialog.title('Create a New User')
 
@@ -161,6 +167,9 @@ class CreateSprintDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
         popUPDialog.geometry('300x250')
         popUPDialog.title('Create a New Sprint')
 
@@ -234,6 +243,9 @@ class CreateItemDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
         popUPDialog.geometry('300x250')
         popUPDialog.title('Create a New Item')
 
@@ -314,8 +326,12 @@ class AboutDialog:
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
         popUPDialog.geometry('550x200')
         popUPDialog.title('About Scrumbles')
+
 
         Tk.Label(popUPDialog, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
         linkLabel = Tk.Label(popUPDialog, text=self.apiLink,fg='blue')

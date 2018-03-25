@@ -156,6 +156,7 @@ class masterView(tk.Tk):
 
     def openAboutDialog(self):
         helpBox = Dialogs.AboutDialog(self)
+
         self.wait_window(helpBox.top)
 
     def updateOpenProjectsMenu(self):
