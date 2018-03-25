@@ -526,9 +526,9 @@ class SCardDescription(tk.Frame):
 
     def repack(self):
         self.title.pack(fill=tk.X)
-        self.cardDescriptions['Active'].pack(side=tk.TOP, fill=tk.BOTH)
+        self.cardDescriptions['Active'].pack(side=tk.TOP, expand=True, fill=tk.BOTH)
         self.canvas.pack_forget()
-        self.canvas.pack()
+        self.canvas.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
 
     def changeDescription(self, event):
