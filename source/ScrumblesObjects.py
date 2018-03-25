@@ -87,7 +87,17 @@ class Item:
         self.itemStatus = queryResultDict['Status']
 
     def getPriority(self):
-        return self.priorityEquivalents[self.itemPriority]
+        #will throw key error if itemPriority is not 1,2,3
+        return Item.priorityEquivalents[self.itemPriority]
+
+    def getStatus(self):
+        return Item.statusEquivalents[self.itemStatus]
+
+    def getFormattedDueDate(self):
+        return self.itemDueDate.strftime("%I:%M %p, %d/%m/%y")
+
+    def getFormattedCreationDate(self):
+        return self.itemCreationDate.strftime("%I:%M %p, %d/%m/%y")
 
 
 class Sprint:

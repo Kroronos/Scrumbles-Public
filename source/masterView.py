@@ -64,14 +64,15 @@ class masterView(tk.Tk):
 
         fileMenu = tk.Menu(menuBar, tearoff=0)
         self.fileMenu = fileMenu
-        fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
-        fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
-        fileMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
         fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
         self.setOpenProjectsMenu(fileMenu)
         self.dataBlock.packCallback(self.updateOpenProjectsMenu)
         fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
 
+        editMenu = tk.Menu(menuBar, tearoff=0)
+        editMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
+        editMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
+        editMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
@@ -88,6 +89,7 @@ class masterView(tk.Tk):
         helpMenu.add_command(label="About", command=self.openAboutDialog)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
+        menuBar.add_cascade(label="Edit", menu=editMenu)
         menuBar.add_cascade(label="Profile", menu=profileMenu)
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
