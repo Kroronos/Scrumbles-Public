@@ -321,20 +321,22 @@ class commentsField(tk.Frame):
         self.clearCommentField()
         for comment in listOfCommentsObject.listOfComments:
             self.comments.append(comment)
-        self.titleText.set("Comments from " + objectName)
+        self.titleText.set("Comments\n" + objectName)
         self.renderCommentField()
 
     def renderCommentField(self):
         self.comments = sorted(self.comments, key=lambda s: s.commentTimeStamp)
         for comment in self.comments:
-            commentLabel = tk.Label(self.commentField, comment.commentContent)
+            commentLabel = tk.Label(self.commentField, text=comment.commentContent)
             self.commentTextElements.append(commentLabel)
-            commentLabel.pack(side=tk.top, fill=tk.X)
+            commentLabel.pack(side=tk.TOP, fill=tk.X)
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
 
     def clearCommentField(self):
         self.comments.clear()
         self.commentField.pack_forget()
+        for element in self.commentTextElements:
+            element.pack_forget()
         self.commentTextElements.clear()
 
 
@@ -346,21 +348,37 @@ class SCardDescription(tk.Frame):
         self.dataBlock = master.dataBlock
         self.config(relief=tk.SUNKEN, borderwidth=5)
 
+        self.canvas = tk.Canvas(self, bd=1, scrollregion=(0,0,1000,1000), height=100)
+        self.scrollbar = tk.Scrollbar(self, command=self.canvas.yview)
+        self.canvas.config(yscrollcommand=self.scrollbar.set)
+
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.canvas.pack(expand=True, fill=tk.BOTH)
+
+        self.internals = tk.Frame(self.canvas)
+        self.canvasFrame = self.canvas.create_window(0,0,window=self.internals, anchor=tk.NW)
         self.titleText = tk.StringVar()
         self.titleText.set("Item Description")
-        self.title = tk.Label(self, textvariable=self.titleText,
+        self.title = tk.Label(self.internals, textvariable=self.titleText,
                               font=(style.header_family, style.header_size, style.header_weight))
         self.title.pack(fill=tk.BOTH)
-
+        self.internals.bind("<Configure>", self.OnFrameConfigure)
+        self.canvas.bind('<Configure>', self.FrameWidth)
         # Reference datatype with widget code as key, allowing data calls from ScrumblesFrames
         self.datatype = dict((source, table) for source, table in zip(sources, datatype))
 
         self.cardDescriptions = {}
-        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self)
-        self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self)
-        self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self)
+        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self.internals)
+        self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self.internals)
+        self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self.internals)
         self.cardDescriptions['Active'] = self.cardDescriptions['Start']
-        self.cardDescriptions['Active'].pack(side=tk.TOP)
+        self.cardDescriptions['Active'].pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+
+    def FrameWidth(self, event):
+        canvas_width = event.width
+        self.canvas.itemconfig(self.canvasFrame, width= canvas_width)
+    def OnFrameConfigure(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     class cardDescriptionStartFrame(tk.Frame):
         def __init__(self, controller):
@@ -388,6 +406,14 @@ class SCardDescription(tk.Frame):
             self.itemStatusT = tk.Label(self.itemStatusF, text="Status: ")
             self.itemStatus = tk.Label(self.itemStatusF, text="")
 
+            self.itemUserF = tk.Frame(self)
+            self.itemUserT = tk.Label(self.itemUserF, text="Assigned Users: ")
+            self.itemUser = tk.Label(self.itemUserF, text="")
+
+            self.itemSprintF = tk.Frame(self)
+            self.itemSprintT = tk.Label(self.itemSprintF, text="Assigned Sprint:")
+            self.itemSprint = tk.Label(self.itemSprintF, text="")
+
             self.itemDescriptionF = tk.Frame(self)
             self.itemDescriptionT = tk.Label(self.itemDescriptionF, text="Description: ")
             self.itemDescription = tk.Label(self.itemDescriptionF, text="")
@@ -400,6 +426,10 @@ class SCardDescription(tk.Frame):
             self.itemDueDate.pack(side=tk.LEFT, fill=tk.X)
             self.itemStatusT.pack(side=tk.LEFT, fill=tk.X)
             self.itemStatus.pack(side=tk.LEFT, fill=tk.X)
+            self.itemUserT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemUser.pack(side=tk.LEFT, fill=tk.X)
+            self.itemSprintT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemSprint.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
 
@@ -407,6 +437,8 @@ class SCardDescription(tk.Frame):
             self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
             self.itemDueDateF.pack(side=tk.TOP, fill=tk.X)
             self.itemStatusF.pack(side=tk.TOP, fill=tk.X)
+            self.itemUserF.pack(side=tk.TOP, fill=tk.X)
+            self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
             self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
 
         def repack(self):
@@ -420,12 +452,18 @@ class SCardDescription(tk.Frame):
             self.itemStatus.pack_forget()
             self.itemDescriptionT.pack_forget()
             self.itemDescription.pack_forget()
+            self.itemUserT.pack_forget()
+            self.itemUser.pack_forget()
+            self.itemSprintT.pack_forget()
+            self.itemSprint.pack_forget()
 
             self.itemTypeF.pack_forget()
             self.itemPriorityF.pack_forget()
             self.itemDueDateF.pack_forget()
             self.itemStatusF.pack_forget()
             self.itemDescriptionF.pack_forget()
+            self.itemUserF.pack_forget()
+            self.itemSprintF.pack_forget()
 
             self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
             self.itemType.pack(side=tk.LEFT, fill=tk.X)
@@ -435,6 +473,10 @@ class SCardDescription(tk.Frame):
             self.itemDueDate.pack(side=tk.LEFT, fill=tk.X)
             self.itemStatusT.pack(side=tk.LEFT, fill=tk.X)
             self.itemStatus.pack(side=tk.LEFT, fill=tk.X)
+            self.itemUserT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemUser.pack(side=tk.LEFT, fill=tk.X)
+            self.itemSprintT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemSprint.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
 
@@ -442,12 +484,13 @@ class SCardDescription(tk.Frame):
             self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
             self.itemDueDateF.pack(side=tk.TOP, fill=tk.X)
             self.itemStatusF.pack(side=tk.TOP, fill=tk.X)
+            self.itemUserF.pack(side=tk.TOP, fill=tk.X)
+            self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
             self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
 
     class cardDescriptionUserFrame(tk.Frame):
         def __init__(self, controller):
             tk.Frame.__init__(self, controller)
-
 
             self.userRoleF = tk.Frame(self)
             self.userRoleT = tk.Label(self.userRoleF, text="Role: ")
@@ -485,7 +528,9 @@ class SCardDescription(tk.Frame):
 
     def repack(self):
         self.title.pack(fill=tk.X)
-        self.cardDescriptions['Active'].pack(side=tk.TOP, fill=tk.BOTH)
+        self.cardDescriptions['Active'].pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+        self.canvas.pack_forget()
+        self.canvas.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
 
     def changeDescription(self, event):
@@ -538,10 +583,26 @@ class SCardDescription(tk.Frame):
 
     def generateItemFields(self, selectedItem):
         self.cardDescriptions["Item"].itemType.configure(text=selectedItem.itemType, justify=tk.LEFT, wraplength=300)
-        self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.itemPriority, justify=tk.LEFT, wraplength=300)
-        self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=300)
-        self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemStatus, justify=tk.LEFT, wraplength=300)
+        if selectedItem.itemPriority is not None and selectedItem.itemPriority != 0:
+            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.getPriority(), justify=tk.LEFT, wraplength=300)
+        else:
+            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.itemPriority, justify=tk.LEFT, wraplength=300)
+        if selectedItem.itemDueDate is not None:
+            self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.getFormattedDueDate(), justify=tk.LEFT, wraplength=300)
+        else:
+            self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemStatus.configure(text=selectedItem.getStatus(), justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDescription, justify=tk.LEFT, wraplength=300)
+        sprintName = ""
+        for sprint in self.master.dataBlock.sprints:
+            if sprint.sprintID == selectedItem.itemSprintID:
+                sprintName = sprint.sprintName
+        self.cardDescriptions["Item"].itemSprint.configure(text=sprintName, justify=tk.LEFT, wraplength=300)
+        userName = ""
+        for user in self.master.dataBlock.users:
+            if user.userID == selectedItem.itemUserID:
+                userName = user.userName
+        self.cardDescriptions["Item"].itemUser.configure(text=userName, justify=tk.LEFT, wraplength=300)
 
         self.cardDescriptions["Item"].repack()
 
