@@ -183,7 +183,12 @@ class DataBlock:
     @dbWrap
     def modifyItemStatus(self,item,status):
         assert status in range(0,4)
-        item.status = status
+        item.itemStatus = status
+        self.conn.setData(Query.updateObject(item))
+
+    @dbWrap
+    def modifyItemStatusByString(self,item,status):
+        item.itemStatus = item.statusEquivalentsReverse[status]
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
