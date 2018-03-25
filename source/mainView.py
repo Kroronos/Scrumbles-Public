@@ -6,7 +6,7 @@ class mainView(tk.Frame):
     def __init__(self, parent, controller,user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        self.usernameLabel = tk.Label(self, text='Welcome to the Main View ', font=("Verdana", 12))
+        self.usernameLabel = tk.Label(self, text='Welcome %s to the Main View '%controller.activeUser.userName, font=("Verdana", 12))
         self.usernameLabel.pack()
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Main View")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
