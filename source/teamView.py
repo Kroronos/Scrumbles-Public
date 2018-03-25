@@ -36,7 +36,9 @@ class teamView(tk.Frame):
 
         self.memberList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.assignedItemInspect.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.descriptionManager.pack(side=tk.LEFT, expand=True)
+        #self.descriptionManager.pack_propagate(0)
+        #self.descriptionManager.config(height=100, width=100)
+        self.descriptionManager.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.recentComments.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def updateFrame(self):
