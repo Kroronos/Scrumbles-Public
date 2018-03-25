@@ -40,7 +40,7 @@ class masterView(tk.Tk):
         self.dataConnection = None
         self.activeProject = None
         self.title("Scrumbles")
-        self.geometry("1000x600")
+        self.geometry("1900x1100")
 
         #self.iconbitmap("logo.ico")
 
