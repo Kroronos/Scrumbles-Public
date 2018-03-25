@@ -6,7 +6,6 @@ class mainView(tk.Frame):
     def __init__(self, parent, controller,user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Main View")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 

@@ -22,9 +22,24 @@ class DataBaseLoginInfo:
         return item
 
 def debug_ObjectdumpList(L):
-    if type(L[0]) == ScrumblesObjects.Item:
+    if len(L) == 0:
+        print('-----> ** Empty List ** <-----')
+
+    elif type(L[0]) == ScrumblesObjects.Item:
         for I in L:
-            print(I.itemTitle)
+            print('\t',I.itemTitle)
+    elif type(L[0]) == ScrumblesObjects.User:
+        for U in L:
+            print('\t',U.userName)
+    elif type(L[0]) == ScrumblesObjects.Sprint:
+        for S in L:
+            print('\t',S.sprintName)
+    elif type(L[0]) == ScrumblesObjects.Project:
+        for P in L:
+            print('\t',P.projectName)
+    elif type(L[0]) == ScrumblesObjects.Comment:
+        for C in L:
+            print('\t',C.commentUserID)
 
 def dbWrap(func):
     def wrapper(self,*args):
@@ -47,6 +62,7 @@ class DataBlock:
     sprints = []
     updaterCallbacks = []
 
+
     def __init__(self):
         self.alive = True
         self.dbLogin = DataBaseLoginInfo('login.txt')
@@ -67,6 +83,44 @@ class DataBlock:
     def getLen(self):
         rv = len(self.items)
         return rv
+
+    def debugDump(self):
+        print('\nDumping Projects')
+        debug_ObjectdumpList(self.projects)
+        for P in self.projects:
+            print('Dumping lists in ', P.projectName)
+            print('Dumping assgined Users')
+            debug_ObjectdumpList(P.listOfAssignedUsers)
+            print('Dumping assinged Sprints')
+            debug_ObjectdumpList(P.listOfAssignedSprints)
+            print('Dumping assigned Items')
+            debug_ObjectdumpList(P.listOfAssignedItems)
+        print('\nDumping Sprints')
+        debug_ObjectdumpList(self.sprints)
+        for S in self.sprints:
+            print('Dumping lists in ', S.sprintName)
+            print('Dumping assigned Items')
+            debug_ObjectdumpList(S.listOfAssignedItems)
+            print('Dumping assigned Users')
+            debug_ObjectdumpList(S.listOfAssignedUsers)
+        print('\nDumping Users')
+        debug_ObjectdumpList(self.users)
+        for U in self.users:
+            print('Dumping lists in ', U.userName)
+            print('Dumping assigned items')
+            debug_ObjectdumpList(U.listOfAssignedItems)
+            print('Dumping comments')
+            debug_ObjectdumpList(U.listOfComments)
+            print('Dumping in projects')
+            debug_ObjectdumpList(U.listOfProjects)
+        print('\nDumping Items')
+        debug_ObjectdumpList(self.items)
+        for I in self.items:
+            print('Dumping comments on item',I.itemTitle)
+        print('\nDumping Comments')
+        debug_ObjectdumpList(self.comments)
+
+
 
 
     def updateAllObjects(self):
@@ -134,12 +188,17 @@ class DataBlock:
                             item.projectID = project.projectID
                             project.listOfAssignedItems.append(item)
 
+
+        self.debugDump()
     def validateData(self):
         return self.getLen() > 0
 
     @dbWrap
     def addUserToProject(self,project,user):
-        self.conn.setData(ProjectQuery.addUser(project,user))
+        if user not in project.listOfAssignedUsers:
+            self.conn.setData(ProjectQuery.addUser(project,user))
+        else:
+            print('User already assigned to project')
 
     @dbWrap
     def removeUserFromProject(self,project,user):
@@ -153,13 +212,22 @@ class DataBlock:
         self.conn.setData(ProjectQuery.removeUser(project,user))
 
     @dbWrap
+    def addComment(self,comment):
+        self.conn.setData(Query.createObject(comment))
+
+
+    @dbWrap
     def assignUserToItem(self,user,item):
         item.itemUserID = user.userID
+        item.itemStatus = 1
         self.conn.setData(Query.updateObject(item))
     @dbWrap
     def addItemToProject(self,project,item):
-        item.projectID = project.projectID
-        self.conn.setData(ProjectQuery.addItem(project,item))
+        if item not in project.listOfAssignedItems:
+            item.projectID = project.projectID
+            self.conn.setData(ProjectQuery.addItem(project,item))
+        else:
+            print('Item already assigned to project')
     @dbWrap
     def removeItemFromProject(self,project,item):
         item.projectID = 0
@@ -182,7 +250,12 @@ class DataBlock:
     @dbWrap
     def modifyItemStatus(self,item,status):
         assert status in range(0,4)
-        item.status = status
+        item.itemStatus = status
+        self.conn.setData(Query.updateObject(item))
+
+    @dbWrap
+    def modifyItemStatusByString(self,item,status):
+        item.itemStatus = item.statusEquivalentsReverse[status]
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
@@ -414,14 +487,17 @@ class CardQuery(Query):
                 'CardTitle,' \
                 'CardDescription,' \
                 'CardCreatedDate,' \
+                'CardPoints,' \
                 'Status) VALUES (' \
                 '\'%s\',\'%s\',0,\'%s\',\'%s\',' \
-                'NOW(),0)' % (
+                'NOW(),\'%s\',0)' % (
             str(item.itemID),
             item.itemType,
             item.itemTitle,
-            item.itemDescription
+            item.itemDescription,
+            str(item.itemPoints)
         )
+        print(query)
         return query
 
     @staticmethod
@@ -442,17 +518,19 @@ class CardQuery(Query):
         itemDict['CodeLink'] = 'NULL'
         if item.itemCodeLink is not None:
             itemDict['CodeLink'] = "'"+item.itemCodeLink+"'"
+        itemDict['Points'] = "'"+item.itemPoints+"'"
 
-        query = 'UPDATE CardTable SET ' \
-                'CardType=%s,' \
-                'CardPriority=%s,' \
-                'CardTitle=%s,' \
-                'CardDescription=%s,' \
-                'CardDueDate=%s,' \
-                'CardCodeLink=%s,' \
-                'SprintID=%s,' \
-                'UserID=%s,' \
-                'Status=%s WHERE CardID=%s'% (
+        query = '''UPDATE CardTable SET
+                CardType=%s,
+                CardPriority=%s,
+                CardTitle=%s,
+                CardDescription=%s,
+                CardDueDate=%s,
+                CardCodeLink=%s,
+                SprintID=%s,
+                UserID=%s,
+                Status=%s,
+                CardPoints=%s WHERE CardID=%s'''% (
             itemDict['Type'],
             itemDict['Priority'],
             itemDict['Title'],
@@ -462,6 +540,7 @@ class CardQuery(Query):
             itemDict['Sprint'],
             itemDict['User'],
             itemDict['Status'],
+            itemDict['Points'],
             item.itemID
         )
         print(query)
