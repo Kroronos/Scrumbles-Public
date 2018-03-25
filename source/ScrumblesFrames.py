@@ -302,6 +302,15 @@ class itemPicker(tk.Frame):
         self.itemTypeValue = tk.StringVar()
         self.itemTypeEntry = tk.Entry(self, textvariable = self.itemTypeValue).grid(row = 5, column = 1)
  
+        self.itemUserLabel = tk.Label(self, text = "User: ", anchor = 'w').grid(row = 6)
+        self.itemUserValue = tk.StringVar()
+
+        #generate list of usernames
+        self.listOfUsers = []
+        for user in self.master.dataBlock.users:
+            self.listOfUsers.append(user.userName)
+
+        self.itemUserSelector = ttk.Combobox(self, textvariable = self.itemUserValue, values = self.listOfUsers , state = "readonly").grid(row = 6, column = 1)
 
         self.submitButton = tk.Button(self, text="Submit Changes", command = self.update_item).grid( column = 2 )
 
@@ -313,7 +322,7 @@ class itemPicker(tk.Frame):
     def selectItem(text):
         print("Item Selected")
 
-    def load_items(self, name, description, status, priority, itemType):
+    def load_items(self, name, description, status, priority, itemType, user):
         #do things
         print("Items Loaded")
         self.itemNameEntryText.set(name)
@@ -321,8 +330,9 @@ class itemPicker(tk.Frame):
         self.itemStatusValue.set(status)
         self.itemPriorityValue.set(priority)
         self.itemTypeValue.set(itemType)
+        self.itemUserValue.set(user)
 
-    def add_item(self):#item_type, item_priority, item_description):
+    def add_item(self):
         self.top = tk.Toplevel()
         self.top.title("New Item")
         self.top.itemAdditionLabel = tk.Label(self.top, text = "New Item Information", anchor = 'w').grid(row = 0, column = 0)
@@ -350,14 +360,13 @@ class itemPicker(tk.Frame):
         self.top.itemAdditionTypeLabel = tk.Label(self.top, text = "Item Type: ", anchor = 'w').grid(row = 5, column = 0)
         self.top.itemAdditionTypeText = tk.StringVar()
         self.top.itemAdditionTypeEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionTypeText).grid(row = 5, column = 1)
- 
-    
 
-        self.top.submitButton = tk.Button(self.top, text="Submit", command = self.add_item_to_database).grid( row = 6, column = 1 )
+        self.top.itemAdditionUserLabel = tk.Label(self.top, text = "User: ", anchor = 'w').grid(row = 6)
+        self.top.itemAdditionUserValue = tk.StringVar()
+        self.top.itemAdditionUserSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionUserValue, values = self.listOfUsers , state = "readonly").grid(row = 6, column = 1)
 
 
-
-        # print("Items added")
+        self.top.submitButton = tk.Button(self.top, text="Submit", command = self.add_item_to_database).grid( column = 2 )
     
     def add_item_to_database(self):
         
@@ -383,6 +392,11 @@ class itemPicker(tk.Frame):
             itemToAdd.itemStatus = 2
 
         itemToAdd.itemType = self.top.itemAdditionTypeText.get()
+
+        for user in self.master.dataBlock.users:
+            if user.userName == self.top.itemAdditionUserValue.get():
+                itemToAdd.itemUserID = user.userID
+
         self.master.dataBlock.addNewScrumblesObject(itemToAdd)
 
 
@@ -393,48 +407,40 @@ class itemPicker(tk.Frame):
         #do things
         print("Items remove")
     
-    def update_item(self):
+    def update_item(self, item):
+
+        item.itemTitle = self.itemNameEntryText.get()
+        item.itemDescription = self.itemDescriptionEntryText.get()
+       
 
         # ScrumblesData.DataBlock.updateScrumblesObject()
-        print("Items updated")
         
-        self.itemDescriptionEntryText.set("Updated")
-     
-
-class itemAdder(tk.Frame):
-    def __init__(self, controller):
-        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
-        self.controller = controller
-
-        self.itemAdderLabel = tk.Label(self, text = "Enter New Item Information", anchor = 'w').grid(row = 0, column = 0)
-
-
-        self.itemNameLabel = tk.Label(self, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
-        self.itemNameEntryText = tk.StringVar()
-        self.itemNameEntry = tk.Entry(self, textvariable = self.itemNameEntryText).grid(row = 1, column = 1)
-
-        self.itemDescriptionLabel =  tk.Label(self, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
-        self.itemDescriptionEntryText = tk.StringVar()
-        self.itemDescriptionEntry = tk.Entry(self, textvariable = self.itemDescriptionEntryText).grid(row = 2, column = 1)
-
-
-        self.itemPriorityLabel = tk.Label( self, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
-        self.itemPriorityValue = tk.StringVar()
-        self.priorities = ("Low Priority", "Medium Priority", "High Priority")
-        self.itemPrioritySelector = ttk.Combobox(self, textvariable = self.itemPriorityValue, values = self.priorities, state = "readonly").grid(row = 3, column = 1)
+        #encode priority
+        if self.itemPriorityValue.get() == self.priorities[0]:
+            item.itemPriority = 0
+        elif self.itemPriorityValue.get() == self.priorities[1]:
+            item.itemPriority = 1
+        elif self.itemPriorityValue.get() == self.priorities[2]:
+            item.itemPriority = 2
         
+        #encode status
+        if self.itemStatusValue.get() == self.statuses[0]:
+            item.itemStatus = 0
+        elif self.itemStatusValue.get() == self.statuses[1]:
+            item.itemStatus = 1
+        elif self.itemStatusValue.get() == self.statuses[2]:
+            item.itemStatus = 2
+        
+        item.itemType = self.itemTypeValue.get()
+        
+        for user in self.master.dataBlock.users:
+            if user.userName == self.itemUserValue.get():
+                item.itemUserID = user.userID
 
- 
-        self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
-        self.itemStatusValue = tk.StringVar()
-        self.statuses = ("Not started", "In Progress", "Done")
-        self.itemStatusSelector = ttk.Combobox(self, textvariable = self.itemStatusValue, values = self.statuses, state = "readonly").grid(row = 4, column = 1) 
- 
-        self.addButton = tk.Button(self, text = "Add Item", command = self.add_item).grid(row = 5, column = 1)
+        self.master.dataBlock.updateScrumblesObject(item)
 
-    def add_item(self):
-        print("Success")
 
+        
 
 
 class commentsField(tk.Frame):

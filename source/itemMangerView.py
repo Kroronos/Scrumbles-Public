@@ -34,13 +34,24 @@ class ItemManagerView(tk.Frame):
 		self.itemEditor.pack(side = tk.LEFT, fill = tk.BOTH, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
 	def dynamicEventHandler(self, event):
-		index = self.itemList.listbox.curselection()
+		
 		# print(self.itemList.listbox.get(index))
 		# # print(self.itemList.listbox.get(index).itemTitle)
 		# print(self.items[0].itemType)
 		# print(self.items[0].getTitle())
 
-		self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription(), self.items[index[0]].getEnglishStatus(), self.items[index[0]].getEnglishPriority(), self.items[index[0]].getType() )
+		if event.widget is self.itemList.listbox:
+			index = self.itemList.listbox.curselection()
+			userName = ""
+		
+			for user in self.controller.dataBlock.users:
+				if user.userID == self.items[index[0]].itemUserID:
+					userName = user.userName
+
+			self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription(), self.items[index[0]].getEnglishStatus(), self.items[index[0]].getEnglishPriority(), self.items[index[0]].getType(), userName )
+		elif event.widget is self.itemEditor.submitButton:
+			self.itemEditor.update_item(self.items[index[0]])
+		
 
 
 		print("item Selected")
