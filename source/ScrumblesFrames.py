@@ -240,7 +240,7 @@ class SBacklogListColor(SBacklogList):
                 if itemTitle == item.itemTitle and item.itemSprintID is None:
                     self.listbox.itemconfig(i, {'bg': 'firebrick4'})
                     self.listbox.itemconfig(i, {'fg':'VioletRed1'})
-                else:
+                elif itemTitle == item.itemTitle and item.itemSprintID is not None:
                     self.listbox.itemconfig(i, {'bg':'dark green'})
                     self.listbox.itemconfig(i, {'fg':'lawn green'})
             i += 1

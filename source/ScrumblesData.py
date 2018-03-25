@@ -136,6 +136,8 @@ class DataBlock:
 
                             project.listOfAssignedItems.append(item)
 
+        return True
+
     def validateData(self):
         return self.getLen() > 0
 
@@ -207,9 +209,9 @@ class DataBlock:
         while self.alive:
             time.sleep(5)
             if self.listener.isDBChanged:
-                self.updateAllObjects()
+                #self.updateAllObjects()
                 with self.cv:
-                    self.cv.wait_for(self.validateData)
+                    self.cv.wait_for(self.updateAllObjects)
 
                     self.executeUpdaterCallbacks()
                     self.listener.isDBChanged = False

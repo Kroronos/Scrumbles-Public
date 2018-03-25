@@ -6,7 +6,7 @@ import ScrumblesObjects
 import ScrumblesFrames
 import Dialogs
 import listboxEventHandler
-
+import time
 import threading
 
 #from tkinter import ttk
@@ -14,7 +14,10 @@ import threading
 class backlogView(tk.Frame):
     def __init__(self, parent, controller,user):
         tk.Frame.__init__(self, parent)
+        self.selectedItem = None
+        self.selectedSprint = None
         self.controller = controller
+        self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
         self.projectNameLabelText = tk.StringVar
         self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
         self.projectNameLabel = tk.Label(self, text=self.projectNameLabelText, font=("Verdana", 12))
@@ -27,6 +30,8 @@ class backlogView(tk.Frame):
         self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.pack(side=tk.LEFT, fill=tk.Y)
+        self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: self.context_menu(event, self.contextMenu))
 
 
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
@@ -36,7 +41,7 @@ class backlogView(tk.Frame):
 
         self.sprintBacklog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
         self.sprintBacklog.pack(side=tk.LEFT, fill=tk.Y)
-        self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+
         self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.context_menu(event, self.contextMenu))
 
 
@@ -50,17 +55,6 @@ class backlogView(tk.Frame):
 
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.controller.dataBlock.packCallback(self.updateBacklogViewData)
-
-        self.sprintListData = self.controller.activeProject.listOfAssignedSprints
-        self.controller.dataBlock.packCallback(self.updateBacklogViewData)
-
-
-        self.selectedSprint = None
-
-
-
-        self.controller.dataBlock.packCallback(self.updateBacklogViewData)
-
         self.updateBacklogViewData()
 
         
@@ -95,8 +89,8 @@ class backlogView(tk.Frame):
 
     def updateItem(self):
         item = None
-        title = self.itemTitle
-        for i in self.controller.activeProject.listOfAssignedItems:
+        title = self.selectedItem
+        for i in self.controller.dataBlock.items:
             if i.itemTitle == title:
                item = i
 
@@ -120,7 +114,7 @@ class backlogView(tk.Frame):
          _, yoffset, _, height = widget.bbox(index)
          if event.y > height + yoffset + 5:
              return
-         self.itemTitle = widget.get(index)
+         self.selectedItem = widget.get(index)
          #print('do something')
          menu.post(event.x_root, event.y_root)
 
@@ -129,6 +123,8 @@ class backlogView(tk.Frame):
 
 
     def updateBacklogViewData(self):
+        print('Calling updateBacklogViewData')
+
         self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
         self.projectNameLabel['text'] = self.projectNameLabelText
         self.sprintList.clearList()
@@ -136,8 +132,6 @@ class backlogView(tk.Frame):
         self.fullBacklog.clearList()
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.sprintList.importSprintsList(self.sprintListData)
-        print('importing project',hex(id(self.controller.activeProject)))
-        print('with List',hex(id(self.controller.activeProject.listOfAssignedItems)))
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
 
