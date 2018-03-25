@@ -363,7 +363,7 @@ class CreateItemDialog:
                 item.itemID = ScrumblesObjects.generateRowID()
                 comment.commentItemID = item.itemID
                 self.dataBlock.addNewScrumblesObject(item)
-            if len(comment.commentContent > 0):
+            if len(comment.commentContent) > 0:
                 try:
                     self.dataBlock.addNewScrumblesObject(comment)
                 except IntegrityError:

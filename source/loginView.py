@@ -85,7 +85,10 @@ class loginView(tk.Frame):
 
 
         try:
-           loggedInUser = authenticateUser(username, password, dbLoginInfo)
+            loggedInUserName = authenticateUser(username, password, dbLoginInfo)
+            for user in self.controller.dataBlock.users:
+                if loggedInUserName == user.userName:
+                    loggedInUser = user
         except Exception as error:
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUser
