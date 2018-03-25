@@ -18,7 +18,8 @@ class CreateProjectDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('300x100')
+        popUPDialog.geometry('600x200')
+
         popUPDialog.title('Create a New Project')
 
         Tk.Label(popUPDialog, text="Project Title").grid(row=2, column=1, pady=5, sticky='E')
@@ -78,7 +79,7 @@ class CreateUserDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('300x250')
+        popUPDialog.geometry('600x500')
         popUPDialog.title('Create a New User')
 
         Tk.Label(popUPDialog, text="User Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -176,8 +177,8 @@ class CreateSprintDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('300x250')
 
+        popUPDialog.geometry('900x500')
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -295,7 +296,7 @@ class CreateItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('350x400')
+        popUPDialog.geometry('600x600')
         popUPDialog.title('Create a New Item')
 
 
@@ -394,7 +395,7 @@ class AboutDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('550x200')
+        popUPDialog.geometry('1100x400')
         popUPDialog.title('About Scrumbles')
 
 
@@ -432,7 +433,7 @@ class EditItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        #popUPDialog.geometry('300x250')
+        popUPDialog.geometry('600x600')
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')

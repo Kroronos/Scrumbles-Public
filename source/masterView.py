@@ -1,3 +1,4 @@
+
 import tkinter as tk
 
 import mainView 
@@ -205,4 +206,5 @@ def exitProgram(mainwindow):
 
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
+
 
