@@ -115,6 +115,7 @@ class backlogView(tk.Frame):
 
 
     def updateBacklogViewData(self):
+        #ScrumblesData.debug_ObjectdumpList(self.controller.activeProject.listOfAssignedItems)
         self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
         self.projectNameLabel['text'] = self.projectNameLabelText
         self.sprintList.clearList()
@@ -122,6 +123,8 @@ class backlogView(tk.Frame):
         self.fullBacklog.clearList()
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.sprintList.importSprintsList(self.sprintListData)
+        print('importing project',hex(id(self.controller.activeProject)))
+        print('with List',hex(id(self.controller.activeProject.listOfAssignedItems)))
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
 
