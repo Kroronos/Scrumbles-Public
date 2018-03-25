@@ -327,9 +327,9 @@ class commentsField(tk.Frame):
     def renderCommentField(self):
         self.comments = sorted(self.comments, key=lambda s: s.commentTimeStamp)
         for comment in self.comments:
-            commentLabel = tk.Label(self.commentField, comment.commentContent)
+            commentLabel = tk.Label(self.commentField, text=comment.commentContent)
             self.commentTextElements.append(commentLabel)
-            commentLabel.pack(side=tk.top, fill=tk.X)
+            commentLabel.pack(side=tk.TOP, fill=tk.X)
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
 
     def clearCommentField(self):
