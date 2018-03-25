@@ -5,7 +5,8 @@ import ScrumblesObjects
 
 import ScrumblesFrames
 import Dialogs
-
+import listboxEventHandler
+import time
 import threading
 
 #from tkinter import ttk
@@ -14,56 +15,92 @@ class backlogManagerView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        self.selectedItem = None
+        self.selectedSprint = None
+        self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+
 
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog Manager")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
-        products = ("PRODUCTS", "PRODUCT A", "PRODUCT B", "PRODUCT C")
-        self.productList = ScrumblesFrames.SComboList(self, "PRODUCT BACKLOG", products)
-        self.backlog = ScrumblesFrames.SBacklogList(self)
+        self.projectNameLabelText = tk.StringVar
+        self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
+        self.projectNameLabel = tk.Label(self, text=self.projectNameLabelText, font=("Verdana", 12))
+        self.projectNameLabel.pack()
+
+        self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
+        self.backlog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
+        self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
+        self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
+        self.fullBacklog.pack(side=tk.LEFT, fill=tk.Y)
+        self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: self.context_menu(event, self.contextMenu))
+
+
+        self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
+        self.sprintListData = self.controller.activeProject.listOfAssignedSprints
+        self.sprintList.importSprintsList(self.sprintListData)
+        self.sprintList.pack(side=tk.LEFT, fill=tk.Y)
+
+        self.sprintBacklog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
+        self.sprintBacklog.pack(side=tk.LEFT, fill=tk.Y)
+
+        self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.context_menu(event, self.contextMenu))
+
+
+
 
         self.contextMenu = tk.Menu()
-        self.aqua = parent.tk.call('tk','windowingsystem') == 'aqua'
+
         self.contextMenu.add_command(label=u'Update Item',command=self.updateItem)
 
 
 
-
-        self.productListData = self.controller.dataBlock.projects
-        self.backlogData = self.controller.dataBlock.items
+        self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.controller.dataBlock.packCallback(self.updateBacklogViewData)
+        self.updateBacklogViewData()
 
 
 
+        #Append Any Sources for Dynamic Events to this List
+        dynamicSources = [self.sprintList.listbox, self.fullBacklog.listbox]#ADD ITEMS HERE
 
-        #todo Not sure if it was Projects that was supposed to be displayed under Products...
+        # To Prevent Duplicate Tkinter Events
+        self.eventHandler = listboxEventHandler.listboxEventHandler()
+        self.eventHandler.setEventToHandle(self.listboxEvents)
+        self.fullBacklog.colorCodeListboxes()
 
-        #self.productListData = ["1","2","3","4","5","6","7",]
-        #self.backlogData = ["a","b","c","bee","e","f","g",]
 
 
+        #Bind Sources
+        for source in dynamicSources:
+            source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
-        self.productList.importProjectList(self.productListData)
+        #todo Click on project name to display items in sprintBacklog
+        #todo click and drag on items in sprintBacklog to change priority variable of an item so that sort will be user defined
 
-        self.backlog.importItemList(self.backlogData)
-        self.backlog.listbox.bind('<2>' if self.aqua else '<3>', lambda event: self.context_menu(event,self.contextMenu))
-        self.productList.pack(side=tk.LEFT, fill=tk.Y)
-        self.backlog.pack(side=tk.LEFT, fill=tk.Y)
+    def colorizeBackLogList(self):
+        for index in range(len(self.controller.activeProject.listOfAssignedItems)):
+            for S in self.controller.activeProject.listOfAssignedSprints:
+                if self.controller.activeProject.listOfAssignedItems[index] in S.listOfAssignedItems:
+                    self.fullBacklog.listbox.itemconfig(index,{'bg': 'firebrick'})
+                    self.fullBacklog.listbox.itemconfig(index,{'fg': 'red'})
+                else:
+                    self.fullBacklog.listbox.itemconfig(index,{'bg' : 'dark green'})
+                    self.fullBacklog.listbox.itemconfig(index,{'fg' : 'lawn green'})
 
-        #todo Click on project name to display items in backlog
-        #todo click and drag on items in backlog to change priority variable of an item so that sort will be user defined
 
     def updateItem(self):
         item = None
-        title = self.itemTitle
-        for i in self.backlogData:
+        title = self.selectedItem
+        for i in self.controller.dataBlock.items:
             if i.itemTitle == title:
                item = i
 
         if item is None:
             print('Item Title:',title)
             print('backlogData:')
-            for i in self.backlogData:
+            for i in self.controller.activeProject.listOfAssignedItems:
                 print(i.itemTitle)
             raise Exception('Error Loading item from title')
 
@@ -80,18 +117,44 @@ class backlogManagerView(tk.Frame):
          _, yoffset, _, height = widget.bbox(index)
          if event.y > height + yoffset + 5:
              return
-         self.itemTitle = widget.get(index)
+         self.selectedItem = widget.get(index)
          #print('do something')
          menu.post(event.x_root, event.y_root)
 
 
 
 
+
     def updateBacklogViewData(self):
-        self.productList.clearList()
-        self.backlog.clearList()
-        self.productList.importProjectList(self.productListData)
-        self.backlog.importItemList(self.backlogData)
+        print('Calling updateBacklogViewData')
+
+        self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
+        self.projectNameLabel['text'] = self.projectNameLabelText
+        self.sprintList.clearList()
+        self.sprintBacklog.clearList()
+        self.fullBacklog.clearList()
+        self.sprintListData = self.controller.activeProject.listOfAssignedSprints
+        self.sprintList.importSprintsList(self.sprintListData)
+        self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
+        self.fullBacklog.colorCodeListboxes()
+
+
+
+
+    def assignedSprintSelectedEvent(self, event):
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            if sprint.sprintName == event.widget.get(tk.ANCHOR):
+                self.selectedSprint = sprint
+                self.assignedItems = sprint.listOfAssignedItems
+                self.sprintBacklog.importItemList(self.assignedItems)
+
+
+
+
+    def listboxEvents(self, event):
+        if event.widget is self.sprintList.listbox:
+            self.assignedSprintSelectedEvent(event)
+
 
 
         #######################################################################
