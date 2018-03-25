@@ -30,7 +30,7 @@ class ItemManagerView(tk.Frame):
 		self.commentField = ScrumblesFrames.commentsField(self)
 		self.commentField.pack(side = tk.RIGHT, fill = tk.Y, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
-		self.itemEditor = ScrumblesFrames.itemPicker(self)
+		self.itemEditor = ScrumblesFrames.itemPicker(self, controller)
 		self.itemEditor.pack(side = tk.LEFT, fill = tk.BOTH, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
 	def dynamicEventHandler(self, event):
@@ -40,7 +40,7 @@ class ItemManagerView(tk.Frame):
 		# print(self.items[0].itemType)
 		# print(self.items[0].getTitle())
 
-		self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription(), self.items[index[0]].getStatus(), self.items[index[0]].getEnglishPriority() )
+		self.itemEditor.load_items(self.itemList.listbox.get(index), self.items[index[0]].getDescription(), self.items[index[0]].getEnglishStatus(), self.items[index[0]].getEnglishPriority(), self.items[index[0]].getType() )
 
 
 		print("item Selected")

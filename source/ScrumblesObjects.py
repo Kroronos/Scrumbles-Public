@@ -83,6 +83,7 @@ class Item:
         self.itemSprintID = queryResultDict['SprintID']
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
+        self.listOfStatuses = {0 : "Not Started", 1 : "In Progress", 2: "Done"}
         self.listOfPriorities = {0 : "Low Priotity", 1 : "Medium Priotity", 2: "High Priotity"}
 
     #NOTE This functions takes in the whole list from a query result
@@ -105,6 +106,12 @@ class Item:
         else:
             return "Invalid Priority Value"
 
+    def getEnglishStatus(self):
+        if self.itemStatus >= 0 and self.itemStatus <= 2:
+            return self.listOfStatuses[self.itemStatus]
+        else:
+            return "Invalid Status Value"
+
     def getDescription(self):
         return self.itemDescription
 
@@ -113,6 +120,9 @@ class Item:
 
     def getStatus(self):
         return self.itemStatus
+
+    def getType(self):
+        return self.itemType
 
 
 class Sprint:
