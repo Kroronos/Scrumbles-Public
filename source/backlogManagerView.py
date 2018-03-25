@@ -11,19 +11,22 @@ import threading
 
 #from tkinter import ttk
 
-class backlogView(tk.Frame):
-    def __init__(self, parent, controller,user):
+class backlogManagerView(tk.Frame):
+    def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
+        self.controller = controller
         self.selectedItem = None
         self.selectedSprint = None
-        self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+
+
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog Manager")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
+
         self.projectNameLabelText = tk.StringVar
         self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
         self.projectNameLabel = tk.Label(self, text=self.projectNameLabelText, font=("Verdana", 12))
         self.projectNameLabel.pack()
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog View")
-        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
         self.backlog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
@@ -57,7 +60,7 @@ class backlogView(tk.Frame):
         self.controller.dataBlock.packCallback(self.updateBacklogViewData)
         self.updateBacklogViewData()
 
-        
+
 
         #Append Any Sources for Dynamic Events to this List
         dynamicSources = [self.sprintList.listbox, self.fullBacklog.listbox]#ADD ITEMS HERE

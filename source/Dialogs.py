@@ -6,6 +6,7 @@ import ScrumblesData
 import ScrumblesObjects
 import webbrowser
 import sys, traceback
+import datetime
 
 
 class CreateProjectDialog:
@@ -14,7 +15,11 @@ class CreateProjectDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x100')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+        popUPDialog.geometry('600x200')
+
         popUPDialog.title('Create a New Project')
 
         Tk.Label(popUPDialog, text="Project Title").grid(row=2, column=1, pady=5, sticky='E')
@@ -71,7 +76,10 @@ class CreateUserDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x250')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+        popUPDialog.geometry('600x500')
         popUPDialog.title('Create a New User')
 
         Tk.Label(popUPDialog, text="User Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -158,14 +166,40 @@ class CreateSprintDialog:
 
     def __init__(self, parent, dataBlock):
 
+        self.month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Nov','Dec']
+        self.day = [str(d) for d in range(1,32)]
+        self.year = [str(y) for y in range(2018,2100)]
+
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x250')
+
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+
+        popUPDialog.geometry('900x500')
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
         Tk.Label(popUPDialog, text="Project").grid(row=3,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Start Date").grid(row=4,column=1,pady=5,sticky='E')
+        Tk.Label(popUPDialog, text="Due Date").grid(row=5,column=1,pady=5,sticky='E')
+        monthVar = Tk.StringVar()
+        monthVar = 'Jan'
+        self.StartMonthCombo = ttk.Combobox(popUPDialog,textvariable=monthVar,values=self.month,state='readonly',width=5)
+        self.StartMonthCombo.grid(row=4,column=2)
+        self.StartDayCombo = ttk.Combobox(popUPDialog,values=self.day,state='readonly',width=3)
+        self.StartDayCombo.grid(row=4,column=3)
+        self.StartYearCombo = ttk.Combobox(popUPDialog,values=self.year,state='readonly',width=5)
+        self.StartYearCombo.grid(row=4,column=4)
+
+        self.DueMonthCombo = ttk.Combobox(popUPDialog, values=self.month, state='readonly',width=5)
+        self.DueMonthCombo.grid(row=5, column=2)
+        self.DueDayCombo = ttk.Combobox(popUPDialog, values=self.day, state='readonly',width=3)
+        self.DueDayCombo.grid(row=5, column=3)
+        self.DueYearCombo = ttk.Combobox(popUPDialog, values=self.year, state='readonly',width=5)
+        self.DueYearCombo.grid(row=5, column=4)
 
 
         self.sprintNameEntry = Tk.Entry(popUPDialog)
@@ -176,12 +210,33 @@ class CreateSprintDialog:
         self.assignSprintToObject.grid(row=3,column=2,pady=5)
 
 
+
         createButton = Tk.Button(popUPDialog, text="Create Sprint", command=self.ok)
         createButton.grid(row=8,column=2,pady=5)
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
         cancelButton.grid(row=8,column=1,pady=5)
 
 
+    def getStartDate(self):
+        month = self.StartMonthCombo.get()
+        day = self.StartDayCombo.get()
+        year = self.StartYearCombo.get()
+
+        if month == '' or day == '' or year == '':
+            dateString = 'Jan 1 2100 5:00PM'
+        else:
+            dateString = month+" "+day+" "+year+" 5:00PM"
+        return datetime.datetime.strptime(dateString,'%b %d %Y %I:%M%p')
+
+    def getDueDate(self):
+        month = self.DueMonthCombo.get()
+        day = self.DueDayCombo.get()
+        year = self.DueYearCombo.get()
+        if month == '' or day == '' or year == '':
+            dateString = 'Jan 1 2100 5:00PM'
+        else:
+            dateString = month+" "+day+" "+year+" 5:00PM"
+        return datetime.datetime.strptime(dateString,'%b %d %Y %I:%M%p')
 
     def ok(self):
 
@@ -189,7 +244,12 @@ class CreateSprintDialog:
 
             sprint = ScrumblesObjects.Sprint()
             sprint.sprintName = self.sprintNameEntry.get()
-            print('SprintDialog get sprint name;',sprint.sprintName)
+            sprint.sprintStartDate = self.getStartDate()
+            sprint.sprintDueDate = self.getDueDate()
+            print('SprintDilog get sprint name;',sprint.sprintName)
+
+
+
             projectName = self.assignSprintToObject.get()
             for P in self.dataBlock.projects:
                 if P.projectName == projectName:
@@ -229,12 +289,15 @@ class CreateSprintDialog:
 class CreateItemDialog:
 
     def __init__(self, parent, dataBlock):
-
+        self.parent = parent
         self.dataBlock = dataBlock
         self.parent = parent
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x250')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+        popUPDialog.geometry('600x600')
         popUPDialog.title('Create a New Item')
 
 
@@ -258,11 +321,18 @@ class CreateItemDialog:
         self.ItemTypebox.grid(row=6, column=2,sticky='W')
         self.ItemTypebox.selection_clear()
 
+        self.pointsEntryLabel = Tk.Label(popUPDialog, text="Points").grid(row=7,column=1,sticky='E')
+        self.pointsEntry = Tk.Entry(popUPDialog)
+        self.pointsEntry.grid(row=7,column=2)
+
+        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Comment').grid(row=9, column=1, sticky='E')
+        self.commentTextBox = Tk.Text(popUPDialog, height=6, width=20, wrap=Tk.WORD)
+        self.commentTextBox.grid(row=9, column=2,pady=5)
 
         createButton = Tk.Button(popUPDialog, text="Create Item", command=self.ok)
-        createButton.grid(row=8,column=2,pady=5)
+        createButton.grid(row=10,column=2,pady=5)
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
-        cancelButton.grid(row=8,column=1,pady=5)
+        cancelButton.grid(row=10,column=1,pady=5)
 
 
     def ok(self):
@@ -275,13 +345,30 @@ class CreateItemDialog:
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
             item.itemType = self.ItemTypebox.get()
+            item.itemPoints = self.pointsEntry.get()
+
+            comment = ScrumblesObjects.Comment()
+            comment.commentContent = self.commentTextBox.get('1.0','end-1c')
+            comment.commentUserID = self.parent.activeUser.userID
+            comment.commentItemID = item.itemID
+
+
+            if not item.itemPoints.isdigit():
+                raise Exception('Points must be a number')
 
 
             try:
                 self.dataBlock.addNewScrumblesObject(item)
             except IntegrityError:
                 item.itemID = ScrumblesObjects.generateRowID()
+                comment.commentItemID = item.itemID
                 self.dataBlock.addNewScrumblesObject(item)
+            if len(comment.commentContent > 0):
+                try:
+                    self.dataBlock.addNewScrumblesObject(comment)
+                except IntegrityError:
+                    comment.commentID = ScrumblesObjects.generateRowID()
+                    self.dataBlock.addNewScrumblesObject(comment)
 
             self.dataBlock.addItemToProject(self.parent.activeProject,item)
 
@@ -308,8 +395,12 @@ class AboutDialog:
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('550x200')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+        popUPDialog.geometry('1100x400')
         popUPDialog.title('About Scrumbles')
+
 
         Tk.Label(popUPDialog, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
         linkLabel = Tk.Label(popUPDialog, text=self.apiLink,fg='blue')
@@ -342,7 +433,10 @@ class EditItemDialog:
         sprintNames = [sprint.sprintName for sprint in self.listOfSprints]
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        #popUPDialog.geometry('300x250')
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.resizable(0, 0)
+        popUPDialog.geometry('600x600')
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
