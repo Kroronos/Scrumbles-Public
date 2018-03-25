@@ -346,21 +346,37 @@ class SCardDescription(tk.Frame):
         self.dataBlock = master.dataBlock
         self.config(relief=tk.SUNKEN, borderwidth=5)
 
+        self.canvas = tk.Canvas(self, bd=1, scrollregion=(0,0,1000,1000), height=100)
+        self.scrollbar = tk.Scrollbar(self, command=self.canvas.yview)
+        self.canvas.config(yscrollcommand=self.scrollbar.set)
+
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.canvas.pack(expand=True, fill=tk.BOTH)
+
+        self.internals = tk.Frame(self.canvas)
+        self.canvasFrame = self.canvas.create_window(0,0,window=self.internals, anchor=tk.NW)
         self.titleText = tk.StringVar()
         self.titleText.set("Item Description")
-        self.title = tk.Label(self, textvariable=self.titleText,
+        self.title = tk.Label(self.internals, textvariable=self.titleText,
                               font=(style.header_family, style.header_size, style.header_weight))
         self.title.pack(fill=tk.BOTH)
-
+        self.internals.bind("<Configure>", self.OnFrameConfigure)
+        self.canvas.bind('<Configure>', self.FrameWidth)
         # Reference datatype with widget code as key, allowing data calls from ScrumblesFrames
         self.datatype = dict((source, table) for source, table in zip(sources, datatype))
 
         self.cardDescriptions = {}
-        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self)
-        self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self)
-        self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self)
+        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self.internals)
+        self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self.internals)
+        self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self.internals)
         self.cardDescriptions['Active'] = self.cardDescriptions['Start']
-        self.cardDescriptions['Active'].pack(side=tk.TOP)
+        self.cardDescriptions['Active'].pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+
+    def FrameWidth(self, event):
+        canvas_width = event.width
+        self.canvas.itemconfig(self.canvasFrame, width= canvas_width)
+    def OnFrameConfigure(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     class cardDescriptionStartFrame(tk.Frame):
         def __init__(self, controller):
@@ -511,6 +527,8 @@ class SCardDescription(tk.Frame):
     def repack(self):
         self.title.pack(fill=tk.X)
         self.cardDescriptions['Active'].pack(side=tk.TOP, fill=tk.BOTH)
+        self.canvas.pack_forget()
+        self.canvas.pack()
 
 
     def changeDescription(self, event):

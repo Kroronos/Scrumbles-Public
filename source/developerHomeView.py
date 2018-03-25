@@ -46,9 +46,7 @@ class developerHomeView(tk.Frame):
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
         self.teamMemberList.pack(side=tk.RIGHT, fill=tk.Y)
-        #self.descriptionManager.pack_propagate(0)
-        #self.descriptionManager.config(height=100, width=100)
-        self.descriptionManager.pack(side=tk.TOP, fill=tk.BOTH, expand=True, ipadx=10, ipady=10)
+        self.descriptionManager.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.cal.pack(side=tk.TOP, fill=tk.BOTH)
         self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)
 
