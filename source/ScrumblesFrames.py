@@ -17,6 +17,7 @@ from tkinter import ttk
 class BaseList(tk.Frame,tk.Listbox):
     def __init__(self, controller):
         self.fullList = []
+        self.controller = controller
 
     # def get(self,*args,**kwargs):
     #     return self.listbox.get(*args,**kwargs)
@@ -218,6 +219,49 @@ class SBacklogList(BaseList):
     def clearSearchEntry(self):
         self.showFullList()
         self.searchEntry.delete(0,tk.END)
+
+class SBacklogListColor(SBacklogList):
+    def __init__(self, controller, title):
+        SBacklogList.__init__(self, controller, title)
+
+
+
+    def colorCodeListboxes(self):
+        i = 0
+        partialList = []
+        for item in self.controller.controller.activeProject.listOfAssignedItems:
+            for item2 in self.listbox.get(0,tk.END):
+                if item.itemTitle == item2:
+                    partialList.append(item)
+
+        for item in partialList:
+            if item.itemSprintID == None:
+                self.listbox.itemconfig(i, {'bg':'red'})
+            else:
+                self.listbox.itemconfig(i, {'bg':'green'})
+            i=i+1
+
+    def importListSorted(self, list):
+        self.deleteList()
+        self.fullList = list
+        for item in self.fullList:
+            self.listbox.insert(tk.END, item)
+        self.colorCodeListboxes()
+
+    def clearSearchEntry(self):
+        self.showFullList()
+        self.searchEntry.delete(0,tk.END)
+        self.colorCodeListboxes()
+
+
+    def search(self, str):
+        def fulfillsCondition(item,str):
+            return item[:len(str)].lower() == str.lower()
+
+        matches = [x for x in self.fullList if fulfillsCondition(x, str)]
+
+        self.showPartialList(matches)
+        self.colorCodeListboxes()
 
 
 class SList(BaseList):

@@ -21,7 +21,7 @@ class backlogView(tk.Frame):
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
         self.backlog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
-        self.fullBacklog = ScrumblesFrames.SBacklogList(self,"ALL ITEMS")
+        self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
 
         self.contextMenu = tk.Menu()
         self.aqua = parent.tk.call('tk','windowingsystem') == 'aqua'
@@ -32,7 +32,6 @@ class backlogView(tk.Frame):
 
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.controller.dataBlock.packCallback(self.updateBacklogViewData)
-
 
 
 
@@ -54,6 +53,9 @@ class backlogView(tk.Frame):
 
 
         self.controller.dataBlock.packCallback(self.updateBacklogViewData)
+
+        self.updateBacklogViewData()
+
         
 
         #Append Any Sources for Dynamic Events to this List
@@ -62,6 +64,8 @@ class backlogView(tk.Frame):
         # To Prevent Duplicate Tkinter Events
         self.eventHandler = listboxEventHandler.listboxEventHandler()
         self.eventHandler.setEventToHandle(self.listboxEvents)
+
+
 
         #Bind Sources
         for source in dynamicSources:
@@ -104,12 +108,14 @@ class backlogView(tk.Frame):
 
 
 
+
     def updateBacklogViewData(self):
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.sprintList.clearList()
         self.backlog.clearList()
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.sprintList.importSprintsList(self.sprintListData)
+        self.fullBacklog.colorCodeListboxes()
 
 
 
