@@ -4,7 +4,7 @@ import mainView
 import loginView
 import backlogView
 import developerHomeView
-import itemMangerView
+import itemManagerView
 import teamView
 
 import Dialogs
@@ -83,7 +83,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Team View", command=lambda: self.show_frame(teamView))
         viewMenu.add_command(label="Sprint View", command=lambda: self.show_frame(mainView))
         viewMenu.add_command(label="Projects Backlog View", command=lambda: self.show_frame(backlogView))
-        viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemMangerView))
+        viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemManagerView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label="About", command=self.openAboutDialog)
@@ -117,7 +117,7 @@ class masterView(tk.Tk):
         views.append(backlogView)
         viewNames.append("Backlog View")
 
-        views.append(itemMangerView)
+        views.append(itemManagerView)
         viewNames.append("Item Manager View")
         return views, viewNames
 
@@ -142,13 +142,13 @@ class masterView(tk.Tk):
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         backlogViewFrame = backlogView.backlogView(self.container, self, loggedInUser)
-        itemManagerFrame = itemMangerView.ItemManagerView(self.container, self)
+        itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
         teamViewFrame = teamView.teamView(self.container, self, loggedInUser)
 
         self.add_frame(mainFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(backlogViewFrame, backlogView)
-        self.add_frame(itemManagerFrame,itemMangerView)
+        self.add_frame(itemManagerFrame, itemManagerView)
         self.add_frame(teamViewFrame, teamView)
         
         self.show_frame(mainView)
