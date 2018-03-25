@@ -14,7 +14,7 @@ class CreateProjectDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x100')
+        popUPDialog.geometry('600x200')
         popUPDialog.title('Create a New Project')
 
         Tk.Label(popUPDialog, text="Project Title").grid(row=2, column=1, pady=5, sticky='E')
@@ -71,7 +71,7 @@ class CreateUserDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x250')
+        popUPDialog.geometry('600x500')
         popUPDialog.title('Create a New User')
 
         Tk.Label(popUPDialog, text="User Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -161,7 +161,7 @@ class CreateSprintDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x250')
+        popUPDialog.geometry('600x500')
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -233,7 +233,7 @@ class CreateItemDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('300x250')
+        popUPDialog.geometry('600x500')
         popUPDialog.title('Create a New Item')
 
 
@@ -307,7 +307,7 @@ class AboutDialog:
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('550x200')
+        popUPDialog.geometry('1100x400')
         popUPDialog.title('About Scrumbles')
 
         Tk.Label(popUPDialog, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
@@ -341,7 +341,7 @@ class EditItemDialog:
         sprintNames = [sprint.sprintName for sprint in self.listOfSprints]
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        #popUPDialog.geometry('300x250')
+        popUPDialog.geometry('600x500')
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
