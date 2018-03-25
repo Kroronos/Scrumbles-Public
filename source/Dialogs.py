@@ -189,7 +189,7 @@ class CreateSprintDialog:
 
             sprint = ScrumblesObjects.Sprint()
             sprint.sprintName = self.sprintNameEntry.get()
-            print('SprintDilog get sprint name;',sprint.sprintName)
+            print('SprintDialog get sprint name;',sprint.sprintName)
             projectName = self.assignSprintToObject.get()
             for P in self.dataBlock.projects:
                 if P.projectName == projectName:
@@ -231,6 +231,7 @@ class CreateItemDialog:
     def __init__(self, parent, dataBlock):
 
         self.dataBlock = dataBlock
+        self.parent = parent
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.geometry('300x250')
@@ -282,7 +283,7 @@ class CreateItemDialog:
                 item.itemID = ScrumblesObjects.generateRowID()
                 self.dataBlock.addNewScrumblesObject(item)
 
-
+            self.dataBlock.addItemToProject(self.parent.activeProject,item)
 
         except Exception as e:
             messagebox.showerror('Error',str(e))
@@ -325,7 +326,7 @@ class AboutDialog:
         self.top.destroy()
 
 
-#todo get dataBlock from caller
+
 class EditItemDialog:
     def __init__(self, parent, dataBlock, Item):
         print(Item)
