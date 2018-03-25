@@ -538,7 +538,10 @@ class SCardDescription(tk.Frame):
 
     def generateItemFields(self, selectedItem):
         self.cardDescriptions["Item"].itemType.configure(text=selectedItem.itemType, justify=tk.LEFT, wraplength=300)
-        self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.itemPriority, justify=tk.LEFT, wraplength=300)
+        if selectedItem.itemPriority is not None and selectedItem.itemPriority != 0:
+            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.getPriority(), justify=tk.LEFT, wraplength=300)
+        else:
+            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.itemPriority, justify=tk.LEFT, wraplength=300)
         if selectedItem.itemDueDate is not None:
             self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.getFormattedDueDate(), justify=tk.LEFT, wraplength=300)
         else:

@@ -8,8 +8,6 @@ class developerHomeView(tk.Frame):
         self.controller = controller
         tk.Frame.__init__(self, parent)
         self.firstCall = True
-        self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ', font=("Verdana", 12))
-        self.usernameLabel.pack()
 
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home View")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
@@ -61,8 +59,6 @@ class developerHomeView(tk.Frame):
 
 
     def updateLists(self):
-        selectedUserName = self.controller.dataBlock.users[0].userName
-
         self.backlog.clear()
         self.teamMembers.clear()
 
