@@ -1,15 +1,6 @@
-#from tkinter import *
-#from masterView import *
-#from mainView import *
-#from ScrumblesData import *
-
-#comment fake a branch split
-
 
 import tkinter as tk
 from tkinter import messagebox
-import masterView
-import mainView
 import ScrumblesData
 import ScrumblesObjects
 
@@ -22,7 +13,7 @@ def authenticateUser(username, password, dbLoginInfo):
     if result == ():
         raise Exception('Invalid USERNAME PASSWORD combo')
     else:
-        user = ScrumblesObjects.User(result[0])
+        user = username
     return user
 
 
@@ -117,9 +108,13 @@ class loginView(tk.Frame):
         username = "TestUser"#self.usernameEntry.get()
         password = "Password1"#self.passwordEntry.get()
         loggedInUser = None
+        loggedInUserName = None
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         try:
-           loggedInUser = authenticateUser(username, password, dbLoginInfo)
+           loggedInUserName = authenticateUser(username, password, dbLoginInfo)
+           for user in self.controller.dataBlock.users:
+               if loggedInUserName == user.userName:
+                   loggedInUser = user
         except Exception as error:
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUser

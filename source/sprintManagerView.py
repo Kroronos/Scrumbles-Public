@@ -6,8 +6,10 @@ import ScrumblesData
 class sprintManagerView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.usernameLabel = tk.Label(self, text = "Sprint Manager", font = ("Verdana", 12))
-        self.usernameLabel.pack()
+        self.controller = controller
+
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Sprint Manager")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.itemList = ScrumblesFrames.SList(self, "SPRINTS")
 

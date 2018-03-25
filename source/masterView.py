@@ -1,18 +1,23 @@
 import tkinter as tk
+
 import mainView 
 import loginView
 import backlogView
 import developerHomeView
+import itemMangerView
+import teamView
+
 import Dialogs
 import ScrumblesData
-import itemMangerView
-import sprintManagerView
+
+
 
 class masterView(tk.Tk):
     def __init__(self):
         self.frames = {}
-
+        self.dataBlock = ScrumblesData.DataBlock()
         tk.Tk.__init__(self)
+        self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
 
         self.container.pack(side="top", fill="both", expand=True)
@@ -26,17 +31,19 @@ class masterView(tk.Tk):
         loginFrame = loginView.loginView(self.container, self)
         #mainFrame = mainView.mainView(self.container, self)
 
-        #self.add_frame(mainFrame, mainView)
+       # self.add_frame(mainFrame, mainView)
         
         self.add_frame(loginFrame, loginView)
 
         self.show_frame(loginView)
         self.dataConnection = None
+        self.activeProject = None
         self.title("Scrumbles")
         self.geometry("1000x600")
-        self.iconbitmap("logo.ico")
 
+        #self.iconbitmap("logo.ico")
 
+        self.activeUser = None
     def show_frame(self, cont):
         #print("Dictionary issue")
         frame = self.frames[cont]
@@ -56,12 +63,16 @@ class masterView(tk.Tk):
         menuBar = tk.Menu(self)
 
         fileMenu = tk.Menu(menuBar, tearoff=0)
-        fileMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
-        fileMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
-        fileMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
+        self.fileMenu = fileMenu
         fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
+        self.setOpenProjectsMenu(fileMenu)
+        self.dataBlock.packCallback(self.updateOpenProjectsMenu)
         fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
 
+        editMenu = tk.Menu(menuBar, tearoff=0)
+        editMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
+        editMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
+        editMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
@@ -69,14 +80,16 @@ class masterView(tk.Tk):
         viewMenu = tk.Menu(menuBar, tearoff=0)
         viewMenu.add_command(label="Main Menu", command=lambda: self.show_frame(mainView))
         viewMenu.add_command(label="Developer Home View", command=lambda: self.show_frame(developerHomeView))
-        viewMenu.add_command(label="Sprint Manager View", command=lambda: self.show_frame(sprintManagerView))
+        viewMenu.add_command(label="Team View", command=lambda: self.show_frame(teamView))
+        viewMenu.add_command(label="Sprint View", command=lambda: self.show_frame(mainView))
         viewMenu.add_command(label="Projects Backlog View", command=lambda: self.show_frame(backlogView))
-        viewMenu.add_command(label="Item Manager View", command = lambda: self.show_frame(itemMangerView))
+        viewMenu.add_command(label = "Item Manager View", command = lambda: self.show_frame(itemMangerView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label="About", command=self.openAboutDialog)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
+        menuBar.add_cascade(label="Edit", menu=editMenu)
         menuBar.add_cascade(label="Profile", menu=profileMenu)
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
@@ -89,34 +102,54 @@ class masterView(tk.Tk):
     def hideMenuBar(self):
         self.configure(menu=self.hiddenMenu)
 
+    def getViews(self):
+        views = []
+        viewNames = []
+        views.append(mainView)
+        viewNames.append("Main View")
+
+        views.append(developerHomeView)
+        viewNames.append("Developer Home View")
+
+        views.append(teamView)
+        viewNames.append("Team View")
+
+        views.append(backlogView)
+        viewNames.append("Backlog View")
+
+        views.append(itemMangerView)
+        viewNames.append("Item Manager View")
+        return views, viewNames
+
     def showCreateProjectDialog(self):
-        createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataConnection)
+        createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataBlock)
         self.wait_window(createProjectDialog.top)
 
     def showCreateUserDialog(self):
-        createUserDialog = Dialogs.CreateUserDialog(self, self.dataConnection)
+        createUserDialog = Dialogs.CreateUserDialog(self, self.dataBlock)
         self.wait_window(createUserDialog.top)
 
     def showCreateSprintDialog(self):
-        createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataConnection)
+        createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataBlock)
         self.wait_window(createSprintDialog.top)
 
     def showCreateItemDialog(self):
-        createItemDialog = Dialogs.CreateItemDialog(self,self.dataConnection)
+        createItemDialog = Dialogs.CreateItemDialog(self,self.dataBlock)
         self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):
+        self.activeUser = loggedInUser
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         backlogViewFrame = backlogView.backlogView(self.container, self, loggedInUser)
-        itemMangerFrame = itemMangerView.ItemManagerView(self.container, self)
-        sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self)
+        itemManagerFrame = itemMangerView.ItemManagerView(self.container, self)
+        teamViewFrame = teamView.teamView(self.container, self, loggedInUser)
 
         self.add_frame(mainFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(backlogViewFrame, backlogView)
-        self.add_frame(itemMangerFrame,itemMangerView)
-        self.add_frame(sprintManagerFrame, sprintManagerView)
+        self.add_frame(itemManagerFrame,itemMangerView)
+        self.add_frame(teamViewFrame, teamView)
         
         self.show_frame(mainView)
 
@@ -126,8 +159,30 @@ class masterView(tk.Tk):
 
     def openAboutDialog(self):
         helpBox = Dialogs.AboutDialog(self)
+
         self.wait_window(helpBox.top)
 
+    def updateOpenProjectsMenu(self):
+        self.setOpenProjectsMenu(self.fileMenu)
+
+    def setOpenProjectsMenu(self,menu):
+        listOfProjects = [P.projectName for P in self.dataBlock.projects]
+        try:
+            menu.delete('Open Project')
+        except Exception:
+            pass
+        self.popMenu = tk.Menu(menu,tearoff=0)
+        for text in listOfProjects:
+            self.popMenu.add_command(label=text,command = lambda t=text:self.setActiveProject(t))
+
+        menu.add_cascade(label='Open Project',menu=self.popMenu,underline=0)
+
+    def setActiveProject(self,projectName):
+        for P in self.dataBlock.projects:
+            if P.projectName == projectName:
+                self.activeProject = P
+
+        print('Active Project set to', self.activeProject.projectName)
 
 def logOut(controller):
     print("Log Me Out Scotty")
@@ -137,6 +192,7 @@ def logOut(controller):
     controller.show_frame(loginView)
 
 def exitProgram(mainwindow):
+    mainwindow.dataBlock.shutdown()
     mainwindow.destroy()
     print("Exiting Program")
     exit()
