@@ -15,13 +15,10 @@ class CreateProjectDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-
-        popUPDialog.geometry('600x200')
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        
-
+        popUPDialog.geometry('300x100')
         popUPDialog.title('Create a New Project')
 
         Tk.Label(popUPDialog, text="Project Title").grid(row=2, column=1, pady=5, sticky='E')
@@ -78,11 +75,10 @@ class CreateUserDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('600x500')
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-      
+        popUPDialog.geometry('300x250')
         popUPDialog.title('Create a New User')
 
         Tk.Label(popUPDialog, text="User Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -177,11 +173,10 @@ class CreateSprintDialog:
 
         popUPDialog = self.top = Tk.Toplevel(parent)
 
-        popUPDialog.geometry('600x500')
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-       
+        popUPDialog.geometry('300x250')
 
         popUPDialog.title('Create a New Sprint')
 
@@ -297,12 +292,10 @@ class CreateItemDialog:
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('600x500')
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-      
-
+        popUPDialog.geometry('350x400')
         popUPDialog.title('Create a New Item')
 
 
@@ -398,10 +391,10 @@ class AboutDialog:
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('1100x400')
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
+        popUPDialog.geometry('550x200')
         popUPDialog.title('About Scrumbles')
 
 
@@ -436,10 +429,10 @@ class EditItemDialog:
         sprintNames = [sprint.sprintName for sprint in self.listOfSprints]
 
         popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.geometry('600x500')
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
+        #popUPDialog.geometry('300x250')
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
