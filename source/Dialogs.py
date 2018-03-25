@@ -239,14 +239,14 @@ class CreateSprintDialog:
 class CreateItemDialog:
 
     def __init__(self, parent, dataBlock):
-
+        self.parent = parent
         self.dataBlock = dataBlock
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('300x250')
+        popUPDialog.geometry('350x400')
         popUPDialog.title('Create a New Item')
 
 
@@ -274,10 +274,14 @@ class CreateItemDialog:
         self.pointsEntry = Tk.Entry(popUPDialog)
         self.pointsEntry.grid(row=7,column=2)
 
+        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Comment').grid(row=9, column=1, sticky='E')
+        self.commentTextBox = Tk.Text(popUPDialog, height=6, width=20, wrap=Tk.WORD)
+        self.commentTextBox.grid(row=9, column=2,pady=5)
+
         createButton = Tk.Button(popUPDialog, text="Create Item", command=self.ok)
-        createButton.grid(row=8,column=2,pady=5)
+        createButton.grid(row=10,column=2,pady=5)
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
-        cancelButton.grid(row=8,column=1,pady=5)
+        cancelButton.grid(row=10,column=1,pady=5)
 
 
     def ok(self):
@@ -291,6 +295,13 @@ class CreateItemDialog:
             item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
             item.itemType = self.ItemTypebox.get()
             item.itemPoints = self.pointsEntry.get()
+
+            comment = ScrumblesObjects.Comment()
+            comment.commentContent = self.commentTextBox.get('1.0','end-1c')
+            comment.commentUserID = self.parent.activeUser.userID
+            comment.commentItemID = item.itemID
+
+
             if not item.itemPoints.isdigit():
                 raise Exception('Points must be a number')
 
@@ -299,9 +310,14 @@ class CreateItemDialog:
                 self.dataBlock.addNewScrumblesObject(item)
             except IntegrityError:
                 item.itemID = ScrumblesObjects.generateRowID()
+                comment.commentItemID = item.itemID
                 self.dataBlock.addNewScrumblesObject(item)
-
-
+            if len(comment.commentContent > 0):
+                try:
+                    self.dataBlock.addNewScrumblesObject(comment)
+                except IntegrityError:
+                    comment.commentID = ScrumblesObjects.generateRowID()
+                    self.dataBlock.addNewScrumblesObject(comment)
 
         except Exception as e:
             messagebox.showerror('Error',str(e))

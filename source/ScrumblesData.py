@@ -153,6 +153,11 @@ class DataBlock:
         self.conn.setData(ProjectQuery.removeUser(project,user))
 
     @dbWrap
+    def addComment(self,comment):
+        self.conn.setData(Query.createObject(comment))
+
+
+    @dbWrap
     def assignUserToItem(self,user,item):
         item.itemUserID = user.userID
         item.itemStatus = 1
