@@ -5,11 +5,11 @@ import listboxEventHandler
 
 class developerHomeView(tk.Frame):
     def __init__(self, parent, controller, user):
-        self.controller = controller
         tk.Frame.__init__(self, parent)
+        self.controller = controller
         self.firstCall = True
 
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home View")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.cal = ScrumblesFrames.SCalendar(self)

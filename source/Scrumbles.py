@@ -13,5 +13,3 @@ if 'win' in sys.platform:
 app = masterView.masterView()
 
 app.mainloop()
-
-

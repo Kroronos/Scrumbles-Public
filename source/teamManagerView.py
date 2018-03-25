@@ -2,17 +2,17 @@ import tkinter as tk
 import ScrumblesFrames
 import listboxEventHandler
 
-class teamView(tk.Frame):
+class teamManagerView(tk.Frame):
     def __init__(self, parent, controller, user):
-        self.controller = controller
-        self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
         tk.Frame.__init__(self, parent)
+        self.controller = controller
 
-        self.teamMembers = []
-
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Team View")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Team Manager")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
+        self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+
+        self.teamMembers = []
         self.memberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
         self.assignedItemInspect = ScrumblesFrames.SUserItemInspection(self, controller)
 

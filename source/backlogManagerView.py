@@ -10,15 +10,15 @@ import threading
 
 #from tkinter import ttk
 
-class backlogView(tk.Frame):
-    def __init__(self, parent, controller,user):
+class backlogManagerView(tk.Frame):
+    def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
-        products = ("PRODUCTS", "PRODUCT A", "PRODUCT B", "PRODUCT C")
         self.controller = controller
-        self.usernameLabel = tk.Label(self, text='Welcome to the Projects Backlog View ', font=("Verdana", 12))
-        self.usernameLabel.pack()
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog View")
+
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog Manager")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
+
+        products = ("PRODUCTS", "PRODUCT A", "PRODUCT B", "PRODUCT C")
         self.productList = ScrumblesFrames.SComboList(self, "PRODUCT BACKLOG", products)
         self.backlog = ScrumblesFrames.SBacklogList(self)
 
