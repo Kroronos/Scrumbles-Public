@@ -176,6 +176,7 @@ class CreateSprintDialog:
         self.assignSprintToObject.grid(row=3,column=2,pady=5)
 
 
+
         createButton = Tk.Button(popUPDialog, text="Create Sprint", command=self.ok)
         createButton.grid(row=8,column=2,pady=5)
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
@@ -257,6 +258,9 @@ class CreateItemDialog:
         self.ItemTypebox.grid(row=6, column=2,sticky='W')
         self.ItemTypebox.selection_clear()
 
+        self.pointsEntryLabel = Tk.Label(popUPDialog, text="Points").grid(row=7,column=1,sticky='E')
+        self.pointsEntry = Tk.Entry(popUPDialog)
+        self.pointsEntry.grid(row=7,column=2)
 
         createButton = Tk.Button(popUPDialog, text="Create Item", command=self.ok)
         createButton.grid(row=8,column=2,pady=5)
@@ -274,6 +278,9 @@ class CreateItemDialog:
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
             item.itemType = self.ItemTypebox.get()
+            item.itemPoints = self.pointsEntry.get()
+            if not item.itemPoints.isdigit():
+                raise Exception('Points must be a number')
 
 
             try:

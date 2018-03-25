@@ -155,6 +155,7 @@ class DataBlock:
     @dbWrap
     def assignUserToItem(self,user,item):
         item.itemUserID = user.userID
+        item.itemStatus = 1
         self.conn.setData(Query.updateObject(item))
     @dbWrap
     def addItemToProject(self,project,item):
@@ -414,14 +415,17 @@ class CardQuery(Query):
                 'CardTitle,' \
                 'CardDescription,' \
                 'CardCreatedDate,' \
+                'CardPoints,' \
                 'Status) VALUES (' \
                 '\'%s\',\'%s\',0,\'%s\',\'%s\',' \
-                'NOW(),0)' % (
+                'NOW(),\'%s\',0)' % (
             str(item.itemID),
             item.itemType,
             item.itemTitle,
-            item.itemDescription
+            item.itemDescription,
+            str(item.itemPoints)
         )
+        print(query)
         return query
 
     @staticmethod
@@ -442,17 +446,19 @@ class CardQuery(Query):
         itemDict['CodeLink'] = 'NULL'
         if item.itemCodeLink is not None:
             itemDict['CodeLink'] = "'"+item.itemCodeLink+"'"
+        itemDict['Points'] = "'"+item.itemPoints+"'"
 
-        query = 'UPDATE CardTable SET ' \
-                'CardType=%s,' \
-                'CardPriority=%s,' \
-                'CardTitle=%s,' \
-                'CardDescription=%s,' \
-                'CardDueDate=%s,' \
-                'CardCodeLink=%s,' \
-                'SprintID=%s,' \
-                'UserID=%s,' \
-                'Status=%s WHERE CardID=%s'% (
+        query = '''UPDATE CardTable SET
+                CardType=%s,
+                CardPriority=%s,
+                CardTitle=%s,
+                CardDescription=%s,
+                CardDueDate=%s,
+                CardCodeLink=%s,
+                SprintID=%s,
+                UserID=%s,
+                Status=%s,
+                CardPoints=%s WHERE CardID=%s'''% (
             itemDict['Type'],
             itemDict['Priority'],
             itemDict['Title'],
@@ -462,6 +468,7 @@ class CardQuery(Query):
             itemDict['Sprint'],
             itemDict['User'],
             itemDict['Status'],
+            itemDict['Points'],
             item.itemID
         )
         print(query)

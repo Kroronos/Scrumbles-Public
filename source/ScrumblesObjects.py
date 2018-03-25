@@ -85,6 +85,7 @@ class Item:
         self.itemSprintID = queryResultDict['SprintID']
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
+        self.itemPoints = queryResultDict['CardPoints']
 
     def getPriority(self):
         return self.priorityEquivalents[self.itemPriority]
