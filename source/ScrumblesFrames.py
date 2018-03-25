@@ -224,24 +224,27 @@ class SBacklogListColor(SBacklogList):
     def __init__(self, controller, title):
         SBacklogList.__init__(self, controller, title)
 
+    def sortForward(self):
+        super().sortForward()
+        self.colorCodeListboxes()
 
+    def sortRevers(self):
+        super().sortReverse()
+        self.colorCodeListboxes()
 
     def colorCodeListboxes(self):
         i = 0
-        partialList = []
-        for item in self.controller.controller.activeProject.listOfAssignedItems:
-            for item2 in self.listbox.get(0,tk.END):
-                if item.itemTitle == item2:
-                    partialList.append(item)
 
-        for item in partialList:
-            if item.itemSprintID == None:
-                self.listbox.itemconfig(i, {'bg':'firebrick'})
-                self.listbox.itemconfig(i, {'fg':'red'})
-            else:
-                self.listbox.itemconfig(i, {'bg':'dark green'})
-                self.listbox.itemconfig(i, {'fg':'lawn green'})
-            i=i+1
+        for itemTitle in self.listbox.get(0,tk.END):
+            for item in self.controller.controller.activeProject.listOfAssignedItems:
+                if itemTitle == item.itemTitle and item.itemSprintID is None:
+                    self.listbox.itemconfig(i, {'bg': 'firebrick4'})
+                    self.listbox.itemconfig(i, {'fg':'VioletRed1'})
+                else:
+                    self.listbox.itemconfig(i, {'bg':'dark green'})
+                    self.listbox.itemconfig(i, {'fg':'lawn green'})
+            i += 1
+
 
     def importListSorted(self, list):
         self.deleteList()
