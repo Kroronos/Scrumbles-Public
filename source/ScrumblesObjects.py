@@ -31,8 +31,7 @@ class User:
     userEmailAddress = None
     userID = None
     userRole = None
-    listOfAssignedItems = []
-    listOfComments = []
+
 
     #Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -47,7 +46,9 @@ class User:
         self.userPassword = queryResultDict['UserPassword']
         self.userRole = queryResultDict['UserRole']
         self.userID = queryResultDict['UserID']
-
+        self.listOfAssignedItems = []
+        self.listOfComments = []
+        self.listOfProjects = []
 
 
 class Item:
@@ -62,9 +63,10 @@ class Item:
     itemSprintID = None
     itemUserID = None
     itemStatus = None
-    listOfComments = []
-    listOfPriorities = None
 
+    priorityEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
+    statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2:'In Progress', 3:'Submitted',4:'Complete'}
+    statusEquivalentsReverse = {'Not Assigned' : 0, 'Assigned':1,'In Progress':2,'Submitted':3,'Complete':4}
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
     def __init__(self,queryResultDict=None):
@@ -83,46 +85,49 @@ class Item:
         self.itemSprintID = queryResultDict['SprintID']
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
+        self.itemPoints = queryResultDict['CardPoints']
         self.listOfStatuses = {0 : "Not Started", 1 : "In Progress", 2: "Done"}
         self.listOfPriorities = {0 : "Low Priotity", 1 : "Medium Priotity", 2: "High Priotity"}
 
     #NOTE This functions takes in the whole list from a query result
 
-    def assignToUser(self, user):
-        self.itemUserID = user.userID
-
-    def modifyStatus(self, status):
-        self.itemStatus = status
-
-    def modifyPriority(self, priority):
-        self.itemPriority = priority
+        self.listOfComments = []
+        self.projectID = 0
 
     def getPriority(self):
         return self.itemPriority
+
+    def getPriority(self):
+        #will throw key error if itemPriority is not 1,2,3
+        return Item.priorityEquivalents[self.itemPriority]
 
     def getEnglishPriority(self):
         if self.itemPriority >= 0 and self.itemPriority <=2:
             return self.listOfPriorities[self.itemPriority]
         else:
             return "Invalid Priority Value"
-
     def getEnglishStatus(self):
         if self.itemStatus >= 0 and self.itemStatus <= 2:
             return self.listOfStatuses[self.itemStatus]
         else:
             return "Invalid Status Value"
-
     def getDescription(self):
         return self.itemDescription
 
     def getTitle(self):
-        return self.itemTitle 
+        return self.itemTitle
 
     def getStatus(self):
-        return self.itemStatus
+        return Item.statusEquivalents[self.itemStatus]
 
     def getType(self):
         return self.itemType
+
+    def getFormattedDueDate(self):
+        return self.itemDueDate.strftime("%I:%M %p, %d/%m/%y")
+
+    def getFormattedCreationDate(self):
+        return self.itemCreationDate.strftime("%I:%M %p, %d/%m/%y")
 
 
 class Sprint:
@@ -131,8 +136,7 @@ class Sprint:
     sprintDueDate = None
     sprintName = None
     projectID = None
-    listOfAssignedItems = []
-    listOfAssignedUsers = []
+
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -146,27 +150,11 @@ class Sprint:
         self.sprintDueDate = queryResultDict['DueDate']
         self.sprintName = queryResultDict['SprintName']
         self.projectID = queryResultDict['ProjectID']
-
-
-
-    def assignItemToSprint(self, item):
-        item.itemSprintID = self.sprintID
-        if item not in self.listOfAssignedItems:
-            self.listOfAssignedItems.append(item)
-
-    def removeItemFromSprint(self, item):
-        if item in self.listOfAssignedItems:
-            item.sprintID = None
-            self.listOfAssignedItems.remove(item)
-        else:
-            raise Exception('Item does not exist in Sprint')
+        self.listOfAssignedItems = []
+        self.listOfAssignedUsers = []
 
 class Comment:
-    commentID = None
-    commentTimeStamp = None
-    commentContent = None
-    commentItemID = None
-    commentUserID = None
+
     #todo listOfTags = []
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
@@ -186,7 +174,7 @@ class Comment:
 class Project:
     projectID = None
     projectName = None
-    listOfAssignedSprints = []
+
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
             self.projectID = generateRowID()
@@ -194,5 +182,8 @@ class Project:
         assert 'ProjectName' in queryResultDict
         self.projectID = queryResultDict['ProjectID']
         self.projectName = queryResultDict['ProjectName']
+        self.listOfAssignedSprints = []
+        self.listOfAssignedUsers = []
+        self.listOfAssignedItems = []
 
-#todo class Tag:
+#todo implement class tag:
