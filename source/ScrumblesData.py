@@ -120,8 +120,10 @@ class DataBlock:
         print('\nDumping Comments')
         debug_ObjectdumpList(self.comments)
 
-
-
+    def lockDown(self):
+        self.alive = False
+    def unlock(self):
+        self.alive = True
 
     def updateAllObjects(self):
         self.conn.connect()
