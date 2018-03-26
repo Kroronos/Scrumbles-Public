@@ -86,16 +86,42 @@ class Item:
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
         self.itemPoints = queryResultDict['CardPoints']
+        self.listOfStatuses = {0 : "Not Started", 1 : "In Progress", 2: "Done"}
+        self.listOfPriorities = {0 : "Low Priotity", 1 : "Medium Priotity", 2: "High Priotity"}
+
+    #NOTE This functions takes in the whole list from a query result
 
         self.listOfComments = []
         self.projectID = 0
 
     def getPriority(self):
+        return self.itemPriority
+
+    def getPriorityString(self):
         #will throw key error if itemPriority is not 1,2,3
         return Item.priorityEquivalents[self.itemPriority]
 
+    def getEnglishPriority(self):
+        if self.itemPriority >= 0 and self.itemPriority <=2:
+            return self.listOfPriorities[self.itemPriority]
+        else:
+            return "Invalid Priority Value"
+    def getEnglishStatus(self):
+        if self.itemStatus >= 0 and self.itemStatus <= 2:
+            return self.listOfStatuses[self.itemStatus]
+        else:
+            return "Invalid Status Value"
+    def getDescription(self):
+        return self.itemDescription
+
+    def getTitle(self):
+        return self.itemTitle
+
     def getStatus(self):
         return Item.statusEquivalents[self.itemStatus]
+
+    def getType(self):
+        return self.itemType
 
     def getFormattedDueDate(self):
         return self.itemDueDate.strftime("%I:%M %p, %d/%m/%y")
