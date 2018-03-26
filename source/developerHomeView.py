@@ -1,18 +1,16 @@
 import tkinter as tk
 import ScrumblesFrames
-import ScrumblesData
-import masterView
-import tkcalendar
-import datetime
+import listboxEventHandler
 
 
 class developerHomeView(tk.Frame):
     def __init__(self, parent, controller, user):
-        self.controller = controller
         tk.Frame.__init__(self, parent)
+        self.controller = controller
+        self.firstCall = True
 
-        self.usernameLabel = tk.Label(self, text='Welcome to the Developer Home View ',font=("Verdana", 12))
-        self.usernameLabel.pack()
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.cal = ScrumblesFrames.SCalendar(self)
 
@@ -24,58 +22,63 @@ class developerHomeView(tk.Frame):
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
         self.assignedItemList = ScrumblesFrames.SList(self, "ASSIGNED ITEMS")
 
-        controller.dataConnection.connect()
-        self.backlog = controller.dataConnection.getData('SELECT * FROM CardTable')
-        self.backlog = [card['CardTitle'] for card in self.backlog]
+        self.backlog = []
+        self.teamMembers = []
+        self.assignedItems = []
+        self.selectedUser = None
 
+        self.controller.dataBlock.packCallback(self.updateLists)
+        self.updateLists()
 
-        self.teamMembers = controller.dataConnection.getData('SELECT UserName FROM UserTable')
-        self.teamMembers = [member['UserName'] for member in self.teamMembers]
+        #Append Any Sources for Dynamic Events to this List
+        dynamicSources = [self.productBacklogList.listbox, self.teamMemberList.listbox, self.assignedItemList.listbox]
+        queryType = ['Item', 'User', 'Item']
+        self.descriptionManager = ScrumblesFrames.SCardDescription(self, controller, dynamicSources, queryType)
 
-        self.assignedItem = controller.dataConnection.getData('SELECT * FROM CardTable')
-        self.assignedItem = [card['CardTitle'] for card in self.assignedItem]
-        controller.dataConnection.close()
+        # To Prevent Duplicate Tkinter Events
+        self.eventHandler = listboxEventHandler.listboxEventHandler()
+        self.eventHandler.setEventToHandle(self.listboxEvents)
 
-        self.productBacklogList.importList(self.backlog)
-        self.teamMemberList.importList(self.teamMembers)
-        self.assignedItemList.importList(self.assignedItem)
-
-
-
-        self.productBacklogList.importList(self.backlog)
-        self.teamMemberList.importList(self.teamMembers)
-        self.assignedItemList.importList(self.assignedItem)
-
-        def updateLists():
-            self.after(30000,updateLists)
-            controller.dataConnection.connect()
-            backlogCheck = controller.dataConnection.getData('SELECT * FROM CardTable')
-            backlogCheck = [card['CardTitle'] for card in backlogCheck]
-
-            teamMembersCheck = controller.dataConnection.getData('SELECT UserName FROM UserTable')
-            teamMembersCheck = [member['UserName'] for member in teamMembersCheck]
-
-            assignedItemCheck = controller.dataConnection.getData('SELECT * FROM CardTable')
-            assignedItemCheck = [card['CardTitle'] for card in assignedItemCheck]
-            
-            controller.dataConnection.close()
-
-            if (set(self.backlog) != set(backlogCheck)):
-                self.backlog=backlogCheck
-                self.productBacklogList.importList(self.backlog)
-
-            if (set(self.teamMembers) != set(teamMembersCheck)):
-                self.teamMembers=teamMembersCheck
-                self.teamMemberList.importList(self.teamMembers)
-
-            if (set(self.assignedItem) != set(assignedItemCheck)):
-                self.assignedItem=assignedItemCheck
-                self.assignedItemList.importList(self.assignedItem)
-
-        updateLists()
+        #Bind Sources
+        for source in dynamicSources:
+            source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
         self.productBacklogList.pack(side=tk.LEFT, fill=tk.Y)
         self.assignedItemList.pack(side=tk.RIGHT, fill=tk.Y)
         self.teamMemberList.pack(side=tk.RIGHT, fill=tk.Y)
+        self.descriptionManager.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.cal.pack(side=tk.TOP, fill=tk.BOTH)
         self.sprintGraph.pack(side=tk.BOTTOM, fill=tk.X)
+
+    def assignedItemEvent(self, event):
+        for user in self.controller.dataBlock.users:
+            if user.userName == event.widget.get(tk.ANCHOR):
+                self.selectedUser = user
+                self.assignedItems = user.listOfAssignedItems
+                self.assignedItemList.importItemList(self.assignedItems)
+
+
+    def updateLists(self):
+        self.backlog.clear()
+        self.teamMembers.clear()
+
+        self.backlog = [item.itemTitle for item in self.controller.dataBlock.items]
+        self.teamMembers = [user.userName for user in self.controller.dataBlock.users]
+        if self.selectedUser is not None:
+            self.assignedItems = self.selectedUser.listOfAssignedItems
+        self.productBacklogList.importList(self.backlog)
+        self.teamMemberList.importList(self.teamMembers)
+        self.assignedItemList.importItemList(self.assignedItems)
+
+    def listboxEvents(self, event):
+        if event.widget is self.teamMemberList.listbox:
+            self.assignedItemEvent(event)
+            self.descriptionManager.changeDescription(event)
+
+        if event.widget is self.productBacklogList.listbox:
+            self.descriptionManager.changeDescription(event)
+
+        if event.widget is self.assignedItemList.listbox:
+            self.descriptionManager.changeDescription(event)
+
+

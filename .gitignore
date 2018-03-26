@@ -2,4 +2,5 @@ source/__pycache__
 .idea/
 source/.idea/
 *.pyc
+*.swp
 source/login.txt
