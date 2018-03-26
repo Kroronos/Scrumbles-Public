@@ -513,35 +513,21 @@ class itemPicker(tk.Frame):
         self.master.dataBlock.updateScrumblesObject(item)
 
 
-
-
-
 class commentsField(tk.Frame):
+    def __init__(self,controller):
+        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
 
+        self.titleText = tk.StringVar()
+        self.titleText.set("Comments")
+        self.commentTitleF = tk.Frame(self,relief=tk.SOLID, borderwidth=1)
+        self.commentTitle = tk.Label(self.commentTitleF, textvariable=self.titleText)
+        self.commentField = tk.Frame(self)
+        self.comments = []
+        self.commentTextElements = []
 
-    def go_to_git(self):
-        #do things
-        print("git opened")
-        webbrowser.open("github.com")
-
-    def __init__(self, controller):
-        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth = 1)
-
-        self.commentTitle = tk.Label(self, text = "Comments").pack(side = tk.TOP, fill = tk.X)
-        self.commentField = tk.Entry(self).pack(side = tk.TOP, fill = tk.X)
-        self.openGit = tk.Button(self, text="Github", command = self.go_to_git).pack(side = tk.TOP, fill = tk.X)
-
-        # self.titleText = tk.StringVar()
-        # self.titleText.set("Comments")
-        # self.commentTitleF = tk.Frame(self,relief=tk.SOLID, borderwidth=1)
-        # self.commentTitle = tk.Label(self.commentTitleF, textvariable=self.titleText)
-        # self.commentField = tk.Frame(self)
-        # self.comments = []
-        # self.commentTextElements = []
-
-        # self.commentTitle.pack(side=tk.TOP, fill=tk.X)
-        # self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
-        # self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
+        self.commentTitle.pack(side=tk.TOP, fill=tk.X)
+        self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
+        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
 
     def updateFromListOfCommentsObject(self, listOfCommentsObject, objectName):
         self.clearCommentField()
@@ -564,6 +550,7 @@ class commentsField(tk.Frame):
         for element in self.commentTextElements:
             element.pack_forget()
         self.commentTextElements.clear()
+
 
 class SCardDescription(tk.Frame):
     def __init__(self, controller, master, sources, datatype):
