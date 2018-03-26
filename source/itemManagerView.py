@@ -4,12 +4,12 @@ import ScrumblesFrames
 
 
 class ItemManagerView(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
+	def __init__(self, parent, controller):
+		tk.Frame.__init__(self, parent)
+		self.controller = controller
 
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Item Manager")
-        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
+		self.tabButtons = ScrumblesFrames.STabs(self, controller, "Item Manager")
+		self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
 		self.itemList = ScrumblesFrames.SList(self, "ITEMS")
 		self.itemList.listbox.bind('<<ListboxSelect>>', lambda event: self.dynamicEventHandler(event))

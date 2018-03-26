@@ -97,7 +97,7 @@ class Item:
     def getPriority(self):
         return self.itemPriority
 
-    def getPriority(self):
+    def getPriorityString(self):
         #will throw key error if itemPriority is not 1,2,3
         return Item.priorityEquivalents[self.itemPriority]
 

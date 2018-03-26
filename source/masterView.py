@@ -6,7 +6,7 @@ import developerHomeView
 import teamManagerView
 import sprintManagerView
 import backlogManagerView
-import itemMangerView
+import itemManagerView
 
 import Dialogs
 import ScrumblesData
@@ -39,7 +39,7 @@ class masterView(tk.Tk):
         self.dataConnection = None
         self.activeProject = self.dataBlock.projects[0]
         self.title("Scrumbles")
-        self.geometry("1900x1100")
+        self.geometry("1280x720")
 
         #self.iconbitmap("logo.ico")
 
@@ -84,7 +84,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
         viewMenu.add_command(label="Sprint Manager", command=lambda: self.show_frame(sprintManagerView))
         viewMenu.add_command(label="Projects Backlog", command=lambda: self.show_frame(backlogManagerView))
-        viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(itemMangerView))
+        viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(itemManagerView))
 
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
@@ -122,7 +122,7 @@ class masterView(tk.Tk):
         views.append(backlogManagerView)
         viewNames.append("Backlog Manager")
 
-        views.append(itemMangerView)
+        views.append(itemManagerView)
         viewNames.append("Item Manager")
         return views, viewNames
 
@@ -159,14 +159,14 @@ class masterView(tk.Tk):
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
         sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self)
         backlogManagerFrame = backlogManagerView.backlogManagerView(self.container, self, loggedInUser)
-        itemManagerFrame = itemMangerView.ItemManagerView(self.container, self)
+        itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
 
         self.add_frame(mainFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
         self.add_frame(sprintManagerFrame, sprintManagerView)
         self.add_frame(backlogManagerFrame, backlogManagerView)
-        self.add_frame(itemManagerFrame, itemMangerView)
+        self.add_frame(itemManagerFrame, itemManagerView)
         
         self.show_frame(mainView)
 
