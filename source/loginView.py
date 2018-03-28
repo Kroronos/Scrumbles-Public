@@ -1,4 +1,4 @@
-
+import logging
 import tkinter as tk
 from tkinter import messagebox
 import ScrumblesData
@@ -11,9 +11,11 @@ def authenticateUser(username, password, dbLoginInfo):
     result = dataConnection.getData(ScrumblesData.Query.getUserByUsernameAndPassword(username, password))
     dataConnection.close()
     if result == ():
+        logging.warning('Login Failed for %s' % username)
         raise Exception('Invalid USERNAME PASSWORD combo')
     else:
         user = username
+        logging.info('%s Successfully logged in' % username)
     return user
 
 

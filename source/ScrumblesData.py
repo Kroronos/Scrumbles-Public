@@ -1,3 +1,4 @@
+import logging
 import MySQLdb
 import ScrumblesObjects
 import re
@@ -64,6 +65,7 @@ class DataBlock:
 
 
     def __init__(self):
+        logging.info('Initializing DataBlock Object')
         self.alive = True
         self.dbLogin = DataBaseLoginInfo('login.txt')
         self.conn = ScrumblesData(self.dbLogin)
@@ -191,7 +193,7 @@ class DataBlock:
                             project.listOfAssignedItems.append(item)
 
 
-        self.debugDump()
+        #self.debugDump()
         return True
 
     def validateData(self):
@@ -199,6 +201,7 @@ class DataBlock:
 
     @dbWrap
     def addUserToProject(self,project,user):
+        logging.info('Adding User %s to project %s' % (user.UserName,project.projectName))
         if user not in project.listOfAssignedUsers:
             self.conn.setData(ProjectQuery.addUser(project,user))
         else:
@@ -206,6 +209,7 @@ class DataBlock:
 
     @dbWrap
     def removeUserFromProject(self,project,user):
+        logging.info('Removing User %s from project %s' %(user.UserName,project.projectName) )
         for item in self.items:
             if item in project.listOfAssignedItems:
                 if item.itemUserID == user.userID:
@@ -215,18 +219,23 @@ class DataBlock:
 
         self.conn.setData(ProjectQuery.removeUser(project,user))
 
+
+    ##### DUPLICATE CODE TODO Remove below and change callers to addNewScrumblesObject
     @dbWrap
     def addComment(self,comment):
+        logging.warning('Depreciated function call: Adding Comment to database: %s' % comment.commentContent)
         self.conn.setData(Query.createObject(comment))
 
 
     @dbWrap
     def assignUserToItem(self,user,item):
+        logging.info('Assigning User %s to item %s.'%(user.userName,item.itemTitle))
         item.itemUserID = user.userID
         item.itemStatus = 1
         self.conn.setData(Query.updateObject(item))
     @dbWrap
     def addItemToProject(self,project,item):
+        logging.info('Adding item %s to project %s.' %(item.itemTitle,project.projectName))
         if item not in project.listOfAssignedItems:
             item.projectID = project.projectID
             self.conn.setData(ProjectQuery.addItem(project,item))
@@ -234,41 +243,54 @@ class DataBlock:
             print('Item already assigned to project')
     @dbWrap
     def removeItemFromProject(self,project,item):
+        logging.info('Removing item %s from project %s.' % (item.itemTitle,project.projectName))
         item.projectID = 0
         self.conn.setData(ProjectQuery.removeItem(project,item))
 
     @dbWrap
     def addNewScrumblesObject(self,obj):
+        logging.info('Adding new object %s to database' % repr(obj))
         self.conn.setData(Query.createObject(obj))
 
     @dbWrap
     def updateScrumblesObject(self,obj):
+        logging.info('Updating object %s to database' % repr(obj))
         self.conn.setData(Query.updateObject(obj))
 
     @dbWrap
+    def deleteScrumblesObject(self,obj):
+        logging.info('Deleting object %s from database' % repr(obj))
+        self.conn.setData(Query.deleteObject(obj))
+
+    @dbWrap
     def modifiyItemPriority(self,item,priority):
+        logging.info('Modifying item %s priority to %s' % (item.itemTitle,item.priorityEquivalents[priority]))
         assert priority in range(1,3)
         item.itemPriority = priority
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
     def modifyItemStatus(self,item,status):
+        logging.info('Modifying item %s status to %s' % (item.itemTitle,item.statusEquivalents[status]))
         assert status in range(0,4)
         item.itemStatus = status
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
     def modifyItemStatusByString(self,item,status):
+        logging.info('Modifying item %s to status %s.' % (item.itemTitle,status))
         item.itemStatus = item.statusEquivalentsReverse[status]
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
     def assignItemToSprint(self,item,sprint):
+        logging.info('Assigning Item %s to Sprint %s.',(item.itemTitle,sprint.sprintName))
         item.itemSprintID = sprint.sprintID
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
     def removeItemFromSprint(self,item):
+        logging.info('Removing Item %s from sprint %d.'%(item.itemTitle,item.itemSprintID))
         item.itemSprintID = 0
         self.conn.setData(Query.updateObject(item))
 
@@ -280,9 +302,9 @@ class DataBlock:
         threading.Thread(target=self.listener.start,args=()).start()
 
         while self.alive:
-            time.sleep(5)
+            time.sleep(2)
             if self.listener.isDBChanged:
-                #self.updateAllObjects()
+                time.sleep(4)
                 with self.cv:
                     self.cv.wait_for(self.updateAllObjects)
 
@@ -291,14 +313,17 @@ class DataBlock:
 
 
     def packCallback(self,callback):
+        logging.info('Callback %s packed into DataBlock' % str(callback))
         self.updaterCallbacks.append(callback)
 
     def executeUpdaterCallbacks(self):
         if len(self.updaterCallbacks) > 0:
             for func in self.updaterCallbacks:
+                logging.info('Executing Updater Func %s'% str(func))
                 func()
 
     def shutdown(self):
+        logging.info('Shutting down DataBlock Threads')
         self.alive = False
         self.listener.stop()
 

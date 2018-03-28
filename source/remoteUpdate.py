@@ -1,4 +1,5 @@
-import socket, time, threading
+import logging,socket, time, threading
+
 
 #this will connect to a remote server on port 5005
 #the remote server will send an ack reply on EHLLO
@@ -40,6 +41,7 @@ class RemoteUpdate:
             
             if data == b'CHANGE':
                 self.isDBChanged = True
+                logging.info('Received Change Message')
         except:
             self.socket.close()
             return False
