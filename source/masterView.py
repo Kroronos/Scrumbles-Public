@@ -1,3 +1,4 @@
+import logging
 import tkinter as tk
 from tkinter import messagebox
 import mainView 
@@ -57,6 +58,7 @@ class masterView(tk.Tk):
             self.hideMenuBar()
 
     def add_frame(self, addedFrame, addedFrameClass):
+        logging.info('Packing Frame %s'% str(addedFrame))
         self.frames[addedFrameClass] = addedFrame
         addedFrame.grid(row=0, column=0, sticky="nsew")
 
@@ -199,11 +201,11 @@ class masterView(tk.Tk):
             if P.projectName == projectName:
                 self.activeProject = P
 
-        print('Active Project set to', self.activeProject.projectName)
+        logging.info('Active Project set to %s' % self.activeProject.projectName)
         self.dataBlock.executeUpdaterCallbacks()
 
 def logOut(controller):
-    print("Log Me Out Scotty")
+    logging.info('%s logged out'%controller.activeUser.userID)
     #Do Some Stuff Here To Clear States
     loginFrame = loginView.loginView(controller.container, controller)
     controller.add_frame(loginFrame, loginView)
@@ -212,7 +214,7 @@ def logOut(controller):
 def exitProgram(mainwindow):
     mainwindow.dataBlock.shutdown()
     mainwindow.destroy()
-    print("Exiting Program")
+    logging.info("Shutting down gracefully")
     exit()
 
 def showGettingStartedText():

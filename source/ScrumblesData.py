@@ -298,13 +298,13 @@ class DataBlock:
 
 
     def updater(self):
-
+        logging.info('Updater Thread %s started' % threading.get_ident())
         threading.Thread(target=self.listener.start,args=()).start()
 
         while self.alive:
             time.sleep(2)
             if self.listener.isDBChanged:
-                time.sleep(4)
+                time.sleep(2)
                 with self.cv:
                     self.cv.wait_for(self.updateAllObjects)
 
@@ -323,7 +323,7 @@ class DataBlock:
                 func()
 
     def shutdown(self):
-        logging.info('Shutting down DataBlock Threads')
+        logging.info('Shutting down Thread %s'%threading.get_ident())
         self.alive = False
         self.listener.stop()
 

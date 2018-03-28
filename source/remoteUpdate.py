@@ -25,11 +25,13 @@ class RemoteUpdate:
 
         self.stop()
     def keepAlive(self):
+        logging.info('Socket keep alive thread %s started'%threading.get_ident())
         while self.alive:
             try:
                 self.socket.send(self.MSG)
                 time.sleep(5)
             except:
+                logging.error('Connection to %s Lost'%self.TCP_IP)
                 self.socket.close()
                 return False
         return False
@@ -41,12 +43,14 @@ class RemoteUpdate:
             
             if data == b'CHANGE':
                 self.isDBChanged = True
-                logging.info('Received Change Message')
+                logging.info('Received Message from DB Server: %s' % data.decode() )
         except:
             self.socket.close()
             return False
         return True
     def start(self):
+        logging.info('Socket thread %s started' % threading.get_ident())
+        logging.info('Connecting to %s on port %s' % (self.TCP_IP,self.TCP_PORT))
         self.conn = self.socket.connect((self.TCP_IP, self.TCP_PORT))
         self.keepAliveThread.start()
         loop = True
