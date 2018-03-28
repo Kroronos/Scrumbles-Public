@@ -313,13 +313,13 @@ class DataBlock:
 
 
     def packCallback(self,callback):
-        logging.info('Callback %s packed into DataBlock' % str(callback))
+        logging.info('Packing Callback %s' % str(callback))
         self.updaterCallbacks.append(callback)
 
     def executeUpdaterCallbacks(self):
         if len(self.updaterCallbacks) > 0:
             for func in self.updaterCallbacks:
-                logging.info('Executing Updater Func %s'% str(func))
+                logging.info('Thread %s Executing Updater Func %s' % ( threading.get_ident(), str(func) ) )
                 func()
 
     def shutdown(self):
