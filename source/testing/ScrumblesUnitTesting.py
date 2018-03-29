@@ -24,9 +24,9 @@ allCommentsQueryResult = dataConnection.getData(getAllCommentsQuery)
 
 dataConnection.close()
 
-assert len(allUsersQueryResult) > 0
-assert len(allSprintsQueryResult) > 0
-assert len(allItemsQueryResult) > 0
+assert len(allUsersQueryResult) >= 0
+assert len(allSprintsQueryResult) >= 0
+assert len(allItemsQueryResult) >= 0
 assert len(allCommentsQueryResult) >= 0
 print('Data Download Successful')
 listOfUsers = []

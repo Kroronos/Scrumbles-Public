@@ -70,8 +70,8 @@ class BaseList(tk.Frame,tk.Listbox):
     def importSprintsList(self, sprints):
         self.deleteList()
         listOfnames = []
-        for sprints in sprints:
-            listOfnames.append(sprints.sprintName)
+        for sprint in sprints:
+            listOfnames.append(sprint.sprintName)
         self.fullList = listOfnames
         for item in self.fullList:
             self.listbox.insert(tk.END, item)
