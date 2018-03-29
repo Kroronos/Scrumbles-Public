@@ -64,9 +64,9 @@ class Item:
     itemUserID = None
     itemStatus = None
 
-    priorityEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
-    statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2:'In Progress', 3:'Submitted',4:'Complete'}
-    statusEquivalentsReverse = {'Not Assigned' : 0, 'Assigned':1,'In Progress':2,'Submitted':3,'Complete':4}
+    priorityEquivalents = {1: "Low Priority", 2: "Medium Priority", 3: "High Priority"}
+    statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2: 'In Progress', 3: 'Submitted', 4: 'Complete'}
+    statusEquivalentsReverse = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
     def __init__(self,queryResultDict=None):

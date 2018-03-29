@@ -202,7 +202,7 @@ class commentsField(tk.Frame):
 
         self.titleText = tk.StringVar()
         self.titleText.set("Comments")
-        self.commentTitleF = tk.Frame(self,relief=tk.SOLID, borderwidth=1)
+        self.commentTitleF = tk.Frame(self, relief=tk.SOLID, borderwidth=1)
         self.commentTitle = tk.Label(self.commentTitleF, textvariable=self.titleText)
         self.commentField = tk.Frame(self)
         self.comments = []
@@ -222,7 +222,7 @@ class commentsField(tk.Frame):
     def renderCommentField(self):
         self.comments = sorted(self.comments, key=lambda s: s.commentTimeStamp)
         for comment in self.comments:
-            commentLabel = tk.Label(self.commentField, text=comment.commentContent)
+            commentLabel = tk.Label(self.commentField, text=comment.commentContent, justify=tk.LEFT, wraplength=300, pady=10)
             self.commentTextElements.append(commentLabel)
             commentLabel.pack(side=tk.TOP, fill=tk.X)
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
@@ -603,9 +603,6 @@ class SUserItemInspection(tk.Frame):
 
         self.textbox.pack(side=tk.TOP, fill=tk.X)
         self.itembox.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-
-
 
     def update(self, user):
         self.nameString.set(user.userName)

@@ -32,6 +32,7 @@ class teamManagerView(tk.Frame):
         self.inspectedItem = None
         self.memberList.listbox.bind('<2>' if self.aqua else '<3>', lambda event: self.memberPopup(event))
 
+        self.controller.dataBlock.packCallback(self.updateFrame)
         self.updateFrame()
 
         self.memberList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
