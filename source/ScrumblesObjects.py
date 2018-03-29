@@ -137,6 +137,12 @@ class Sprint:
     sprintName = None
     projectID = None
 
+    def getFormattedDueDate(self):
+        return self.sprintDueDate.strftime("%I:%M %p, %d/%m/%y")
+
+    def getFormattedStartDate(self):
+        return self.sprintStartDate.strftime("%I:%M %p, %d/%m/%y")
+
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List

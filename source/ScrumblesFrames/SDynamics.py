@@ -266,6 +266,7 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self.internals)
         self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self.internals)
         self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self.internals)
+        self.cardDescriptions['Sprint'] = self.cardDescriptionSprintFrame(self.internals)
         self.cardDescriptions['Active'] = self.cardDescriptions['Start']
         self.cardDescriptions['Active'].pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
@@ -420,6 +421,41 @@ class SCardDescription(tk.Frame):
             self.userRoleF.pack(side=tk.TOP)
             self.userEmailF.pack(side=tk.TOP)
 
+    class cardDescriptionSprintFrame(tk.Frame):
+        def __init__(self, controller):
+            tk.Frame.__init__(self, controller)
+            self.sprintStartF = tk.Frame(self)
+            self.sprintStartT = tk.Label(self.sprintStartF, text="Start Date: ")
+            self.sprintStart = tk.Label(self.sprintStartF, text="")
+
+            self.sprintDueF = tk.Frame(self)
+            self.sprintDueT = tk.Label(self.sprintDueF, text="Due Date: ")
+            self.sprintDue = tk.Label(self.sprintDueF, text="")
+
+            self.sprintStartT.pack(side=tk.LEFT)
+            self.sprintStart.pack(side=tk.LEFT)
+            self.sprintDueT.pack(side=tk.LEFT)
+            self.sprintDue.pack(side=tk.LEFT)
+
+            self.sprintStartF.pack(side=tk.TOP)
+            self.sprintDueF.pack(side=tk.TOP)
+
+        def repack(self):
+            self.sprintStartT.pack_forget()
+            self.sprintStart.pack_forget()
+            self.sprintDueT.pack_forget()
+            self.sprintDue.pack_forget()
+
+            self.sprintStartF.pack_forget()
+            self.sprintDueF.pack_forget()
+
+            self.sprintStartT.pack(side=tk.LEFT)
+            self.sprintStart.pack(side=tk.LEFT)
+            self.sprintDueT.pack(side=tk.LEFT)
+            self.sprintDue.pack(side=tk.LEFT)
+
+            self.sprintStartF.pack(side=tk.TOP)
+            self.sprintDueF.pack(side=tk.TOP)
 
     def repack(self):
         self.title.pack(fill=tk.X)
@@ -466,6 +502,15 @@ class SCardDescription(tk.Frame):
             else:
                 self.generateItemFields(match)
 
+        if self.datatype[widget] == 'Sprint':
+            for sprint in self.dataBlock.sprints:
+                if sprint.sprintName == widget.get(tk.ANCHOR):
+                    match = sprint
+            if match is None:
+                self.resetToStart()
+            else:
+                self.generateSprintFields(match)
+
     def generateUserFields(self, selectedUser):
         self.cardDescriptions["User"].userRole.configure(text=selectedUser.userRole, justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["User"].userEmail.configure(text=selectedUser.userEmailAddress, justify=tk.LEFT,
@@ -503,6 +548,15 @@ class SCardDescription(tk.Frame):
 
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions["Item"]
+
+    def generateSprintFields(self, selectedSprint):
+        self.cardDescriptions["Sprint"].sprintStart.configure(text=selectedSprint.getFormattedStartDate(), justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Sprint"].sprintDue.configure(text=selectedSprint.getFormattedDueDate(), justify=tk.LEFT, wraplength=300)
+
+        self.cardDescriptions["Sprint"].repack()
+
+        self.cardDescriptions["Active"].pack_forget()
+        self.cardDescriptions["Active"] = self.cardDescriptions["Sprint"]
 
     def resetToStart(self):
         self.titleText.set("Item Description")
