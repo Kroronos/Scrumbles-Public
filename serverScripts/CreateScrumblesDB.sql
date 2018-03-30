@@ -1,4 +1,3 @@
-DROP DATABASE `Scrumbles`;
 CREATE DATABASE `Scrumbles` /*!40100 DEFAULT CHARACTER SET latin1 */;
 Use `Scrumbles`;
 CREATE TABLE `CardTable` (
@@ -91,6 +90,16 @@ CREATE TABLE `UserTable` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Testingthe creation of a table';
 
 INSERT INTO `ProjectsTable` (`ProjectID`,`ProjectName`) VALUES (0,'New Project');
+INSERT INTO `UserTable`
+(`UserID`,
+`UserName`,
+`UserEmailAddress`,
+`UserPassword`,
+`UserRole`)
+VALUES
+('0', 'Admin', '', 
+'ce1e29c43cf4721dcc39f077631e09e9d8d3b19ba8c8743a3fc18e8eca2a0f73', 'Admin');
+
 
 
 
