@@ -1,0 +1,70 @@
+3/29/2018 Meeting Notes
+
+Developer User Workflow
+	View on Login ?  
+	What do I want to see in that view?
+		Developer Home View
+		What's assigned to ME
+		What's not assigned to anyone (Backlog)
+			Stack Frames in one column ( Items assigned to me on top, backlog view on bottom )
+		Sorted by selected option from drop down
+		
+			Put combobox fields on the Description Frame to make it easier to change status
+		
+		Progress bar shows percent based on completed verses total assigned for sprint
+		Comment Frame on the Right
+		
+	Begin Work On an Item  < change status to in progress >
+		Right Click on Item 
+	Comment on Items		
+	Submit an Item for review < Change status to submitted > 
+		Right Click on Item
+	Create a new Item
+	
+	User can self assign items, but cannot assign to other users
+	
+	CANNOT CHANGE ITEM PRIORITY OR POINTS
+	
+		
+		-- No need to see Main View ( going to be renamed HOME VIEW )
+	
+Scrum Master User Workflow
+	View on Login ?
+		
+	What do I want to see in that view?
+		Home View ( Main View )
+			Backlog
+			
+	Create New Sprints
+	Delete Sprints
+	Delete Items
+	Edit Sprint Name, Due Date, Start Date
+	Modify Item Priority
+	Edit Item Name, Description
+	Promote Items To Epics
+	Assign Sub-Items To Epics
+	Assign Items to Sprints
+	Assign Items to Users
+	Approve Items for Completion  < Change status to complete >
+	Reject Items for Completion  < Change status to in progress >
+
+Admin User Workflow
+	View on Login ?
+		Home View ( Main View ) 
+	What do I want to see in that view?
+		Same as Scrum Master
+	Create New Users
+	Create New Projects
+	Assign Users to Projects
+	Delete Projects
+	
+	
+Needed Issues:
+	When assigning item to user,  item needs to change status
+	+ Button To SList for Create New ITEM
+	Indicate Which item is selected when right click happens
+	Name View Tabs Based on logged in user privileged level
+	Can Scrum Teams go away From main view ~ discuss with Feeney
+	Main View ~ Come up with a 
+	Main View ~ progress bars for item in project and projects in Sprint
+	add status bars for item completion stats
