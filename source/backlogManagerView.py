@@ -1,15 +1,6 @@
 import tkinter as tk
-from tkinter import messagebox
-import ScrumblesData
-import ScrumblesObjects
+import ScrumblesFrames, SPopMenu, Dialogs, listboxEventHandler
 
-import ScrumblesFrames
-import Dialogs
-import listboxEventHandler
-import time
-import threading
-
-#from tkinter import ttk
 
 class backlogManagerView(tk.Frame):
     def __init__(self, parent, controller, user):
@@ -17,7 +8,7 @@ class backlogManagerView(tk.Frame):
         self.controller = controller
         self.selectedItem = None
         self.selectedSprint = None
-        self.listOfEpics = []
+        self.listOfEpics = [I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
 
@@ -35,7 +26,10 @@ class backlogManagerView(tk.Frame):
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.pack(side=tk.LEFT, fill=tk.Y)
         self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.context_menu(event, self.contextMenu))
+                                        lambda event: self.popMenu.context_menu(event, self.popMenu))
+
+        self.popMenu = SPopMenu.PopMenu(self,self.controller,self.listOfEpics)
+        self.popMenu.add_command(label=u'Update Item', command=self.updateItem)
 
 
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
@@ -46,16 +40,7 @@ class backlogManagerView(tk.Frame):
         self.sprintBacklog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
         self.sprintBacklog.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.context_menu(event, self.contextMenu))
-
-
-
-
-        self.contextMenu = tk.Menu(tearoff=0)
-
-        self.contextMenu.add_command(label=u'Update Item',command=self.updateItem)
-        self.contextMenu.add_command(label=u'Promote To Epic',command=self.promoteItemToEpic)
-        self.setEpicsMenu(self.contextMenu)
+        self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.popMenu.context_menu(event, self.popMenu))
 
 
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
@@ -78,8 +63,6 @@ class backlogManagerView(tk.Frame):
         for source in dynamicSources:
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
-        #todo Click on project name to display items in sprintBacklog
-        #todo click and drag on items in sprintBacklog to change priority variable of an item so that sort will be user defined
 
     def colorizeBackLogList(self):
         for index in range(len(self.controller.activeProject.listOfAssignedItems)):
@@ -112,24 +95,9 @@ class backlogManagerView(tk.Frame):
         self.wait_window(editUserDialog.top)
 
 
-
-    def context_menu(self,event,menu):
-         widget = event.widget
-         index = widget.nearest(event.y)
-         _, yoffset, _, height = widget.bbox(index)
-         if event.y > height + yoffset + 5:
-             return
-         self.selectedItem = widget.get(index)
-         #print('do something')
-         menu.post(event.x_root, event.y_root)
-
-
-
-
-
     def updateBacklogViewData(self):
         print('Calling updateBacklogViewData')
-
+        self.listOfEpics = []
         self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
         self.projectNameLabel['text'] = self.projectNameLabelText
         self.sprintList.clearList()
@@ -140,7 +108,7 @@ class backlogManagerView(tk.Frame):
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
         self.listOfEpics = [ I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
-        self.updateEpicsMenu()
+        self.popMenu.updateEpicsMenu()
 
 
 
@@ -158,62 +126,3 @@ class backlogManagerView(tk.Frame):
         if event.widget is self.sprintList.listbox:
             self.assignedSprintSelectedEvent(event)
 
-    def promoteItemToEpic(self):
-        item = None
-        title = self.selectedItem
-        for i in self.controller.dataBlock.items:
-            if i.itemTitle == title:
-                item = i
-
-        if item is None:
-            print('Item Title:', title)
-            print('backlogData:')
-            for i in self.controller.activeProject.listOfAssignedItems:
-                print(i.itemTitle)
-            raise Exception('Error Loading item from title')
-
-        self.controller.dataBlock.promoteItemToEpic(item)
-
-    def updateEpicsMenu(self):
-        self.setEpicsMenu(self.contextMenu)
-
-    def setEpicsMenu(self,menu):
-
-        listOfEpics = [E.itemTitle for E in self.listOfEpics]
-        print(listOfEpics)
-        try:
-            menu.delete('Assign To Epic')
-        except Exception:
-           pass
-
-        self.popMenu = tk.Menu(menu,tearoff=0)
-        for text in listOfEpics:
-            self.popMenu.add_command(label=text,command = lambda t=text:self.assignItemToEpic(t))
-
-        menu.add_cascade(label='Assign To Epic',menu=self.popMenu,underline=0)
-
-    def assignItemToEpic(self,epicName):
-
-        epic = None
-        item = None
-        for I in self.controller.activeProject.listOfAssignedItems:
-            if I.itemTitle == epicName:
-                epic = I
-            if I.itemTitle == self.selectedItem:
-                item = I
-
-        try:
-            if self.isItemAlreadyInAnEpic(item):
-                self.controller.dataBlock.reAssignItemToEpic(item,epic)
-            else:
-                self.controller.dataBlock.addItemToEpic(item, epic)
-        except Exception as e:
-            messagebox.showerror('Error', str(e))
-
-    def isItemAlreadyInAnEpic(self,item):
-        listOfItemsInAnEpic = []
-        for I in self.controller.dataBlock.items:
-            if I.itemType == 'Epic':
-                for subItem in I.subItemList:
-                    listOfItemsInAnEpic.append(subItem)
-        return item in listOfItemsInAnEpic
