@@ -1,6 +1,6 @@
 import ScrumblesObjects
-import hashlib
-import re
+import hashlib,re
+
 
 class QueryException(Exception):
     def __init__(self, message):
@@ -15,7 +15,7 @@ class Query:
     getAllProjects = 'SELECT * FROM ProjectsTable'
     getAllUserProject = 'SELECT * FROM ProjectUserTable'
     getAllProjectItem = 'SELECT * FROM ProjectItemTable'
-
+    validItemTypes = ['User Story', 'Epic', 'Bug','Chore','Feature']
     @staticmethod
     def getUserByUsernameAndPassword(username, password):
         hashedPassword = Password(password)
@@ -216,8 +216,10 @@ class CardQuery(Query):
 
     @staticmethod
     def updateCard(item):
+
         assert item is not None
         assert item.itemID is not None
+        assert item.itemType in Query.validItemTypes
         itemDict = {}
         itemDict['Type'] = "'" + item.itemType + "'"
         itemDict['Priority'] = "'" + str(item.itemPriority) + "'"
@@ -282,7 +284,27 @@ class CardQuery(Query):
         assert item is not None
         query = 'DELETE FROM CardTable WHERE CardID=%i' % (item.itemID)
         return query
-
+    @staticmethod
+    def getEpicSubitems(item):
+        assert item is not None
+        query = 'Select SubitemID From EpicTable WHERE EpicID=%i' % (item.itemID)
+        return query
+    @staticmethod
+    def removeItemFromEpic(item):
+        assert item is not None
+        query = 'DELETE FROM EpicTable WHERE SubitemID=%i' % item.itemID
+        return query
+    @staticmethod
+    def deleteEpic(item):
+        assert item is not None
+        query = 'DELETE FROM EpicTable WHERE EpicID=%i' % item.itemID
+        return query
+    @staticmethod
+    def assignItemToEpic(item,epic):
+        assert item is not None
+        assert epic.itemType == 'Epic'
+        query = 'INSERT INTO EpicTable (EpicID,SubitemID) VALUES (%i,%i)' % (epic.itemID,item.itemID)
+        return query
 
 class UserQuery(Query):
     @staticmethod
@@ -451,6 +473,7 @@ class ObjectValidator:
         assert item.itemType is not None
         assert item.itemTitle is not None
         assert item.itemDescription is not None
+        assert item.itemType in Query.validItemTypes
         if item.itemType == '':
             raise Exception('Item Type cannot be Blank')
         if item.itemTitle == '':

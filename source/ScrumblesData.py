@@ -1,11 +1,7 @@
-import logging
 import MySQLdb
 import ScrumblesObjects
-import re
-import hashlib
 import base64
-import threading,time
-import remoteUpdate
+
 
 class DataBaseLoginInfo:
     def __init__(self,file):
