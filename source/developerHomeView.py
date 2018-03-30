@@ -62,6 +62,7 @@ class developerHomeView(tk.Frame):
         self.backlog.clear()
         self.teamMembers.clear()
 
+
         self.backlog = [item.itemTitle for item in self.controller.activeProject.listOfAssignedItems]
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
         if self.selectedUser is not None:
