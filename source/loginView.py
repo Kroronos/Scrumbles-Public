@@ -92,6 +92,7 @@ class loginView(tk.Frame):
                 if loggedInUserName == user.userName:
                     loggedInUser = user
         except Exception as error:
+            logging.warning('Failed Login user %s'% username)
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUser
 
@@ -121,6 +122,7 @@ class loginView(tk.Frame):
                if loggedInUserName == user.userName:
                    loggedInUser = user
         except Exception as error:
+            logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUser
 

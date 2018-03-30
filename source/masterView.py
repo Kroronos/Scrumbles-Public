@@ -190,7 +190,8 @@ class masterView(tk.Tk):
         try:
             menu.delete('Open Project')
         except Exception:
-            pass
+            logging.exception('Failed to delete menu')
+
         self.popMenu = tk.Menu(menu,tearoff=0)
         for text in listOfProjects:
             self.popMenu.add_command(label=text,command = lambda t=text:self.setActiveProject(t))
