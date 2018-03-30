@@ -17,6 +17,7 @@ class masterView(tk.Tk):
     def __init__(self):
         self.frames = {}
         self.dataBlock = ScrumblesData.DataBlock()
+        self.dataBlock.packCallback(self.repointActiveProject)
         tk.Tk.__init__(self)
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
@@ -203,6 +204,11 @@ class masterView(tk.Tk):
 
         logging.info('Active Project set to %s' % self.activeProject.projectName)
         self.dataBlock.executeUpdaterCallbacks()
+
+    def repointActiveProject(self):
+        for P in self.dataBlock.projects:
+            if P.projectName == self.activeProject.projectName:
+                self.activeProject = P
 
 def logOut(controller):
     logging.info('%s logged out'%controller.activeUser.userID)
