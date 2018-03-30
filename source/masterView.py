@@ -8,7 +8,7 @@ import teamManagerView
 import sprintManagerView
 import backlogManagerView
 import itemManagerView
-
+import DataBlock
 import Dialogs
 import ScrumblesData
 
@@ -16,7 +16,7 @@ import ScrumblesData
 class masterView(tk.Tk):
     def __init__(self):
         self.frames = {}
-        self.dataBlock = ScrumblesData.DataBlock()
+        self.dataBlock = DataBlock.DataBlock()
         self.dataBlock.packCallback(self.repointActiveProject)
         tk.Tk.__init__(self)
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))

@@ -1,14 +1,17 @@
-import logging
 import tkinter as tk
 from tkinter import messagebox
+from Query import Query
+
+import logging
 import ScrumblesData
-import ScrumblesObjects
+
+
 
 def authenticateUser(username, password, dbLoginInfo):
     user = None
     dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
     dataConnection.connect()
-    result = dataConnection.getData(ScrumblesData.Query.getUserByUsernameAndPassword(username, password))
+    result = dataConnection.getData(Query.getUserByUsernameAndPassword(username, password))
     dataConnection.close()
     if result == ():
         logging.warning('Login Failed for %s' % username)
