@@ -106,6 +106,9 @@ class DataBlock:
             Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
             self.items.append(Item)
 
+        for I in self.items:
+            if I.itemType == 'Epic':
+                self.populateSubItems(I)
 
         for user in userTable:
             User = ScrumblesObjects.User(user)
@@ -250,7 +253,36 @@ class DataBlock:
         item.itemSprintID = 0
         self.conn.setData(Query.updateObject(item))
 
+    @dbWrap
+    def promoteItemToEpic(self,item):
+        logging.info('Promoting Item %s to Epic'% item.itemTitle)
+        item.itemType = 'Epic'
+        self.conn.setData(Query.updateObject(item))
 
+    @dbWrap
+    def addItemToEpic(self,item,epic):
+        assert epic.itemType == 'Epic'
+        logging.info('Adding item %s to Epic %s' % (item.itemTitle, epic.itemTitel))
+        self.conn.setData(CardQuery.assignItemToEpic(item,epic))
+
+    @dbWrap
+    def removeItemFromEpic(self,item):
+        logging.info('Removing item %s from Epic' % item.itemTitle)
+        self.conn.setData(CardQuery.removeItemFromEpic(item))
+
+    @dbWrap
+    def deleteEpic(self,item):
+        assert item.itemType == 'Epic'
+        logging.info('Deleting Epic %s and removing bindings' % item.itemTitle)
+        self.conn.setData(CardQuery.deleteEpic(item))
+
+    @dbWrap
+    def populateSubItems(self,item):
+        queryResult = CardQuery.getEpicSubitems(item)
+        for dict in queryResult:
+            for I in self.items:
+                if dict['SubitemID'] == I.itemID:
+                    item.subItemList.append(I)
 
 
     def updater(self):

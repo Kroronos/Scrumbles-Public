@@ -89,9 +89,10 @@ class Item:
         self.listOfStatuses = {0 : "Not Started", 1 : "In Progress", 2: "Done"}
         self.listOfPriorities = {0 : "Low Priotity", 1 : "Medium Priotity", 2: "High Priotity"}
 
-    #NOTE This functions takes in the whole list from a query result
+
 
         self.listOfComments = []
+        self.subItemList = []
         self.projectID = 0
 
     def getPriority(self):
