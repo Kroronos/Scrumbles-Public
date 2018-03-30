@@ -261,9 +261,19 @@ class DataBlock:
 
     @dbWrap
     def addItemToEpic(self,item,epic):
-        assert epic.itemType == 'Epic'
-        logging.info('Adding item %s to Epic %s' % (item.itemTitle, epic.itemTitel))
+        if item.itemType == 'Epic':
+            raise Exception('Cannot Assign Epic to Epic')
+        if epic.itemType != 'Epic':
+            raise Exception('Item not an Epic')
+        if epic.itemTitle == item.itemTitle:
+            raise Exception('Epic cannot be Self Assigned')
+        logging.info('Adding item %s to Epic %s' % (item.itemTitle, epic.itemTitle))
         self.conn.setData(CardQuery.assignItemToEpic(item,epic))
+
+
+    def reAssignItemToEpic(self,item,epic):
+        self.removeItemFromEpic(item)
+        self.addItemToEpic(item,epic)
 
     @dbWrap
     def removeItemFromEpic(self,item):
@@ -278,11 +288,11 @@ class DataBlock:
 
     @dbWrap
     def populateSubItems(self,item):
-        queryResult = CardQuery.getEpicSubitems(item)
+        queryResult = self.conn.getData(CardQuery.getEpicSubitems(item))
         for dict in queryResult:
-            for I in self.items:
-                if dict['SubitemID'] == I.itemID:
-                    item.subItemList.append(I)
+           for I in self.items:
+               if dict['SubitemID'] == str(I.itemID):
+                   item.subItemList.append(I)
 
 
     def updater(self):

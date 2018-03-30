@@ -1,5 +1,5 @@
 import tkinter as tk
-
+from tkinter import messagebox
 import ScrumblesData
 import ScrumblesObjects
 
@@ -17,6 +17,7 @@ class backlogManagerView(tk.Frame):
         self.controller = controller
         self.selectedItem = None
         self.selectedSprint = None
+        self.listOfEpics = []
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
 
@@ -50,10 +51,11 @@ class backlogManagerView(tk.Frame):
 
 
 
-        self.contextMenu = tk.Menu()
+        self.contextMenu = tk.Menu(tearoff=0)
 
         self.contextMenu.add_command(label=u'Update Item',command=self.updateItem)
-
+        self.contextMenu.add_command(label=u'Promote To Epic',command=self.promoteItemToEpic)
+        self.setEpicsMenu(self.contextMenu)
 
 
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
@@ -137,7 +139,8 @@ class backlogManagerView(tk.Frame):
         self.sprintList.importSprintsList(self.sprintListData)
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
-
+        self.listOfEpics = [ I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
+        self.updateEpicsMenu()
 
 
 
@@ -155,20 +158,62 @@ class backlogManagerView(tk.Frame):
         if event.widget is self.sprintList.listbox:
             self.assignedSprintSelectedEvent(event)
 
+    def promoteItemToEpic(self):
+        item = None
+        title = self.selectedItem
+        for i in self.controller.dataBlock.items:
+            if i.itemTitle == title:
+                item = i
 
+        if item is None:
+            print('Item Title:', title)
+            print('backlogData:')
+            for i in self.controller.activeProject.listOfAssignedItems:
+                print(i.itemTitle)
+            raise Exception('Error Loading item from title')
 
-        #######################################################################
-        ###Five freaking hours of troublshooting... I am a F@$%ing moron
-        # right here.. Python PASSES OBJECTS AROUND BY REFERENCE
-        #self.productListData.clear()  # <--- This clears dataBlock.projects GLOBALLY
-        #self.backlogData.clear()      # <--- This clears dataBlock.items GLOBALLY
-        #####################################################################
+        self.controller.dataBlock.promoteItemToEpic(item)
 
-        ############### Below is completely Stupid,  these need to repack the frames
-        # NEED CODE BELOW TO REPACK FRAMES NOT this
-        #self.productListData = DB.projects # <-- this does nothing, this is the same as a = a
-        #self.backlogData = DB.items #<-- this does nothing, this is the same as a = a
-        #############################################################################
-        #  This is why sleep deprivation and programming do not mix well
-        ##############################################################################
+    def updateEpicsMenu(self):
+        self.setEpicsMenu(self.contextMenu)
 
+    def setEpicsMenu(self,menu):
+
+        listOfEpics = [E.itemTitle for E in self.listOfEpics]
+        print(listOfEpics)
+        try:
+            menu.delete('Assign To Epic')
+        except Exception:
+           pass
+
+        self.popMenu = tk.Menu(menu,tearoff=0)
+        for text in listOfEpics:
+            self.popMenu.add_command(label=text,command = lambda t=text:self.assignItemToEpic(t))
+
+        menu.add_cascade(label='Assign To Epic',menu=self.popMenu,underline=0)
+
+    def assignItemToEpic(self,epicName):
+
+        epic = None
+        item = None
+        for I in self.controller.activeProject.listOfAssignedItems:
+            if I.itemTitle == epicName:
+                epic = I
+            if I.itemTitle == self.selectedItem:
+                item = I
+
+        try:
+            if self.isItemAlreadyInAnEpic(item):
+                self.controller.dataBlock.reAssignItemToEpic(item,epic)
+            else:
+                self.controller.dataBlock.addItemToEpic(item, epic)
+        except Exception as e:
+            messagebox.showerror('Error', str(e))
+
+    def isItemAlreadyInAnEpic(self,item):
+        listOfItemsInAnEpic = []
+        for I in self.controller.dataBlock.items:
+            if I.itemType == 'Epic':
+                for subItem in I.subItemList:
+                    listOfItemsInAnEpic.append(subItem)
+        return item in listOfItemsInAnEpic
