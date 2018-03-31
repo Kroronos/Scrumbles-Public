@@ -48,7 +48,7 @@ class SLineGraph(tk.Frame):
     def displayGraph(self):
         self.graph.plot(self.x, self.y)
         canvas = FigureCanvasTkAgg(self.figure, self)
-        canvas.show()
+        canvas.draw()
         if self.label is not None:
             self.label.pack(side=tk.TOP, fill=tk.X)
 
