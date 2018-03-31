@@ -50,6 +50,8 @@ class User:
         self.listOfComments = []
         self.listOfProjects = []
 
+    def getTitle(self):
+        return self.userName
 
 class Item:
     itemID = None
@@ -167,7 +169,7 @@ class Comment:
     # This initializer accepts a DICT not a List
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
-            self.commentID =  generateRowID()
+            self.commentID = generateRowID()
             return
         assert 'CommentContent' in queryResultDict
         self.commentID = queryResultDict['CommentID']

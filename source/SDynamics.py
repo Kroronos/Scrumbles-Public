@@ -197,8 +197,10 @@ class itemPicker(tk.Frame):
 
 
 class commentsField(tk.Frame):
-    def __init__(self,controller):
+    def __init__(self, controller, master):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
+
+        self.master = master
 
         self.titleText = tk.StringVar()
         self.titleText.set("Comments")
@@ -208,31 +210,99 @@ class commentsField(tk.Frame):
         self.comments = []
         self.commentTextElements = []
 
+        self.newCommentFieldF = tk.Frame(self)
+        self.newCommentFieldFI = tk.Frame(self.newCommentFieldF)
+        self.newCommentField = tk.Text(self.newCommentFieldFI, height=5)
+        self.newCommentFieldScrollBar = tk.Scrollbar(self.newCommentFieldFI, command=self.newCommentField.yview)
+        self.newCommentField['yscrollcommand'] = self.newCommentFieldScrollBar.set
+        self.submitButton = tk.Button(self.newCommentFieldF, text="Submit", command=self.submitComment)
+
+        self.source = None
+        self.searchParams = None
+
         self.commentTitle.pack(side=tk.TOP, fill=tk.X)
         self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
-        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
+        self.commentField.pack(side=tk.TOP, fill=tk.BOTH, ipady=4)
 
-    def updateFromListOfCommentsObject(self, listOfCommentsObject, objectName):
+        self.newCommentFieldScrollBar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.newCommentField.pack(side=tk.LEFT, fill=tk.X)
+        self.newCommentFieldFI.pack(side=tk.TOP, fill=tk.BOTH)
+        self.submitButton.pack(side=tk.TOP, fill=tk.BOTH)
+
+    def submitComment(self):
+        newComment = ScrumblesObjects.Comment()
+        newComment.commentContent = self.newCommentField.get("1.0", tk.END)
+        self.newCommentField.delete("1.0", tk.END)
+        newComment.commentUserID = self.master.activeUser.userID
+        newComment.commentItemID = self.inspection.itemID
+        self.master.dataBlock.addComment(newComment)
+
+    def updateFromListOfCommentsObject(self, source, searchParams, isUpdate=False):
         self.clearCommentField()
-        for comment in listOfCommentsObject.listOfComments:
-            self.comments.append(comment)
-        self.titleText.set("Comments\n" + objectName)
-        self.renderCommentField()
+
+        if source is not None and searchParams is not None:
+            if isUpdate is False:
+                self.source = source
+                self.searchParams = searchParams
+
+                self.clearCommentField()
+                self.inspection = None
+                for thing in source:
+                    if thing.getTitle() == searchParams:
+                        self.inspection = thing
+
+            else:
+                self.inspection = None
+
+                if type(source[1]) is ScrumblesObjects.Item:
+                    for user in self.master.activeProject.listOfAssignedUsers:
+                        if user.userName == searchParams:
+                            self.inspection = user
+                if type(source[1] is ScrumblesObjects.User):
+                    for item in self.master.activeProject.listOfAssignedItems:
+                        if item.itemTitle == searchParams:
+                            self.inspection = item
+
+            if self.inspection is not None:
+                self.titleText.set("Comments\n" + self.inspection.getTitle())
+                for comment in self.inspection.listOfComments:
+                    self.comments.append(comment)
+
+            self.renderCommentField()
+
+    def updateComments(self):
+        self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate=True)
 
     def renderCommentField(self):
-        self.comments = sorted(self.comments, key=lambda s: s.commentTimeStamp)
+        self.comments = sorted(self.comments, reverse=True, key=lambda s: s.commentTimeStamp)
         for comment in self.comments:
-            commentLabel = tk.Label(self.commentField, text=comment.commentContent, justify=tk.LEFT, wraplength=300, pady=10)
+            commentLabel = tk.Label(self.commentField, anchor=tk.W, text=comment.commentContent, justify=tk.LEFT, wraplength=300, pady=10)
             self.commentTextElements.append(commentLabel)
             commentLabel.pack(side=tk.TOP, fill=tk.X)
+
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
+
+        if type(self.inspection) is ScrumblesObjects.Item:
+            self.newCommentFieldF.pack_forget()
+            self.newCommentFieldF.pack(side=tk.BOTTOM, fill=tk.X)
+        else:
+            self.newCommentFieldF.pack_forget()
+
 
     def clearCommentField(self):
         self.comments.clear()
+        self.newCommentField.delete("1.0", tk.END)
         self.commentField.pack_forget()
         for element in self.commentTextElements:
             element.pack_forget()
         self.commentTextElements.clear()
+
+    def FrameWidth(self, event):
+        canvas_width = event.width
+        self.canvas.itemconfig(self.canvasFrame, width=canvas_width)
+
+    def OnFrameConfigure(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
 
 class SCardDescription(tk.Frame):

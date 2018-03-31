@@ -18,7 +18,7 @@ class teamManagerView(tk.Frame):
 
         self.dynamicSources, queryType = self.assignedItemInspect.getSCardDescriptionExport()
         self.descriptionManager = ScrumblesFrames.SCardDescription(self, controller, self.dynamicSources, queryType)
-        self.recentComments = ScrumblesFrames.commentsField(self)
+        self.recentComments = ScrumblesFrames.commentsField(self, self.controller)
 
         #Dynamic Events
         # To Prevent Duplicate Tkinter Events
@@ -44,6 +44,7 @@ class teamManagerView(tk.Frame):
         self.teamMembers.clear()
         self.teamMembers = [user.userName for user in self.controller.dataBlock.users]
         self.memberList.importList(self.teamMembers)
+        self.recentComments.updateComments()
 
     def generateMemberMenus(self):
         self.memberPopupMenu = tk.Menu(self, tearoff=0)
@@ -71,17 +72,14 @@ class teamManagerView(tk.Frame):
     def listboxEvents(self, event):
         if event.widget is self.memberList.listbox:
             self.descriptionManager.resetToStart()
-            for user in self.controller.dataBlock.users:
-                if user.userName == event.widget.get(tk.ANCHOR):
-                    self.assignedItemInspect.update(user)
-                    self.recentComments.updateFromListOfCommentsObject(user, user.userName)
+            self.recentComments.updateFromListOfCommentsObject(self.controller.activeProject.listOfAssignedUsers,
+                                                               event.widget.get(tk.ANCHOR))
 
         for source in self.dynamicSources:
             if event.widget is source:
                 self.descriptionManager.changeDescription(event)
-                for item in self.controller.dataBlock.items:
-                    if item.itemTitle == event.widget.get(tk.ANCHOR):
-                        self.recentComments.updateFromListOfCommentsObject(item, item.itemTitle)
+                self.recentComments.updateFromListOfCommentsObject(self.controller.activeProject.listOfAssignedItems,
+                                                                   event.widget.get(tk.ANCHOR))
 
     def memberPopup(self, event):
         widget = event.widget
