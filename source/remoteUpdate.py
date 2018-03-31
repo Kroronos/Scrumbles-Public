@@ -32,6 +32,7 @@ class RemoteUpdate:
                 time.sleep(5)
             except:
                 logging.error('Connection to %s Lost'%self.TCP_IP)
+
                 self.socket.close()
                 return False
         return False
@@ -45,6 +46,7 @@ class RemoteUpdate:
                 self.isDBChanged = True
                 logging.info('Received Message from DB Server: %s' % data.decode() )
         except:
+            logging.exception('Failed to connect to remote server')
             self.socket.close()
             return False
         return True

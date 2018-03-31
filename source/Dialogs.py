@@ -7,6 +7,7 @@ import ScrumblesObjects
 import webbrowser
 import sys, traceback
 import datetime
+import logging
 
 
 class CreateProjectDialog:
@@ -46,6 +47,7 @@ class CreateProjectDialog:
             try:
                 self.dataBlock.addNewScrumblesObject(project)
             except IntegrityError:
+                logging.exception('ID Collision')
                 project.projectID = ScrumblesObjects.generateRowID()
                 self.dataBlock.addNewScrumblesObject(project)
 
@@ -132,11 +134,13 @@ class CreateUserDialog:
             try:
                 self.dataBlock.addNewScrumblesObject(user)
             except IntegrityError:
+                logging.exception('ID Collision')
                 user.userID = ScrumblesObjects.generateRowID()
                 self.dataBlock.addNewScrumblesObject(user)
 
 
         except IntegrityError as e:
+            logging.exception('Invalid Input')
             if 'UserName' in str(e):
                 messagebox.showerror('Error', 'Username already in use')
             elif "EmailAddress" in str(e):
@@ -259,10 +263,12 @@ class CreateSprintDialog:
             try:
                 self.dataBlock.addNewScrumblesObject(sprint)
             except IntegrityError:
+                logging.exception('ID Collision')
                 sprint.sprintID = ScrumblesObjects.generateRowID()
                 self.dataBlock.addNewScrumblesObject(sprint)
 
         except IntegrityError as e:
+            logging.exception('Invalid Input')
             if 'SprintName' in str(e):
                 messagebox.showerror('Error', 'Sprint Must have unique Name')
             else:
@@ -360,6 +366,7 @@ class CreateItemDialog:
             try:
                 self.dataBlock.addNewScrumblesObject(item)
             except IntegrityError:
+                logging.exception('ID Collision')
                 item.itemID = ScrumblesObjects.generateRowID()
                 comment.commentItemID = item.itemID
                 self.dataBlock.addNewScrumblesObject(item)
@@ -373,6 +380,7 @@ class CreateItemDialog:
             self.dataBlock.addItemToProject(self.parent.activeProject,item)
 
         except Exception as e:
+            logging.exception('Object Creation Error')
             messagebox.showerror('Error',str(e))
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print("*** print_tb:")
@@ -531,6 +539,7 @@ class EditItemDialog:
 
 
         except Exception as e:
+            logging.exception('Object Edit Error')
             messagebox.showerror('Error', str(e))
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print("*** print_tb:")

@@ -8,7 +8,7 @@ import teamManagerView
 import sprintManagerView
 import backlogManagerView
 import itemManagerView
-
+import DataBlock
 import Dialogs
 import ScrumblesData
 
@@ -16,8 +16,8 @@ import ScrumblesData
 class masterView(tk.Tk):
     def __init__(self):
         self.frames = {}
-        self.dataBlock = ScrumblesData.DataBlock()
-        self.dataBlock.packCallback(self.repointActiveProject)
+        self.dataBlock = DataBlock.DataBlock()
+        self.dataBlock.packCallback(self.repointActiveObjects)
         tk.Tk.__init__(self)
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
@@ -190,7 +190,8 @@ class masterView(tk.Tk):
         try:
             menu.delete('Open Project')
         except Exception:
-            pass
+            logging.exception('Failed to delete menu')
+
         self.popMenu = tk.Menu(menu,tearoff=0)
         for text in listOfProjects:
             self.popMenu.add_command(label=text,command = lambda t=text:self.setActiveProject(t))
@@ -205,10 +206,13 @@ class masterView(tk.Tk):
         logging.info('Active Project set to %s' % self.activeProject.projectName)
         self.dataBlock.executeUpdaterCallbacks()
 
-    def repointActiveProject(self):
+    def repointActiveObjects(self):
         for P in self.dataBlock.projects:
             if P.projectName == self.activeProject.projectName:
                 self.activeProject = P
+        for U in self.dataBlock.users:
+            if U.userName == self.activeUser.userName:
+                self.activeUser = U
 
 def logOut(controller):
     logging.info('%s logged out'%controller.activeUser.userID)
