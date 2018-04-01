@@ -254,11 +254,11 @@ class commentsField(tk.Frame):
             else:
                 self.inspection = None
 
-                if type(source[1]) is ScrumblesObjects.Item:
+                if type(source[0]) is ScrumblesObjects.Item:
                     for user in self.master.activeProject.listOfAssignedUsers:
                         if user.userName == searchParams:
                             self.inspection = user
-                if type(source[1] is ScrumblesObjects.User):
+                if type(source[0] is ScrumblesObjects.User):
                     for item in self.master.activeProject.listOfAssignedItems:
                         if item.itemTitle == searchParams:
                             self.inspection = item

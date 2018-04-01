@@ -56,7 +56,9 @@ class developerHomeView(tk.Frame):
                 self.backlog.append(item)
 
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
-        self.assignedItems = self.controller.activeUser.listOfAssignedItems
+        for item in self.controller.activeUser.listOfAssignedItems:
+            if item.projectID == self.controller.activeProject.projectID:
+                self.assignedItems.append(item)
 
         self.productBacklogList.importItemList(self.backlog)
         self.userItemList.importItemList(self.assignedItems)
