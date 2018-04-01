@@ -250,9 +250,6 @@ class CreateSprintDialog:
             sprint.sprintName = self.sprintNameEntry.get()
             sprint.sprintStartDate = self.getStartDate()
             sprint.sprintDueDate = self.getDueDate()
-            print('SprintDilog get sprint name;',sprint.sprintName)
-
-
 
             projectName = self.assignSprintToObject.get()
             for P in self.dataBlock.projects:
@@ -303,7 +300,7 @@ class CreateItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x600')
+        popUPDialog.geometry('600x640')
         popUPDialog.title('Create a New Item')
 
 
@@ -321,24 +318,34 @@ class CreateItemDialog:
 
 
 
-        ItemTypeVar = Tk.StringVar()
-        items = ('User Story', 'Epic', 'Bug','Chore','Feature')
-        self.ItemTypebox = ttk.Combobox(popUPDialog,textvariable=ItemTypeVar,state='readonly',values=items)
+        self.ItemTypeVar = Tk.StringVar()
+        self.itemTypes = ('User Story', 'Epic', 'Bug','Chore','Feature')
+        self.ItemTypebox = ttk.Combobox(popUPDialog,textvariable=self.ItemTypeVar,state='readonly',values=self.itemTypes)
         self.ItemTypebox.grid(row=6, column=2,sticky='W')
-        self.ItemTypebox.selection_clear()
+        self.ItemTypebox.current(0)
 
-        self.pointsEntryLabel = Tk.Label(popUPDialog, text="Points").grid(row=7,column=1,sticky='E')
+
+        self.itemPriorityLabel = Tk.Label(popUPDialog,text='Item Priority').grid(row=7,column=1,sticky='E')
+        self.itemPriorities = ( "Low Priority", "Medium Priority", "High Priority")
+        self.itemPriorityVar = Tk.StringVar()
+        self.itemPriorityCombobox = ttk.Combobox(popUPDialog,textvariable=self.itemPriorityVar,state='readonly')
+        self.itemPriorityCombobox['values'] = self.itemPriorities
+        self.itemPriorityCombobox.current(0)
+        self.itemPriorityCombobox.grid(row=7,column=2,sticky='W')
+
+
+        self.pointsEntryLabel = Tk.Label(popUPDialog, text="Points").grid(row=8,column=1,sticky='E')
         self.pointsEntry = Tk.Entry(popUPDialog)
-        self.pointsEntry.grid(row=7,column=2)
+        self.pointsEntry.grid(row=8,column=2)
 
-        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Comment').grid(row=9, column=1, sticky='E')
+        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Comment').grid(row=10, column=1, sticky='E')
         self.commentTextBox = Tk.Text(popUPDialog, height=6, width=20, wrap=Tk.WORD)
-        self.commentTextBox.grid(row=9, column=2,pady=5)
+        self.commentTextBox.grid(row=10, column=2,pady=5)
 
         createButton = Tk.Button(popUPDialog, text="Create Item", command=self.ok)
-        createButton.grid(row=10,column=2,pady=5)
+        createButton.grid(row=11,column=2,pady=5)
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
-        cancelButton.grid(row=10,column=1,pady=5)
+        cancelButton.grid(row=11,column=1,pady=5)
 
 
     def ok(self):
@@ -352,6 +359,7 @@ class CreateItemDialog:
             item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
             item.itemType = self.ItemTypebox.get()
             item.itemPoints = self.pointsEntry.get()
+            item.itemPriority = item.priorityEquivalentsReverse[self.itemPriorityCombobox.get()]
 
             comment = ScrumblesObjects.Comment()
             comment.commentContent = self.commentTextBox.get('1.0','end-1c')
@@ -431,14 +439,17 @@ class EditItemDialog:
         print(Item)
         self.item = Item
         self.dataBlock = dataBlock
-        ItemTypeVar = Tk.StringVar()
-        itemUserVar = Tk.StringVar()
-        sprintVar = Tk.StringVar()
+        self.ItemTypeVar = Tk.StringVar()
+        self.itemUserVar = Tk.StringVar()
+        self.sprintVar = Tk.StringVar()
+        self.itemPriorityVar = Tk.StringVar
 
         self.listOfUsers = self.dataBlock.users
-        self.listOfSprints = self.dataBlock.sprints
+        self.listOfSprints = parent.controller.activeProject.listOfAssignedSprints
         userNames = [user.userName for user in self.listOfUsers]
+        userNames.append('None')
         sprintNames = [sprint.sprintName for sprint in self.listOfSprints]
+        sprintNames.append('None')
 
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.transient(parent)
@@ -465,29 +476,34 @@ class EditItemDialog:
         self.itemDescriptionEntry.grid(row=3, column=2, pady=5)
 
 
-        items = ('User Story', 'Epic', 'Bug', 'Chore', 'Feature')
-        self.ItemTypebox = ttk.Combobox(popUPDialog, textvariable=ItemTypeVar, state='readonly', values=items)
+        itemTypes = Item.validItemTypes
+        self.ItemTypebox = ttk.Combobox(popUPDialog, textvariable=self.ItemTypeVar, state='readonly', values=Item.validItemTypes)
         self.ItemTypebox.grid(row=6, column=2, sticky='W')
         #self.ItemTypebox.selection_clear()
-        if Item.itemType in items:
-            self.ItemTypebox.current(items.index(Item.itemType))
+        if Item.itemType in itemTypes:
+            print(Item.itemType,'in',itemTypes)
+            print('at index', itemTypes.index(Item.itemType))
+            self.ItemTypebox.current(itemTypes.index(Item.itemType))
+            self.ItemTypebox.current(1)
         else:
             self.ItemTypebox.current(0)
         users = tuple(userNames)
         sprints = tuple(sprintNames)
-        self.usersComboBox = ttk.Combobox(popUPDialog, textvariable=itemUserVar, state='readonly',values=users)
+        self.usersComboBox = ttk.Combobox(popUPDialog, textvariable=self.itemUserVar, state='readonly',values=users)
         self.usersComboBox.current(0)
         self.usersComboBox.grid(row=7,column=2, sticky='W')
 
-        self.sprintsComboBox = ttk.Combobox(popUPDialog, textvariable=sprintVar, state='readonly',values=sprints)
+        self.sprintsComboBox = ttk.Combobox(popUPDialog, textvariable=self.sprintVar, state='readonly',values=sprints)
         self.sprintsComboBox.current(0)
         self.sprintsComboBox.grid(row=8,column=2, sticky='W')
 
 
         self.itemCodeLinkEntry = Tk.Entry(popUPDialog, width=27)
         self.itemCodeLinkEntry.grid(row=10, column=2, pady=5, sticky='W')
-        self.itemPriorityEntry = Tk.Entry(popUPDialog, width=27)
-        self.itemPriorityEntry.grid(row=9, column=2, pady=5, sticky='W')
+        self.itemPriorityCombobox = ttk.Combobox(popUPDialog, textvariable=self.itemPriorityVar, state='readonly', width=27)
+        self.itemPriorityCombobox['values'] = ( "Low Priority","Medium Priority", "High Priority")
+        self.itemPriorityCombobox.current(Item.itemPriority)
+        self.itemPriorityCombobox.grid(row=9, column=2, pady=5, sticky='W')
 
         createButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
         createButton.grid(row=12, column=2, pady=5)
@@ -504,7 +520,7 @@ class EditItemDialog:
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
             selectedSprint = None
-            userID = 0
+            userID = None
 
 
             for sprint in self.listOfSprints:
@@ -516,9 +532,12 @@ class EditItemDialog:
                 if user.userName == self.usersComboBox.get():
                     userID = user.userID
 
-            if self.sprintsComboBox.get() != '':
+            if self.sprintsComboBox.get() != 'None':
                 item.itemSprintID = selectedSprint.sprintID
                 item.itemDueDate = selectedSprint.sprintDueDate
+            else:
+                item.itemSprintID = None
+                item.itemDueDate = None
 
             item.itemType = self.ItemTypebox.get()
 
@@ -526,10 +545,10 @@ class EditItemDialog:
 
 
             item.itemCodeLink = self.itemCodeLinkEntry.get()
-            if self.itemPriorityEntry.get() == '':
+            if self.itemPriorityCombobox.get() == '':
                 item.itemPriority = 0
             else:
-                item.itemPriority = int(self.itemPriorityEntry.get())
+                item.itemPriority = item.priorityEquivalentsReverse[self.itemPriorityCombobox.get()]
 
 
 
@@ -548,7 +567,7 @@ class EditItemDialog:
             traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
             traceback.print_stack(file=sys.stdout)
         else:
-            messagebox.showinfo('Info', 'New Item Successfully Created')
+            messagebox.showinfo('Info', "Item '%s' Successfully Updated"%item.itemTitle)
             self.exit()
 
 
