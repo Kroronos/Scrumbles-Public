@@ -21,7 +21,7 @@ class developerHomeView(tk.Frame):
         # progress bar
         s = ttk.Style()
         s.theme_use('clam')
-        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_grey, background=style.scrumbles_orange)
+        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_blue, background=style.scrumbles_orange)
 
         progressBarStyle = "scrumbles.Horizontal.TProgressbar"
 
