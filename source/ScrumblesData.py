@@ -1,4 +1,4 @@
-import MySQLdb
+import MySQLdb, logging
 import ScrumblesObjects
 import base64
 
@@ -45,6 +45,7 @@ class ScrumblesData:
         self.password = dbLoginInfo.password
         self.defaultDB = dbLoginInfo.defaultDB
         self.dbConnection = None
+        self.cursor = None
         # This connect and close will check if the network is good
         # an excpetion will be thrown if unable to connect to server
         self.connect()
@@ -52,7 +53,7 @@ class ScrumblesData:
 
     def connect(self):
         self.dbConnection = MySQLdb.connect(self.ipaddress, self.userID, self.password, self.defaultDB)
-
+        self.cursor = self.dbConnection.cursor()
     def getData(self, query):
         assert self.dbConnection is not None
         self.dbConnection.query(query)
@@ -62,12 +63,24 @@ class ScrumblesData:
         return queryResult.fetch_row(maxRows, how)
 
     def setData(self, query):
+        print(query)
         assert self.dbConnection is not None
-        self.dbConnection.query(query)
-        self.dbConnection.commit()
+        try:
+            if type(query) is not tuple:
+                self.cursor.execute(query)
+                self.dbConnection.commit()
+            else:
+
+                self.cursor.execute(query[0],query[1])
+                self.dbConnection.commit()
+        except:
+            logging.exception('Query did not execute')
+            self.dbConnection.rollback()
+
 
     def close(self):
         assert self.dbConnection is not None
+        self.cursor = None
         self.dbConnection.close()
 
     def isConnected(self):

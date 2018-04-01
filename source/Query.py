@@ -32,12 +32,11 @@ class Query:
             raise QueryException('ItemID is None type')
         if sprint.sprintID is None:
             raise QueryException('SprintID is None type')
-        query = 'UPDATE CardTable SET CardDueDate = ( ' \
-                'SELECT DueDate FROM SprintTable WHERE SprintID=%i), ' \
-                'SprintID = %i, Status=1 WHERE CardID = %i' % (sprint.sprintID,
-                                                               sprint.sprintID,
-                                                               item.itemID)
-        return query
+
+        query = ''''UPDATE CardTable SET CardDueDate = ( 
+                SELECT DueDate FROM SprintTable WHERE SprintID=%s), 
+                SprintID = %s, Status=1 WHERE CardID = %s'''
+        return query, (sprint.sprintID, sprint.sprintID, item.itemID)
 
     @staticmethod
     def createObject(obj):
@@ -96,50 +95,42 @@ class ProjectQuery(Query):
     @staticmethod
     def createProject(project):
         ObjectValidator.validate(project)
-        query = 'INSERT INTO ProjectsTable (ProjectID, ProjectName) VALUES (\'%s\',\'%s\')' % (
-            str(project.projectID), project.projectName)
-        return query
+        # query = 'INSERT INTO ProjectsTable (ProjectID, ProjectName) VALUES (\'%s\',\'%s\')' % (
+        #     str(project.projectID), project.projectName)
+        query = 'INSERT INTO ProjectsTable (ProjectID, ProjectName) VALUES (%s,%s)'
+        return query, (project.projectID,project.projectName)
 
     @staticmethod
     def deleteProject(project):
         assert project is not None
-        query = 'DELETE FROM ProjectsTable WHERE ProjectID=\'%s\'' % (str(project.projectID))
-        return query
+        query = 'DELETE FROM ProjectsTable WHERE ProjectID=%s'
+        return query , (project.projectID,)
 
     @staticmethod
     def updateProject(project):
         assert project is not None
-        query = 'UPDATE ProjectsTable SET ProjectName=\'%s\' WHERE ProjectID = %i' % (project.projectName,
-                                                                                      project.projectID)
-        return query
+        query = 'UPDATE ProjectsTable SET ProjectName=%s WHERE ProjectID = %s'
+        return query, (project.projectName,project.projectID)
 
     @staticmethod
     def addUser(project, user):
-        query = 'INSERT INTO ProjectUserTable (UserID, ProjectID) VALUES (\'%s\',\'%s\')' % (
-            str(user.userID), str(project.projectID)
-        )
-        return query
+        query = 'INSERT INTO ProjectUserTable (UserID, ProjectID) VALUES (%s,%s)'
+        return query , (user.userID,project.projectID)
 
     @staticmethod
     def removeUser(project, user):
-        query = 'DELETE FROM ProjectUserTable WHERE ProjectID=\'%s\' AND UserID=\'%s\'' % (
-            str(project.projectID), str(user.userID)
-        )
-        return query
+        query = 'DELETE FROM ProjectUserTable WHERE ProjectID=%s AND UserID=%s'
+        return query, (project.projectID, user.userID)
 
     @staticmethod
     def addItem(project, item):
-        query = 'INSERT INTO ProjectItemTable (ItemID,ProjectID) VALUES (\'%s\',\'%s\')' % (
-            str(item.itemID), str(project.projectID)
-        )
-        return query
+        query = 'INSERT INTO ProjectItemTable (ItemID,ProjectID) VALUES (%s,%s)'
+        return query, (item.itemID,project.projectID)
 
     @staticmethod
     def removeItem(project, item):
-        query = 'DELETE FROM ProjectItemTable WHERE ProjectID=\'%s\' AND ItemID=\'%s\'' % (
-            str(project.projectID), str(item.itemID)
-        )
-        return query
+        query = 'DELETE FROM ProjectItemTable WHERE ProjectID=%s AND ItemID=%s'
+        return query, (project.projecID,item.itemID)
 
 
 class SprintQuery(Query):
@@ -147,72 +138,72 @@ class SprintQuery(Query):
     def createSprint(sprint):
         ObjectValidator.validate(sprint)
         sprintMap = {'SprintName': 'NULL', 'StartDate': 'NULL', 'DueDate': 'NULL', 'ProjectID': 'NULL'}
-        sprintMap['SprintID'] = "'" + str(sprint.sprintID) + "'"
+        sprintMap['SprintID'] = sprint.sprintID
         if sprint.sprintName is not None:
-            sprintMap['SprintName'] = "'" + str(sprint.sprintName) + "'"
+            sprintMap['SprintName'] = sprint.sprintName
         if sprint.sprintStartDate is not None:
-            sprintMap['StartDate'] = "'" + str(sprint.sprintStartDate) + "'"
+            sprintMap['StartDate'] = sprint.sprintStartDate
         if sprint.sprintDueDate is not None:
-            sprintMap['DueDate'] = "'" + str(sprint.sprintDueDate) + "'"
+            sprintMap['DueDate'] = sprint.sprintDueDate
         if sprint.projectID is not None:
-            sprintMap['ProjectID'] = "'" + str(sprint.projectID) + "'"
+            sprintMap['ProjectID'] = sprint.projectID
 
         query = '''INSERT INTO SprintTable (SprintID, SprintName, StartDate,DueDate,ProjectID) VALUES (
-        %s,%s,%s,%s,%s)''' % (sprintMap['SprintID'], sprintMap['SprintName'], sprintMap['StartDate']
-                                              , sprintMap['DueDate'], sprintMap['ProjectID'])
+        %s,%s,%s,%s,%s)'''
         print(query)
-        return query
+        return query, (sprintMap['SprintID'], sprintMap['SprintName'], sprintMap['StartDate']
+                                              , sprintMap['DueDate'], sprintMap['ProjectID'])
 
     @staticmethod
     def updateSprint(sprint):
         assert sprint is not None
         assert sprint.sprintID is not None
 
-        query = 'UPDATE SprintTable SET StartDate=\'%s\',' \
-                'DueDate=\'%s\', SprintName=\'%s\' WHERE SprintID=%i' % (
+        query = 'UPDATE SprintTable SET StartDate=%s,' \
+                'DueDate=%s, SprintName=\'%s\' WHERE SprintID=%s'
+        return query, (
                     sprint.sprintStartDate,
                     sprint.sprintDueDate,
                     sprint.sprintName,
                     sprint.sprintID
                 )
-        return query
 
     @staticmethod
     def getSprintBySprintID(sprintID):
         assert sprintID is not None
-        query = 'SELECT * FROM SprintTable WHERE SprintID=%i' % (sprintID)
-        return query
+        query = 'SELECT * FROM SprintTable WHERE SprintID=%s'
+        return query, (sprintID,)
 
     @staticmethod
     def deleteSprint(sprint):
         assert sprint is not None
-        query = 'DELETE FROM SprintTable WHERE SprintID=%i' % (sprint.sprintID)
-        return query
+        query = 'DELETE FROM SprintTable WHERE SprintID=%s'
+        return query, (sprint.sprintID,)
 
 
 class CardQuery(Query):
     @staticmethod
     def createCard(item):
         ObjectValidator.validate(item)
-        query = 'INSERT INTO CardTable (' \
-                'CardId,' \
-                'CardType,' \
-                'CardPriority,' \
-                'CardTitle,' \
-                'CardDescription,' \
-                'CardCreatedDate,' \
-                'CardPoints,' \
-                'Status) VALUES (' \
-                '\'%s\',\'%s\',0,\'%s\',\'%s\',' \
-                'NOW(),\'%s\',0)' % (
-                    str(item.itemID),
+        query = '''INSERT INTO CardTable ( 
+                CardId, 
+                CardType,
+                CardPriority, 
+                CardTitle, 
+                CardDescription,
+                CardCreatedDate, 
+                CardPoints,
+                Status) VALUES (
+                %s,%s,0,%s,%s,
+                NOW(),%s,0) '''
+
+        return query , (
+                    item.itemID,
                     item.itemType,
                     item.itemTitle,
                     item.itemDescription,
-                    str(item.itemPoints)
+                    item.itemPoints
                 )
-        print(query)
-        return query
 
     @staticmethod
     def updateCard(item):
@@ -221,22 +212,22 @@ class CardQuery(Query):
         assert item.itemID is not None
         assert item.itemType in Query.validItemTypes
         itemDict = {}
-        itemDict['Type'] = "'" + item.itemType + "'"
-        itemDict['Priority'] = "'" + str(item.itemPriority) + "'"
-        itemDict['Title'] = "'" + item.itemTitle + "'"
-        itemDict['Descr'] = "'" + item.itemDescription + "'"
+        itemDict['Type'] =  item.itemType
+        itemDict['Priority'] = item.itemPriority
+        itemDict['Title'] = item.itemTitle
+        itemDict['Descr'] =  item.itemDescription
         itemDict['DueDate'] = 'NULL'
         if item.itemDueDate is not None:
-            itemDict['DueDate'] = "'" + str(item.itemDueDate) + "'"
-        itemDict['Sprint'] = "'" + str(item.itemSprintID) + "'"
-        itemDict['User'] = "'" + str(item.itemUserID) + "'"
-        itemDict['Status'] = "'" + str(item.itemStatus) + "'"
+            itemDict['DueDate'] = item.itemDueDate
+        itemDict['Sprint'] = item.itemSprintID
+        itemDict['User'] = item.itemUserID
+        itemDict['Status'] = item.itemStatus
         itemDict['CodeLink'] = 'NULL'
         if item.itemCodeLink is not None:
-            itemDict['CodeLink'] = "'" + item.itemCodeLink + "'"
-        itemDict['Points'] = "'" + str(item.itemPoints) + "'"
+            itemDict['CodeLink'] = item.itemCodeLink
+        itemDict['Points'] = item.itemPoints
 
-        query = '''UPDATE CardTable SET
+        query = '''UPDATE CardTable SET (
                 CardType=%s,
                 CardPriority=%s,
                 CardTitle=%s,
@@ -246,7 +237,9 @@ class CardQuery(Query):
                 SprintID=%s,
                 UserID=%s,
                 Status=%s,
-                CardPoints=%s WHERE CardID=%s''' % (
+                CardPoints=%s ) WHERE CardID=%s'''
+
+        return query , (
             itemDict['Type'],
             itemDict['Priority'],
             itemDict['Title'],
@@ -259,118 +252,104 @@ class CardQuery(Query):
             itemDict['Points'],
             item.itemID
         )
-        print(query)
-        return query
 
-    @staticmethod
-    def getCardByCardID(cardID):
-        query = 'SELECT * from CardTable WHERE CardID=%i' % (cardID)
-        return query
-
-    @staticmethod
-    def getCardByCardTitle(cardTitle):
-        query = 'SELECT * FROM CardTable WHERE CardTitle=\'%s\'' % (cardTitle)
-        return query
-
-    @staticmethod
-    def getCardsBySprint(sprint):
-        assert sprint is not None
-        assert sprint.sprintID is not None
-        query = 'SELECT * FROM CardTable WHERE SprintID=%i' % (sprint.sprintID)
-        return query
+    # @staticmethod
+    # def getCardByCardID(cardID):
+    #     query = 'SELECT * from CardTable WHERE CardID=%i'
+    #     return query , (cardID,)
+    #
+    # @staticmethod
+    # def getCardByCardTitle(cardTitle):
+    #     query = 'SELECT * FROM CardTable WHERE CardTitle=%s\'' % (cardTitle)
+    #     return query
+    #
+    # @staticmethod
+    # def getCardsBySprint(sprint):
+    #     assert sprint is not None
+    #     assert sprint.sprintID is not None
+    #     query = 'SELECT * FROM CardTable WHERE SprintID=%i' % (sprint.sprintID)
+    #     return query
 
     @staticmethod
     def deleteCard(item):
         assert item is not None
-        query = 'DELETE FROM CardTable WHERE CardID=%i' % (item.itemID)
-        return query
+        query = 'DELETE FROM CardTable WHERE CardID=%s'
+        return query,(item.itemID,)
     @staticmethod
     def getEpicSubitems(item):
         assert item is not None
-        query = 'Select SubitemID From EpicTable WHERE EpicID=%i' % (item.itemID)
+        query = 'Select SubitemID From EpicTable WHERE EpicID=%s' % (item.itemID)
         return query
     @staticmethod
     def removeItemFromEpic(item):
         assert item is not None
-        query = 'DELETE FROM EpicTable WHERE SubitemID=%i' % item.itemID
-        return query
+        query = 'DELETE FROM EpicTable WHERE SubitemID=%s'
+        return query, (item.itemID,)
     @staticmethod
     def deleteEpic(item):
         assert item is not None
-        query = 'DELETE FROM EpicTable WHERE EpicID=%i' % item.itemID
-        return query
+        query = 'DELETE FROM EpicTable WHERE EpicID=%s'
+        return query,(item.itemID,)
     @staticmethod
     def assignItemToEpic(item,epic):
         assert item is not None
         assert epic.itemType == 'Epic'
-        query = 'INSERT INTO EpicTable (EpicID,SubitemID) VALUES (%i,%i)' % (epic.itemID,item.itemID)
-        return query
+        query = 'INSERT INTO EpicTable (EpicID,SubitemID) VALUES (%s,%s)'
+        return query,(epic.itemID,item.itemID)
 
 class UserQuery(Query):
     @staticmethod
-    def getUserByUsername(username):
-        query = 'SELECT * from UserTable WHERE UserName=\'%s\'' % (username)
-        return query
+    # def getUserByUsername(username):
+    #     query = 'SELECT * from UserTable WHERE UserName=\'%s\'' % (username)
+    #     return query
 
     @staticmethod
     def createUser(user):
         ObjectValidator.validate(user)
         password = Password(user.userPassword)
         password.encrypt()
-        query = 'INSERT INTO UserTable (UserID, userName,UserEmailAddress,UserPassword,UserRole) VALUES (\'%s\',\'%s\',\'%s\',\'%s\',\'%s\')' % (
-            str(user.userID), user.userName, user.userEmailAddress, str(password), user.userRole)
-        return query
+        query = 'INSERT INTO UserTable (UserID, userName,UserEmailAddress,UserPassword,UserRole) VALUES (%s,%s,%s,%s,%s)'
+        return query,(user.userID, user.userName, user.userEmailAddress, password, user.userRole)
 
     @staticmethod
     def updateUser(user):
         assert user is not None
         assert user.userID is not None
-        query = 'UPDATE UserTable SET ' \
-                'UserName=\'%s\',' \
-                'UserEmailAddress=\'%s\',' \
-                'UserPassword=\'%s\',' \
-                'UserRole=\'%s\' WHERE ' \
-                'UserID=%i' % (
-                    user.userName,
-                    user.userEmailAddress,
-                    user.userPassword,
-                    user.userRole,
-                    user.userID
-                )
-        return query
+        query = '''UPDATE UserTable SET ( 
+                UserName=%s,
+                UserEmailAddress=%s,
+                UserPassword=%s,
+                UserRole=%s ) WHERE 
+                UserID=%s'''
+        return query, ( user.userName, user.userEmailAddress,user.userPassword,user.userRole,user.userID )
 
     @staticmethod
     def deleteUser(user):
         assert user is not None
-        query = 'DELETE FROM UserTable WHERE UserID=%i' % (user.userID)
-        return query
+        query = 'DELETE FROM UserTable WHERE UserID=%s'
+        return query , (user.userID,)
 
 
 class CommentQuery(Query):
     @staticmethod
     def createComment(comment):
-        query = 'INSERT INTO CommentTable (CommentID, CommentTimeStamp,' \
-                'CommentContent,' \
-                'CardID,' \
-                'UserID) VALUES ( \'%s\',NOW(), \'%s\',%i,%i)' % (
-                    str(comment.commentID),
+        query = '''INSERT INTO CommentTable (CommentID, CommentTimeStamp,
+                CommentContent,
+                CardID,
+                UserID) VALUES ( %s,NOW(), %s,%s,%s)'''
+        return query, (
+                    comment.commentID,
                     comment.commentContent,
                     comment.commentItemID,
                     comment.commentUserID
                 )
-        return query
 
     @staticmethod
     def updateComment(comment):
         assert comment is not None
         assert comment.commentID is not None
-        query = 'UPDATE CommentTable SET ' \
-                'CommentContent=\'%s\' WHERE' \
-                'CommentID=%i' % (
-                    comment.commentContent,
-                    comment.commentID
-                )
-        return query
+        query = '''UPDATE CommentTable SET CommentContent=%s WHERE CommentID=%s'''
+        return query,(comment.commentContent, comment.commentID)
 
     @staticmethod
     def getCommentsByUser(user):
@@ -389,8 +368,8 @@ class CommentQuery(Query):
     @staticmethod
     def deleteComment(comment):
         assert comment is not None
-        query = 'DELETE FROM CommentTable WHERE CommentID=%i' % (comment.commentID)
-        return query
+        query = 'DELETE FROM CommentTable WHERE CommentID=%s'
+        return query, (comment.commentID,)
 
 
 class Password:
