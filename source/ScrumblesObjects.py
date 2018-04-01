@@ -64,9 +64,11 @@ class Item:
     itemUserID = None
     itemStatus = None
 
-    priorityEquivalents = {1: "Low Priority", 2: "Medium Priority", 3: "High Priority"}
+    priorityEquivalents = {0: "Low Priority", 1: "Medium Priority", 2: "High Priority"}
+    priorityEquivalentsReverse = { "Low Priority":0, "Medium Priority":1, "High Priority":2}
     statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2: 'In Progress', 3: 'Submitted', 4: 'Complete'}
     statusEquivalentsReverse = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+    validItemTypes = ('User Story', 'Epic', 'Bug', 'Chore', 'Feature')
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
     def __init__(self,queryResultDict=None):
@@ -87,7 +89,7 @@ class Item:
         self.itemStatus = queryResultDict['Status']
         self.itemPoints = queryResultDict['CardPoints']
         self.listOfStatuses = {0 : "Not Started", 1 : "In Progress", 2: "Done"}
-        self.listOfPriorities = {0 : "Low Priotity", 1 : "Medium Priotity", 2: "High Priotity"}
+        self.listOfPriorities = {0: "Low Priority", 1: "Medium Priority", 3: "High Priority"}
 
 
 

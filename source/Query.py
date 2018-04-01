@@ -189,12 +189,13 @@ class CardQuery(Query):
                 CardCreatedDate, 
                 CardPoints,
                 Status) VALUES (
-                %s,%s,0,%s,%s,
+                %s,%s,%s,%s,%s,
                 NOW(),%s,0) '''
 
         return query , (
                     item.itemID,
                     item.itemType,
+                    item.itemPriority,
                     item.itemTitle,
                     item.itemDescription,
                     item.itemPoints
