@@ -302,9 +302,9 @@ class DataBlock:
         threading.Thread(target=self.listener.start,args=()).start()
 
         while self.alive:
-            time.sleep(2)
+            time.sleep(1)
             if self.listener.isDBChanged:
-                time.sleep(2)
+                time.sleep(1)
                 with self.cv:
                     self.cv.wait_for(self.updateAllObjects)
 
