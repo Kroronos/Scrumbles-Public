@@ -11,8 +11,10 @@ class PopMenu(Tk.Menu):
         self.master = Master
         self.widget = None
         self.add_command(label=u'Promote To Epic', command=self.promoteItemToEpic)
-
-
+        try:
+            self.selectedItem = root.selectedItem
+        except:
+            self.selectedItem = None
         self.hasEpics = False
 
         if epicList is not None:
@@ -27,6 +29,10 @@ class PopMenu(Tk.Menu):
         if event.y > height + yoffset + 5:
             return
         self.selectedItem = self.widget.get(index)
+        try:
+            self.root.selectedItem = self.selectedItem
+        except:
+            pass
         self.widget.selection_clear(0,Tk.END)
         self.widget.selection_set(index)
         #self.widget.activate(index)

@@ -95,8 +95,6 @@ class ProjectQuery(Query):
     @staticmethod
     def createProject(project):
         ObjectValidator.validate(project)
-        # query = 'INSERT INTO ProjectsTable (ProjectID, ProjectName) VALUES (\'%s\',\'%s\')' % (
-        #     str(project.projectID), project.projectName)
         query = 'INSERT INTO ProjectsTable (ProjectID, ProjectName) VALUES (%s,%s)'
         return query, (project.projectID,project.projectName)
 
