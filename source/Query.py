@@ -198,7 +198,7 @@ class CardQuery(Query):
                     item.itemPriority,
                     item.itemTitle,
                     item.itemDescription,
-                    item.itemPointsf
+                    item.itemPoints
                 )
 
     @staticmethod
