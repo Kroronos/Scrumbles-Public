@@ -235,7 +235,7 @@ class commentsField(tk.Frame):
         self.newCommentField.delete("1.0", tk.END)
         newComment.commentUserID = self.master.activeUser.userID
         newComment.commentItemID = self.inspection.itemID
-        self.master.dataBlock.addComment(newComment)
+        self.master.dataBlock.addNewScrumblesObject(newComment)
 
     def updateFromListOfCommentsObject(self, source, searchParams, isUpdate=False):
         self.clearCommentField()

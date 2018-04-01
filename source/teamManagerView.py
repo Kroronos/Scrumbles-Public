@@ -62,6 +62,8 @@ class teamManagerView(tk.Frame):
 
     def generateRemoveFromProjectMenus(self):
         assignedProjects = tk.Menu(self.memberPopupMenu, tearoff=0)
+        if not self.inspectedItem.listOfProjects:
+            assignedProjects.add_command(label="[Empty]", state="disabled")
         for project in self.inspectedItem.listOfProjects:
             assignedProjects.add_command(label=project.projectName, command=
             lambda project=project: self.controller.dataBlock.removeUserFromProject(project, self.inspectedItem))
