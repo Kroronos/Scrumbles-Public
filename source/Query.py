@@ -157,14 +157,11 @@ class SprintQuery(Query):
         assert sprint is not None
         assert sprint.sprintID is not None
 
-        query = 'UPDATE SprintTable SET StartDate=%s,' \
-                'DueDate=%s, SprintName=\'%s\' WHERE SprintID=%s'
-        return query, (
-                    sprint.sprintStartDate,
+        query = '''UPDATE SprintTable SET StartDate=%s,DueDate=%s, SprintName=%s WHERE SprintID=%s'''
+        return query, ( sprint.sprintStartDate,
                     sprint.sprintDueDate,
                     sprint.sprintName,
-                    sprint.sprintID
-                )
+                    sprint.sprintID )
 
     @staticmethod
     def getSprintBySprintID(sprintID):
@@ -214,28 +211,19 @@ class CardQuery(Query):
         itemDict['Priority'] = item.itemPriority
         itemDict['Title'] = item.itemTitle
         itemDict['Descr'] =  item.itemDescription
-        itemDict['DueDate'] = 'NULL'
+        itemDict['DueDate'] = None
         if item.itemDueDate is not None:
             itemDict['DueDate'] = item.itemDueDate
         itemDict['Sprint'] = item.itemSprintID
         itemDict['User'] = item.itemUserID
         itemDict['Status'] = item.itemStatus
-        itemDict['CodeLink'] = 'NULL'
+        itemDict['CodeLink'] = None
         if item.itemCodeLink is not None:
             itemDict['CodeLink'] = item.itemCodeLink
         itemDict['Points'] = item.itemPoints
 
-        query = '''UPDATE CardTable SET (
-                CardType=%s,
-                CardPriority=%s,
-                CardTitle=%s,
-                CardDescription=%s,
-                CardDueDate=%s,
-                CardCodeLink=%s,
-                SprintID=%s,
-                UserID=%s,
-                Status=%s,
-                CardPoints=%s ) WHERE CardID=%s'''
+        query = '''UPDATE CardTable SET  CardType=%s, CardPriority=%s, CardTitle=%s,CardDescription=%s, CardDueDate=%s,
+                CardCodeLink=%s, SprintID=%s, UserID=%s, Status=%s, CardPoints=%s  WHERE CardID=%s'''
 
         return query , (
             itemDict['Type'],
@@ -251,22 +239,6 @@ class CardQuery(Query):
             item.itemID
         )
 
-    # @staticmethod
-    # def getCardByCardID(cardID):
-    #     query = 'SELECT * from CardTable WHERE CardID=%i'
-    #     return query , (cardID,)
-    #
-    # @staticmethod
-    # def getCardByCardTitle(cardTitle):
-    #     query = 'SELECT * FROM CardTable WHERE CardTitle=%s\'' % (cardTitle)
-    #     return query
-    #
-    # @staticmethod
-    # def getCardsBySprint(sprint):
-    #     assert sprint is not None
-    #     assert sprint.sprintID is not None
-    #     query = 'SELECT * FROM CardTable WHERE SprintID=%i' % (sprint.sprintID)
-    #     return query
 
     @staticmethod
     def deleteCard(item):
@@ -296,10 +268,6 @@ class CardQuery(Query):
         return query,(epic.itemID,item.itemID)
 
 class UserQuery(Query):
-    @staticmethod
-    # def getUserByUsername(username):
-    #     query = 'SELECT * from UserTable WHERE UserName=\'%s\'' % (username)
-    #     return query
 
     @staticmethod
     def createUser(user):
@@ -313,11 +281,11 @@ class UserQuery(Query):
     def updateUser(user):
         assert user is not None
         assert user.userID is not None
-        query = '''UPDATE UserTable SET ( 
+        query = '''UPDATE UserTable SET  
                 UserName=%s,
                 UserEmailAddress=%s,
                 UserPassword=%s,
-                UserRole=%s ) WHERE 
+                UserRole=%s  WHERE 
                 UserID=%s'''
         return query, ( user.userName, user.userEmailAddress,user.userPassword,user.userRole,user.userID )
 
