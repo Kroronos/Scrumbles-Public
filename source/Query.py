@@ -148,7 +148,7 @@ class SprintQuery(Query):
 
         query = '''INSERT INTO SprintTable (SprintID, SprintName, StartDate,DueDate,ProjectID) VALUES (
         %s,%s,%s,%s,%s)'''
-        print(query)
+
         return query, (sprintMap['SprintID'], sprintMap['SprintName'], sprintMap['StartDate']
                                               , sprintMap['DueDate'], sprintMap['ProjectID'])
 
@@ -198,7 +198,7 @@ class CardQuery(Query):
                     item.itemPriority,
                     item.itemTitle,
                     item.itemDescription,
-                    item.itemPoints
+                    item.itemPointsf
                 )
 
     @staticmethod

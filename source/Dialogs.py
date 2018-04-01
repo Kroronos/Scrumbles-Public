@@ -250,9 +250,6 @@ class CreateSprintDialog:
             sprint.sprintName = self.sprintNameEntry.get()
             sprint.sprintStartDate = self.getStartDate()
             sprint.sprintDueDate = self.getDueDate()
-            print('SprintDilog get sprint name;',sprint.sprintName)
-
-
 
             projectName = self.assignSprintToObject.get()
             for P in self.dataBlock.projects:

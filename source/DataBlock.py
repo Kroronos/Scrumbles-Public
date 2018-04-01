@@ -75,6 +75,8 @@ class DataBlock:
         debug_ObjectdumpList(self.items)
         for I in self.items:
             print('Dumping comments on item',I.itemTitle)
+            print('Dumping subitems in item')
+            debug_ObjectdumpList(I.subItemList)
         print('\nDumping Comments')
         debug_ObjectdumpList(self.comments)
 
@@ -164,7 +166,7 @@ class DataBlock:
         if user not in project.listOfAssignedUsers:
             self.conn.setData(ProjectQuery.addUser(project,user))
         else:
-            print('User already assigned to project')
+           logging.warning('User already assigned to project')
 
     @dbWrap
     def removeUserFromProject(self,project,user):
@@ -199,7 +201,7 @@ class DataBlock:
             item.projectID = project.projectID
             self.conn.setData(ProjectQuery.addItem(project,item))
         else:
-            print('Item already assigned to project')
+           logging.warning('Item already assigned to project')
     @dbWrap
     def removeItemFromProject(self,project,item):
         logging.info('Removing item %s from project %s.' % (item.itemTitle,project.projectName))
