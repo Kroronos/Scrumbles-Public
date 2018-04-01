@@ -105,7 +105,7 @@ class Item:
 
     def getEnglishPriority(self):
         if self.itemPriority >= 0 and self.itemPriority <=2:
-            return self.listOfPriorities[self.itemPriority]
+            return Item.priorityEquivalents[self.itemPriority]
         else:
             return "Invalid Priority Value"
     def getEnglishStatus(self):

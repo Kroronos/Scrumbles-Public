@@ -232,6 +232,7 @@ class commentsField(tk.Frame):
     def submitComment(self):
         newComment = ScrumblesObjects.Comment()
         newComment.commentContent = self.newCommentField.get("1.0", tk.END)
+        #newComment.commentSignature = self.activeUser.userName + " " +  datetime.datetime.now().strftime("%I:%M %p, %d/%m/%y")
         self.newCommentField.delete("1.0", tk.END)
         newComment.commentUserID = self.master.activeUser.userID
         newComment.commentItemID = self.inspection.itemID
@@ -655,6 +656,7 @@ class SUserItemInspection(tk.Frame):
         self.roleText = tk.Label(self.roletag, textvariable=self.roleString)
 
         self.itembox = tk.Frame(self)
+        self.assignedItemsList = SList(self.itembox, "Assigned Items")
         self.inProgressItemsList = SList(self.itembox, "In Progress Items")
         self.submittedItemsList = SList(self.itembox, "Submitted Items")
         self.completedItemsList = SList(self.itembox, "Completed Items")
@@ -667,6 +669,7 @@ class SUserItemInspection(tk.Frame):
         self.nametag.pack(side=tk.LEFT, fill=tk.X, expand=1)
         self.roletag.pack(side=tk.LEFT, fill=tk.X, expand=1)
 
+        self.assignedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.inProgressItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.submittedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.completedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -680,19 +683,27 @@ class SUserItemInspection(tk.Frame):
         self.updateItems(user.listOfAssignedItems)
 
     def updateItems(self, assignedItems):
+        assignedItems = []
         inProgressItems = []
         submittedItems = []
         completedItems = []
         for item in assignedItems:
             if item.itemStatus == 1:
-                inProgressItems.append(item)
+                assignedItems.append(item)
             if item.itemStatus == 2:
-                submittedItems.append(item)
+                inProgressItems.append(item)
             if item.itemStatus == 3:
+                submittedItems.append(item)
+            if item.itemStatus == 4:
                 completedItems.append(item)
+
+        self.updateAssignedItems(assignedItems)
         self.updateInProgessItems(inProgressItems)
         self.updateSubmittedItems(submittedItems)
         self.updateCompletedItems(completedItems)
+
+    def updateAssignedItems(self, assignedItems):
+        self.assignedItemsList.importItemList(assignedItems)
 
     def updateInProgessItems(self, inProgressItems):
         self.inProgressItemsList.importItemList(inProgressItems)
@@ -704,7 +715,7 @@ class SUserItemInspection(tk.Frame):
         self.completedItemsList.importItemList(completedItems)
 
     def getSCardDescriptionExport(self):
-        return [self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']
+        return [self.assignedItemsList.listbox, self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']
 
 class STabs(tk.Frame):
     def __init__(self, controller, master, viewName):

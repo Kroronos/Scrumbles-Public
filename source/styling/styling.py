@@ -1,3 +1,5 @@
+import tkinter as tk
+from tkinter import ttk
 #fonts
 
 header_family = "Helevetica"
@@ -22,3 +24,5 @@ up_arrow = u'\u2B06'
 down_arrow = u'\u2B07'
 right_enter_arrow = u'\u21E8' 
 cancel_button = u'\u2573'
+
+

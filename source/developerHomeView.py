@@ -1,6 +1,8 @@
 import tkinter as tk
+from tkinter import ttk
 import ScrumblesFrames
 import listboxEventHandler
+from styling import styling as style
 
 
 class developerHomeView(tk.Frame):
@@ -16,6 +18,14 @@ class developerHomeView(tk.Frame):
         self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame,"BACKLOG")
         self.commentFeed = ScrumblesFrames.commentsField(self, self.controller)
 
+        # progress bar
+        s = ttk.Style()
+        s.theme_use('clam')
+        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_grey, background=style.scrumbles_orange)
+
+        progressBarStyle = "scrumbles.Horizontal.TProgressbar"
+
+        self.progressBar = ttk.Progressbar(self.itemColumnFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
 
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
 
@@ -41,15 +51,26 @@ class developerHomeView(tk.Frame):
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
         self.userItemList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.progressBar.pack(side=tk.TOP, fill=tk.X)
         self.productBacklogList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.itemColumnFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.descriptionManager.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.commentFeed.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+    def updateProgressBar(self):
+        self.maxTasks = len(self.assignedItems)
+        self.completedTasks = 1 #this should be zero, it is one because otherwise you can't see the progress bar
+        for item in self.assignedItems:
+            if item.itemStatus == 4:
+                self.completedTasks += 1
+        self.progressBar["value"] = self.completedTasks
+        self.progressBar["maximum"] = self.maxTasks
+
     def updateLists(self):
         self.backlog.clear()
         self.teamMembers.clear()
+        self.assignedItems.clear()
 
         for item in self.controller.activeProject.listOfAssignedItems:
             if item.itemStatus == 0:
@@ -63,6 +84,7 @@ class developerHomeView(tk.Frame):
         self.productBacklogList.importItemList(self.backlog)
         self.userItemList.importItemList(self.assignedItems)
 
+        self.updateProgressBar()
         self.commentFeed.updateComments()
 
 
