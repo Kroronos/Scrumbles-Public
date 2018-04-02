@@ -172,6 +172,7 @@ class masterView(tk.Tk):
         self.add_frame(itemManagerFrame, itemManagerView)
         
         self.show_frame(mainView)
+        self.title("Scrumbles"+" - "+self.activeProject.projectName)
 
     def setDatabaseConnection(self):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
@@ -201,7 +202,7 @@ class masterView(tk.Tk):
         for P in self.dataBlock.projects:
             if P.projectName == projectName:
                 self.activeProject = P
-
+        self.title("Scrumbles"+" - "+self.activeProject.projectName)
         logging.info('Active Project set to %s' % self.activeProject.projectName)
         self.dataBlock.executeUpdaterCallbacks()
 
@@ -216,6 +217,7 @@ def logOut(controller):
     loginFrame = loginView.loginView(controller.container, controller)
     controller.add_frame(loginFrame, loginView)
     controller.show_frame(loginView)
+    controller.title("Scrumbles")
 
 def exitProgram(mainwindow):
     mainwindow.dataBlock.shutdown()

@@ -50,8 +50,8 @@ class developerHomeView(tk.Frame):
         for source in dynamicSources:
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
-        self.userItemList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.progressBar.pack(side=tk.TOP, fill=tk.X)
+        self.userItemList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.productBacklogList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.itemColumnFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
