@@ -8,6 +8,7 @@ import teamManagerView
 import sprintManagerView
 import backlogManagerView
 import itemManagerView
+import platform
 
 import Dialogs
 import ScrumblesData
@@ -42,8 +43,8 @@ class masterView(tk.Tk):
         self.activeProject = self.dataBlock.projects[0]
         self.title("Scrumbles")
         self.geometry("1280x720")
-
-        #self.iconbitmap("logo.ico")
+        if platform.system() == "Windows":
+            self.iconbitmap("logo.ico")
 
         self.activeUser = None
 
@@ -173,6 +174,7 @@ class masterView(tk.Tk):
         
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
+        self.iconbitmap("logo.ico")
 
     def setDatabaseConnection(self):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
