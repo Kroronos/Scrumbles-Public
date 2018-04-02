@@ -77,6 +77,10 @@ class teamManagerView(tk.Frame):
             self.recentComments.updateFromListOfCommentsObject(self.controller.activeProject.listOfAssignedUsers,
                                                                event.widget.get(tk.ANCHOR))
 
+            for user in self.controller.dataBlock.users:
+                if user.userName ==  event.widget.get(tk.ANCHOR):
+                    self.assignedItemInspect.update(user)
+
         for source in self.dynamicSources:
             if event.widget is source:
                 self.descriptionManager.changeDescription(event)
