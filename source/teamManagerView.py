@@ -13,6 +13,9 @@ class teamManagerView(tk.Frame):
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
         self.teamMembers = []
+        self.allUsers = []
+
+        self.userList = ScrumblesFrames.SList(self, "USERS")
         self.memberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
         self.assignedItemInspect = ScrumblesFrames.SUserItemInspection(self, controller)
 
@@ -31,10 +34,13 @@ class teamManagerView(tk.Frame):
 
         self.inspectedItem = None
         self.memberList.listbox.bind('<2>' if self.aqua else '<3>', lambda event: self.memberPopup(event))
+        self.userList.listbox.bind('<2>' if self.aqua else '<3>', lambda event: self.memberPopup(event))
+
 
         self.controller.dataBlock.packCallback(self.updateFrame)
         self.updateFrame()
 
+        self.userList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.memberList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.assignedItemInspect.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.recentComments.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
@@ -42,8 +48,13 @@ class teamManagerView(tk.Frame):
 
     def updateFrame(self):
         self.teamMembers.clear()
-        self.teamMembers = [user.userName for user in self.controller.dataBlock.users]
+        self.allUsers.clear()
+
+        self.allUsers = [user.userName for user in self.controller.dataBlock.users]
+        self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
+        self.userList.importList(self.allUsers)
         self.memberList.importList(self.teamMembers)
+
         self.recentComments.updateComments()
 
     def generateMemberMenus(self):
