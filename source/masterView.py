@@ -193,9 +193,9 @@ class masterView(tk.Tk):
             pass
         self.popMenu = tk.Menu(menu,tearoff=0)
         for text in listOfProjects:
-            self.popMenu.add_command(label=text,command = lambda t=text:self.setActiveProject(t))
+            self.popMenu.add_command(label=text, command=lambda t=text: self.setActiveProject(t))
 
-        menu.add_cascade(label='Open Project',menu=self.popMenu,underline=0)
+        menu.insert_cascade(index=1, label='Open Project', menu=self.popMenu, underline=0)
 
     def setActiveProject(self,projectName):
         for P in self.dataBlock.projects:
