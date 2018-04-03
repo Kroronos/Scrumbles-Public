@@ -248,14 +248,16 @@ class DataBlock:
     @dbWrap
     def modifyItemStatus(self,item,status):
         logging.info('Modifying item %s status to %s' % (item.itemTitle,item.statusNumberToTextMap[status]))
-        assert status in range(0,4)
+        assert status in range(0,5)
         item.itemStatus = status
+        self.conn.setData(TimeLineQuery.timeStampItem(item))
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
     def modifyItemStatusByString(self,item,status):
         logging.info('Modifying item %s to status %s.' % (item.itemTitle,status))
-        item.itemStatus = item.statusEquivalentsReverse[status]
+        item.itemStatus = item.statusTextToNumberMap[status]
+        self.conn.setData(TimeLineQuery.timeStampItem(item))
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
