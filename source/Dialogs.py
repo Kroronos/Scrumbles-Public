@@ -545,6 +545,18 @@ class EditItemDialog:
             comment.commentUserID = self.parent.controller.activeUser.userID
             comment.commentItemID = item.itemID
 
+            if len(comment.commentContent) > 0:
+                try:
+                    self.dataBlock.addNewScrumblesObject(comment)
+                except IntegrityError:
+                    comment.commentID = ScrumblesObjects.generateRowID()
+                    self.dataBlock.addNewScrumblesObject(comment)
+            else:
+                raise Exception('Comment box cannot be blank\nPlease enter a change reason.')
+
+
+
+
             for sprint in self.listOfSprints:
                 if sprint.sprintName == self.sprintsComboBox.get():
                     selectedSprint = sprint
@@ -575,12 +587,6 @@ class EditItemDialog:
 
             self.dataBlock.updateScrumblesObject(item)
 
-            if len(comment.commentContent) > 0:
-                try:
-                    self.dataBlock.addNewScrumblesObject(comment)
-                except IntegrityError:
-                    comment.commentID = ScrumblesObjects.generateRowID()
-                    self.dataBlock.addNewScrumblesObject(comment)
 
 
         except Exception as e:
