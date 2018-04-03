@@ -20,23 +20,27 @@ class DataBlock:
     updaterCallbacks = []
 
 
-    def __init__(self):
-        logging.info('Initializing DataBlock Object')
-        self.alive = True
+    def __init__(self,mode=None):
         self.dbLogin = DataBaseLoginInfo('login.txt')
         self.conn = ScrumblesData(self.dbLogin)
-        self.listener = remoteUpdate.RemoteUpdate()
-        self.lock = threading.Lock()
-        self.updateAllObjects()
-        self.size = self.getLen()
-        self.updaterThread = threading.Thread(target = self.updater, args=())
-        self.cv = threading.Condition()
+        self.mode = mode
+        if mode is None:
+            logging.info('Initializing DataBlock Object')
+            self.alive = True
 
-        self.updaterThread.start()
+            self.listener = remoteUpdate.RemoteUpdate()
+            self.lock = threading.Lock()
+            self.updateAllObjects()
+            self.size = self.getLen()
+            self.updaterThread = threading.Thread(target = self.updater, args=())
+            self.cv = threading.Condition()
+
+            self.updaterThread.start()
 
     def __del__(self):
-        self.shutdown()
-        del self.listener
+        if self.mode != 'test':
+            self.shutdown()
+            del self.listener
 
     def getLen(self):
         rv = len(self.items)
@@ -303,7 +307,8 @@ class DataBlock:
     @dbWrap
     def populateItemTimeLine(self,item):
         queryReslt = self.conn.getData(TimeLineQuery.getItemTimeLine(item))
-        item.itemTimeLine = queryReslt[0]
+        if queryReslt != ():
+            item.itemTimeLine = queryReslt[0]
 
     def updater(self):
         logging.info('Updater Thread %s started' % threading.get_ident())
@@ -320,7 +325,10 @@ class DataBlock:
                     self.listener.isDBChanged = False
 
 
-
+    def turnOffListener(self):
+        self.alive = False
+    def turnOnListener(self):
+        self.alive = True
 
     def packCallback(self,callback):
         logging.info('Packing Callback %s' % str(callback))
@@ -335,4 +343,5 @@ class DataBlock:
     def shutdown(self):
         logging.info('Shutting down Thread %s'%threading.get_ident())
         self.alive = False
-        self.listener.stop()
+        if self.mode != 'test':
+            self.listener.stop()

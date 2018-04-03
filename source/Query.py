@@ -350,7 +350,8 @@ class TimeLineQuery(Query):
 
     @staticmethod
     def timeStampItem(item):
-        if item.itemTimeLine['AssignedToSprint'] == datetime.max and item.itemTimeLine['AssignedToUser'] == datetime.max:
+        maxDate = datetime(9999, 12, 31, 23, 59, 59)
+        if item.itemTimeLine['AssignedToSprint'] == maxDate and item.itemTimeLine['AssignedToUser'] == maxDate:
             if item.itemStatus > 1:
                 raise Exception('Invalid Operation: Item must be assigned to sprint or user before timestamping status to %s'%item.statusEquivalents[item.itemStatus])
             else:
@@ -363,7 +364,7 @@ class TimeLineQuery(Query):
 
             else:
                 query = 'UPDATE CardTimeLine SET %s=%s WHERE CardID=%s'
-                rtnTuple = (TimeLineQuery.statusMap[item.itemStatus],datetime.max, item.itemID)
+                rtnTuple = (TimeLineQuery.statusMap[item.itemStatus],maxDate, item.itemID)
         return query,   rtnTuple
 
     @staticmethod
@@ -373,7 +374,7 @@ class TimeLineQuery(Query):
 
     @staticmethod
     def getItemTimeLine(item):
-        query = 'SELECT AssignedToSPrint, AssignedToUser, WorkStarted, Submitted, Completed WHERE CardID=%i' %item.itemID
+        query = 'SELECT AssignedToSPrint, AssignedToUser, WorkStarted, Submitted, Completed, Created FROM CardTimeLine WHERE CardID=%i' %item.itemID
         return query
 
 

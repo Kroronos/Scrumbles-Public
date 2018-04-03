@@ -95,7 +95,8 @@ class Item:
         self.listOfPriorities = self.priorityEquivalents
 
         #DataBlock will updated timeline with values from the database
-        self.itemTimeLine = {'AssignedToSprint':datetime.max , 'AssignedToUser':datetime.max, 'WorkStarted':datetime.max,'Submitted':datetime.max,'Completed':datetime.max}
+        maxDate = datetime(9999, 12, 31, 23, 59, 59)
+        self.itemTimeLine = {'AssignedToSprint':maxDate , 'AssignedToUser':maxDate, 'WorkStarted':maxDate,'Submitted':maxDate,'Completed':maxDate}
         self.listOfComments = []
         self.subItemList = []
         self.projectID = 0

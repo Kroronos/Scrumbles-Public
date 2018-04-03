@@ -7,11 +7,11 @@ Item.itemTimeLine is a dictionary of timestamps with the following keys:
     Submitted
     Completed
 
-On initialization all values are set to datetime.max()
+On initialization all values are set to maxDate = datetime(9999, 12, 31, 23, 59, 59)
+maxDate = datetime(9999, 12, 31, 23, 59, 59)
+self.itemTimeLine = {'AssignedToSprint':maxDate , 'AssignedToUser':maxDate, 'WorkStarted':maxDate,'Submitted':maxDate,'Completed':maxDate}
 
-self.itemTimeLine = {'AssignedToSprint':datetime.max() , 'AssignedToUser':datetime.max(), 'WorkStarted':datetime.max(),'Submitted':datetime.max(),'Completed':datetime.max()}
-
-if Item.itemTimeLine[key] == datetime.max() then the action that relates to that key has not occurred.
+if Item.itemTimeLine[key] == maxDate then the action that relates to that key has not occurred.
 
 When an action that relates to one of the keys occurs, that corresponding value should be updated by DataBlock with datetime.now()
 
@@ -35,5 +35,5 @@ Completed               Complete                        4
 
 The preceding complexity makes retrieving an items status changes trivial for use in analytics
 
-for instance:
+refer to https://docs.python.org/3/library/datetime.html#datetime.timedelta for calculating timeduration between timestamps
 
