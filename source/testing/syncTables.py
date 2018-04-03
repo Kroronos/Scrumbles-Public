@@ -3,8 +3,10 @@ import ScrumblesData
 
 db = ScrumblesData.DataBlock()
 db.conn.connect()
+
 db.conn.setData('DELETE FROM ProjectItemTable')
 db.conn.setData('DELETE FROM ProjectUserTable')
+
 db.conn.close()
 
 

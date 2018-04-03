@@ -1,4 +1,5 @@
 import hashlib, random, threading, os
+from datetime import datetime
 
 #Thread local storage
 thread_local = threading.local()
@@ -63,6 +64,7 @@ class Item:
     itemSprintID = None
     itemUserID = None
     itemStatus = None
+    itemTimeLine = None
 
     priorityEquivalents = {0: "Low Priority", 1: "Medium Priority", 2: "High Priority"}
     priorityEquivalentsReverse = { "Low Priority":0, "Medium Priority":1, "High Priority":2}
@@ -88,11 +90,12 @@ class Item:
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
         self.itemPoints = queryResultDict['CardPoints']
-        self.listOfStatuses = {0 : "Not Started", 1 : "In Progress", 2: "Done"}
-        self.listOfPriorities = {0: "Low Priority", 1: "Medium Priority", 3: "High Priority"}
+        #todo find every reference to the two lines below and refactor using the static dictionaries defined above
+        self.listOfStatuses = self.statusEquivalents
+        self.listOfPriorities = self.priorityEquivalents
 
-
-
+        #DataBlock will updated timeline with values from the database
+        self.itemTimeLine = {'AssignedToSprint':datetime.max , 'AssignedToUser':datetime.max, 'WorkStarted':datetime.max,'Submitted':datetime.max,'Completed':datetime.max}
         self.listOfComments = []
         self.subItemList = []
         self.projectID = 0

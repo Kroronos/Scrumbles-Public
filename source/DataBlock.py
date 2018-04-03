@@ -106,6 +106,7 @@ class DataBlock:
         for item in itemTable:
             Item = ScrumblesObjects.Item(item)
             Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
+            self.populateItemTimeLine(Item)
             self.items.append(Item)
 
         for I in self.items:
@@ -210,6 +211,8 @@ class DataBlock:
 
     @dbWrap
     def addNewScrumblesObject(self,obj):
+        if type(obj) == ScrumblesObjects.Item:
+            self.conn.setData(TimeLineQuery.newItem(obj))
         logging.info('Adding new object %s to database' % repr(obj))
         self.conn.setData(Query.createObject(obj))
 
@@ -248,6 +251,7 @@ class DataBlock:
         logging.info('Assigning Item %s to Sprint %s.',(item.itemTitle,sprint.sprintName))
         item.itemSprintID = sprint.sprintID
         self.conn.setData(Query.updateObject(item))
+        self.conn.setData(TimeLineQuery.stampItemToSprint(item))
 
     @dbWrap
     def removeItemFromSprint(self,item):
@@ -296,6 +300,10 @@ class DataBlock:
                if dict['SubitemID'] == str(I.itemID):
                    item.subItemList.append(I)
 
+    @dbWrap
+    def populateItemTimeLine(self,item):
+        queryReslt = self.conn.getData(TimeLineQuery.getItemTimeLine(item))
+        item.itemTimeLine = queryReslt[0]
 
     def updater(self):
         logging.info('Updater Thread %s started' % threading.get_ident())
@@ -310,6 +318,8 @@ class DataBlock:
 
                     self.executeUpdaterCallbacks()
                     self.listener.isDBChanged = False
+
+
 
 
     def packCallback(self,callback):

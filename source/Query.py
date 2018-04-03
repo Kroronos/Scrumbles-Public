@@ -1,5 +1,6 @@
 import ScrumblesObjects
 import hashlib,re
+from datetime import datetime
 
 
 class QueryException(Exception):
@@ -337,6 +338,43 @@ class CommentQuery(Query):
         assert comment is not None
         query = 'DELETE FROM CommentTable WHERE CommentID=%s'
         return query, (comment.commentID,)
+
+class TimeLineQuery(Query):
+    statusMap = {0: 'AssignedToUser', 1: 'AssignedToUser', 2: 'WorkStared', 3: 'Submitted', 4: 'Completed'}
+    #statusEquivalentsReverse = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+
+    @staticmethod
+    def newItem(item):
+        query = 'INSERT INTO CardTimeLine CardID VALUES %s'
+        return query, (item.itemID,)
+
+    @staticmethod
+    def timeStampItem(item):
+        if item.itemTimeLine['AssignedToSprint'] == datetime.max and item.itemTimeLine['AssignedToUser'] == datetime.max:
+            if item.itemStatus > 1:
+                raise Exception('Invalid Operation: Item must be assigned to sprint or user before timestamping status to %s'%item.statusEquivalents[item.itemStatus])
+            else:
+                query = 'INSERT INTO CardTimeLine (CardID, AssignedToUser) VALUES (%s,NOW())'
+                rtnTuple = (item.itemID,)
+        else:
+            if item.itemStatus > 0:
+                query = 'UPDATE CardTimeLine SET %s=NOW() WHERE CardID=%s'
+                rtnTuple = (TimeLineQuery.statusMap[item.itemStatus],item.itemID)
+
+            else:
+                query = 'UPDATE CardTimeLine SET %s=%s WHERE CardID=%s'
+                rtnTuple = (TimeLineQuery.statusMap[item.itemStatus],datetime.max, item.itemID)
+        return query,   rtnTuple
+
+    @staticmethod
+    def stampItemToSprint(item):
+        query = 'UPDATE CardTimeLine SET AssignedToSprint=NOW() WHERE CardID=%s'
+        return query, (item.itemID,)
+
+    @staticmethod
+    def getItemTimeLine(item):
+        query = 'SELECT AssignedToSPrint, AssignedToUser, WorkStarted, Submitted, Completed WHERE CardID=%i' %item.itemID
+        return query
 
 
 class Password:
