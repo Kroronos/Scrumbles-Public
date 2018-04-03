@@ -195,10 +195,18 @@ class DataBlock:
 
     @dbWrap
     def assignUserToItem(self,user,item):
-        logging.info('Assigning User %s to item %s.'%(user.userName,item.itemTitle))
-        item.itemUserID = user.userID
-        item.itemStatus = 1
+        if user is not None:
+            logging.info('Assigning User %s to item %s.'%(user.userName,item.itemTitle))
+            item.itemUserID = user.userID
+            item.itemStatus = item.statusTextToNumberMap['Assigned']
+        else:
+            logging.info('Assinging None User to item %s.' % item.itemTitle)
+            item.itemUserID = None
+            item.itemStatus = item.statusTextToNumberMap['Not Assigned']
+
         self.conn.setData(Query.updateObject(item))
+        self.conn.setData(TimeLineQuery.timeStampItem(item))
+
     @dbWrap
     def addItemToProject(self,project,item):
         logging.info('Adding item %s to project %s.' %(item.itemTitle,project.projectName))
@@ -232,14 +240,14 @@ class DataBlock:
 
     @dbWrap
     def modifiyItemPriority(self,item,priority):
-        logging.info('Modifying item %s priority to %s' % (item.itemTitle,item.priorityEquivalents[priority]))
-        assert priority in range(1,3)
+        logging.info('Modifying item %s priority to %s' % (item.itemTitle,item.priorityNumberToTextMap[priority]))
+        assert priority in range(0,3)
         item.itemPriority = priority
         self.conn.setData(Query.updateObject(item))
 
     @dbWrap
     def modifyItemStatus(self,item,status):
-        logging.info('Modifying item %s status to %s' % (item.itemTitle,item.statusEquivalents[status]))
+        logging.info('Modifying item %s status to %s' % (item.itemTitle,item.statusNumberToTextMap[status]))
         assert status in range(0,4)
         item.itemStatus = status
         self.conn.setData(Query.updateObject(item))
@@ -252,14 +260,16 @@ class DataBlock:
 
     @dbWrap
     def assignItemToSprint(self,item,sprint):
-        logging.info('Assigning Item %s to Sprint %s.',(item.itemTitle,sprint.sprintName))
+        logging.info('Assigning Item %s to Sprint %s.'%(item.itemTitle,sprint.sprintName))
         item.itemSprintID = sprint.sprintID
+        item.itemDescription = sprint.sprintDueDate
         self.conn.setData(Query.updateObject(item))
         self.conn.setData(TimeLineQuery.stampItemToSprint(item))
 
     @dbWrap
     def removeItemFromSprint(self,item):
-        logging.info('Removing Item %s from sprint %d.'%(item.itemTitle,item.itemSprintID))
+
+        logging.info('Removing Item %s from sprint %s.'%(item.itemTitle,str(item.itemSprintID)))
         item.itemSprintID = 0
         self.conn.setData(Query.updateObject(item))
 
@@ -309,6 +319,10 @@ class DataBlock:
         queryReslt = self.conn.getData(TimeLineQuery.getItemTimeLine(item))
         if queryReslt != ():
             item.itemTimeLine = queryReslt[0]
+            #This is a workaround from a funky bug between MySQL and MySQL db
+            #although the Column name in the db is AssignedToSprint
+            #it is coming back as AssignedToSPrint
+            item.itemTimeLine['AssignedToSprint'] = item.itemTimeLine['AssignedToSPrint']
 
     def updater(self):
         logging.info('Updater Thread %s started' % threading.get_ident())

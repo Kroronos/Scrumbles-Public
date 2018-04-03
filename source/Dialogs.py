@@ -359,7 +359,7 @@ class CreateItemDialog:
             item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
             item.itemType = self.ItemTypebox.get()
             item.itemPoints = self.pointsEntry.get()
-            item.itemPriority = item.priorityEquivalentsReverse[self.itemPriorityCombobox.get()]
+            item.itemPriority = item.priorityTextToNumberMap[self.itemPriorityCombobox.get()]
 
             comment = ScrumblesObjects.Comment()
             comment.commentContent = self.commentTextBox.get('1.0','end-1c')
@@ -520,7 +520,7 @@ class EditItemDialog:
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
             selectedSprint = None
-            userID = None
+            selectedUser = None
 
 
             for sprint in self.listOfSprints:
@@ -530,26 +530,25 @@ class EditItemDialog:
                         raise Exception('Corrupted Sprint Data, contact your database admin')
             for user in self.listOfUsers:
                 if user.userName == self.usersComboBox.get():
-                    userID = user.userID
+                    selectedUser = user
 
             if self.sprintsComboBox.get() != 'None':
-                item.itemSprintID = selectedSprint.sprintID
-                item.itemDueDate = selectedSprint.sprintDueDate
+                self.dataBlock.removeItemFromSprint(item)
+                self.dataBlock.assignItemToSprint(item,selectedSprint)
             else:
                 item.itemSprintID = None
                 item.itemDueDate = None
 
             item.itemType = self.ItemTypebox.get()
+            self.dataBlock.assignUserToItem(selectedUser,item)
 
-            item.itemUserID = userID
 
 
             item.itemCodeLink = self.itemCodeLinkEntry.get()
             if self.itemPriorityCombobox.get() == '':
                 item.itemPriority = 0
             else:
-                item.itemPriority = item.priorityEquivalentsReverse[self.itemPriorityCombobox.get()]
-
+                self.dataBlock.modifiyItemPriority(item,item.priorityTextToNumberMap[self.itemPriorityCombobox.get()])
 
 
             self.dataBlock.updateScrumblesObject(item)

@@ -37,3 +37,5 @@ The preceding complexity makes retrieving an items status changes trivial for us
 
 refer to https://docs.python.org/3/library/datetime.html#datetime.timedelta for calculating timeduration between timestamps
 
+When an item is assigned a sprint None, as in it us unassigned from a Sprint, The time line does for assinged to
+Sprint does not change, reflecting that the item had been assigned to a sprint some time in the past

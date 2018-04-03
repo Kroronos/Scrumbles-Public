@@ -66,10 +66,10 @@ class Item:
     itemStatus = None
     itemTimeLine = None
 
-    priorityEquivalents = {0: "Low Priority", 1: "Medium Priority", 2: "High Priority"}
-    priorityEquivalentsReverse = { "Low Priority":0, "Medium Priority":1, "High Priority":2}
-    statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2: 'In Progress', 3: 'Submitted', 4: 'Complete'}
-    statusEquivalentsReverse = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+    priorityNumberToTextMap = {0: "Low Priority", 1: "Medium Priority", 2: "High Priority"}
+    priorityTextToNumberMap = {"Low Priority":0, "Medium Priority":1, "High Priority":2}
+    statusNumberToTextMap = {0 : 'Not Assigned', 1: 'Assigned', 2: 'In Progress', 3: 'Submitted', 4: 'Complete'}
+    statusTextToNumberMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
     validItemTypes = ('User Story', 'Epic', 'Bug', 'Chore', 'Feature')
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -91,8 +91,8 @@ class Item:
         self.itemStatus = queryResultDict['Status']
         self.itemPoints = queryResultDict['CardPoints']
         #todo find every reference to the two lines below and refactor using the static dictionaries defined above
-        self.listOfStatuses = self.statusEquivalents
-        self.listOfPriorities = self.priorityEquivalents
+        self.listOfStatuses = self.statusNumberToTextMap
+        self.listOfPriorities = self.priorityNumberToTextMap
 
         #DataBlock will update timeline with values from the database
         maxDate = datetime(9999, 12, 31, 23, 59, 59)
@@ -105,7 +105,7 @@ class Item:
         return self.itemPriority
 
     def getPriorityString(self):
-        return Item.priorityEquivalents[self.itemPriority]
+        return Item.priorityNumberToTextMap[self.itemPriority]
 
     def getEnglishPriority(self):
         if self.itemPriority in range(0,3):
@@ -124,7 +124,7 @@ class Item:
         return self.itemTitle
 
     def getStatus(self):
-        return Item.statusEquivalents[self.itemStatus]
+        return Item.statusNumberToTextMap[self.itemStatus]
 
     def getType(self):
         return self.itemType
