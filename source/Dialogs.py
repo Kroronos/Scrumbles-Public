@@ -436,6 +436,7 @@ class AboutDialog:
 
 class EditItemDialog:
     def __init__(self, parent, dataBlock, Item):
+        self.parent = parent
         print(Item)
         self.item = Item
         self.dataBlock = dataBlock
@@ -516,6 +517,12 @@ class EditItemDialog:
         self.itemPriorityCombobox.current(Item.itemPriority)
         self.itemPriorityCombobox.grid(row=9, column=2, pady=5, sticky='W')
 
+
+
+        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Reason For Change').grid(row=10, column=1, sticky='E')
+        self.commentTextBox = Tk.Text(popUPDialog, height=6, width=20, wrap=Tk.WORD)
+        self.commentTextBox.grid(row=10, column=2, pady=5,sticky='W')
+
         createButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
         createButton.grid(row=12, column=2, pady=5)
         cancelButton = Tk.Button(popUPDialog, text="Cancel", command=self.exit)
@@ -533,6 +540,10 @@ class EditItemDialog:
             selectedSprint = None
             selectedUser = None
 
+            comment = ScrumblesObjects.Comment()
+            comment.commentContent = self.commentTextBox.get('1.0', 'end-1c')
+            comment.commentUserID = self.parent.controller.activeUser.userID
+            comment.commentItemID = item.itemID
 
             for sprint in self.listOfSprints:
                 if sprint.sprintName == self.sprintsComboBox.get():
@@ -564,7 +575,12 @@ class EditItemDialog:
 
             self.dataBlock.updateScrumblesObject(item)
 
-
+            if len(comment.commentContent) > 0:
+                try:
+                    self.dataBlock.addNewScrumblesObject(comment)
+                except IntegrityError:
+                    comment.commentID = ScrumblesObjects.generateRowID()
+                    self.dataBlock.addNewScrumblesObject(comment)
 
 
         except Exception as e:
