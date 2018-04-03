@@ -94,7 +94,7 @@ class Item:
         self.listOfStatuses = self.statusEquivalents
         self.listOfPriorities = self.priorityEquivalents
 
-        #DataBlock will updated timeline with values from the database
+        #DataBlock will update timeline with values from the database
         maxDate = datetime(9999, 12, 31, 23, 59, 59)
         self.itemTimeLine = {'AssignedToSprint':maxDate , 'AssignedToUser':maxDate, 'WorkStarted':maxDate,'Submitted':maxDate,'Completed':maxDate}
         self.listOfComments = []
@@ -105,19 +105,18 @@ class Item:
         return self.itemPriority
 
     def getPriorityString(self):
-        #will throw key error if itemPriority is not 1,2,3
         return Item.priorityEquivalents[self.itemPriority]
 
     def getEnglishPriority(self):
-        if self.itemPriority >= 0 and self.itemPriority <=2:
+        if self.itemPriority in range(0,3):
             return self.listOfPriorities[self.itemPriority]
         else:
-            return "Invalid Priority Value"
+            raise Exception("Invalid Priority Value")
     def getEnglishStatus(self):
-        if self.itemStatus >= 0 and self.itemStatus <= 2:
+        if self.itemStatus in range(0,5):
             return self.listOfStatuses[self.itemStatus]
         else:
-            return "Invalid Status Value"
+           raise Exception("Invalid Status Value")
     def getDescription(self):
         return self.itemDescription
 
