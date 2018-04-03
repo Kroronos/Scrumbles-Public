@@ -446,6 +446,12 @@ class EditItemDialog:
 
         self.listOfUsers = self.dataBlock.users
         self.listOfSprints = parent.controller.activeProject.listOfAssignedSprints
+        self.userMap = {}
+        self.sprintMap = {}
+        for U in self.dataBlock.users:
+            self.userMap[U.userID] = U.userName
+        for S in self.dataBlock.sprints:
+            self.sprintMap[S.sprintID] = S.sprintName
         userNames = [user.userName for user in self.listOfUsers]
         userNames.append('None')
         sprintNames = [sprint.sprintName for sprint in self.listOfSprints]
@@ -481,25 +487,30 @@ class EditItemDialog:
         self.ItemTypebox.grid(row=6, column=2, sticky='W')
         #self.ItemTypebox.selection_clear()
         if Item.itemType in itemTypes:
-            print(Item.itemType,'in',itemTypes)
-            print('at index', itemTypes.index(Item.itemType))
-            self.ItemTypebox.current(itemTypes.index(Item.itemType))
-            self.ItemTypebox.current(1)
+           self.ItemTypebox.set(Item.itemType)
         else:
             self.ItemTypebox.current(0)
         users = tuple(userNames)
         sprints = tuple(sprintNames)
+
         self.usersComboBox = ttk.Combobox(popUPDialog, textvariable=self.itemUserVar, state='readonly',values=users)
         self.usersComboBox.current(0)
         self.usersComboBox.grid(row=7,column=2, sticky='W')
-
+        if self.item.itemUserID is not None and self.item.itemUserID != 0:
+            self.usersComboBox.set(self.userMap[self.item.itemUserID])
+        else:
+            self.usersComboBox.set('None')
         self.sprintsComboBox = ttk.Combobox(popUPDialog, textvariable=self.sprintVar, state='readonly',values=sprints)
         self.sprintsComboBox.current(0)
         self.sprintsComboBox.grid(row=8,column=2, sticky='W')
-
-
+        if self.item.itemSprintID is not None and self.item.itemSprintID != 0:
+            self.sprintsComboBox.set(self.sprintMap[self.item.itemSprintID])
+        else:
+            self.sprintsComboBox.set('None')
         self.itemCodeLinkEntry = Tk.Entry(popUPDialog, width=27)
         self.itemCodeLinkEntry.grid(row=10, column=2, pady=5, sticky='W')
+        if self.item.itemCodeLink is not None:
+            self.itemCodeLinkEntry.insert(0,self.item.itemCodeLink)
         self.itemPriorityCombobox = ttk.Combobox(popUPDialog, textvariable=self.itemPriorityVar, state='readonly', width=27)
         self.itemPriorityCombobox['values'] = ( "Low Priority","Medium Priority", "High Priority")
         self.itemPriorityCombobox.current(Item.itemPriority)
