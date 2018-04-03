@@ -1,4 +1,5 @@
 import hashlib, random, threading, os
+from datetime import datetime
 
 #Thread local storage
 thread_local = threading.local()
@@ -63,11 +64,12 @@ class Item:
     itemSprintID = None
     itemUserID = None
     itemStatus = None
+    itemTimeLine = None
 
-    priorityEquivalents = {0: "Low Priority", 1: "Medium Priority", 2: "High Priority"}
-    priorityEquivalentsReverse = { "Low Priority":0, "Medium Priority":1, "High Priority":2}
-    statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2: 'In Progress', 3: 'Submitted', 4: 'Complete'}
-    statusEquivalentsReverse = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+    priorityNumberToTextMap = {0: "Low Priority", 1: "Medium Priority", 2: "High Priority"}
+    priorityTextToNumberMap = {"Low Priority":0, "Medium Priority":1, "High Priority":2}
+    statusNumberToTextMap = {0 : 'Not Assigned', 1: 'Assigned', 2: 'In Progress', 3: 'Submitted', 4: 'Complete'}
+    statusTextToNumberMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
     validItemTypes = ('User Story', 'Epic', 'Bug', 'Chore', 'Feature')
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
@@ -88,11 +90,13 @@ class Item:
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
         self.itemPoints = queryResultDict['CardPoints']
-        self.listOfStatuses = {0 : "Not Started", 1 : "In Progress", 2: "Done"}
-        self.listOfPriorities = {0: "Low Priority", 1: "Medium Priority", 3: "High Priority"}
+        #todo find every reference to the two lines below and refactor using the static dictionaries defined above
+        self.listOfStatuses = self.statusNumberToTextMap
+        self.listOfPriorities = self.priorityNumberToTextMap
 
-
-
+        #DataBlock will update timeline with values from the database
+        maxDate = datetime(9999, 12, 31, 23, 59, 59)
+        self.itemTimeLine = {'AssignedToSprint':maxDate , 'AssignedToUser':maxDate, 'WorkStarted':maxDate,'Submitted':maxDate,'Completed':maxDate}
         self.listOfComments = []
         self.subItemList = []
         self.projectID = 0
@@ -101,19 +105,18 @@ class Item:
         return self.itemPriority
 
     def getPriorityString(self):
-        #will throw key error if itemPriority is not 1,2,3
-        return Item.priorityEquivalents[self.itemPriority]
+        return Item.priorityNumberToTextMap[self.itemPriority]
 
     def getEnglishPriority(self):
-        if self.itemPriority >= 0 and self.itemPriority <=2:
+        if self.itemPriority in range(0,3):
             return self.listOfPriorities[self.itemPriority]
         else:
-            return "Invalid Priority Value"
+            raise Exception("Invalid Priority Value")
     def getEnglishStatus(self):
-        if self.itemStatus >= 0 and self.itemStatus <= 2:
+        if self.itemStatus in range(0,5):
             return self.listOfStatuses[self.itemStatus]
         else:
-            return "Invalid Status Value"
+           raise Exception("Invalid Status Value")
     def getDescription(self):
         return self.itemDescription
 
@@ -121,7 +124,7 @@ class Item:
         return self.itemTitle
 
     def getStatus(self):
-        return Item.statusEquivalents[self.itemStatus]
+        return Item.statusNumberToTextMap[self.itemStatus]
 
     def getType(self):
         return self.itemType

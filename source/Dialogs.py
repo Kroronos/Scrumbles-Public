@@ -359,7 +359,7 @@ class CreateItemDialog:
             item.itemDescription = self.itemDescriptionEntry.get('1.0','end-1c')
             item.itemType = self.ItemTypebox.get()
             item.itemPoints = self.pointsEntry.get()
-            item.itemPriority = item.priorityEquivalentsReverse[self.itemPriorityCombobox.get()]
+            item.itemPriority = item.priorityTextToNumberMap[self.itemPriorityCombobox.get()]
 
             comment = ScrumblesObjects.Comment()
             comment.commentContent = self.commentTextBox.get('1.0','end-1c')
@@ -436,6 +436,7 @@ class AboutDialog:
 
 class EditItemDialog:
     def __init__(self, parent, dataBlock, Item):
+        self.parent = parent
         print(Item)
         self.item = Item
         self.dataBlock = dataBlock
@@ -446,6 +447,12 @@ class EditItemDialog:
 
         self.listOfUsers = self.dataBlock.users
         self.listOfSprints = parent.controller.activeProject.listOfAssignedSprints
+        self.userMap = {}
+        self.sprintMap = {}
+        for U in self.dataBlock.users:
+            self.userMap[U.userID] = U.userName
+        for S in self.dataBlock.sprints:
+            self.sprintMap[S.sprintID] = S.sprintName
         userNames = [user.userName for user in self.listOfUsers]
         userNames.append('None')
         sprintNames = [sprint.sprintName for sprint in self.listOfSprints]
@@ -481,29 +488,40 @@ class EditItemDialog:
         self.ItemTypebox.grid(row=6, column=2, sticky='W')
         #self.ItemTypebox.selection_clear()
         if Item.itemType in itemTypes:
-            print(Item.itemType,'in',itemTypes)
-            print('at index', itemTypes.index(Item.itemType))
-            self.ItemTypebox.current(itemTypes.index(Item.itemType))
-            self.ItemTypebox.current(1)
+           self.ItemTypebox.set(Item.itemType)
         else:
             self.ItemTypebox.current(0)
         users = tuple(userNames)
         sprints = tuple(sprintNames)
+
         self.usersComboBox = ttk.Combobox(popUPDialog, textvariable=self.itemUserVar, state='readonly',values=users)
         self.usersComboBox.current(0)
         self.usersComboBox.grid(row=7,column=2, sticky='W')
-
+        if self.item.itemUserID is not None and self.item.itemUserID != 0:
+            self.usersComboBox.set(self.userMap[self.item.itemUserID])
+        else:
+            self.usersComboBox.set('None')
         self.sprintsComboBox = ttk.Combobox(popUPDialog, textvariable=self.sprintVar, state='readonly',values=sprints)
         self.sprintsComboBox.current(0)
         self.sprintsComboBox.grid(row=8,column=2, sticky='W')
-
-
+        if self.item.itemSprintID is not None and self.item.itemSprintID != 0:
+            self.sprintsComboBox.set(self.sprintMap[self.item.itemSprintID])
+        else:
+            self.sprintsComboBox.set('None')
         self.itemCodeLinkEntry = Tk.Entry(popUPDialog, width=27)
         self.itemCodeLinkEntry.grid(row=10, column=2, pady=5, sticky='W')
+        if self.item.itemCodeLink is not None:
+            self.itemCodeLinkEntry.insert(0,self.item.itemCodeLink)
         self.itemPriorityCombobox = ttk.Combobox(popUPDialog, textvariable=self.itemPriorityVar, state='readonly', width=27)
         self.itemPriorityCombobox['values'] = ( "Low Priority","Medium Priority", "High Priority")
         self.itemPriorityCombobox.current(Item.itemPriority)
         self.itemPriorityCombobox.grid(row=9, column=2, pady=5, sticky='W')
+
+
+
+        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Reason For Change').grid(row=10, column=1, sticky='E')
+        self.commentTextBox = Tk.Text(popUPDialog, height=6, width=20, wrap=Tk.WORD)
+        self.commentTextBox.grid(row=10, column=2, pady=5,sticky='W')
 
         createButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
         createButton.grid(row=12, column=2, pady=5)
@@ -520,7 +538,23 @@ class EditItemDialog:
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
             selectedSprint = None
-            userID = None
+            selectedUser = None
+
+            comment = ScrumblesObjects.Comment()
+            comment.commentContent = self.commentTextBox.get('1.0', 'end-1c')
+            comment.commentUserID = self.parent.controller.activeUser.userID
+            comment.commentItemID = item.itemID
+
+            if len(comment.commentContent) > 0:
+                try:
+                    self.dataBlock.addNewScrumblesObject(comment)
+                except IntegrityError:
+                    comment.commentID = ScrumblesObjects.generateRowID()
+                    self.dataBlock.addNewScrumblesObject(comment)
+            else:
+                raise Exception('Comment box cannot be blank\nPlease enter a change reason.')
+
+
 
 
             for sprint in self.listOfSprints:
@@ -530,30 +564,28 @@ class EditItemDialog:
                         raise Exception('Corrupted Sprint Data, contact your database admin')
             for user in self.listOfUsers:
                 if user.userName == self.usersComboBox.get():
-                    userID = user.userID
+                    selectedUser = user
 
             if self.sprintsComboBox.get() != 'None':
-                item.itemSprintID = selectedSprint.sprintID
-                item.itemDueDate = selectedSprint.sprintDueDate
+                self.dataBlock.removeItemFromSprint(item)
+                self.dataBlock.assignItemToSprint(item,selectedSprint)
             else:
                 item.itemSprintID = None
                 item.itemDueDate = None
 
             item.itemType = self.ItemTypebox.get()
+            self.dataBlock.assignUserToItem(selectedUser,item)
 
-            item.itemUserID = userID
 
 
             item.itemCodeLink = self.itemCodeLinkEntry.get()
             if self.itemPriorityCombobox.get() == '':
                 item.itemPriority = 0
             else:
-                item.itemPriority = item.priorityEquivalentsReverse[self.itemPriorityCombobox.get()]
-
+                self.dataBlock.modifiyItemPriority(item,item.priorityTextToNumberMap[self.itemPriorityCombobox.get()])
 
 
             self.dataBlock.updateScrumblesObject(item)
-
 
 
 
