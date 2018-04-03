@@ -232,10 +232,18 @@ class commentsField(tk.Frame):
     def submitComment(self):
         newComment = ScrumblesObjects.Comment()
         newComment.commentContent = self.newCommentField.get("1.0", tk.END)
-        #newComment.commentSignature = self.activeUser.userName + " " +  datetime.datetime.now().strftime("%I:%M %p, %d/%m/%y")
-        self.newCommentField.delete("1.0", tk.END)
+        newComment.commentContent = str(newComment.commentContent)
+        newComment.commentContent = newComment.commentContent.strip()
+
+        newComment.commentTimeStamp = datetime.datetime.now()
+        newComment.commentSignature = self.master.activeUser.userName + " " + datetime.datetime.now().strftime("%I:%M %p, %m/%d/%y")
         newComment.commentUserID = self.master.activeUser.userID
         newComment.commentItemID = self.inspection.itemID
+
+        self.newCommentField.delete("1.0", tk.END)
+
+        self.comments.append(newComment)
+        self.renderCommentField(initializedComments=True)
         self.master.dataBlock.addNewScrumblesObject(newComment)
 
     def updateFromListOfCommentsObject(self, source, searchParams, isUpdate=False):
@@ -274,12 +282,36 @@ class commentsField(tk.Frame):
     def updateComments(self):
         self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate=True)
 
-    def renderCommentField(self):
+    def renderCommentField(self, initializedComments=False):
+        if initializedComments is True:
+            for element in self.commentTextElements:
+                element.pack_forget()
+            self.commentTextElements.clear()
+
         self.comments = sorted(self.comments, reverse=True, key=lambda s: s.commentTimeStamp)
         for comment in self.comments:
-            commentLabel = tk.Label(self.commentField, anchor=tk.W, text=comment.commentContent, justify=tk.LEFT, wraplength=300, pady=10)
-            self.commentTextElements.append(commentLabel)
+            commentFrame = tk.Frame(self.commentField)
+            commentLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentContent,
+                                    justify=tk.LEFT, wraplength=300,
+                                    font=style.comment_font)
+            if comment.commentSignature is not None:
+                commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
+                                                 justify=tk.LEFT, wraplength=300,
+                                                 font=style.comment_signature_font)
+            else:
+                commentUserName = None
+                for user in self.master.dataBlock.users:
+                    if user.userID == comment.commentUserID:
+                        commentUserName = user.userName
+                if commentUserName is not None:
+                    comment.commentSignature = commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
+                    commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
+                                                     justify=tk.LEFT, wraplength=300,
+                                                     font=style.comment_signature_font)
+            self.commentTextElements.append(commentFrame)
             commentLabel.pack(side=tk.TOP, fill=tk.X)
+            commentSignatureLabel.pack(side=tk.TOP, fill=tk.X)
+            commentFrame.pack(side=tk.TOP, fill=tk.X, pady=10)
 
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
 

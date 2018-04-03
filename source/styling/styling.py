@@ -9,6 +9,10 @@ header_weight = "bold"
 body_family = "Helevetica"
 body_size = 14
 
+comment_font = "Helvetica 10"
+comment_signature_font = "Helvetica 10 italic"
+
+
 logo_path = "styling/logo.ico"
 
 #hex colors

@@ -132,10 +132,10 @@ class Item:
         return self.itemType
 
     def getFormattedDueDate(self):
-        return self.itemDueDate.strftime("%I:%M %p, %d/%m/%y")
+        return self.itemDueDate.strftime("%I:%M %p, %m/%d/%y")
 
     def getFormattedCreationDate(self):
-        return self.itemCreationDate.strftime("%I:%M %p, %d/%m/%y")
+        return self.itemCreationDate.strftime("%I:%M %p, %m/%d/%y")
 
 
 class Sprint:
@@ -146,10 +146,10 @@ class Sprint:
     projectID = None
 
     def getFormattedDueDate(self):
-        return self.sprintDueDate.strftime("%I:%M %p, %d/%m/%y")
+        return self.sprintDueDate.strftime("%I:%M %p, %m/%d/%y")
 
     def getFormattedStartDate(self):
-        return self.sprintStartDate.strftime("%I:%M %p, %d/%m/%y")
+        return self.sprintStartDate.strftime("%I:%M %p, %m/%d/%y")
 
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
@@ -183,6 +183,7 @@ class Comment:
         self.commentContent = queryResultDict['CommentContent']
         self.commentItemID = queryResultDict['CardID']
         self.commentUserID = queryResultDict['UserID']
+        self.commentSignature = None
 
 
 class Project:
