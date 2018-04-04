@@ -4,6 +4,7 @@ from tkinter import ttk
 import ScrumblesFrames, SPopMenu,ScrumblesObjects,Dialogs
 import listboxEventHandler
 from styling import styling as style
+import logging
 
 
 class developerHomeView(tk.Frame):
@@ -130,7 +131,9 @@ class developerHomeView(tk.Frame):
         try:
             self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
             self.controller.dataBlock.addNewScrumblesObject(Comment)
+            messagebox.OK('Success','Item Status changed to In-Progress')
         except Exception as e:
+            logging.exception('Error Setting Item to In progress')
             messagebox.showerror('Error', str(e))
     def setItemToSubmitted(self):
         Item = self.myItemsPopMenu.getSelectedItemObject()
@@ -142,7 +145,9 @@ class developerHomeView(tk.Frame):
         try:
             self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
             self.controller.dataBlock.addNewScrumblesObject(Comment)
+            messagebox.OK('Success','Item Submitted to Scrum Master for review')
         except Exception as e:
+            logging.exception('Error Assigning Submitting item for review')
             messagebox.showerror('Error', str(e))
     def assignItemToActiveUser(self):
         Item = self.backlogPopMenu.getSelectedItemObject()
@@ -158,7 +163,9 @@ class developerHomeView(tk.Frame):
         try:
             self.controller.dataBlock.assignUserToItem(self.controller.activeUser,Item)
             self.controller.dataBlock.addNewScrumblesObject(Comment)
+            messagebox.OK('Success', 'Item Assigned to %s' % self.controller.activeUser.userName)
         except Exception as e:
+            logging.exception('Error Assigning Item to active User')
             messagebox.showerror('Error', str(e))
     def getCodeLink(self,item):
         evnt = self.myItemsPopMenu.event
