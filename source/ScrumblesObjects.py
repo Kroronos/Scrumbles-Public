@@ -1,4 +1,5 @@
 import hashlib, random, threading, os
+from datetime import datetime
 
 #Thread local storage
 thread_local = threading.local()
@@ -50,6 +51,8 @@ class User:
         self.listOfComments = []
         self.listOfProjects = []
 
+    def getTitle(self):
+        return self.userName
 
 class Item:
     itemID = None
@@ -63,10 +66,13 @@ class Item:
     itemSprintID = None
     itemUserID = None
     itemStatus = None
+    itemTimeLine = None
 
-    priorityEquivalents = {1 : "Low Priority", 2 : "Medium Priority", 3 : "High Priority"}
-    statusEquivalents = {0 : 'Not Assigned', 1: 'Assigned', 2:'In Progress', 3:'Submitted',4:'Complete'}
-    statusEquivalentsReverse = {'Not Assigned' : 0, 'Assigned':1,'In Progress':2,'Submitted':3,'Complete':4}
+    priorityNumberToTextMap = {0: "Low Priority", 1: "Medium Priority", 2: "High Priority"}
+    priorityTextToNumberMap = {"Low Priority":0, "Medium Priority":1, "High Priority":2}
+    statusNumberToTextMap = {0 : 'Not Assigned', 1: 'Assigned', 2: 'In Progress', 3: 'Submitted', 4: 'Complete'}
+    statusTextToNumberMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+    validItemTypes = ('User Story', 'Epic', 'Bug', 'Chore', 'Feature')
     # Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List
     def __init__(self,queryResultDict=None):
@@ -86,31 +92,33 @@ class Item:
         self.itemUserID = queryResultDict['UserID']
         self.itemStatus = queryResultDict['Status']
         self.itemPoints = queryResultDict['CardPoints']
-        self.listOfStatuses = {0 : "Not Started", 1 : "In Progress", 2: "Done"}
-        self.listOfPriorities = {0 : "Low Priotity", 1 : "Medium Priotity", 2: "High Priotity"}
+        #todo find every reference to the two lines below and refactor using the static dictionaries defined above
+        self.listOfStatuses = self.statusNumberToTextMap
+        self.listOfPriorities = self.priorityNumberToTextMap
 
-    #NOTE This functions takes in the whole list from a query result
-
+        #DataBlock will update timeline with values from the database
+        maxDate = datetime(9999, 12, 31, 23, 59, 59)
+        self.itemTimeLine = {'AssignedToSprint':maxDate , 'AssignedToUser':maxDate, 'WorkStarted':maxDate,'Submitted':maxDate,'Completed':maxDate}
         self.listOfComments = []
+        self.subItemList = []
         self.projectID = 0
 
     def getPriority(self):
         return self.itemPriority
 
     def getPriorityString(self):
-        #will throw key error if itemPriority is not 1,2,3
-        return Item.priorityEquivalents[self.itemPriority]
+        return Item.priorityNumberToTextMap[self.itemPriority]
 
     def getEnglishPriority(self):
-        if self.itemPriority >= 0 and self.itemPriority <=2:
+        if self.itemPriority in range(0,3):
             return self.listOfPriorities[self.itemPriority]
         else:
-            return "Invalid Priority Value"
+            raise Exception("Invalid Priority Value")
     def getEnglishStatus(self):
-        if self.itemStatus >= 0 and self.itemStatus <= 2:
+        if self.itemStatus in range(0,5):
             return self.listOfStatuses[self.itemStatus]
         else:
-            return "Invalid Status Value"
+           raise Exception("Invalid Status Value")
     def getDescription(self):
         return self.itemDescription
 
@@ -118,16 +126,16 @@ class Item:
         return self.itemTitle
 
     def getStatus(self):
-        return Item.statusEquivalents[self.itemStatus]
+        return Item.statusNumberToTextMap[self.itemStatus]
 
     def getType(self):
         return self.itemType
 
     def getFormattedDueDate(self):
-        return self.itemDueDate.strftime("%I:%M %p, %d/%m/%y")
+        return self.itemDueDate.strftime("%I:%M %p, %m/%d/%y")
 
     def getFormattedCreationDate(self):
-        return self.itemCreationDate.strftime("%I:%M %p, %d/%m/%y")
+        return self.itemCreationDate.strftime("%I:%M %p, %m/%d/%y")
 
 
 class Sprint:
@@ -136,6 +144,12 @@ class Sprint:
     sprintDueDate = None
     sprintName = None
     projectID = None
+
+    def getFormattedDueDate(self):
+        return self.sprintDueDate.strftime("%I:%M %p, %m/%d/%y")
+
+    def getFormattedStartDate(self):
+        return self.sprintStartDate.strftime("%I:%M %p, %m/%d/%y")
 
 
     # Note: ScrumblesData.getData() returns a LIST of DICTS
@@ -161,7 +175,7 @@ class Comment:
     # This initializer accepts a DICT not a List
     def __init__(self, queryResultDict=None):
         if queryResultDict is None:
-            self.commentID =  generateRowID()
+            self.commentID = generateRowID()
             return
         assert 'CommentContent' in queryResultDict
         self.commentID = queryResultDict['CommentID']
@@ -169,6 +183,7 @@ class Comment:
         self.commentContent = queryResultDict['CommentContent']
         self.commentItemID = queryResultDict['CardID']
         self.commentUserID = queryResultDict['UserID']
+        self.commentSignature = None
 
 
 class Project:

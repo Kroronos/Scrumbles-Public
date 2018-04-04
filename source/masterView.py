@@ -8,7 +8,9 @@ import teamManagerView
 import sprintManagerView
 import backlogManagerView
 import itemManagerView
+import platform
 
+import DataBlock
 import Dialogs
 import ScrumblesData
 
@@ -16,7 +18,8 @@ import ScrumblesData
 class masterView(tk.Tk):
     def __init__(self):
         self.frames = {}
-        self.dataBlock = ScrumblesData.DataBlock()
+        self.dataBlock = DataBlock.DataBlock()
+        self.dataBlock.packCallback(self.repointActiveObjects)
         tk.Tk.__init__(self)
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
@@ -41,8 +44,8 @@ class masterView(tk.Tk):
         self.activeProject = self.dataBlock.projects[0]
         self.title("Scrumbles")
         self.geometry("1280x720")
-
-        #self.iconbitmap("logo.ico")
+        if platform.system() == "Windows":
+            self.iconbitmap("logo.ico")
 
         self.activeUser = None
 
@@ -171,6 +174,8 @@ class masterView(tk.Tk):
         self.add_frame(itemManagerFrame, itemManagerView)
         
         self.show_frame(mainView)
+        self.title("Scrumbles"+" - "+self.activeProject.projectName)
+        self.iconbitmap("logo.ico")
 
     def setDatabaseConnection(self):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
@@ -189,20 +194,29 @@ class masterView(tk.Tk):
         try:
             menu.delete('Open Project')
         except Exception:
-            pass
+            logging.exception('Failed to delete menu')
+
         self.popMenu = tk.Menu(menu,tearoff=0)
         for text in listOfProjects:
-            self.popMenu.add_command(label=text,command = lambda t=text:self.setActiveProject(t))
+            self.popMenu.add_command(label=text, command=lambda t=text: self.setActiveProject(t))
 
-        menu.add_cascade(label='Open Project',menu=self.popMenu,underline=0)
+        menu.insert_cascade(index=1, label='Open Project', menu=self.popMenu, underline=0)
 
     def setActiveProject(self,projectName):
         for P in self.dataBlock.projects:
             if P.projectName == projectName:
                 self.activeProject = P
-
+        self.title("Scrumbles"+" - "+self.activeProject.projectName)
         logging.info('Active Project set to %s' % self.activeProject.projectName)
         self.dataBlock.executeUpdaterCallbacks()
+
+    def repointActiveObjects(self):
+        for P in self.dataBlock.projects:
+            if P.projectName == self.activeProject.projectName:
+                self.activeProject = P
+        for U in self.dataBlock.users:
+            if U.userName == self.activeUser.userName:
+                self.activeUser = U
 
 def logOut(controller):
     logging.info('%s logged out'%controller.activeUser.userID)
@@ -210,6 +224,7 @@ def logOut(controller):
     loginFrame = loginView.loginView(controller.container, controller)
     controller.add_frame(loginFrame, loginView)
     controller.show_frame(loginView)
+    controller.title("Scrumbles")
 
 def exitProgram(mainwindow):
     mainwindow.dataBlock.shutdown()

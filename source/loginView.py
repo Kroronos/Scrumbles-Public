@@ -1,14 +1,17 @@
-import logging
 import tkinter as tk
 from tkinter import messagebox
+from Query import Query
+
+import logging
 import ScrumblesData
-import ScrumblesObjects
+
+
 
 def authenticateUser(username, password, dbLoginInfo):
     user = None
     dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
     dataConnection.connect()
-    result = dataConnection.getData(ScrumblesData.Query.getUserByUsernameAndPassword(username, password))
+    result = dataConnection.getData(Query.getUserByUsernameAndPassword(username, password))
     dataConnection.close()
     if result == ():
         logging.warning('Login Failed for %s' % username)
@@ -92,6 +95,7 @@ class loginView(tk.Frame):
                 if loggedInUserName == user.userName:
                     loggedInUser = user
         except Exception as error:
+            logging.warning('Failed Login user %s'% username)
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUser
 
@@ -121,6 +125,7 @@ class loginView(tk.Frame):
                if loggedInUserName == user.userName:
                    loggedInUser = user
         except Exception as error:
+            logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUser
 

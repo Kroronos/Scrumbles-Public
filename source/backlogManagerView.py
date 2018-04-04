@@ -1,15 +1,6 @@
 import tkinter as tk
+import ScrumblesFrames, SPopMenu, Dialogs, listboxEventHandler
 
-import ScrumblesData
-import ScrumblesObjects
-
-import ScrumblesFrames
-import Dialogs
-import listboxEventHandler
-import time
-import threading
-
-#from tkinter import ttk
 
 class backlogManagerView(tk.Frame):
     def __init__(self, parent, controller, user):
@@ -17,6 +8,7 @@ class backlogManagerView(tk.Frame):
         self.controller = controller
         self.selectedItem = None
         self.selectedSprint = None
+        self.listOfEpics = [I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
 
@@ -34,7 +26,10 @@ class backlogManagerView(tk.Frame):
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.pack(side=tk.LEFT, fill=tk.Y)
         self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.context_menu(event, self.contextMenu))
+                                        lambda event: self.popMenu.context_menu(event, self.popMenu))
+
+        self.popMenu = SPopMenu.BacklogManPopMenu(self,self.controller,self.listOfEpics)
+        self.popMenu.add_command(label=u'Update Item', command=self.updateItem)
 
 
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
@@ -45,15 +40,7 @@ class backlogManagerView(tk.Frame):
         self.sprintBacklog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
         self.sprintBacklog.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.context_menu(event, self.contextMenu))
-
-
-
-
-        self.contextMenu = tk.Menu()
-
-        self.contextMenu.add_command(label=u'Update Item',command=self.updateItem)
-
+        self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.popMenu.context_menu(event, self.popMenu))
 
 
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
@@ -76,8 +63,6 @@ class backlogManagerView(tk.Frame):
         for source in dynamicSources:
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
-        #todo Click on project name to display items in sprintBacklog
-        #todo click and drag on items in sprintBacklog to change priority variable of an item so that sort will be user defined
 
     def colorizeBackLogList(self):
         for index in range(len(self.controller.activeProject.listOfAssignedItems)):
@@ -110,24 +95,9 @@ class backlogManagerView(tk.Frame):
         self.wait_window(editUserDialog.top)
 
 
-
-    def context_menu(self,event,menu):
-         widget = event.widget
-         index = widget.nearest(event.y)
-         _, yoffset, _, height = widget.bbox(index)
-         if event.y > height + yoffset + 5:
-             return
-         self.selectedItem = widget.get(index)
-         #print('do something')
-         menu.post(event.x_root, event.y_root)
-
-
-
-
-
     def updateBacklogViewData(self):
         print('Calling updateBacklogViewData')
-
+        self.listOfEpics = []
         self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
         self.projectNameLabel['text'] = self.projectNameLabelText
         self.sprintList.clearList()
@@ -137,7 +107,8 @@ class backlogManagerView(tk.Frame):
         self.sprintList.importSprintsList(self.sprintListData)
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
-
+        self.listOfEpics = [ I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
+        self.popMenu.updateEpicsMenu()
 
 
 
@@ -154,21 +125,4 @@ class backlogManagerView(tk.Frame):
     def listboxEvents(self, event):
         if event.widget is self.sprintList.listbox:
             self.assignedSprintSelectedEvent(event)
-
-
-
-        #######################################################################
-        ###Five freaking hours of troublshooting... I am a F@$%ing moron
-        # right here.. Python PASSES OBJECTS AROUND BY REFERENCE
-        #self.productListData.clear()  # <--- This clears dataBlock.projects GLOBALLY
-        #self.backlogData.clear()      # <--- This clears dataBlock.items GLOBALLY
-        #####################################################################
-
-        ############### Below is completely Stupid,  these need to repack the frames
-        # NEED CODE BELOW TO REPACK FRAMES NOT this
-        #self.productListData = DB.projects # <-- this does nothing, this is the same as a = a
-        #self.backlogData = DB.items #<-- this does nothing, this is the same as a = a
-        #############################################################################
-        #  This is why sleep deprivation and programming do not mix well
-        ##############################################################################
 

@@ -1,0 +1,41 @@
+The timestamping works like this,
+
+Item.itemTimeLine is a dictionary of timestamps with the following keys:
+    AssignedToSprint
+    AssignedToUser
+    WorkStarted
+    Submitted
+    Completed
+
+On initialization all values are set to maxDate = datetime(9999, 12, 31, 23, 59, 59)
+maxDate = datetime(9999, 12, 31, 23, 59, 59)
+self.itemTimeLine = {'AssignedToSprint':maxDate , 'AssignedToUser':maxDate, 'WorkStarted':maxDate,'Submitted':maxDate,'Completed':maxDate}
+
+if Item.itemTimeLine[key] == maxDate then the action that relates to that key has not occurred.
+
+When an action that relates to one of the keys occurs, that corresponding value should be updated by DataBlock with datetime.now()
+
+for instance:
+def assignItemToUser(item,user):
+    # execute code that does the assignment
+    # execute code that updates the timestamp
+
+
+The keys in the dictionary relate to item status, when an item status changes, the appropriate itemTimeLine value should be timestamped by DataBlock
+
+
+Key                     Status Relation         Status Integer Value
+AssignedToSprint        no correspondence               -
+AssignedToUser          Assigned                        1
+WorkStarted             In Progress                     2
+Submitted               Submitted                       3
+Completed               Complete                        4
+
+
+
+The preceding complexity makes retrieving an items status changes trivial for use in analytics
+
+refer to https://docs.python.org/3/library/datetime.html#datetime.timedelta for calculating timeduration between timestamps
+
+When an item is assigned a sprint None, as in it us unassigned from a Sprint, The time line does for assinged to
+Sprint does not change, reflecting that the item had been assigned to a sprint some time in the past

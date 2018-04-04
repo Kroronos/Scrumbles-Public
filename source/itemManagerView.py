@@ -24,7 +24,7 @@ class ItemManagerView(tk.Frame):
 
 
 
-		self.commentField = ScrumblesFrames.commentsField(self)
+		self.commentField = ScrumblesFrames.commentsField(self, self.controller)
 		self.commentField.pack(side = tk.RIGHT, fill = tk.Y, padx = 20, pady = 20, ipadx = 5, ipady = 5)
 
 		self.itemEditor = ScrumblesFrames.itemPicker(self, controller)
