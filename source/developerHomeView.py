@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
 import ScrumblesFrames, SPopMenu,ScrumblesObjects,Dialogs
 import listboxEventHandler
@@ -126,21 +127,23 @@ class developerHomeView(tk.Frame):
         Comment.commentUserID = self.controller.activeUser.userID
         Comment.commentContent = 'Set to In Progress by menu action'
 
-        #statusTextToNumberMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
-        self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
-        self.controller.dataBlock.addNewScrumblesObject(Comment)
-
+        try:
+            self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
+            self.controller.dataBlock.addNewScrumblesObject(Comment)
+        except Exception as e:
+            messagebox.showerror('Error', str(e))
     def setItemToSubmitted(self):
         Item = self.myItemsPopMenu.getSelectedItemObject()
         Comment = ScrumblesObjects.Comment()
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
         Comment.commentContent = 'Set to Submitted by menu action'
-        # statusTextToNumberMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
         self.getCodeLink(Item)
-        self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
-        self.controller.dataBlock.addNewScrumblesObject(Comment)
-
+        try:
+            self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
+            self.controller.dataBlock.addNewScrumblesObject(Comment)
+        except Exception as e:
+            messagebox.showerror('Error', str(e))
     def assignItemToActiveUser(self):
         Item = self.backlogPopMenu.getSelectedItemObject()
         Comment = ScrumblesObjects.Comment()
@@ -152,10 +155,11 @@ class developerHomeView(tk.Frame):
         self.assignedItems.append(Item)
         self.userItemList.addItem(Item.itemTitle)
         self.updateProgressBar()
-
-        self.controller.dataBlock.assignUserToItem(self.controller.activeUser,Item)
-        self.controller.dataBlock.addNewScrumblesObject(Comment)
-
+        try:
+            self.controller.dataBlock.assignUserToItem(self.controller.activeUser,Item)
+            self.controller.dataBlock.addNewScrumblesObject(Comment)
+        except Exception as e:
+            messagebox.showerror('Error', str(e))
     def getCodeLink(self,item):
         evnt = self.myItemsPopMenu.event
         getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller.dataBlock,item,evnt)

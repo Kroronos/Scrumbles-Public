@@ -353,7 +353,7 @@ class TimeLineQuery(Query):
         maxDate = datetime(9999, 12, 31, 23, 59, 59)
         if item.itemTimeLine['AssignedToSprint'] == maxDate and item.itemTimeLine['AssignedToUser'] == maxDate:
             if item.itemStatus > 1:
-                raise Exception('Invalid Operation: Item must be assigned to sprint or user before timestamping status to %s'%item.statusNumberToTextMap[item.itemStatus])
+                raise Exception('Invalid Operation: Item must be assigned to sprint and user before changing status to %s'%item.statusNumberToTextMap[item.itemStatus])
             else:
                 query = 'INSERT INTO CardTimeLine (CardID, AssignedToUser) VALUES (%s,NOW())'
                 rtnTuple = (item.itemID,)

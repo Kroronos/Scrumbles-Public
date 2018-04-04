@@ -419,8 +419,8 @@ class SCardDescription(tk.Frame):
 
             self.itemCodeLinkF = tk.Frame(self)
             self.itemCodeLinkT = tk.Label(self.itemCodeLinkF,text='Link to Code: ')
-            self.itemCodeLink = tk.Label(self.itemCodeLinkF,text="",fg='blue',underline=1,cursor='gumby')
-            self.itemCodeLink.bind('<Button-1>', lambda event  :self.open(event))
+            self.itemCodeLink = tk.Label(self.itemCodeLinkF,text="")
+
 
             self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
             self.itemType.pack(side=tk.LEFT, fill=tk.X)
@@ -447,10 +447,7 @@ class SCardDescription(tk.Frame):
             self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
             self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
             self.itemCodeLinkF.pack(side=tk.TOP,fill=tk.X)
-        def open(self,event):
-            link = self.itemCodeLink.cget('text')
-            print(event)
-            webbrowser.open(link)
+
         def repack(self):
             self.itemTypeT.pack_forget()
             self.itemType.pack_forget()
@@ -653,7 +650,13 @@ class SCardDescription(tk.Frame):
             self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["Item"].itemStatus.configure(text=selectedItem.getStatus(), justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDescription, justify=tk.LEFT, wraplength=300)
-        self.cardDescriptions["Item"].itemCodeLink.configure(text=selectedItem.itemCodeLink,justify=tk.LEFT,wraplength=300)
+        if selectedItem.itemCodeLink is not None and selectedItem.itemCodeLink != '' :
+            self.cardDescriptions["Item"].itemCodeLink.configure(text=selectedItem.itemCodeLink,justify=tk.LEFT,wraplength=300,fg='blue',underline=1,cursor='gumby')
+            self.cardDescriptions["Item"].itemCodeLink.bind('<Button-1>', lambda event: self.open(event))
+        else:
+            self.cardDescriptions["Item"].itemCodeLink.configure(text=u'None Set', justify=tk.LEFT,
+                                                                 wraplength=300,fg='red',underline=-1,cursor='x_cursor')
+            self.cardDescriptions['Item'].itemCodeLink.unbind('<Button 1>')
         sprintName = ""
         for sprint in self.master.dataBlock.sprints:
             if sprint.sprintID == selectedItem.itemSprintID:
@@ -686,6 +689,11 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions['Start']
         self.cardDescriptions['Active'].pack(side=tk.TOP)
+
+    def open(self, event):
+        link = event.widget.cget('text')
+        print(link)
+        webbrowser.open(link)
 
 class SUserItemInspection(tk.Frame):
 

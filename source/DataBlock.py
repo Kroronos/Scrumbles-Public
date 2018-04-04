@@ -249,9 +249,14 @@ class DataBlock:
     def modifyItemStatus(self,item,status):
         logging.info('Modifying item %s status to %s' % (item.itemTitle,item.statusNumberToTextMap[status]))
         assert status in range(0,5)
+        oldStatus = item.itemStatus
         item.itemStatus = status
-        self.conn.setData(TimeLineQuery.timeStampItem(item))
-        self.conn.setData(Query.updateObject(item))
+        try:
+            self.conn.setData(TimeLineQuery.timeStampItem(item))
+            self.conn.setData(Query.updateObject(item))
+        except Exception as e:
+            item.itemStatus = oldStatus
+            raise e
 
     @dbWrap
     def modifyItemStatusByString(self,item,status):
