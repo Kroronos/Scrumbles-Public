@@ -225,7 +225,7 @@ class commentsField(tk.Frame):
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH, ipady=4)
 
         self.newCommentFieldScrollBar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.newCommentField.pack(side=tk.LEFT, fill=tk.X)
+        self.newCommentField.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.newCommentFieldFI.pack(side=tk.TOP, fill=tk.BOTH)
         self.submitButton.pack(side=tk.TOP, fill=tk.BOTH)
 
