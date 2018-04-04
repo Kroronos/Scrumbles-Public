@@ -131,7 +131,7 @@ class developerHomeView(tk.Frame):
         try:
             self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
             self.controller.dataBlock.addNewScrumblesObject(Comment)
-            messagebox.OK('Success','Item Status changed to In-Progress')
+            messagebox.showinfo('Success','Item Status changed to In-Progress')
         except Exception as e:
             logging.exception('Error Setting Item to In progress')
             messagebox.showerror('Error', str(e))
@@ -145,12 +145,15 @@ class developerHomeView(tk.Frame):
         try:
             self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
             self.controller.dataBlock.addNewScrumblesObject(Comment)
-            messagebox.OK('Success','Item Submitted to Scrum Master for review')
+            messagebox.showinfo('Success','Item Submitted to Scrum Master for review')
         except Exception as e:
             logging.exception('Error Assigning Submitting item for review')
             messagebox.showerror('Error', str(e))
     def assignItemToActiveUser(self):
         Item = self.backlogPopMenu.getSelectedItemObject()
+        if Item.itemUserID is not None:
+            messagebox.showerror('Error','Cannot Assign Item to Self!\nItem already assigned to another user')
+            return False
         Comment = ScrumblesObjects.Comment()
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
@@ -163,10 +166,12 @@ class developerHomeView(tk.Frame):
         try:
             self.controller.dataBlock.assignUserToItem(self.controller.activeUser,Item)
             self.controller.dataBlock.addNewScrumblesObject(Comment)
-            messagebox.OK('Success', 'Item Assigned to %s' % self.controller.activeUser.userName)
+            messagebox.showinfo('Success', 'Item Assigned to %s' % self.controller.activeUser.userName)
         except Exception as e:
             logging.exception('Error Assigning Item to active User')
             messagebox.showerror('Error', str(e))
+        return True
+
     def getCodeLink(self,item):
         evnt = self.myItemsPopMenu.event
         getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller.dataBlock,item,evnt)
