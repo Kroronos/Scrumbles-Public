@@ -358,13 +358,14 @@ class TimeLineQuery(Query):
                 query = 'INSERT INTO CardTimeLine (CardID, AssignedToUser) VALUES (%s,NOW())'
                 rtnTuple = (item.itemID,)
         else:
+            q = 'UPDAte CardTimeLine SET %s' % TimeLineQuery.statusMap[item.itemStatus]
             if item.itemStatus > 0:
-                query = 'UPDATE CardTimeLine SET %s=NOW() WHERE CardID=%s'
-                rtnTuple = (TimeLineQuery.statusMap[item.itemStatus],item.itemID)
+                query = q+'=NOW() WHERE CardID=%s'
+                rtnTuple = (item.itemID,)
 
             else:
-                query = 'UPDATE CardTimeLine SET %s=%s WHERE CardID=%s'
-                rtnTuple = (TimeLineQuery.statusMap[item.itemStatus],maxDate, item.itemID)
+                query = q+'=%s WHERE CardID=%s'
+                rtnTuple = (maxDate, item.itemID)
         return query,   rtnTuple
 
     @staticmethod
