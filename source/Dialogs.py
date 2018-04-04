@@ -413,8 +413,15 @@ class AboutDialog:
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
-        popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('1100x400')
+        #popUPDialog.resizable(0, 0)
+        #popUPDialog.geometry('1100x400')
+        w = 600
+        h = 600
+        ws = parent.winfo_screenwidth()  # width of the screen
+        hs = parent.winfo_screenheight()  # height of the screen
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        popUPDialog.geometry('%dx%d+%d+%d' % (w, h, x, y))
         popUPDialog.title('About Scrumbles')
 
 
@@ -423,8 +430,47 @@ class AboutDialog:
         linkLabel.grid(row=2,pady=5)
         linkLabel.bind('<Button-1>',self.openPage)
 
+        itemList = [ 'Not Assigned To Anything', 'Assigned to Sprint, no User', 'Assigned to User, No Sprint', 'Assigned to User and Sprint', 'In Progress', 'Submitted','Item Is Epic' ,'Complete']
+        listBoxWidth=0
+        self.itemListBox = Tk.Listbox(popUPDialog, selectborderwidth=10)
+        self.itemListBox.grid(row=3)
+        for item in itemList:
+            self.itemListBox.insert(Tk.END,item)
+            if len(item) > listBoxWidth:
+                listBoxWidth = len(item)
+
+        self.itemListBox['width'] = listBoxWidth
+        self.itemListBox['activestyle'] = 'dotbox'
+        self.itemListBox['height'] = len(itemList)
+
+        self.itemListBox.itemconfig(0, {'bg': 'firebrick4'}) # Not Assigned To Anything
+        self.itemListBox.itemconfig(0, {'fg': 'VioletRed1'})
+
+        self.itemListBox.itemconfig(1, {'bg': 'dark orange'}) #Assigned to Sprint, no User
+        self.itemListBox.itemconfig(1, {'fg': 'yellow'})
+
+        self.itemListBox.itemconfig(2, {'bg': 'yellow'}) #Assigned to User, No Sprint
+        self.itemListBox.itemconfig(2, {'fg': 'dark orange'})
+
+        self.itemListBox.itemconfig(3, {'bg': 'deep sky blue'}) # Assigned to User and Sprint
+        self.itemListBox.itemconfig(3, {'fg': 'navy'})
+
+        self.itemListBox.itemconfig(4, {'bg': 'khaki'}) # In Progress
+        self.itemListBox.itemconfig(4, {'fg': 'dark green'})
+
+        self.itemListBox.itemconfig(5, {'bg': 'maroon1'}) # Submitted
+        self.itemListBox.itemconfig(5, {'fg': 'red4'})
+
+        self.itemListBox.itemconfig(6, {'bg': 'MediumPurple1'}) # Item Is Epic
+        self.itemListBox.itemconfig(6, {'fg': 'black'})
+
+
+        self.itemListBox.itemconfig(7, {'bg': 'dark green'}) # Completed
+        self.itemListBox.itemconfig(7, {'fg': 'lawn green'})
+
+
         okayButton = Tk.Button(popUPDialog, text="Okay", command=self.exit)
-        okayButton.grid(row=3, pady=5)
+        okayButton.grid(row=20, pady=5)
 
     def openPage(self, *args, **kwargs):
         webbrowser.open(self.apiLink)
