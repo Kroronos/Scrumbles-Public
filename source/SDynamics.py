@@ -417,6 +417,11 @@ class SCardDescription(tk.Frame):
             self.itemDescriptionT = tk.Label(self.itemDescriptionF, text="Description: ")
             self.itemDescription = tk.Label(self.itemDescriptionF, text="")
 
+            self.itemCodeLinkF = tk.Frame(self)
+            self.itemCodeLinkT = tk.Label(self.itemCodeLinkF,text='Link to Code: ')
+            self.itemCodeLink = tk.Label(self.itemCodeLinkF,text="",fg='blue',underline=1,cursor='gumby')
+            self.itemCodeLink.bind('<Button-1>', lambda event  :self.open(event))
+
             self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
             self.itemType.pack(side=tk.LEFT, fill=tk.X)
             self.itemPriorityT.pack(side=tk.LEFT, fill=tk.X)
@@ -431,6 +436,8 @@ class SCardDescription(tk.Frame):
             self.itemSprint.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
+            self.itemCodeLinkT.pack(side=tk.LEFT,fill=tk.X)
+            self.itemCodeLink.pack(side=tk.LEFT,fill=tk.X)
 
             self.itemTypeF.pack(side=tk.TOP, fill=tk.X)
             self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
@@ -439,7 +446,11 @@ class SCardDescription(tk.Frame):
             self.itemUserF.pack(side=tk.TOP, fill=tk.X)
             self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
             self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
-
+            self.itemCodeLinkF.pack(side=tk.TOP,fill=tk.X)
+        def open(self,event):
+            link = self.itemCodeLink.cget('text')
+            print(event)
+            webbrowser.open(link)
         def repack(self):
             self.itemTypeT.pack_forget()
             self.itemType.pack_forget()
@@ -455,6 +466,8 @@ class SCardDescription(tk.Frame):
             self.itemUser.pack_forget()
             self.itemSprintT.pack_forget()
             self.itemSprint.pack_forget()
+            self.itemCodeLink.pack_forget()
+            self.itemCodeLinkT.pack_forget()
 
             self.itemTypeF.pack_forget()
             self.itemPriorityF.pack_forget()
@@ -463,6 +476,7 @@ class SCardDescription(tk.Frame):
             self.itemDescriptionF.pack_forget()
             self.itemUserF.pack_forget()
             self.itemSprintF.pack_forget()
+            self.itemCodeLinkF.pack_forget()
 
             self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
             self.itemType.pack(side=tk.LEFT, fill=tk.X)
@@ -478,6 +492,8 @@ class SCardDescription(tk.Frame):
             self.itemSprint.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
+            self.itemCodeLinkT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemCodeLink.pack(side=tk.LEFT, fill=tk.X)
 
             self.itemTypeF.pack(side=tk.TOP, fill=tk.X)
             self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
@@ -486,6 +502,7 @@ class SCardDescription(tk.Frame):
             self.itemUserF.pack(side=tk.TOP, fill=tk.X)
             self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
             self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
+            self.itemCodeLinkF.pack(side=tk.TOP, fill=tk.X)
 
     class cardDescriptionUserFrame(tk.Frame):
         def __init__(self, controller):
@@ -636,6 +653,7 @@ class SCardDescription(tk.Frame):
             self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["Item"].itemStatus.configure(text=selectedItem.getStatus(), justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDescription, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemCodeLink.configure(text=selectedItem.itemCodeLink,justify=tk.LEFT,wraplength=300)
         sprintName = ""
         for sprint in self.master.dataBlock.sprints:
             if sprint.sprintID == selectedItem.itemSprintID:
@@ -651,6 +669,8 @@ class SCardDescription(tk.Frame):
 
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions["Item"]
+
+
 
     def generateSprintFields(self, selectedSprint):
         self.cardDescriptions["Sprint"].sprintStart.configure(text=selectedSprint.getFormattedStartDate(), justify=tk.LEFT, wraplength=300)

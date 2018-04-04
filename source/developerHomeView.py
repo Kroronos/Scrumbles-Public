@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import ScrumblesFrames
+import ScrumblesFrames, SPopMenu,ScrumblesObjects,Dialogs
 import listboxEventHandler
 from styling import styling as style
 
@@ -9,13 +9,29 @@ class developerHomeView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
+        self.myItemsPopMenu = SPopMenu.GenericPopupMenu(self, self.controller)
+        self.myItemsPopMenu.add_command(label=u'Begin Work', command=self.setItemToInprogress)
+        self.myItemsPopMenu.add_command(label=u'Submit For Review', command=self.setItemToSubmitted)
+
+        self.backlogPopMenu = SPopMenu.GenericPopupMenu(self, self.controller)
+        self.backlogPopMenu.add_command(label=u'Assign To me', command=self.assignItemToActiveUser)
+
         self.itemColumnFrame = tk.Frame(self)
         self.userItemList = ScrumblesFrames.SList(self.itemColumnFrame, "MY ITEMS")
+        self.userItemList.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: self.myItemsPopMenu.context_menu(event, self.myItemsPopMenu))
+
         self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame,"BACKLOG")
+        self.productBacklogList.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: self.backlogPopMenu.context_menu(event, self.backlogPopMenu) )
+
+
+
         self.commentFeed = ScrumblesFrames.commentsField(self, self.controller)
 
         # progress bar
@@ -28,6 +44,7 @@ class developerHomeView(tk.Frame):
         self.progressBar = ttk.Progressbar(self.itemColumnFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
 
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
+
 
         self.backlog = []
         self.teamMembers = []
@@ -81,7 +98,10 @@ class developerHomeView(tk.Frame):
             if item.projectID == self.controller.activeProject.projectID:
                 self.assignedItems.append(item)
 
+        self.productBacklogList.clearList()
         self.productBacklogList.importItemList(self.backlog)
+
+        self.userItemList.clearList()
         self.userItemList.importItemList(self.assignedItems)
 
         self.updateProgressBar()
@@ -98,3 +118,45 @@ class developerHomeView(tk.Frame):
             self.descriptionManager.changeDescription(event)
             self.commentFeed.updateFromListOfCommentsObject(self.controller.activeProject.listOfAssignedItems,
                                                             event.widget.get(tk.ANCHOR))
+
+    def setItemToInprogress(self):
+        Item = self.myItemsPopMenu.getSelectedItemObject()
+        Comment = ScrumblesObjects.Comment()
+        Comment.commentItemID = Item.itemID
+        Comment.commentUserID = self.controller.activeUser.userID
+        Comment.commentContent = 'Set to In Progress by menu action'
+
+        #statusTextToNumberMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+        self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
+        self.controller.dataBlock.addNewScrumblesObject(Comment)
+
+    def setItemToSubmitted(self):
+        Item = self.myItemsPopMenu.getSelectedItemObject()
+        Comment = ScrumblesObjects.Comment()
+        Comment.commentItemID = Item.itemID
+        Comment.commentUserID = self.controller.activeUser.userID
+        Comment.commentContent = 'Set to Submitted by menu action'
+        # statusTextToNumberMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+        self.getCodeLink(Item)
+        self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
+        self.controller.dataBlock.addNewScrumblesObject(Comment)
+
+    def assignItemToActiveUser(self):
+        Item = self.backlogPopMenu.getSelectedItemObject()
+        Comment = ScrumblesObjects.Comment()
+        Comment.commentItemID = Item.itemID
+        Comment.commentUserID = self.controller.activeUser.userID
+        Comment.commentContent = 'Assigned to self by menu action'
+
+
+        self.assignedItems.append(Item)
+        self.userItemList.addItem(Item.itemTitle)
+        self.updateProgressBar()
+
+        self.controller.dataBlock.assignUserToItem(self.controller.activeUser,Item)
+        self.controller.dataBlock.addNewScrumblesObject(Comment)
+
+    def getCodeLink(self,item):
+        evnt = self.myItemsPopMenu.event
+        getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller.dataBlock,item,evnt)
+        self.wait_window(getLinkPopUP.top)
