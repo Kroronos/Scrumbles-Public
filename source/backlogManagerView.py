@@ -28,7 +28,7 @@ class backlogManagerView(tk.Frame):
         self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.popMenu.context_menu(event, self.popMenu))
 
-        self.popMenu = SPopMenu.PopMenu(self,self.controller,self.listOfEpics)
+        self.popMenu = SPopMenu.DevHomePopMenu(self,self.controller,self.listOfEpics)
         self.popMenu.add_command(label=u'Update Item', command=self.updateItem)
 
 

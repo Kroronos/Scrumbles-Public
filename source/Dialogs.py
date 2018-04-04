@@ -436,6 +436,7 @@ class AboutDialog:
 
 class EditItemDialog:
     def __init__(self, parent, dataBlock, Item):
+        print(type(Item))
         self.parent = parent
         print(Item)
         self.item = Item
