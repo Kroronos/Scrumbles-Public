@@ -9,6 +9,7 @@ class GenericPopupMenu(Tk.Menu):
         self.dataBlock = Master.dataBlock
         self.master = Master
         self.widget = None
+        self.event = None
         try:
             self.selectedItem = root.selectedItem
         except:
@@ -16,6 +17,7 @@ class GenericPopupMenu(Tk.Menu):
 
     def context_menu(self, event, menu):
         self.widget = event.widget
+        self.event = event
         index = self.widget.nearest(event.y)
         _, yoffset, _, height = self.widget.bbox(index)
         if event.y > height + yoffset + 5:
@@ -27,9 +29,18 @@ class GenericPopupMenu(Tk.Menu):
             pass
         self.widget.selection_clear(0, Tk.END)
         self.widget.selection_set(index)
+        self.widget.activate(index)
         menu.post(event.x_root, event.y_root)
 
-
+    def getSelectedItemObject(self):
+        if self.selectedItem is None:
+            raise Exception('PopMenu Selected Item is None')
+        else:
+            Item = None
+            for I in self.dataBlock.items:
+                if I.itemTitle == self.selectedItem:
+                    Item = I
+            return Item
 
 class BacklogManPopMenu(GenericPopupMenu):
     def __init__(self,root,Master,epicList=None):
