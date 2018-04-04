@@ -197,8 +197,10 @@ class itemPicker(tk.Frame):
 
 
 class commentsField(tk.Frame):
-    def __init__(self,controller):
+    def __init__(self, controller, master):
         tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
+
+        self.master = master
 
         self.titleText = tk.StringVar()
         self.titleText.set("Comments")
@@ -208,31 +210,132 @@ class commentsField(tk.Frame):
         self.comments = []
         self.commentTextElements = []
 
+        self.newCommentFieldF = tk.Frame(self)
+        self.newCommentFieldFI = tk.Frame(self.newCommentFieldF)
+        self.newCommentField = tk.Text(self.newCommentFieldFI, height=5)
+        self.newCommentFieldScrollBar = tk.Scrollbar(self.newCommentFieldFI, command=self.newCommentField.yview)
+        self.newCommentField['yscrollcommand'] = self.newCommentFieldScrollBar.set
+        self.submitButton = tk.Button(self.newCommentFieldF, text="Submit", command=self.submitComment)
+
+        self.source = None
+        self.searchParams = None
+
         self.commentTitle.pack(side=tk.TOP, fill=tk.X)
         self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
-        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
+        self.commentField.pack(side=tk.TOP, fill=tk.BOTH, ipady=4)
 
-    def updateFromListOfCommentsObject(self, listOfCommentsObject, objectName):
+        self.newCommentFieldScrollBar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.newCommentField.pack(side=tk.LEFT, fill=tk.X)
+        self.newCommentFieldFI.pack(side=tk.TOP, fill=tk.BOTH)
+        self.submitButton.pack(side=tk.TOP, fill=tk.BOTH)
+
+    def submitComment(self):
+        newComment = ScrumblesObjects.Comment()
+        newComment.commentContent = self.newCommentField.get("1.0", tk.END)
+        newComment.commentContent = str(newComment.commentContent)
+        newComment.commentContent = newComment.commentContent.strip()
+
+        newComment.commentTimeStamp = datetime.datetime.now()
+        newComment.commentSignature = self.master.activeUser.userName + " " + datetime.datetime.now().strftime("%I:%M %p, %m/%d/%y")
+        newComment.commentUserID = self.master.activeUser.userID
+        newComment.commentItemID = self.inspection.itemID
+
+        self.newCommentField.delete("1.0", tk.END)
+
+        self.comments.append(newComment)
+        self.renderCommentField(initializedComments=True)
+        self.master.dataBlock.addNewScrumblesObject(newComment)
+
+    def updateFromListOfCommentsObject(self, source, searchParams, isUpdate=False):
         self.clearCommentField()
-        for comment in listOfCommentsObject.listOfComments:
-            self.comments.append(comment)
-        self.titleText.set("Comments\n" + objectName)
-        self.renderCommentField()
 
-    def renderCommentField(self):
-        self.comments = sorted(self.comments, key=lambda s: s.commentTimeStamp)
+        if source is not None and searchParams is not None:
+            if isUpdate is False:
+                self.source = source
+                self.searchParams = searchParams
+
+                self.clearCommentField()
+                self.inspection = None
+                for thing in source:
+                    if thing.getTitle() == searchParams:
+                        self.inspection = thing
+
+            else:
+                self.inspection = None
+
+                if type(source[0]) is ScrumblesObjects.Item:
+                    for user in self.master.activeProject.listOfAssignedUsers:
+                        if user.userName == searchParams:
+                            self.inspection = user
+                if type(source[0] is ScrumblesObjects.User):
+                    for item in self.master.activeProject.listOfAssignedItems:
+                        if item.itemTitle == searchParams:
+                            self.inspection = item
+
+            if self.inspection is not None:
+                self.titleText.set("Comments\n" + self.inspection.getTitle())
+                for comment in self.inspection.listOfComments:
+                    self.comments.append(comment)
+
+            self.renderCommentField()
+
+    def updateComments(self):
+        self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate=True)
+
+    def renderCommentField(self, initializedComments=False):
+        if initializedComments is True:
+            for element in self.commentTextElements:
+                element.pack_forget()
+            self.commentTextElements.clear()
+
+        self.comments = sorted(self.comments, reverse=True, key=lambda s: s.commentTimeStamp)
         for comment in self.comments:
-            commentLabel = tk.Label(self.commentField, text=comment.commentContent, justify=tk.LEFT, wraplength=300, pady=10)
-            self.commentTextElements.append(commentLabel)
+            commentFrame = tk.Frame(self.commentField)
+            commentLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentContent,
+                                    justify=tk.LEFT, wraplength=300,
+                                    font=style.comment_font)
+            if comment.commentSignature is not None:
+                commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
+                                                 justify=tk.LEFT, wraplength=300,
+                                                 font=style.comment_signature_font)
+            else:
+                commentUserName = None
+                for user in self.master.dataBlock.users:
+                    if user.userID == comment.commentUserID:
+                        commentUserName = user.userName
+                if commentUserName is not None:
+                    comment.commentSignature = commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
+                    commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
+                                                     justify=tk.LEFT, wraplength=300,
+                                                     font=style.comment_signature_font)
+            self.commentTextElements.append(commentFrame)
             commentLabel.pack(side=tk.TOP, fill=tk.X)
+            commentSignatureLabel.pack(side=tk.TOP, fill=tk.X)
+            commentFrame.pack(side=tk.TOP, fill=tk.X, pady=10)
+
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
+
+        if type(self.inspection) is ScrumblesObjects.Item:
+            self.newCommentFieldF.pack_forget()
+            self.newCommentFieldF.pack(side=tk.BOTTOM, fill=tk.X)
+        else:
+            self.newCommentFieldF.pack_forget()
+
 
     def clearCommentField(self):
         self.comments.clear()
+        self.newCommentField.delete("1.0", tk.END)
         self.commentField.pack_forget()
         for element in self.commentTextElements:
             element.pack_forget()
         self.commentTextElements.clear()
+
+    def FrameWidth(self, event):
+        canvas_width = event.width
+        self.canvas.itemconfig(self.canvasFrame, width=canvas_width)
+
+    def OnFrameConfigure(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
 
 class SCardDescription(tk.Frame):
@@ -585,6 +688,7 @@ class SUserItemInspection(tk.Frame):
         self.roleText = tk.Label(self.roletag, textvariable=self.roleString)
 
         self.itembox = tk.Frame(self)
+        self.assignedItemsList = SList(self.itembox, "Assigned Items")
         self.inProgressItemsList = SList(self.itembox, "In Progress Items")
         self.submittedItemsList = SList(self.itembox, "Submitted Items")
         self.completedItemsList = SList(self.itembox, "Completed Items")
@@ -597,6 +701,7 @@ class SUserItemInspection(tk.Frame):
         self.nametag.pack(side=tk.LEFT, fill=tk.X, expand=1)
         self.roletag.pack(side=tk.LEFT, fill=tk.X, expand=1)
 
+        self.assignedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.inProgressItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.submittedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.completedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -610,19 +715,27 @@ class SUserItemInspection(tk.Frame):
         self.updateItems(user.listOfAssignedItems)
 
     def updateItems(self, assignedItems):
+        assignedItems = []
         inProgressItems = []
         submittedItems = []
         completedItems = []
         for item in assignedItems:
             if item.itemStatus == 1:
-                inProgressItems.append(item)
+                assignedItems.append(item)
             if item.itemStatus == 2:
-                submittedItems.append(item)
+                inProgressItems.append(item)
             if item.itemStatus == 3:
+                submittedItems.append(item)
+            if item.itemStatus == 4:
                 completedItems.append(item)
+
+        self.updateAssignedItems(assignedItems)
         self.updateInProgessItems(inProgressItems)
         self.updateSubmittedItems(submittedItems)
         self.updateCompletedItems(completedItems)
+
+    def updateAssignedItems(self, assignedItems):
+        self.assignedItemsList.importItemList(assignedItems)
 
     def updateInProgessItems(self, inProgressItems):
         self.inProgressItemsList.importItemList(inProgressItems)
@@ -634,7 +747,7 @@ class SUserItemInspection(tk.Frame):
         self.completedItemsList.importItemList(completedItems)
 
     def getSCardDescriptionExport(self):
-        return [self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']
+        return [self.assignedItemsList.listbox, self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']
 
 class STabs(tk.Frame):
     def __init__(self, controller, master, viewName):

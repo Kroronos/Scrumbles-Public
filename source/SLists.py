@@ -199,7 +199,7 @@ class SBacklogList(BaseList):
 
         self.typeSort = "none"
         self.titleFrame.pack(fill=tk.X, expand=False)
-        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.listScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.listFrame.pack(fill=tk.BOTH, expand=True)
