@@ -340,7 +340,7 @@ class CommentQuery(Query):
         return query, (comment.commentID,)
 
 class TimeLineQuery(Query):
-    statusMap = {0: 'AssignedToUser', 1: 'AssignedToUser', 2: 'WorkStared', 3: 'Submitted', 4: 'Completed'}
+    statusMap = {0: 'AssignedToUser', 1: 'AssignedToUser', 2: 'WorkStarted', 3: 'Submitted', 4: 'Completed'}
     #statusEquivalentsReverse = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
 
     @staticmethod
