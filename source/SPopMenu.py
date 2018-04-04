@@ -31,7 +31,7 @@ class GenericPopupMenu(Tk.Menu):
 
 
 
-class DevHomePopMenu(GenericPopupMenu):
+class BacklogManPopMenu(GenericPopupMenu):
     def __init__(self,root,Master,epicList=None):
         GenericPopupMenu.__init__(self,root,Master)
 
