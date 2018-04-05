@@ -1,7 +1,7 @@
 import logging
 import tkinter as tk
 from tkinter import messagebox
-import mainView 
+import mainView
 import loginView
 import developerHomeView
 import teamManagerView
@@ -9,7 +9,11 @@ import sprintManagerView
 import backlogManagerView
 import itemManagerView
 import platform
+
+import time
+
 import webbrowser
+
 
 import DataBlock
 import Dialogs
@@ -18,10 +22,34 @@ import ScrumblesData
 
 class masterView(tk.Tk):
     def __init__(self):
-        self.frames = {}
-        self.dataBlock = DataBlock.DataBlock()
-        self.dataBlock.packCallback(self.repointActiveObjects)
+
+        print('Init masterView')
         tk.Tk.__init__(self)
+        self.withdraw()
+        w = 1280
+        h = 720
+        ws =self.winfo_screenwidth()  # width of the screen
+        hs = self.winfo_screenheight()  # height of the screen
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.title("Scrumbles")
+        # self.geometry("1280x720")
+        if platform.system() == "Windows":
+            self.iconbitmap("logo.ico")
+        self.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.splash = Dialogs.SplashScreen(self)
+
+        self.frames = {}
+        print('Init DataBlock')
+        self.dataBlock = DataBlock.DataBlock()
+
+        while self.dataBlock.isLoading:
+             self.splash.step_progressBar(1)
+
+
+        self.splash.kill()
+
+        self.dataBlock.packCallback(self.repointActiveObjects)
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
 
@@ -40,15 +68,20 @@ class masterView(tk.Tk):
         
         self.add_frame(loginFrame, loginView)
 
+
+
+
+
+        self.deiconify()
         self.show_frame(loginView)
         self.dataConnection = None
         self.activeProject = self.dataBlock.projects[0]
-        self.title("Scrumbles")
-        self.geometry("1280x720")
-        if platform.system() == "Windows":
-            self.iconbitmap("logo.ico")
+
 
         self.activeUser = None
+
+
+
 
     def show_frame(self, cont):
         #print("Dictionary issue")

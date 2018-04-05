@@ -216,6 +216,7 @@ class commentsField(tk.Frame):
         self.newCommentFieldScrollBar = tk.Scrollbar(self.newCommentFieldFI, command=self.newCommentField.yview)
         self.newCommentField['yscrollcommand'] = self.newCommentFieldScrollBar.set
         self.submitButton = tk.Button(self.newCommentFieldF, text="Submit", command=self.submitComment)
+        self.newCommentField.bind('<Control-s>', lambda event: self.submitComment(event))
 
         self.source = None
         self.searchParams = None
@@ -225,11 +226,11 @@ class commentsField(tk.Frame):
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH, ipady=4)
 
         self.newCommentFieldScrollBar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.newCommentField.pack(side=tk.LEFT, fill=tk.X)
+        self.newCommentField.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.newCommentFieldFI.pack(side=tk.TOP, fill=tk.BOTH)
         self.submitButton.pack(side=tk.TOP, fill=tk.BOTH)
 
-    def submitComment(self):
+    def submitComment(self, event=None):
         newComment = ScrumblesObjects.Comment()
         newComment.commentContent = self.newCommentField.get("1.0", tk.END)
         newComment.commentContent = str(newComment.commentContent)
@@ -417,6 +418,11 @@ class SCardDescription(tk.Frame):
             self.itemDescriptionT = tk.Label(self.itemDescriptionF, text="Description: ")
             self.itemDescription = tk.Label(self.itemDescriptionF, text="")
 
+            self.itemCodeLinkF = tk.Frame(self)
+            self.itemCodeLinkT = tk.Label(self.itemCodeLinkF,text='Link to Code: ')
+            self.itemCodeLink = tk.Label(self.itemCodeLinkF,text="")
+
+
             self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
             self.itemType.pack(side=tk.LEFT, fill=tk.X)
             self.itemPriorityT.pack(side=tk.LEFT, fill=tk.X)
@@ -431,6 +437,8 @@ class SCardDescription(tk.Frame):
             self.itemSprint.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
+            self.itemCodeLinkT.pack(side=tk.LEFT,fill=tk.X)
+            self.itemCodeLink.pack(side=tk.LEFT,fill=tk.X)
 
             self.itemTypeF.pack(side=tk.TOP, fill=tk.X)
             self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
@@ -439,6 +447,7 @@ class SCardDescription(tk.Frame):
             self.itemUserF.pack(side=tk.TOP, fill=tk.X)
             self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
             self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
+            self.itemCodeLinkF.pack(side=tk.TOP,fill=tk.X)
 
         def repack(self):
             self.itemTypeT.pack_forget()
@@ -455,6 +464,8 @@ class SCardDescription(tk.Frame):
             self.itemUser.pack_forget()
             self.itemSprintT.pack_forget()
             self.itemSprint.pack_forget()
+            self.itemCodeLink.pack_forget()
+            self.itemCodeLinkT.pack_forget()
 
             self.itemTypeF.pack_forget()
             self.itemPriorityF.pack_forget()
@@ -463,6 +474,7 @@ class SCardDescription(tk.Frame):
             self.itemDescriptionF.pack_forget()
             self.itemUserF.pack_forget()
             self.itemSprintF.pack_forget()
+            self.itemCodeLinkF.pack_forget()
 
             self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
             self.itemType.pack(side=tk.LEFT, fill=tk.X)
@@ -478,6 +490,8 @@ class SCardDescription(tk.Frame):
             self.itemSprint.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
             self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
+            self.itemCodeLinkT.pack(side=tk.LEFT, fill=tk.X)
+            self.itemCodeLink.pack(side=tk.LEFT, fill=tk.X)
 
             self.itemTypeF.pack(side=tk.TOP, fill=tk.X)
             self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
@@ -486,6 +500,7 @@ class SCardDescription(tk.Frame):
             self.itemUserF.pack(side=tk.TOP, fill=tk.X)
             self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
             self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
+            self.itemCodeLinkF.pack(side=tk.TOP, fill=tk.X)
 
     class cardDescriptionUserFrame(tk.Frame):
         def __init__(self, controller):
@@ -636,6 +651,13 @@ class SCardDescription(tk.Frame):
             self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["Item"].itemStatus.configure(text=selectedItem.getStatus(), justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDescription, justify=tk.LEFT, wraplength=300)
+        if selectedItem.itemCodeLink is not None and selectedItem.itemCodeLink != '' :
+            self.cardDescriptions["Item"].itemCodeLink.configure(text=selectedItem.itemCodeLink,justify=tk.LEFT,wraplength=300,fg='blue',underline=1,cursor='gumby')
+            self.cardDescriptions["Item"].itemCodeLink.bind('<Button-1>', lambda event: self.open(event))
+        else:
+            self.cardDescriptions["Item"].itemCodeLink.configure(text=u'None Set', justify=tk.LEFT,
+                                                                 wraplength=300,fg='red',underline=-1,cursor='x_cursor')
+            self.cardDescriptions['Item'].itemCodeLink.unbind('<Button 1>')
         sprintName = ""
         for sprint in self.master.dataBlock.sprints:
             if sprint.sprintID == selectedItem.itemSprintID:
@@ -652,6 +674,8 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions["Item"]
 
+
+
     def generateSprintFields(self, selectedSprint):
         self.cardDescriptions["Sprint"].sprintStart.configure(text=selectedSprint.getFormattedStartDate(), justify=tk.LEFT, wraplength=300)
         self.cardDescriptions["Sprint"].sprintDue.configure(text=selectedSprint.getFormattedDueDate(), justify=tk.LEFT, wraplength=300)
@@ -666,6 +690,11 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions['Start']
         self.cardDescriptions['Active'].pack(side=tk.TOP)
+
+    def open(self, event):
+        link = event.widget.cget('text')
+        print(link)
+        webbrowser.open(link)
 
 class SUserItemInspection(tk.Frame):
 
