@@ -408,68 +408,6 @@ class CreateItemDialog:
 
 
 
-class AboutDialog:
-    def __init__(self, parent):
-        self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
-
-        popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.transient(parent)
-        popUPDialog.grab_set()
-        popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('1100x400')
-        popUPDialog.title('About Scrumbles')
-
-
-        Tk.Label(popUPDialog, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
-        linkLabel = Tk.Label(popUPDialog, text=self.apiLink,fg='blue')
-        linkLabel.grid(row=2,pady=5)
-        linkLabel.bind('<Button-1>',self.openPage)
-
-        okayButton = Tk.Button(popUPDialog, text="Okay", command=self.exit)
-        okayButton.grid(row=3, pady=5)
-
-    def openPage(self, *args, **kwargs):
-        webbrowser.open(self.apiLink)
-
-    def exit(self):
-        self.top.destroy()
-
-class codeLinkDialog:
-    def __init__(self,parent,dataBlock,Item,event):
-        self.parent = parent
-        self.dataBlock=dataBlock
-        self.Item = Item
-        self.event = event
-        self.widget = event.widget
-
-        popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.transient(parent)
-        popUPDialog.grab_set()
-        # popUPDialog.resizable(0, 0)
-
-        w = 600
-        h = 60
-        ws = parent.winfo_screenwidth()  # width of the screen
-        hs = parent.winfo_screenheight()  # height of the screen
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-        popUPDialog.geometry('%dx%d+%d+%d'%(w,h,x,y))
-        popUPDialog.title('Edit %s' % Item.itemTitle)
-        self.codeLinkEntry = Tk.Entry(popUPDialog,width=60)
-        self.codeLinkEntry.grid(row=1,column=1,sticky='W')
-        if self.Item.itemCodeLink is not None:
-            self.codeLinkEntry.insert(0,self.Item.itemCodeLink)
-        self.submitButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
-        self.submitButton.grid(row=1, column=2, padx=3)
-    def ok(self):
-        self.Item.itemCodeLink = self.codeLinkEntry.get()
-        self.dataBlock.updateScrumblesObject(self.Item)
-        self.exit()
-
-
-    def exit(self):
-        self.top.destroy()
-
 class EditItemDialog:
     def __init__(self, parent, dataBlock, Item):
         print(type(Item))
