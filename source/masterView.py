@@ -40,7 +40,7 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.splash = Dialogs.SplashScreen(self)
+        self.splash = Dialogs.SplashScreen(self, self)
 
         self.frames = {}
         print('Init DataBlock')
@@ -138,7 +138,7 @@ class masterView(tk.Tk):
         return menuBar
 
     def colorHelp(self):
-        colorPopUP = Dialogs.AboutDialog(self)
+        colorPopUP = Dialogs.AboutDialog(self, self)
         self.wait_window(colorPopUP.top)
     def raiseMenuBar(self):
         self.configure(menu=self.menuBar)
@@ -170,7 +170,7 @@ class masterView(tk.Tk):
 
     def showCreateProjectDialog(self):
         if self.activeUser.userRole == "Admin":
-            createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataBlock)
+            createProjectDialog = Dialogs.CreateProjectDialog(self, self, self.dataBlock)
             self.wait_window(createProjectDialog.top)
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
@@ -178,20 +178,20 @@ class masterView(tk.Tk):
 
     def showCreateUserDialog(self):
         if self.activeUser.userRole == "Admin":
-            createUserDialog = Dialogs.CreateUserDialog(self, self.dataBlock)
+            createUserDialog = Dialogs.CreateUserDialog(self, self, self.dataBlock)
             self.wait_window(createUserDialog.top)
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
     def showCreateSprintDialog(self):
         if self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master":
-            createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataBlock)
+            createSprintDialog = Dialogs.CreateSprintDialog(self, self, self.dataBlock)
             self.wait_window(createSprintDialog.top)
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
     def showCreateItemDialog(self):
-        createItemDialog = Dialogs.CreateItemDialog(self,self.dataBlock)
+        createItemDialog = Dialogs.CreateItemDialog(self, self, self.dataBlock)
         self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):

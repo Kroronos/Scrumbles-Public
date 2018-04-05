@@ -14,7 +14,7 @@ import time
 
 
 class CreateProjectDialog:
-    def __init__(self, parent, dataBlock):
+    def __init__(self, parent, master, dataBlock):
 
         self.dataBlock = dataBlock
 
@@ -22,7 +22,7 @@ class CreateProjectDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('dxd'%(600*parent.w_rat, 200*parent.h_rat))
+        popUPDialog.geometry('%dx%d'%(600*master.w_rat, 200*master.h_rat))
 
         popUPDialog.title('Create a New Project')
 
@@ -76,7 +76,7 @@ class CreateProjectDialog:
 
 class CreateUserDialog:
 
-    def __init__(self, parent, dataBlock):
+    def __init__(self, parent, master, dataBlock):
 
         self.dataBlock = dataBlock
 
@@ -84,7 +84,7 @@ class CreateUserDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('dxd'%(600*parent.w_rat, 500*parent.h_rat))
+        popUPDialog.geometry('%dx%d'%(600*master.w_rat, 500*master.h_rat))
         popUPDialog.title('Create a New User')
 
         Tk.Label(popUPDialog, text="User Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -171,7 +171,7 @@ class CreateUserDialog:
 
 class CreateSprintDialog:
 
-    def __init__(self, parent, dataBlock):
+    def __init__(self, parent, master, dataBlock):
 
         self.month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Nov','Dec']
         self.day = [str(d) for d in range(1,32)]
@@ -185,7 +185,7 @@ class CreateSprintDialog:
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
 
-        popUPDialog.geometry('dxd'%(900*parent.w_rat, 500*parent.h_rat))
+        popUPDialog.geometry('%dx%d'%(900*master.w_rat, 500*master.h_rat))
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -294,7 +294,7 @@ class CreateSprintDialog:
 
 class CreateItemDialog:
 
-    def __init__(self, parent, dataBlock):
+    def __init__(self, parent, master, dataBlock):
         self.parent = parent
         self.dataBlock = dataBlock
         self.parent = parent
@@ -303,7 +303,7 @@ class CreateItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('dxd'%(600*parent.w_rat, 640*parent.h_rat))
+        popUPDialog.geometry('%dx%d'%(600*master.w_rat, 640*master.h_rat))
         popUPDialog.title('Create a New Item')
 
 
@@ -410,7 +410,7 @@ class CreateItemDialog:
 
 
 class AboutDialog:
-    def __init__(self, parent):
+    def __init__(self, parent, master):
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         popUPDialog = self.top = Tk.Toplevel(parent)
@@ -418,8 +418,8 @@ class AboutDialog:
         popUPDialog.grab_set()
         #popUPDialog.resizable(0, 0)
         #popUPDialog.geometry('1100x400')
-        w = 600*parent.w_rat
-        h = 600*parent.h_rat
+        w = 600*master.w_rat
+        h = 600*master.h_rat
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -470,7 +470,7 @@ class AboutDialog:
 
 
 class EditItemDialog:
-    def __init__(self, parent, dataBlock, Item):
+    def __init__(self, parent, master, dataBlock, Item):
         self.parent = parent
         print(Item)
         self.item = Item
@@ -497,7 +497,7 @@ class EditItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('dxd'%(600*parent.w_rat, 600*parent.h_rat))
+        popUPDialog.geometry('%dx%d'%(600*master.w_rat, 600*master.h_rat))
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
@@ -657,8 +657,8 @@ class codeLinkDialog:
         popUPDialog.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
         # popUPDialog.resizable(0, 0)
 
-        w = 600*parent.w_rat
-        h = 80*parent.h_rat
+        w = 600*master.w_rat
+        h = 80*master.h_rat
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -691,14 +691,14 @@ class codeLinkDialog:
         self.exit()
 
 class SplashScreen(Tk.Toplevel):
-    def __init__(self,parent):
+    def __init__(self,parent, master):
         Tk.Toplevel.__init__(self,parent,cursor="wait")
         print('Init Splash')
 
         self.wm_overrideredirect(True)
         self.title('Welcome To Scrumbles')
-        w = 1280*parent.w_rat
-        h = 800*parent.h_rat
+        w = 1280*master.w_rat
+        h = 800*master.h_rat
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)

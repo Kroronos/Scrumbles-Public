@@ -83,7 +83,7 @@ class backlogManagerView(tk.Frame):
 
 
 
-        editUserDialog = Dialogs.EditItemDialog(self, self.controller.dataBlock ,item)
+        editUserDialog = Dialogs.EditItemDialog(self, self.controller, self.controller.dataBlock ,item)
         self.wait_window(editUserDialog.top)
 
 
