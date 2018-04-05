@@ -32,7 +32,6 @@ class DataBlock:
 
             self.listener = remoteUpdate.RemoteUpdate()
             self.lock = threading.Lock()
-            #self.updateAllObjects()
             self.size = self.getLen()
             self.updaterThread = threading.Thread(target = self.updater, args=())
             self.cv = threading.Condition()
@@ -130,8 +129,11 @@ class DataBlock:
         for item in itemTable:
             Item = ScrumblesObjects.Item(item)
             Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
-            if Item.itemID in timeLineMap:
-                Item.itemTimeLine = timeLineMap[Item.itemID]
+            self.applyItemLine(Item,timeLineMap)
+            # try:
+            #     Item.itemTimeLine = timeLineMap[Item.itemID]
+            # except KeyError:
+            #     timeLineMap = self.reloadTimeLineMap()
             if 'AssignedToSPrint' in Item.itemTimeLine:
                 Item.itemTimeLine['AssignedToSprint'] = Item.itemTimeLine['AssignedToSPrint']
             #self.populateItemTimeLine(Item,timeLineMap)
@@ -200,6 +202,22 @@ class DataBlock:
         print('Data Loaded in %fs' % (time.clock()-funcStartTime))
         self.isLoading = False
         return True
+
+    def applyItemLine(self, Item, timeLineMap):
+        try:
+            Item.itemTimeLine = timeLineMap[Item.itemID]
+        except KeyError as e:
+            time.sleep(1)
+            print(str(e))
+            print('re-applying timeline')
+            self.applyItemLine( Item, self.reloadTimeLineMap() )
+        return
+
+    @dbWrap
+    def reloadTimeLineMap(self):
+        itemTimeLineTable = self.conn.getData('SELECT * FROM CardTimeLine')
+        timeLineMap = self.mapTimeline(itemTimeLineTable)
+        return timeLineMap
 
     def mapTimeline(self,QResult):
         #QResult is a tuple of dicts
