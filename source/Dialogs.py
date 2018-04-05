@@ -651,22 +651,22 @@ class EditItemDialog:
 # #
 # dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
 
-root = Tk.Tk()
-Tk.Button(root, text="Hello!").pack()
-# root.update()
+# root = Tk.Tk()
+# Tk.Button(root, text="Hello!").pack()
+# # root.update()
+# # #
+# # # # u = CreateUserDialog(root,dataConnection)
+# # # # s = CreateSprintDialog(root, dataConnection)
+# # # # i = CreateItemDialog(root, dataConnection)
+# # # p = CreateProjectDialog(root, dataConnection)
 # #
+#
 # # # u = CreateUserDialog(root,dataConnection)
 # # # s = CreateSprintDialog(root, dataConnection)
 # # # i = CreateItemDialog(root, dataConnection)
-# # p = CreateProjectDialog(root, dataConnection)
-#
-
-# # u = CreateUserDialog(root,dataConnection)
-# # s = CreateSprintDialog(root, dataConnection)
-# # i = CreateItemDialog(root, dataConnection)
-# # p = CreateProjectDialog(root, dataConnection)
-h = AboutDialog(root)
-root.wait_window(h.top)
+# # # p = CreateProjectDialog(root, dataConnection)
+# h = AboutDialog(root)
+# root.wait_window(h.top)
 
 # items = []
 # dataConnection.connect()

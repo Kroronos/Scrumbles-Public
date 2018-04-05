@@ -218,6 +218,40 @@ class SBacklogList(BaseList):
         self.showFullList()
         self.searchEntry.delete(0,tk.END)
 
+    def colorCodeListboxes(self):
+        i = 0
+        itemTitleMap = {}
+        for item in self.controller.controller.activeProject.listOfAssignedItems:
+            itemTitleMap[item.itemTitle] = item
+
+        for title in self.listbox.get(0, tk.END):
+            if  itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is None:
+                self.listbox.itemconfig(i, ColorSchemes.notAssignedToAnythingColorScheme)
+
+            elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is not None:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
+
+            elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is None:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserNotSprintColorScheme)
+
+            elif itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is not None:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
+            elif itemTitleMap[title].itemStatus == 1:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
+            elif itemTitleMap[title].itemStatus == 2:
+                self.listbox.itemconfig(i, ColorSchemes.inProgressColorScheme)
+            elif itemTitleMap[title].itemStatus == 3:
+                self.listbox.itemconfig(i, ColorSchemes.submittedColorScheme)
+            elif itemTitleMap[title].itemStatus == 4:
+                self.listbox.itemconfig(i, ColorSchemes.completedItemColorScheme)
+
+            else:
+                pass
+
+            if itemTitleMap[title].itemType == 'Epic':
+                self.listbox.itemconfig(i, ColorSchemes.epicItemColorScheme)
+            i += 1
+
 class SBacklogListColor(SBacklogList):
     def __init__(self, controller, title):
         SBacklogList.__init__(self, controller, title)
@@ -230,18 +264,7 @@ class SBacklogListColor(SBacklogList):
         super().sortReverse()
         self.colorCodeListboxes()
 
-    def colorCodeListboxes(self):
-        i = 0
 
-        for itemTitle in self.listbox.get(0,tk.END):
-            for item in self.controller.controller.activeProject.listOfAssignedItems:
-                if itemTitle == item.itemTitle and item.itemSprintID is None:
-                    self.listbox.itemconfig(i, {'bg': 'firebrick4'})
-                    self.listbox.itemconfig(i, {'fg':'VioletRed1'})
-                elif itemTitle == item.itemTitle and item.itemSprintID is not None:
-                    self.listbox.itemconfig(i, {'bg':'dark green'})
-                    self.listbox.itemconfig(i, {'fg':'lawn green'})
-            i += 1
 
 
     def importListSorted(self, list):
