@@ -91,6 +91,7 @@ class DataBlock:
 
     def updateAllObjects(self):
         self.isLoading = True
+        funcStartTime = time.clock()
         print('connecting')
         self.conn.connect()
         self.users.clear()
@@ -100,7 +101,7 @@ class DataBlock:
         self.tags.clear()
         self.sprints.clear()
         print('getting tables')
-        startTime = time.clock()
+        loopStartTime = time.clock()
         userTable = self.conn.getData(Query.getAllUsers)
         itemTable = self.conn.getData(Query.getAllCards)
         projectTable = self.conn.getData(Query.getAllProjects)
@@ -110,71 +111,71 @@ class DataBlock:
         itemToProjectRelationTable = self.conn.getData(Query.getAllProjectItem)
         self.conn.close()
 
-        print('Tables loaded in %fms' % ((time.clock()-startTime)*1000) )
+        print('Tables loaded in %fms' % ((time.clock()-loopStartTime)*1000) )
 
-        startTime = time.clock()
+        loopStartTime = time.clock()
         print('splicing vectors')
         for comment in commentTable:
             Comment = ScrumblesObjects.Comment(comment)
             self.comments.append(Comment)
-        print('Comment List Built in %fms' % ((time.clock() - startTime) * 1000))
+        print('Comment List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
-        startTime = time.clock()
+        loopStartTime = time.clock()
         for item in itemTable:
             Item = ScrumblesObjects.Item(item)
             Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
             self.populateItemTimeLine(Item)
             self.items.append(Item)
-        print('Item List Built in %fms' % ((time.clock() - startTime) * 1000))
+        print('Item List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
-        startTime = time.clock()
+        loopStartTime = time.clock()
         for I in self.items:
             if I.itemType == 'Epic':
                 self.populateSubItems(I)
-        print('Item subitems spliced in %fms' % ((time.clock() - startTime) * 1000))
+        print('Item subitems spliced in %fms' % ((time.clock() - loopStartTime) * 1000))
 
-        startTime = time.clock()
+        loopStartTime = time.clock()
         for user in userTable:
             User = ScrumblesObjects.User(user)
             User.listOfAssignedItems = [ I for I in self.items if I.itemUserID == User.userID ]
             User.listOfComments = [ C for C in self.comments if C.commentUserID == User.userID ]
             self.users.append(User)
-        print('User List Built in %fms' % ((time.clock() - startTime) * 1000))
+        print('User List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
-        startTime = time.clock()
+        loopStartTime = time.clock()
         for sprint in sprintTable:
             Sprint = ScrumblesObjects.Sprint(sprint)
             Sprint.listOfAssignedItems = [I for I in self.items if I.itemSprintID == Sprint.sprintID]
             Sprint.listOfAssignedUsers = [U for U in self.users if U.userID in [I.itemUserID for I in Sprint.listOfAssignedItems]]
             self.sprints.append(Sprint)
-        print('Sprint List Built in %fms' % ((time.clock() - startTime) * 1000))
+        print('Sprint List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
-        startTime = time.clock()
+        loopStartTime = time.clock()
         for project in projectTable:
             Project = ScrumblesObjects.Project(project)
             Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
             self.projects.append(Project)
-        print('Project List Built in %fms' % ((time.clock() - startTime) * 1000))
+        print('Project List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
-        startTime = time.clock()
+        loopStartTime = time.clock()
         for user in self.users:
             for dict in userToProjectRelationTable:
                 if dict['UserID'] == user.userID:
                     for project in self.projects:
                         if dict['ProjectID'] == project.projectID:
                             user.listOfProjects.append(project)
-        print('Users Spliced to Projects in %fms' % ((time.clock() - startTime) * 1000))
+        print('Users Spliced to Projects in %fms' % ((time.clock() - loopStartTime) * 1000))
 
-        startTime = time.clock()
+        loopStartTime = time.clock()
         for project in self.projects:
             for dict in userToProjectRelationTable:
                 if dict['ProjectID'] == project.projectID:
                     for user in self.users:
                         if dict['UserID'] == user.userID:
                             project.listOfAssignedUsers.append(user)
-            print('Projects spliced to users in %fms' % ((time.clock() - startTime) * 1000))
+            print('Projects spliced to users in %fms' % ((time.clock() - loopStartTime) * 1000))
 
-            startTime = time.clock()
+            loopStartTime = time.clock()
             for dict in itemToProjectRelationTable:
                 if dict['ProjectID'] == project.projectID:
                     for item in self.items:
@@ -182,10 +183,10 @@ class DataBlock:
                             item.projectID = project.projectID
 
                             project.listOfAssignedItems.append(item)
-        print('Items Spliced to Projects in %fms' % ((time.clock() - startTime) * 1000))
+        print('Items Spliced to Projects in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         #self.debugDump()
-        print('Data Loaded')
+        print('Data Loaded in %fs' % (time.clock()-funcStartTime))
         self.isLoading = False
         return True
 
