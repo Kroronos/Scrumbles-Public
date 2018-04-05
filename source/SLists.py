@@ -3,6 +3,16 @@ import tkinter as tk
 from styling import styling as style
 from tkinter import ttk
 
+class ColorSchemes:
+    notAssignedToAnythingColorScheme = {'bg': 'firebrick4', 'fg': 'VioletRed1'}
+    assignedToSprintNotUserColorScheme = {'bg': 'dark orange', 'fg': 'yellow'}
+    assignedToUserNotSprintColorScheme = {'bg': 'yellow', 'fg': 'dark orange'}
+    assignedToUserAndSprintColorScheme = {'bg': 'deep sky blue', 'fg': 'navy'}
+    inProgressColorScheme = {'bg': 'khaki', 'fg': 'dark green'}
+    submittedColorScheme = {'bg': 'maroon1', 'fg': 'red4'}
+    epicItemColorScheme = {'bg': 'MediumPurple1', 'fg': 'black'}
+    completedItemColorScheme = {'bg': 'dark green', 'fg': 'lawn green'}
+
 
 class BaseList(tk.Frame,tk.Listbox):
     def __init__(self, controller):

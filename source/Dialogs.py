@@ -8,7 +8,7 @@ import webbrowser
 import sys, traceback
 import datetime
 import logging
-
+from SLists import ColorSchemes
 
 class CreateProjectDialog:
     def __init__(self, parent, dataBlock):
@@ -443,30 +443,16 @@ class AboutDialog:
         self.itemListBox['activestyle'] = 'dotbox'
         self.itemListBox['height'] = len(itemList)
 
-        self.itemListBox.itemconfig(0, {'bg': 'firebrick4'}) # Not Assigned To Anything
-        self.itemListBox.itemconfig(0, {'fg': 'VioletRed1'})
 
-        self.itemListBox.itemconfig(1, {'bg': 'dark orange'}) #Assigned to Sprint, no User
-        self.itemListBox.itemconfig(1, {'fg': 'yellow'})
+        self.itemListBox.itemconfig(0, ColorSchemes.notAssignedToAnythingColorScheme) # Not Assigned To Anything
+        self.itemListBox.itemconfig(1, ColorSchemes.assignedToSprintNotUserColorScheme) #Assigned to Sprint, no User
+        self.itemListBox.itemconfig(2, ColorSchemes.assignedToUserNotSprintColorScheme) #Assigned to User, No Sprint
+        self.itemListBox.itemconfig(3, ColorSchemes.assignedToUserAndSprintColorScheme) # Assigned to User and Sprint
+        self.itemListBox.itemconfig(4, ColorSchemes.inProgressColorScheme) # In Progress
+        self.itemListBox.itemconfig(5, ColorSchemes.submittedColorScheme) # Submitted
+        self.itemListBox.itemconfig(6, ColorSchemes.epicItemColorScheme) # Item Is Epic
+        self.itemListBox.itemconfig(7, ColorSchemes.completedItemColorScheme) # Completed
 
-        self.itemListBox.itemconfig(2, {'bg': 'yellow'}) #Assigned to User, No Sprint
-        self.itemListBox.itemconfig(2, {'fg': 'dark orange'})
-
-        self.itemListBox.itemconfig(3, {'bg': 'deep sky blue'}) # Assigned to User and Sprint
-        self.itemListBox.itemconfig(3, {'fg': 'navy'})
-
-        self.itemListBox.itemconfig(4, {'bg': 'khaki'}) # In Progress
-        self.itemListBox.itemconfig(4, {'fg': 'dark green'})
-
-        self.itemListBox.itemconfig(5, {'bg': 'maroon1'}) # Submitted
-        self.itemListBox.itemconfig(5, {'fg': 'red4'})
-
-        self.itemListBox.itemconfig(6, {'bg': 'MediumPurple1'}) # Item Is Epic
-        self.itemListBox.itemconfig(6, {'fg': 'black'})
-
-
-        self.itemListBox.itemconfig(7, {'bg': 'dark green'}) # Completed
-        self.itemListBox.itemconfig(7, {'fg': 'lawn green'})
 
 
         okayButton = Tk.Button(popUPDialog, text="Okay", command=self.exit)
@@ -665,8 +651,8 @@ class EditItemDialog:
 # #
 # dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
 
-# root = Tk.Tk()
-# Tk.Button(root, text="Hello!").pack()
+root = Tk.Tk()
+Tk.Button(root, text="Hello!").pack()
 # root.update()
 # #
 # # # u = CreateUserDialog(root,dataConnection)
@@ -679,8 +665,8 @@ class EditItemDialog:
 # # s = CreateSprintDialog(root, dataConnection)
 # # i = CreateItemDialog(root, dataConnection)
 # # p = CreateProjectDialog(root, dataConnection)
-# h = AboutDialog(root)
-# root.wait_window(h.top)
+h = AboutDialog(root)
+root.wait_window(h.top)
 
 # items = []
 # dataConnection.connect()
