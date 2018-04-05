@@ -25,11 +25,11 @@ class masterView(tk.Tk):
         print('Init masterView')
         tk.Tk.__init__(self)
         self.withdraw()
-        w_rat, h_rat = getGeometryFromFile("geometry.txt")
-        w_rat /= 1280
-        h_rat/= 720
-        w  = 1280*w_rat
-        h = 720*h_rat
+        self.w_rat, self.h_rat = getGeometryFromFile("geometry.txt")
+        self.w_rat /= 1280
+        self.h_rat/= 720
+        w = 1280*self.w_rat
+        h = 720*self.h_rat
         print("Width: " + str(w))
         print("Height: " + str(h))
         ws =self.winfo_screenwidth()  # width of the screen
@@ -37,7 +37,6 @@ class masterView(tk.Tk):
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.title("Scrumbles")
-        # self.geometry("1280x720")
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))

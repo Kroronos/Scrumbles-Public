@@ -22,7 +22,7 @@ class CreateProjectDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x200')
+        popUPDialog.geometry('dxd'%(600*parent.w_rat, 200*parent.h_rat))
 
         popUPDialog.title('Create a New Project')
 
@@ -84,7 +84,7 @@ class CreateUserDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x500')
+        popUPDialog.geometry('dxd'%(600*parent.w_rat, 500*parent.h_rat))
         popUPDialog.title('Create a New User')
 
         Tk.Label(popUPDialog, text="User Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -185,7 +185,7 @@ class CreateSprintDialog:
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
 
-        popUPDialog.geometry('900x500')
+        popUPDialog.geometry('dxd'%(900*parent.w_rat, 500*parent.h_rat))
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -303,7 +303,7 @@ class CreateItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x640')
+        popUPDialog.geometry('dxd'%(600*parent.w_rat, 640*parent.h_rat))
         popUPDialog.title('Create a New Item')
 
 
@@ -418,8 +418,8 @@ class AboutDialog:
         popUPDialog.grab_set()
         #popUPDialog.resizable(0, 0)
         #popUPDialog.geometry('1100x400')
-        w = 600
-        h = 600
+        w = 600*parent.w_rat
+        h = 600*parent.h_rat
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -497,7 +497,7 @@ class EditItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x600')
+        popUPDialog.geometry('dxd'%(600*parent.w_rat, 600*parent.h_rat))
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
@@ -657,8 +657,8 @@ class codeLinkDialog:
         popUPDialog.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
         # popUPDialog.resizable(0, 0)
 
-        w = 600
-        h = 80
+        w = 600*parent.w_rat
+        h = 80*parent.h_rat
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -697,8 +697,8 @@ class SplashScreen(Tk.Toplevel):
 
         self.wm_overrideredirect(True)
         self.title('Welcome To Scrumbles')
-        w = 1280
-        h = 800
+        w = 1280*parent.w_rat
+        h = 800*parent.h_rat
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
