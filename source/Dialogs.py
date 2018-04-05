@@ -584,33 +584,40 @@ class EditItemDialog:
 
         self.top.destroy()
 class codeLinkDialog:
-    def __init__(self,parent,dataBlock,Item,event):
+    def __init__(self,parent,dataBlock,Item,event,isUpdated):
         self.parent = parent
         self.dataBlock=dataBlock
         self.Item = Item
         self.event = event
         self.widget = event.widget
-
+        self.updated = isUpdated
         popUPDialog = self.top = Tk.Toplevel(parent)
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
+        popUPDialog.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
         # popUPDialog.resizable(0, 0)
 
         w = 600
-        h = 60
+        h = 80
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         popUPDialog.geometry('%dx%d+%d+%d'%(w,h,x,y))
         popUPDialog.title('Edit %s' % Item.itemTitle)
+        self.codeLinkLabel = ttk.Label(popUPDialog,text='Please enter link to Code')
+        self.codeLinkLabel.grid(row=1,column=1)
         self.codeLinkEntry = Tk.Entry(popUPDialog,width=60)
-        self.codeLinkEntry.grid(row=1,column=1,sticky='W')
+        self.codeLinkEntry.grid(row=2,column=1,sticky='W')
         if self.Item.itemCodeLink is not None:
             self.codeLinkEntry.insert(0,self.Item.itemCodeLink)
         self.submitButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
-        self.submitButton.grid(row=1, column=2, padx=3)
+        self.submitButton.grid(row=2, column=2, padx=3)
+        self.cancelButton = Tk.Button(popUPDialog,text='Cancel',command=self.cancel)
+        self.cancelButton.grid(row=2,column=3,pady=1)
+
     def ok(self):
+        self.updated[0] = True
         self.Item.itemCodeLink = self.codeLinkEntry.get()
         self.dataBlock.updateScrumblesObject(self.Item)
         self.exit()
@@ -618,6 +625,10 @@ class codeLinkDialog:
 
     def exit(self):
         self.top.destroy()
+
+    def cancel(self):
+        self.updated[0] = False
+        self.exit()
 
 class SplashScreen(Tk.Toplevel):
     def __init__(self,parent):
