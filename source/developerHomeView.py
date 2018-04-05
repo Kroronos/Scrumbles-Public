@@ -79,7 +79,7 @@ class developerHomeView(tk.Frame):
 
     def updateProgressBar(self):
         self.maxTasks = len(self.assignedItems)
-        self.completedTasks = 1 #this should be zero, it is one because otherwise you can't see the progress bar
+        self.completedTasks = 0
         for item in self.assignedItems:
             if item.itemStatus == 4:
                 self.completedTasks += 1

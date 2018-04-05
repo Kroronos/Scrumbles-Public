@@ -216,6 +216,7 @@ class commentsField(tk.Frame):
         self.newCommentFieldScrollBar = tk.Scrollbar(self.newCommentFieldFI, command=self.newCommentField.yview)
         self.newCommentField['yscrollcommand'] = self.newCommentFieldScrollBar.set
         self.submitButton = tk.Button(self.newCommentFieldF, text="Submit", command=self.submitComment)
+        self.newCommentField.bind('<Control-s>', lambda event: self.submitComment(event))
 
         self.source = None
         self.searchParams = None
@@ -229,7 +230,7 @@ class commentsField(tk.Frame):
         self.newCommentFieldFI.pack(side=tk.TOP, fill=tk.BOTH)
         self.submitButton.pack(side=tk.TOP, fill=tk.BOTH)
 
-    def submitComment(self):
+    def submitComment(self, event=None):
         newComment = ScrumblesObjects.Comment()
         newComment.commentContent = self.newCommentField.get("1.0", tk.END)
         newComment.commentContent = str(newComment.commentContent)

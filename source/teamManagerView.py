@@ -15,8 +15,9 @@ class teamManagerView(tk.Frame):
         self.teamMembers = []
         self.allUsers = []
 
-        self.userList = ScrumblesFrames.SList(self, "USERS")
-        self.memberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
+        self.userListsF = tk.Frame(self)
+        self.userList = ScrumblesFrames.SList(self.userListsF, "USERS")
+        self.memberList = ScrumblesFrames.SList(self.userListsF, "TEAM MEMBERS")
         self.assignedItemInspect = ScrumblesFrames.SUserItemInspection(self, controller)
 
         self.dynamicSources, queryType = self.assignedItemInspect.getSCardDescriptionExport()
@@ -40,8 +41,10 @@ class teamManagerView(tk.Frame):
         self.controller.dataBlock.packCallback(self.updateFrame)
         self.updateFrame()
 
-        self.userList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.memberList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.memberList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.userList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.userListsF.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
         self.assignedItemInspect.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.recentComments.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
         self.descriptionManager.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
