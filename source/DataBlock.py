@@ -130,7 +130,8 @@ class DataBlock:
         for item in itemTable:
             Item = ScrumblesObjects.Item(item)
             Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
-            Item.itemTimeLine = timeLineMap[Item.itemID]
+            if Item.itemID in timeLineMap:
+                Item.itemTimeLine = timeLineMap[Item.itemID]
             if 'AssignedToSPrint' in Item.itemTimeLine:
                 Item.itemTimeLine['AssignedToSprint'] = Item.itemTimeLine['AssignedToSPrint']
             #self.populateItemTimeLine(Item,timeLineMap)
