@@ -9,7 +9,6 @@ import sprintManagerView
 import backlogManagerView
 import itemManagerView
 import platform
-import base64
 import time
 
 import webbrowser
@@ -26,7 +25,13 @@ class masterView(tk.Tk):
         print('Init masterView')
         tk.Tk.__init__(self)
         self.withdraw()
-        w, h = getGeometryFromFile("geometry.txt")
+        w_rat, h_rat = getGeometryFromFile("geometry.txt")
+        w_rat /= 1280
+        h_rat/= 720
+        w  = 1280*w_rat
+        h = 720*h_rat
+        print("Width: " + str(w))
+        print("Height: " + str(h))
         ws =self.winfo_screenwidth()  # width of the screen
         hs = self.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -280,6 +285,7 @@ def getGeometryFromFile(file):
         h = int(h)
         geometryFile.close()
     except:
+        print("EXCEPTION ALERTTTT")
         w = 1280
         h = 720
 
@@ -288,15 +294,12 @@ def getGeometryFromFile(file):
 def processFile(openFile):
     item = openFile.readline()
     item = item.rstrip("\n\r")
-    item = base64.standard_b64decode(item)
-    item = item.decode('utf8')
     return item
 
 def setGeometryFile(window):
-    window.update_idletasks()
     w = window.winfo_width()
     h = window.winfo_height()
-    f=open("geometry.txt", "w+")
+    f = open("geometry.txt", "w+")
     f.write(str(w)+"\n")
     f.write(str(h)+"\n")
     f.close()
