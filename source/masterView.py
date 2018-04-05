@@ -129,6 +129,7 @@ class masterView(tk.Tk):
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
+        helpMenu.add_command(label = "What's with the colors", command=self.colorHelp)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Edit", menu=editMenu)
@@ -138,6 +139,9 @@ class masterView(tk.Tk):
 
         return menuBar
 
+    def colorHelp(self):
+        colorPopUP = Dialogs.AboutDialog(self)
+        self.wait_window(colorPopUP.top)
     def raiseMenuBar(self):
         self.configure(menu=self.menuBar)
 
