@@ -219,7 +219,7 @@ class DataBlock:
 
     @dbWrap
     def addUserToProject(self,project,user):
-        logging.info('Adding User %s to project %s' % (user.UserName,project.projectName))
+        logging.info('Adding User %s to project %s' % (user.userName,project.projectName))
         if user not in project.listOfAssignedUsers:
             self.conn.setData(ProjectQuery.addUser(project,user))
         else:
@@ -227,7 +227,7 @@ class DataBlock:
 
     @dbWrap
     def removeUserFromProject(self,project,user):
-        logging.info('Removing User %s from project %s' %(user.UserName,project.projectName) )
+        logging.info('Removing User %s from project %s' %(user.userName,project.projectName) )
         for item in self.items:
             if item in project.listOfAssignedItems:
                 if item.itemUserID == user.userID:
