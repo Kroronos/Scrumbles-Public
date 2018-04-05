@@ -234,16 +234,24 @@ class SBacklogList(BaseList):
             elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is None:
                 self.listbox.itemconfig(i, ColorSchemes.assignedToUserNotSprintColorScheme)
 
-            elif itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is not None:
-                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
-            elif itemTitleMap[title].itemStatus == 1:
-                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
-            elif itemTitleMap[title].itemStatus == 2:
-                self.listbox.itemconfig(i, ColorSchemes.inProgressColorScheme)
-            elif itemTitleMap[title].itemStatus == 3:
-                self.listbox.itemconfig(i, ColorSchemes.submittedColorScheme)
             elif itemTitleMap[title].itemStatus == 4:
                 self.listbox.itemconfig(i, ColorSchemes.completedItemColorScheme)
+
+            elif itemTitleMap[title].itemStatus == 3:
+                self.listbox.itemconfig(i, ColorSchemes.submittedColorScheme)
+
+            elif itemTitleMap[title].itemStatus == 2:
+                self.listbox.itemconfig(i, ColorSchemes.inProgressColorScheme)
+
+            elif itemTitleMap[title].itemStatus == 1:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
+
+            elif itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is not None:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
+
+
+
+
 
             else:
                 pass
