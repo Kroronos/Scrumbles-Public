@@ -64,15 +64,7 @@ class backlogManagerView(tk.Frame):
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
 
-    def colorizeBackLogList(self):
-        for index in range(len(self.controller.activeProject.listOfAssignedItems)):
-            for S in self.controller.activeProject.listOfAssignedSprints:
-                if self.controller.activeProject.listOfAssignedItems[index] in S.listOfAssignedItems:
-                    self.fullBacklog.listbox.itemconfig(index,{'bg': 'firebrick'})
-                    self.fullBacklog.listbox.itemconfig(index,{'fg': 'red'})
-                else:
-                    self.fullBacklog.listbox.itemconfig(index,{'bg' : 'dark green'})
-                    self.fullBacklog.listbox.itemconfig(index,{'fg' : 'lawn green'})
+
 
 
     def updateItem(self):
@@ -100,13 +92,19 @@ class backlogManagerView(tk.Frame):
         self.listOfEpics = []
         self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
         self.projectNameLabel['text'] = self.projectNameLabelText
+
         self.sprintList.clearList()
+
         self.sprintBacklog.clearList()
+
         self.fullBacklog.clearList()
+
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.sprintList.importSprintsList(self.sprintListData)
+
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
+
         self.listOfEpics = [ I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
         self.popMenu.updateEpicsMenu()
 
@@ -118,6 +116,7 @@ class backlogManagerView(tk.Frame):
                 self.selectedSprint = sprint
                 self.assignedItems = sprint.listOfAssignedItems
                 self.sprintBacklog.importItemList(self.assignedItems)
+                self.sprintBacklog.colorCodeListboxes()
 
 
 

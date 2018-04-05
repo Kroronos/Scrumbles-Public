@@ -183,10 +183,10 @@ class SComboList(BaseList):
         self.listFrame.pack(fill=tk.BOTH, expand=True)
 
 class SBacklogList(BaseList):
-    def __init__(self, controller, title):
+    def __init__(self, controller, title,MasterView=None):
         BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
-
+        self.MasterView = MasterView
         self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)
         self.searchFrame = tk.Frame(self.titleFrame, relief=tk.SOLID, bg=style.scrumbles_blue)
 
@@ -228,7 +228,15 @@ class SBacklogList(BaseList):
     def colorCodeListboxes(self):
         i = 0
         itemTitleMap = {}
-        for item in self.controller.controller.activeProject.listOfAssignedItems:
+        if self.MasterView is not None:
+            itemList = self.MasterView.activeProject.listOfAssignedItems
+            print('Master is Sent')
+            print(self.controller)
+            print(len(itemList))
+        else:
+            itemList = self.controller.controller.activeProject.listOfAssignedItems
+
+        for item in itemList:
             itemTitleMap[item.itemTitle] = item
 
         for title in self.listbox.get(0, tk.END):
@@ -269,8 +277,8 @@ class SBacklogList(BaseList):
             i += 1
 
 class SBacklogListColor(SBacklogList):
-    def __init__(self, controller, title):
-        SBacklogList.__init__(self, controller, title)
+    def __init__(self, controller, title, MasterView=None):
+        SBacklogList.__init__(self, controller, title, MasterView)
 
     def sortForward(self):
         super().sortForward()
