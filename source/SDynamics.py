@@ -210,6 +210,16 @@ class commentsField(tk.Frame):
         self.comments = []
         self.commentTextElements = []
 
+        self.canvas = tk.Canvas(self.commentField, bd=1, scrollregion=(0,0,1000,1000), height=100)
+        self.scrollbar = tk.Scrollbar(self.commentField, command=self.canvas.yview)
+        self.canvas.config(yscrollcommand=self.scrollbar.set)
+
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.canvas.pack(expand=True, fill=tk.BOTH)
+        self.internals = tk.Frame(self.canvas)
+        self.canvasFrame = self.canvas.create_window(0, 0, window=self.internals, anchor=tk.NW)
+
+
         self.newCommentFieldF = tk.Frame(self)
         self.newCommentFieldFI = tk.Frame(self.newCommentFieldF)
         self.newCommentField = tk.Text(self.newCommentFieldFI, height=5)
@@ -217,7 +227,6 @@ class commentsField(tk.Frame):
         self.newCommentField['yscrollcommand'] = self.newCommentFieldScrollBar.set
         self.submitButton = tk.Button(self.newCommentFieldF, text="Submit", command=self.submitComment)
         self.newCommentField.bind('<Control-s>', lambda event: self.submitComment(event))
-
         self.source = None
         self.searchParams = None
 
@@ -229,6 +238,9 @@ class commentsField(tk.Frame):
         self.newCommentField.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.newCommentFieldFI.pack(side=tk.TOP, fill=tk.BOTH)
         self.submitButton.pack(side=tk.TOP, fill=tk.BOTH)
+
+        self.internals.bind("<Configure>", self.OnFrameConfigure)
+        self.canvas.bind('<Configure>', self.FrameWidth)
 
     def submitComment(self, event=None):
         newComment = ScrumblesObjects.Comment()
@@ -291,7 +303,7 @@ class commentsField(tk.Frame):
 
         self.comments = sorted(self.comments, reverse=True, key=lambda s: s.commentTimeStamp)
         for comment in self.comments:
-            commentFrame = tk.Frame(self.commentField)
+            commentFrame = tk.Frame(self.internals)
             commentLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentContent,
                                     justify=tk.LEFT, wraplength=300,
                                     font=style.comment_font)
@@ -314,7 +326,7 @@ class commentsField(tk.Frame):
             commentSignatureLabel.pack(side=tk.TOP, fill=tk.X)
             commentFrame.pack(side=tk.TOP, fill=tk.X, pady=10)
 
-        self.commentField.pack(side=tk.TOP, fill=tk.BOTH)
+        self.commentField.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         if type(self.inspection) is ScrumblesObjects.Item:
             self.newCommentFieldF.pack_forget()
