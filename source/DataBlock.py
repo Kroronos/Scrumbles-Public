@@ -18,7 +18,7 @@ class DataBlock:
     tags = []
     sprints = []
     updaterCallbacks = []
-
+    itemMap = {}
 
     def __init__(self,mode=None,):
         self.dbLogin = DataBaseLoginInfo('login.txt')
@@ -100,6 +100,7 @@ class DataBlock:
         self.comments.clear()
         self.tags.clear()
         self.sprints.clear()
+        self.itemMap = {}
         print('getting tables')
         loopStartTime = time.clock()
         userTable = self.conn.getData(Query.getAllUsers)
@@ -109,12 +110,17 @@ class DataBlock:
         sprintTable = self.conn.getData(Query.getAllSprints)
         userToProjectRelationTable = self.conn.getData(Query.getAllUserProject)
         itemToProjectRelationTable = self.conn.getData(Query.getAllProjectItem)
+        itemTimeLineTable = self.conn.getData('SELECT * FROM CardTimeLine')
+        epicTable = self.conn.getData('SELECT * FROM EpicTable')
         self.conn.close()
 
         print('Tables loaded in %fms' % ((time.clock()-loopStartTime)*1000) )
 
         loopStartTime = time.clock()
         print('splicing vectors')
+
+        timeLineMap = self.mapTimeline(itemTimeLineTable)
+        epicMap = self.buildEpicMap(epicTable)
         for comment in commentTable:
             Comment = ScrumblesObjects.Comment(comment)
             self.comments.append(Comment)
@@ -124,14 +130,18 @@ class DataBlock:
         for item in itemTable:
             Item = ScrumblesObjects.Item(item)
             Item.listOfComments = [C for C in self.comments if C.commentItemID == Item.itemID]
-            self.populateItemTimeLine(Item)
+            Item.itemTimeLine = timeLineMap[Item.itemID]
+            if 'AssignedToSPrint' in Item.itemTimeLine:
+                Item.itemTimeLine['AssignedToSprint'] = Item.itemTimeLine['AssignedToSPrint']
+            #self.populateItemTimeLine(Item,timeLineMap)
+            self.itemMap[Item.itemID] = Item
             self.items.append(Item)
         print('Item List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
         for I in self.items:
-            if I.itemType == 'Epic':
-                self.populateSubItems(I)
+            if I.itemID in epicMap:  #epicMap[subitemID]->EpicID
+                self.itemMap[epicMap[I.itemID]].subItemList.append(I) #itemMap[itemID]->Item
         print('Item subitems spliced in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
@@ -190,6 +200,19 @@ class DataBlock:
         self.isLoading = False
         return True
 
+    def mapTimeline(self,QResult):
+        #QResult is a tuple of dicts
+        #I want to map each cardID to a dict
+        timeLineMap = {}
+        for dict in QResult:
+            timeLineMap[dict['CardID']] = dict
+        return timeLineMap
+
+    def buildEpicMap(self,epicTable):
+        epicMap = {}
+        for dict in epicTable:
+            epicMap[dict['SubitemID']] = dict['EpicID']
+        return epicMap
     def validateData(self):
         return self.getLen() > 0
 
@@ -260,6 +283,8 @@ class DataBlock:
     def updateScrumblesObject(self,obj):
         logging.info('Updating object %s to database' % repr(obj))
         self.conn.setData(Query.updateObject(obj))
+        if type(obj) is ScrumblesObjects.Item:
+            self.conn.setData(TimeLineQuery.newItem(obj))
 
     @dbWrap
     def deleteScrumblesObject(self,obj):
@@ -341,23 +366,10 @@ class DataBlock:
         logging.info('Deleting Epic %s and removing bindings' % item.itemTitle)
         self.conn.setData(CardQuery.deleteEpic(item))
 
-    @dbWrap
-    def populateSubItems(self,item):
-        queryResult = self.conn.getData(CardQuery.getEpicSubitems(item))
-        for dict in queryResult:
-           for I in self.items:
-               if dict['SubitemID'] == str(I.itemID):
-                   item.subItemList.append(I)
 
-    @dbWrap
-    def populateItemTimeLine(self,item):
-        queryReslt = self.conn.getData(TimeLineQuery.getItemTimeLine(item))
-        if queryReslt != ():
-            item.itemTimeLine = queryReslt[0]
-            #This is a workaround from a funky bug between MySQL and MySQL db
-            #although the Column name in the db is AssignedToSprint
-            #it is coming back as AssignedToSPrint
-            item.itemTimeLine['AssignedToSprint'] = item.itemTimeLine['AssignedToSPrint']
+    def populateSubItems(self,item,epicMap):
+       pass
+
 
     def updater(self):
         logging.info('Updater Thread %s started' % threading.get_ident())
