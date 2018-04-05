@@ -24,7 +24,7 @@ class backlogManagerView(tk.Frame):
         self.backlog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
         self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
-        self.fullBacklog.pack(side=tk.LEFT, fill=tk.Y)
+        self.fullBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.popMenu.context_menu(event, self.popMenu))
 
@@ -35,10 +35,10 @@ class backlogManagerView(tk.Frame):
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.sprintList.importSprintsList(self.sprintListData)
-        self.sprintList.pack(side=tk.LEFT, fill=tk.Y)
+        self.sprintList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.sprintBacklog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
-        self.sprintBacklog.pack(side=tk.LEFT, fill=tk.Y)
+        self.sprintBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.popMenu.context_menu(event, self.popMenu))
 

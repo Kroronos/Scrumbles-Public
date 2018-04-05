@@ -62,7 +62,7 @@ class masterView(tk.Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        self.menuBar = self.generateMenuBar()
+        self.menuBar = None
         self.hiddenMenu = tk.Menu(self)
 
         loginFrame = loginView.loginView(self.container, self)
@@ -117,8 +117,14 @@ class masterView(tk.Tk):
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
 
         viewMenu = tk.Menu(menuBar, tearoff=0)
-        viewMenu.add_command(label="Main", command=lambda: self.show_frame(mainView))
-        viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
+        if (self.activeUser.userRole == "Admin"):
+            viewMenu.add_command(label="Administrator Home", command=lambda: self.show_frame(mainView))
+        if (self.activeUser.userRole == "Scrum Master"):
+            viewMenu.add_command(label="Scrum Master Home", command=lambda: self.show_frame(mainView))
+        
+        elif (self.activeUser.userRole == "Developer"):
+            viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
+        
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
         viewMenu.add_command(label="Sprint Manager", command=lambda: self.show_frame(sprintManagerView))
         viewMenu.add_command(label="Projects Backlog", command=lambda: self.show_frame(backlogManagerView))
@@ -136,7 +142,7 @@ class masterView(tk.Tk):
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
-        return menuBar
+        self.menuBar = menuBar
 
     def colorHelp(self):
         colorPopUP = Dialogs.AboutDialog(self)
@@ -150,11 +156,17 @@ class masterView(tk.Tk):
     def getViews(self):
         views = []
         viewNames = []
-        views.append(mainView)
-        viewNames.append("Main")
+        if (self.activeUser.userRole == "Admin"):
+            views.append(mainView)
+            viewNames.append("Admin Main")
 
-        views.append(developerHomeView)
-        viewNames.append("Developer Home")
+        elif (self.activeUser.userRole == "Scrum Master"):
+            views.append(mainView)
+            viewNames.append("Scrum Master Main")  
+
+        elif (self.activeUser.userRole == "Developer"):
+            views.append(developerHomeView)
+            viewNames.append("Developer Home")
 
         views.append(teamManagerView)
         viewNames.append("Team Manager")
@@ -210,6 +222,8 @@ class masterView(tk.Tk):
         self.add_frame(sprintManagerFrame, sprintManagerView)
         self.add_frame(backlogManagerFrame, backlogManagerView)
         self.add_frame(itemManagerFrame, itemManagerView)
+
+        self.generateMenuBar()
         
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
