@@ -406,33 +406,6 @@ class CreateItemDialog:
 
 
 
-class AboutDialog:
-    def __init__(self, parent):
-        self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
-
-        popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.transient(parent)
-        popUPDialog.grab_set()
-        popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('1100x400')
-        popUPDialog.title('About Scrumbles')
-
-
-        Tk.Label(popUPDialog, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
-        linkLabel = Tk.Label(popUPDialog, text=self.apiLink,fg='blue')
-        linkLabel.grid(row=2,pady=5)
-        linkLabel.bind('<Button-1>',self.openPage)
-
-        okayButton = Tk.Button(popUPDialog, text="Okay", command=self.exit)
-        okayButton.grid(row=3, pady=5)
-
-    def openPage(self, *args, **kwargs):
-        webbrowser.open(self.apiLink)
-
-    def exit(self):
-        self.top.destroy()
-
-
 
 class EditItemDialog:
     def __init__(self, parent, dataBlock, Item):
