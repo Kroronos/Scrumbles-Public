@@ -118,10 +118,17 @@ class BaseList(tk.Frame,tk.Listbox):
 
     def deleteSelectedItem(self):
 
-        deleteIndex = self.listbox.get(0, tk.END).index(tk.ANCHOR)
-        del self.fullList[deleteIndex]
-        self.listbox.delete(tk.ANCHOR)
-        self.enforceSorting()
+        # deleteIndex = self.listbox.get(0, tk.END).index(tk.ANCHOR)
+        # del self.fullList[deleteIndex]
+        # self.listbox.delete(tk.ANCHOR)
+
+        selection = self.listbox.curselection()
+        self.listbox.delete(selection[0])
+        val = self.listbox.get(selection[0])
+        index = self.fullList.index(val)
+        del(self.fullList[index])
+
+        self.enforceSort()
 
     def decideSort(self):
         if self.typeSort == "none":

@@ -9,6 +9,9 @@ import sys, traceback
 import datetime
 import logging
 from SLists import ColorSchemes
+import time
+
+
 
 class CreateProjectDialog:
     def __init__(self, parent, dataBlock):
@@ -505,6 +508,7 @@ class EditItemDialog:
 
         Tk.Label(popUPDialog, text="Set Priority").grid(row=9,column=1,pady=5,sticky='E')
         Tk.Label(popUPDialog, text="Set link to Code").grid(row=10,column=1,pady=5,sticky='E')
+
         self.itemTitleEntry = Tk.Entry(popUPDialog, width=27)
         self.itemTitleEntry.insert(0,Item.itemTitle)
         self.itemTitleEntry.grid(row=2, column=2, pady=5, sticky='W')
@@ -544,6 +548,7 @@ class EditItemDialog:
         self.itemCodeLinkEntry.grid(row=10, column=2, pady=5, sticky='W')
         if self.item.itemCodeLink is not None:
             self.itemCodeLinkEntry.insert(0,self.item.itemCodeLink)
+
         self.itemPriorityCombobox = ttk.Combobox(popUPDialog, textvariable=self.itemPriorityVar, state='readonly', width=27)
         self.itemPriorityCombobox['values'] = ( "Low Priority","Medium Priority", "High Priority")
         self.itemPriorityCombobox.current(Item.itemPriority)
@@ -551,9 +556,9 @@ class EditItemDialog:
 
 
 
-        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Reason For Change').grid(row=10, column=1, sticky='E')
+        self.commentTextBoxLabel = Tk.Label(popUPDialog, text='Reason For Change').grid(row=11, column=1, sticky='E')
         self.commentTextBox = Tk.Text(popUPDialog, height=6, width=20, wrap=Tk.WORD)
-        self.commentTextBox.grid(row=10, column=2, pady=5,sticky='W')
+        self.commentTextBox.grid(row=11, column=2, pady=5,sticky='W')
 
         createButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
         createButton.grid(row=12, column=2, pady=5)
@@ -638,7 +643,91 @@ class EditItemDialog:
     def exit(self):
 
         self.top.destroy()
+class codeLinkDialog:
+    def __init__(self,parent,dataBlock,Item,event,isUpdated):
+        self.parent = parent
+        self.dataBlock=dataBlock
+        self.Item = Item
+        self.event = event
+        self.widget = event.widget
+        self.updated = isUpdated
+        popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        popUPDialog.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
+        # popUPDialog.resizable(0, 0)
 
+        w = 600
+        h = 80
+        ws = parent.winfo_screenwidth()  # width of the screen
+        hs = parent.winfo_screenheight()  # height of the screen
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        popUPDialog.geometry('%dx%d+%d+%d'%(w,h,x,y))
+        popUPDialog.title('Edit %s' % Item.itemTitle)
+        self.codeLinkLabel = ttk.Label(popUPDialog,text='Please enter link to Code')
+        self.codeLinkLabel.grid(row=1,column=1)
+        self.codeLinkEntry = Tk.Entry(popUPDialog,width=60)
+        self.codeLinkEntry.grid(row=2,column=1,sticky='W')
+        if self.Item.itemCodeLink is not None:
+            self.codeLinkEntry.insert(0,self.Item.itemCodeLink)
+        self.submitButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
+        self.submitButton.grid(row=2, column=2, padx=3)
+        self.cancelButton = Tk.Button(popUPDialog,text='Cancel',command=self.cancel)
+        self.cancelButton.grid(row=2,column=3,pady=1)
+
+    def ok(self):
+        self.updated[0] = True
+        self.Item.itemCodeLink = self.codeLinkEntry.get()
+        self.dataBlock.updateScrumblesObject(self.Item)
+        self.exit()
+
+
+    def exit(self):
+        self.top.destroy()
+
+    def cancel(self):
+        self.updated[0] = False
+        self.exit()
+
+class SplashScreen(Tk.Toplevel):
+    def __init__(self,parent):
+        Tk.Toplevel.__init__(self,parent,cursor="wait")
+        print('Init Splash')
+
+        self.wm_overrideredirect(True)
+        self.title('Welcome To Scrumbles')
+        w = 1280
+        h = 800
+        ws = parent.winfo_screenwidth()  # width of the screen
+        hs = parent.winfo_screenheight()  # height of the screen
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.waitLabel = Tk.Label(self,text='Please wait while Scrumbles Loads')
+        self.waitLabel.pack()
+        self.isAlive = True
+
+        self.pbarList = []
+        for i in range(30):
+            pbar = None
+            pbar= ttk.Progressbar(self,length=1000,maximum=10*(i),mode='indeterminate')
+            pbar.pack()
+            #pbar.start(10)
+            self.pbarList.append(pbar)
+
+
+        self.update()
+        #self.start_progressBar()
+    def kill(self):
+        print('destroying Splash')
+        self.isAlive = False
+        self.destroy()
+
+    def step_progressBar(self,interval):
+        for pbar in self.pbarList:
+            pbar.step(interval)
+            self.update()
 
 
 
@@ -660,7 +749,6 @@ class EditItemDialog:
 # # # # i = CreateItemDialog(root, dataConnection)
 # # # p = CreateProjectDialog(root, dataConnection)
 # #
-#
 # # # u = CreateUserDialog(root,dataConnection)
 # # # s = CreateSprintDialog(root, dataConnection)
 # # # i = CreateItemDialog(root, dataConnection)

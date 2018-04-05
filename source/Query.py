@@ -340,12 +340,12 @@ class CommentQuery(Query):
         return query, (comment.commentID,)
 
 class TimeLineQuery(Query):
-    statusMap = {0: 'AssignedToUser', 1: 'AssignedToUser', 2: 'WorkStared', 3: 'Submitted', 4: 'Completed'}
+    statusMap = {0: 'AssignedToUser', 1: 'AssignedToUser', 2: 'WorkStarted', 3: 'Submitted', 4: 'Completed'}
     #statusEquivalentsReverse = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
 
     @staticmethod
     def newItem(item):
-        query = 'INSERT INTO CardTimeLine CardID VALUES %s'
+        query = 'INSERT INTO CardTimeLine (CardID,Created) VALUES (%s,NOW())'
         return query, (item.itemID,)
 
     @staticmethod
@@ -353,18 +353,19 @@ class TimeLineQuery(Query):
         maxDate = datetime(9999, 12, 31, 23, 59, 59)
         if item.itemTimeLine['AssignedToSprint'] == maxDate and item.itemTimeLine['AssignedToUser'] == maxDate:
             if item.itemStatus > 1:
-                raise Exception('Invalid Operation: Item must be assigned to sprint or user before timestamping status to %s'%item.statusEquivalents[item.itemStatus])
+                raise Exception('Invalid Operation: Item must be assigned to sprint and user before changing status to %s'%item.statusNumberToTextMap[item.itemStatus])
             else:
                 query = 'INSERT INTO CardTimeLine (CardID, AssignedToUser) VALUES (%s,NOW())'
                 rtnTuple = (item.itemID,)
         else:
+            q = 'UPDAte CardTimeLine SET %s' % TimeLineQuery.statusMap[item.itemStatus]
             if item.itemStatus > 0:
-                query = 'UPDATE CardTimeLine SET %s=NOW() WHERE CardID=%s'
-                rtnTuple = (TimeLineQuery.statusMap[item.itemStatus],item.itemID)
+                query = q+'=NOW() WHERE CardID=%s'
+                rtnTuple = (item.itemID,)
 
             else:
-                query = 'UPDATE CardTimeLine SET %s=%s WHERE CardID=%s'
-                rtnTuple = (TimeLineQuery.statusMap[item.itemStatus],maxDate, item.itemID)
+                query = q+'=%s WHERE CardID=%s'
+                rtnTuple = (maxDate, item.itemID)
         return query,   rtnTuple
 
     @staticmethod
