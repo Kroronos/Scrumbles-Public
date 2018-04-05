@@ -644,7 +644,7 @@ class EditItemDialog:
 
         self.top.destroy()
 class codeLinkDialog:
-    def __init__(self,parent,dataBlock,Item,event,isUpdated):
+    def __init__(self,parent,master,dataBlock,Item,event,isUpdated):
         self.parent = parent
         self.dataBlock=dataBlock
         self.Item = Item

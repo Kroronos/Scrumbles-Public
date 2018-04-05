@@ -11,7 +11,7 @@ class ColorSchemes:
     inProgressColorScheme = {'bg': 'khaki', 'fg': 'dark green'}
     submittedColorScheme = {'bg': 'maroon1', 'fg': 'red4'}
     epicItemColorScheme = {'bg': 'MediumPurple1', 'fg': 'black'}
-    completedItemColorScheme = {'bg': 'dark green', 'fg': 'lawn green'}
+    completedItemColorScheme = {'bg': style.scrumbles_orange, 'fg': 'black'}
 
 
 class BaseList(tk.Frame,tk.Listbox):

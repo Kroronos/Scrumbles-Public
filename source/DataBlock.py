@@ -89,6 +89,7 @@ class DataBlock:
 
 
     def updateAllObjects(self):
+        time.sleep(10)
         self.isLoading = True
         funcStartTime = time.clock()
         print('connecting')
