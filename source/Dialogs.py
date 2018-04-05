@@ -8,6 +8,8 @@ import webbrowser
 import sys, traceback
 import datetime
 import logging
+import time
+
 
 
 class CreateProjectDialog:
@@ -644,7 +646,38 @@ class EditItemDialog:
 
         self.top.destroy()
 
+class SplashScreen(Tk.Toplevel):
+    def __init__(self,parent):
+        Tk.Toplevel.__init__(self,parent,cursor="wait")
 
+
+        self.wm_overrideredirect(True)
+        self.title('Welcome To Scrumbles')
+        w = 1280
+        h = 800
+        ws = parent.winfo_screenwidth()  # width of the screen
+        hs = parent.winfo_screenheight()  # height of the screen
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.waitLabel = Tk.Label(self,text='Please wait while Scrumbles Loads')
+        self.waitLabel.pack()
+        self.isAlive = True
+
+        pbarList = []
+        for i in range(30):
+            pbar = None
+            pbar= ttk.Progressbar(self,length=1000,maximum=10*(i),mode='indeterminate')
+            pbar.pack()
+            pbar.start(10)
+            pbarList.append(pbar)
+
+
+        self.update()
+
+    def kill(self):
+        self.isAlive = False
+        self.destroy()
 
 
 
