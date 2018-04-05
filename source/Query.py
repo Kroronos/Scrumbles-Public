@@ -345,7 +345,7 @@ class TimeLineQuery(Query):
 
     @staticmethod
     def newItem(item):
-        query = 'INSERT INTO CardTimeLine CardID VALUES %s'
+        query = 'INSERT INTO CardTimeLine (CardID,Created) VALUES (%s,NOW())'
         return query, (item.itemID,)
 
     @staticmethod

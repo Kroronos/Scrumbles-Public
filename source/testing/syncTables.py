@@ -59,16 +59,16 @@ db.updateAllObjects()
 maxDate = datetime(9999, 12, 31, 23, 59, 59)
 db.conn.connect()
 
-# QResult = db.conn.getData('SELECT CardID FROM CardTimeLine')
-# idList = [card['CardID'] for card in QResult]
-# cardsInBlock = [I.itemID for I in db.items]
-#
-# print(len(idList))
-# print(len(cardsInBlock))
-#
-# # for id in cardsInBlock:
-# #     if id not in idList:
-# #         db.conn.setData( ('INSERT INTO CardTimeLine (CardID) VALUES (%s)' , (id,) ) )
+QResult = db.conn.getData('SELECT CardID FROM CardTimeLine')
+idList = [card['CardID'] for card in QResult]
+cardsInBlock = [I.itemID for I in db.items]
+
+print(len(idList))
+print(len(cardsInBlock))
+
+# for id in cardsInBlock:
+#     if id not in idList:
+#         db.conn.setData( ('INSERT INTO CardTimeLine (CardID) VALUES (%s)' , (id,) ) )
 
 
 
