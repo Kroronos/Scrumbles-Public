@@ -9,7 +9,7 @@ import sprintManagerView
 import backlogManagerView
 import itemManagerView
 import platform
-
+import base64
 import time
 
 import webbrowser
@@ -26,8 +26,7 @@ class masterView(tk.Tk):
         print('Init masterView')
         tk.Tk.__init__(self)
         self.withdraw()
-        w = 1280
-        h = 720
+        w, h = getGeometryFromFile("geometry.txt")
         ws =self.winfo_screenwidth()  # width of the screen
         hs = self.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -68,10 +67,6 @@ class masterView(tk.Tk):
         
         self.add_frame(loginFrame, loginView)
 
-
-
-
-
         self.deiconify()
         self.show_frame(loginView)
         self.dataConnection = None
@@ -84,7 +79,6 @@ class masterView(tk.Tk):
 
 
     def show_frame(self, cont):
-        #print("Dictionary issue")
         frame = self.frames[cont]
         print("Switching Views")
         frame.tkraise()
@@ -268,6 +262,7 @@ def logOut(controller):
     controller.title("Scrumbles")
 
 def exitProgram(mainwindow):
+    setGeometryFile(mainwindow)
     mainwindow.dataBlock.shutdown()
     mainwindow.destroy()
     logging.info("Shutting down gracefully")
@@ -275,3 +270,33 @@ def exitProgram(mainwindow):
 
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
+
+def getGeometryFromFile(file):
+    try:
+        geometryFile = open(file,'r')
+        w = processFile(geometryFile)
+        h = processFile(geometryFile)
+        w = int(w)
+        h = int(h)
+        geometryFile.close()
+    except:
+        w = 1280
+        h = 720
+
+    return w,h
+
+def processFile(openFile):
+    item = openFile.readline()
+    item = item.rstrip("\n\r")
+    item = base64.standard_b64decode(item)
+    item = item.decode('utf8')
+    return item
+
+def setGeometryFile(window):
+    window.update_idletasks()
+    w = window.winfo_width()
+    h = window.winfo_height()
+    f=open("geometry.txt", "w+")
+    f.write(str(w)+"\n")
+    f.write(str(h)+"\n")
+    f.close()
