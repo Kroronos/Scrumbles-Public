@@ -127,14 +127,15 @@ class developerHomeView(tk.Frame):
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
         Comment.commentContent = 'Set to In Progress by menu action'
-
-        try:
-            self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
-            self.controller.dataBlock.addNewScrumblesObject(Comment)
-            messagebox.showinfo('Success','Item Status changed to In-Progress')
-        except Exception as e:
-            logging.exception('Error Setting Item to In progress')
-            messagebox.showerror('Error', str(e))
+        result = messagebox.askyesno('Get to Work','Are you ready to begin work on this item?')
+        if result:
+            try:
+                self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
+                self.controller.dataBlock.addNewScrumblesObject(Comment)
+                messagebox.showinfo('Success','Item Status changed to In-Progress')
+            except Exception as e:
+                logging.exception('Error Setting Item to In progress')
+                messagebox.showerror('Error', str(e))
     def setItemToSubmitted(self):
         Item = self.myItemsPopMenu.getSelectedItemObject()
         Comment = ScrumblesObjects.Comment()
@@ -164,14 +165,16 @@ class developerHomeView(tk.Frame):
         self.assignedItems.append(Item)
         self.userItemList.addItem(Item.itemTitle)
         self.updateProgressBar()
-        try:
-            self.controller.dataBlock.assignUserToItem(self.controller.activeUser,Item)
-            self.controller.dataBlock.addNewScrumblesObject(Comment)
-            messagebox.showinfo('Success', 'Item Assigned to %s' % self.controller.activeUser.userName)
-        except Exception as e:
-            logging.exception('Error Assigning Item to active User')
-            messagebox.showerror('Error', str(e))
-        return True
+        result = messagebox.askyesno('Assign To Me','Do you want Assign this Item to yourself?')
+        if result:
+            try:
+                self.controller.dataBlock.assignUserToItem(self.controller.activeUser,Item)
+                self.controller.dataBlock.addNewScrumblesObject(Comment)
+                messagebox.showinfo('Success', 'Item Assigned to %s' % self.controller.activeUser.userName)
+            except Exception as e:
+                logging.exception('Error Assigning Item to active User')
+                messagebox.showerror('Error', str(e))
+            return True
 
     def getCodeLink(self,item):
         isUpdated = [False]  #Had to make this a list because bool and int are immutable
