@@ -649,7 +649,7 @@ class EditItemDialog:
 class SplashScreen(Tk.Toplevel):
     def __init__(self,parent):
         Tk.Toplevel.__init__(self,parent,cursor="wait")
-
+        print('Init Splash')
 
         self.wm_overrideredirect(True)
         self.title('Welcome To Scrumbles')
@@ -664,20 +664,27 @@ class SplashScreen(Tk.Toplevel):
         self.waitLabel.pack()
         self.isAlive = True
 
-        pbarList = []
+        self.pbarList = []
         for i in range(30):
             pbar = None
             pbar= ttk.Progressbar(self,length=1000,maximum=10*(i),mode='indeterminate')
             pbar.pack()
-            pbar.start(10)
-            pbarList.append(pbar)
+            #pbar.start(10)
+            self.pbarList.append(pbar)
 
 
         self.update()
-
+        #self.start_progressBar()
     def kill(self):
+        print('destroying Splash')
         self.isAlive = False
         self.destroy()
+
+    def step_progressBar(self,interval):
+        for pbar in self.pbarList:
+            pbar.step(interval)
+            self.update()
+
 
 
 

@@ -18,7 +18,7 @@ import ScrumblesData
 class masterView(tk.Tk):
     def __init__(self):
 
-
+        print('Init masterView')
         tk.Tk.__init__(self)
         self.withdraw()
         w = 1280
@@ -33,11 +33,17 @@ class masterView(tk.Tk):
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.splash = Dialogs.SplashScreen(self)
-        print(self.splash.isAlive)
+
         self.frames = {}
+        print('Init DataBlock')
         self.dataBlock = DataBlock.DataBlock()
+
         while self.dataBlock.isLoading:
-            self.splash.update()
+             self.splash.step_progressBar(1)
+
+
+        self.splash.kill()
+
         self.dataBlock.packCallback(self.repointActiveObjects)
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
@@ -59,7 +65,7 @@ class masterView(tk.Tk):
 
 
 
-        self.splash.kill()
+
 
         self.deiconify()
         self.show_frame(loginView)

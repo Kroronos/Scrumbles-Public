@@ -91,7 +91,7 @@ class DataBlock:
 
     def updateAllObjects(self):
         self.isLoading = True
-
+        print('connecting')
         self.conn.connect()
         self.users.clear()
         self.items.clear()
@@ -99,6 +99,7 @@ class DataBlock:
         self.comments.clear()
         self.tags.clear()
         self.sprints.clear()
+        print('getting tables')
         userTable = self.conn.getData(Query.getAllUsers)
         itemTable = self.conn.getData(Query.getAllCards)
         projectTable = self.conn.getData(Query.getAllProjects)
@@ -107,6 +108,7 @@ class DataBlock:
         userToProjectRelationTable = self.conn.getData(Query.getAllUserProject)
         itemToProjectRelationTable = self.conn.getData(Query.getAllProjectItem)
         self.conn.close()
+        print('splicing vectors')
         for comment in commentTable:
             Comment = ScrumblesObjects.Comment(comment)
             self.comments.append(Comment)
@@ -164,6 +166,7 @@ class DataBlock:
 
 
         #self.debugDump()
+        print('Data Loaded')
         self.isLoading = False
         return True
 
