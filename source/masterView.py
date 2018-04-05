@@ -9,7 +9,12 @@ import sprintManagerView
 import backlogManagerView
 import itemManagerView
 import platform
+
 import time
+
+import webbrowser
+
+
 import DataBlock
 import Dialogs
 import ScrumblesData
@@ -122,7 +127,8 @@ class masterView(tk.Tk):
 
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
-        helpMenu.add_command(label="About", command=self.openAboutDialog)
+        helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
+        helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Edit", menu=editMenu)
@@ -210,10 +216,12 @@ class masterView(tk.Tk):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         self.dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
 
-    def openAboutDialog(self):
-        helpBox = Dialogs.AboutDialog(self)
+   
+    def openAPI(self):
+        webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/Scrumbles-API-Documentation')
 
-        self.wait_window(helpBox.top)
+    def openStatus(self):
+        webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/Current-Status')
 
     def updateOpenProjectsMenu(self):
         self.setOpenProjectsMenu(self.fileMenu)
