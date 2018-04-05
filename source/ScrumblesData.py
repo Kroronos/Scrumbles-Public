@@ -38,6 +38,7 @@ def debug_ObjectdumpList(L):
         for C in L:
             print('\t',C.commentUserID)
 
+
 class ScrumblesData:
     def __init__(self, dbLoginInfo):
         self.ipaddress = dbLoginInfo.ipaddress

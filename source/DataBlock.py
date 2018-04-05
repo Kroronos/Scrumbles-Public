@@ -20,17 +20,19 @@ class DataBlock:
     updaterCallbacks = []
 
 
-    def __init__(self,mode=None):
+    def __init__(self,mode=None,):
         self.dbLogin = DataBaseLoginInfo('login.txt')
         self.conn = ScrumblesData(self.dbLogin)
         self.mode = mode
+        self.isLoading = True
+        self.firstLoad = True
         if mode is None:
             logging.info('Initializing DataBlock Object')
             self.alive = True
 
             self.listener = remoteUpdate.RemoteUpdate()
             self.lock = threading.Lock()
-            self.updateAllObjects()
+            #self.updateAllObjects()
             self.size = self.getLen()
             self.updaterThread = threading.Thread(target = self.updater, args=())
             self.cv = threading.Condition()
@@ -88,6 +90,8 @@ class DataBlock:
 
 
     def updateAllObjects(self):
+        self.isLoading = True
+
         self.conn.connect()
         self.users.clear()
         self.items.clear()
@@ -160,6 +164,7 @@ class DataBlock:
 
 
         #self.debugDump()
+        self.isLoading = False
         return True
 
     def validateData(self):
@@ -334,6 +339,9 @@ class DataBlock:
     def updater(self):
         logging.info('Updater Thread %s started' % threading.get_ident())
         threading.Thread(target=self.listener.start,args=()).start()
+        if self.firstLoad:
+            self.updateAllObjects()
+            self.firstLoad = False
 
         while self.alive:
             time.sleep(1)
