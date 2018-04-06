@@ -64,9 +64,6 @@ class backlogManagerView(tk.Frame):
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
 
-
-
-
     def updateItem(self):
         item = None
         title = self.selectedItem
@@ -81,11 +78,7 @@ class backlogManagerView(tk.Frame):
                 print(i.itemTitle)
             raise Exception('Error Loading item from title')
 
-
-
-        editUserDialog = Dialogs.EditItemDialog(self, self.controller, self.controller.dataBlock ,item)
-        self.wait_window(editUserDialog.top)
-
+        Dialogs.EditItemDialog(self.controller, master=self.controller, dataBlock=self.controller.dataBlock ,item=item).show()
 
     def updateBacklogViewData(self):
         print('Calling updateBacklogViewData')
@@ -125,3 +118,6 @@ class backlogManagerView(tk.Frame):
         if event.widget is self.sprintList.listbox:
             self.assignedSprintSelectedEvent(event)
 
+
+    def __str__(self):
+        return 'Scrumbles Backlog Manger View'

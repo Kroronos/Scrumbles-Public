@@ -83,7 +83,7 @@ class loginView(tk.Frame):
     def loginProcess(self):
         loggedInUser = self.loginButtonClicked()
         if (loggedInUser is not None):
-            self.controller.setDatabaseConnection()
+
             self.controller.generateViews(loggedInUser)
 
     def loginButtonClicked(self):
@@ -113,7 +113,7 @@ class loginView(tk.Frame):
         loggedInUser = self.loginButtonClickedBypassAdmin()
         if (loggedInUser is not None):
             print('loginProcessBypassAdmin')
-            #self.controller.setDatabaseConnection()
+
             self.controller.generateViews(loggedInUser)
 
 
@@ -138,7 +138,7 @@ class loginView(tk.Frame):
     def loginProcessBypassSM(self):
         loggedInUser = self.loginButtonClickedBypassSM()
         if (loggedInUser is not None):
-            self.controller.setDatabaseConnection()
+            #self.controller.setDatabaseConnection()
             self.controller.generateViews(loggedInUser)
 
 
@@ -163,7 +163,7 @@ class loginView(tk.Frame):
     def loginProcessBypassDev(self):
         loggedInUser = self.loginButtonClickedBypassDev()
         if (loggedInUser is not None):
-            self.controller.setDatabaseConnection()
+
             self.controller.generateViews(loggedInUser)
 
 
