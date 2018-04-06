@@ -626,20 +626,18 @@ class AboutDialog(GenericDialog):
         if not self.isTest:
             w = 600*self.master.w_rat
             h = 600*self.master.h_rat
-        else:
-            w = 600
-            h = 600
-        ws = self.parent.winfo_screenwidth()  # width of the screen
-        hs = self.parent.winfo_screenheight()  # height of the screen
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-        self.geometry('%dx%d+%d+%d' % (w, h, x, y))
+            ws = self.parent.winfo_screenwidth()  # width of the screen
+            hs = self.parent.winfo_screenheight()  # height of the screen
+            x = (ws / 2) - (w / 2)
+            y = (hs / 2) - (h / 2)
+            self.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
         self.title('About Scrumbles')
         self.createWidgets()
 
     def createWidgets(self):
         Tk.Label(self, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
-        linkLabel = Tk.Label(self, text=self.apiLink,fg='blue')
+        linkLabel = Tk.Label(self, text=self.apiLink,fg='blue',cursor='gumby')
         linkLabel.grid(row=2,pady=5)
         linkLabel.bind('<Button-1>',self.openPage)
 
@@ -681,43 +679,41 @@ class AboutDialog(GenericDialog):
 
 
 
-class codeLinkDialog:
-    def __init__(self,parent,master,dataBlock,Item,event,isUpdated):
-        self.parent = parent
-        self.dataBlock=dataBlock
-        self.Item = Item
-        self.event = event
-        self.widget = event.widget
-        self.updated = isUpdated
-        popUPDialog = self.top = Tk.Toplevel(parent)
-        popUPDialog.transient(parent)
-        popUPDialog.grab_set()
-        popUPDialog.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
-        # popUPDialog.resizable(0, 0)
+class codeLinkDialog(GenericDialog):
+    def __init__(self,*args,**kwargs):
+        self.Item = kwargs.pop('item')
 
-        w = 600*master.w_rat
-        h = 80*master.h_rat
-        ws = parent.winfo_screenwidth()  # width of the screen
-        hs = parent.winfo_screenheight()  # height of the screen
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-        popUPDialog.geometry('%dx%d+%d+%d'%(w,h,x,y))
-        popUPDialog.title('Edit %s' % Item.itemTitle)
-        self.codeLinkLabel = ttk.Label(popUPDialog,text='Please enter link to Code')
+        super().__init__(*args,**kwargs)
+
+        self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
+        if not self.isTest:
+            w = 600*self.master.w_rat
+            h = 80*self.master.h_rat
+            ws = self.parent.winfo_screenwidth()  # width of the screen
+            hs = self.parent.winfo_screenheight()  # height of the screen
+            x = (ws / 2) - (w / 2)
+            y = (hs / 2) - (h / 2)
+            self.geometry('%dx%d+%d+%d'%(w,h,x,y))
+        self.createWidgets()
+    @tryExcept
+    def createWidgets(self):
+        self.title('Edit %s' % self.Item.itemTitle)
+        self.codeLinkLabel = ttk.Label(self,text='Please enter link to Code')
         self.codeLinkLabel.grid(row=1,column=1)
-        self.codeLinkEntry = Tk.Entry(popUPDialog,width=60)
+        self.codeLinkEntry = Tk.Entry(self,width=60)
         self.codeLinkEntry.grid(row=2,column=1,sticky='W')
         if self.Item.itemCodeLink is not None:
             self.codeLinkEntry.insert(0,self.Item.itemCodeLink)
-        self.submitButton = Tk.Button(popUPDialog, text="Update Item", command=self.ok)
+        self.submitButton = Tk.Button(self, text="Update Item", command=self.ok)
         self.submitButton.grid(row=2, column=2, padx=3)
-        self.cancelButton = Tk.Button(popUPDialog,text='Cancel',command=self.cancel)
+        self.cancelButton = Tk.Button(self,text='Cancel',command=self.cancel)
         self.cancelButton.grid(row=2,column=3,pady=1)
-
+    @tryExcept
     def ok(self):
-        self.updated[0] = True
+        self.executeSuccess = True
         self.Item.itemCodeLink = self.codeLinkEntry.get()
-        self.dataBlock.updateScrumblesObject(self.Item)
+        if not self.isTest:
+            self.dataBlock.updateScrumblesObject(self.Item)
         self.exit()
 
 
@@ -725,8 +721,9 @@ class codeLinkDialog:
         self.top.destroy()
 
     def cancel(self):
-        self.updated[0] = False
+        self.executeSuccess = False
         self.exit()
+
 
 
 
@@ -829,4 +826,6 @@ if __name__ == '__main__':
     # assert EditSprintDialog(root, test=True, sprint=TSprint).show(), 'edit Sprint failed'
     # assert CreateItemDialog(root, test=True).show(),'create item failed'
     # assert EditItemDialog(root, test=True, item=TItem ).show(), 'edit item failed'
-    assert AboutDialog(root,test=True).show(), 'Help Dialog Failed'
+    # assert AboutDialog(root,test=True).show(), 'Help Dialog Failed'
+    assert codeLinkDialog(root, test=True, item=TItem).show()
+    assert not codeLinkDialog(root, test=True, item=TItem).show()

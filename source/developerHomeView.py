@@ -144,8 +144,8 @@ class developerHomeView(tk.Frame):
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
         Comment.commentContent = 'Set to Submitted by menu action'
-        updated = self.getCodeLink(Item)
-        if updated[0]:
+        updated = Dialogs.codeLinkDialog(self, master=self.master, dataBlock=self.controller.dataBlock,item=Item).show()
+        if updated:
             try:
                 self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
                 self.controller.dataBlock.addNewScrumblesObject(Comment)
@@ -153,6 +153,7 @@ class developerHomeView(tk.Frame):
             except Exception as e:
                 logging.exception('Error Assigning Submitting item for review')
                 messagebox.showerror('Error', str(e))
+
     def assignItemToActiveUser(self):
         Item = self.backlogPopMenu.getSelectedItemObject()
         if Item.itemUserID is not None:
@@ -177,13 +178,3 @@ class developerHomeView(tk.Frame):
                 logging.exception('Error Assigning Item to active User')
                 messagebox.showerror('Error', str(e))
             return True
-
-    def getCodeLink(self,item):
-        isUpdated = [False]  #Had to make this a list because bool and int are immutable
-        evnt = self.myItemsPopMenu.event
-        #yes it is bad practice, but getLinkPopUp is a frame that isn't going to have return value,
-        #so, isUpdated is going to be modified by the popup
-        #bad juju, I know, but do you have a better idea?
-        getLinkPopUP = Dialogs.codeLinkDialog(self, self.master, self.controller.dataBlock,item,evnt,isUpdated)
-        self.wait_window(getLinkPopUP.top)
-        return isUpdated
