@@ -24,11 +24,12 @@ class developerHomeView(tk.Frame):
         self.backlogPopMenu.add_command(label=u'Assign To me', command=self.assignItemToActiveUser)
 
         self.itemColumnFrame = tk.Frame(self)
-        self.userItemList = ScrumblesFrames.SList(self.itemColumnFrame, "MY ITEMS")
+        self.userItemList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "MY ITEMS",controller)
         self.userItemList.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.myItemsPopMenu.context_menu(event, self.myItemsPopMenu))
 
-        self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame,"BACKLOG")
+        self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame,"BACKLOG",controller)
+
         self.productBacklogList.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.backlogPopMenu.context_menu(event, self.backlogPopMenu) )
 
@@ -102,10 +103,11 @@ class developerHomeView(tk.Frame):
 
         self.productBacklogList.clearList()
         self.productBacklogList.importItemList(self.backlog)
+        self.productBacklogList.colorCodeListboxes()
 
         self.userItemList.clearList()
         self.userItemList.importItemList(self.assignedItems)
-
+        self.userItemList.colorCodeListboxes()
         self.updateProgressBar()
         self.commentFeed.updateComments()
 
@@ -182,6 +184,6 @@ class developerHomeView(tk.Frame):
         #yes it is bad practice, but getLinkPopUp is a frame that isn't going to have return value,
         #so, isUpdated is going to be modified by the popup
         #bad juju, I know, but do you have a better idea?
-        getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller.dataBlock,item,evnt,isUpdated)
+        getLinkPopUP = Dialogs.codeLinkDialog(self, self.master, self.controller.dataBlock,item,evnt,isUpdated)
         self.wait_window(getLinkPopUP.top)
         return isUpdated

@@ -24,7 +24,7 @@ class backlogManagerView(tk.Frame):
         self.backlog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
         self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
-        self.fullBacklog.pack(side=tk.LEFT, fill=tk.Y)
+        self.fullBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.popMenu.context_menu(event, self.popMenu))
 
@@ -35,10 +35,10 @@ class backlogManagerView(tk.Frame):
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.sprintList.importSprintsList(self.sprintListData)
-        self.sprintList.pack(side=tk.LEFT, fill=tk.Y)
+        self.sprintList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.sprintBacklog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
-        self.sprintBacklog.pack(side=tk.LEFT, fill=tk.Y)
+        self.sprintBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.popMenu.context_menu(event, self.popMenu))
 
@@ -64,15 +64,7 @@ class backlogManagerView(tk.Frame):
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
 
-    def colorizeBackLogList(self):
-        for index in range(len(self.controller.activeProject.listOfAssignedItems)):
-            for S in self.controller.activeProject.listOfAssignedSprints:
-                if self.controller.activeProject.listOfAssignedItems[index] in S.listOfAssignedItems:
-                    self.fullBacklog.listbox.itemconfig(index,{'bg': 'firebrick'})
-                    self.fullBacklog.listbox.itemconfig(index,{'fg': 'red'})
-                else:
-                    self.fullBacklog.listbox.itemconfig(index,{'bg' : 'dark green'})
-                    self.fullBacklog.listbox.itemconfig(index,{'fg' : 'lawn green'})
+
 
 
     def updateItem(self):
@@ -91,7 +83,7 @@ class backlogManagerView(tk.Frame):
 
 
 
-        editUserDialog = Dialogs.EditItemDialog(self, self.controller.dataBlock ,item)
+        editUserDialog = Dialogs.EditItemDialog(self, self.controller, self.controller.dataBlock ,item)
         self.wait_window(editUserDialog.top)
 
 
@@ -100,13 +92,19 @@ class backlogManagerView(tk.Frame):
         self.listOfEpics = []
         self.projectNameLabelText = ' %s Project Backlog View ' % self.controller.activeProject.projectName
         self.projectNameLabel['text'] = self.projectNameLabelText
+
         self.sprintList.clearList()
+
         self.sprintBacklog.clearList()
+
         self.fullBacklog.clearList()
+
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
         self.sprintList.importSprintsList(self.sprintListData)
+
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
+
         self.listOfEpics = [ I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
         self.popMenu.updateEpicsMenu()
 
@@ -118,6 +116,7 @@ class backlogManagerView(tk.Frame):
                 self.selectedSprint = sprint
                 self.assignedItems = sprint.listOfAssignedItems
                 self.sprintBacklog.importItemList(self.assignedItems)
+                self.sprintBacklog.colorCodeListboxes()
 
 
 

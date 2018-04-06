@@ -8,12 +8,13 @@ import webbrowser
 import sys, traceback
 import datetime
 import logging
+from SLists import ColorSchemes
 import time
 
 
 
 class CreateProjectDialog:
-    def __init__(self, parent, dataBlock):
+    def __init__(self, parent, master, dataBlock):
 
         self.dataBlock = dataBlock
 
@@ -21,7 +22,7 @@ class CreateProjectDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x200')
+        popUPDialog.geometry('%dx%d'%(600*master.w_rat, 200*master.h_rat))
 
         popUPDialog.title('Create a New Project')
 
@@ -75,7 +76,7 @@ class CreateProjectDialog:
 
 class CreateUserDialog:
 
-    def __init__(self, parent, dataBlock):
+    def __init__(self, parent, master, dataBlock):
 
         self.dataBlock = dataBlock
 
@@ -83,7 +84,7 @@ class CreateUserDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x500')
+        popUPDialog.geometry('%dx%d'%(600*master.w_rat, 500*master.h_rat))
         popUPDialog.title('Create a New User')
 
         Tk.Label(popUPDialog, text="User Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -170,7 +171,7 @@ class CreateUserDialog:
 
 class CreateSprintDialog:
 
-    def __init__(self, parent, dataBlock):
+    def __init__(self, parent, master, dataBlock):
 
         self.month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Nov','Dec']
         self.day = [str(d) for d in range(1,32)]
@@ -184,7 +185,7 @@ class CreateSprintDialog:
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
 
-        popUPDialog.geometry('900x500')
+        popUPDialog.geometry('%dx%d'%(900*master.w_rat, 500*master.h_rat))
         popUPDialog.title('Create a New Sprint')
 
         Tk.Label(popUPDialog, text="Sprint Name").grid(row=2,column=1,pady=5,sticky='E')
@@ -293,7 +294,7 @@ class CreateSprintDialog:
 
 class CreateItemDialog:
 
-    def __init__(self, parent, dataBlock):
+    def __init__(self, parent, master, dataBlock):
         self.parent = parent
         self.dataBlock = dataBlock
         self.parent = parent
@@ -302,7 +303,7 @@ class CreateItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x640')
+        popUPDialog.geometry('%dx%d'%(600*master.w_rat, 640*master.h_rat))
         popUPDialog.title('Create a New Item')
 
 
@@ -408,9 +409,68 @@ class CreateItemDialog:
 
 
 
+class AboutDialog:
+    def __init__(self, parent, master):
+        self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
+
+        popUPDialog = self.top = Tk.Toplevel(parent)
+        popUPDialog.transient(parent)
+        popUPDialog.grab_set()
+        #popUPDialog.resizable(0, 0)
+        #popUPDialog.geometry('1100x400')
+        w = 600*master.w_rat
+        h = 600*master.h_rat
+        ws = parent.winfo_screenwidth()  # width of the screen
+        hs = parent.winfo_screenheight()  # height of the screen
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        popUPDialog.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        popUPDialog.title('About Scrumbles')
+
+
+        Tk.Label(popUPDialog, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
+        linkLabel = Tk.Label(popUPDialog, text=self.apiLink,fg='blue')
+        linkLabel.grid(row=2,pady=5)
+        linkLabel.bind('<Button-1>',self.openPage)
+
+        itemList = [ 'Not Assigned To Anything', 'Assigned to Sprint, no User', 'Assigned to User, No Sprint', 'Assigned to User and Sprint', 'In Progress', 'Submitted','Item Is Epic' ,'Complete']
+        listBoxWidth=0
+        self.itemListBox = Tk.Listbox(popUPDialog, selectborderwidth=10)
+        self.itemListBox.grid(row=3)
+        for item in itemList:
+            self.itemListBox.insert(Tk.END,item)
+            if len(item) > listBoxWidth:
+                listBoxWidth = len(item)
+
+        self.itemListBox['width'] = listBoxWidth
+        self.itemListBox['activestyle'] = 'dotbox'
+        self.itemListBox['height'] = len(itemList)
+
+
+        self.itemListBox.itemconfig(0, ColorSchemes.notAssignedToAnythingColorScheme) # Not Assigned To Anything
+        self.itemListBox.itemconfig(1, ColorSchemes.assignedToSprintNotUserColorScheme) #Assigned to Sprint, no User
+        self.itemListBox.itemconfig(2, ColorSchemes.assignedToUserNotSprintColorScheme) #Assigned to User, No Sprint
+        self.itemListBox.itemconfig(3, ColorSchemes.assignedToUserAndSprintColorScheme) # Assigned to User and Sprint
+        self.itemListBox.itemconfig(4, ColorSchemes.inProgressColorScheme) # In Progress
+        self.itemListBox.itemconfig(5, ColorSchemes.submittedColorScheme) # Submitted
+        self.itemListBox.itemconfig(6, ColorSchemes.epicItemColorScheme) # Item Is Epic
+        self.itemListBox.itemconfig(7, ColorSchemes.completedItemColorScheme) # Completed
+
+
+
+        okayButton = Tk.Button(popUPDialog, text="Okay", command=self.exit)
+        okayButton.grid(row=20, pady=5)
+
+    def openPage(self, *args, **kwargs):
+        webbrowser.open(self.apiLink)
+
+    def exit(self):
+        self.top.destroy()
+
+
+
 class EditItemDialog:
-    def __init__(self, parent, dataBlock, Item):
-        print(type(Item))
+    def __init__(self, parent, master, dataBlock, Item):
         self.parent = parent
         print(Item)
         self.item = Item
@@ -437,7 +497,7 @@ class EditItemDialog:
         popUPDialog.transient(parent)
         popUPDialog.grab_set()
         popUPDialog.resizable(0, 0)
-        popUPDialog.geometry('600x600')
+        popUPDialog.geometry('%dx%d'%(600*master.w_rat, 600*master.h_rat))
         popUPDialog.title('Edit %s' % Item.itemTitle)
 
         Tk.Label(popUPDialog, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
@@ -584,7 +644,7 @@ class EditItemDialog:
 
         self.top.destroy()
 class codeLinkDialog:
-    def __init__(self,parent,dataBlock,Item,event,isUpdated):
+    def __init__(self,parent,master,dataBlock,Item,event,isUpdated):
         self.parent = parent
         self.dataBlock=dataBlock
         self.Item = Item
@@ -597,8 +657,8 @@ class codeLinkDialog:
         popUPDialog.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
         # popUPDialog.resizable(0, 0)
 
-        w = 600
-        h = 80
+        w = 600*master.w_rat
+        h = 80*master.h_rat
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -631,14 +691,14 @@ class codeLinkDialog:
         self.exit()
 
 class SplashScreen(Tk.Toplevel):
-    def __init__(self,parent):
+    def __init__(self,parent, master):
         Tk.Toplevel.__init__(self,parent,cursor="wait")
         print('Init Splash')
 
         self.wm_overrideredirect(True)
         self.title('Welcome To Scrumbles')
-        w = 1280
-        h = 800
+        w = 1280*master.w_rat
+        h = 800*master.h_rat
         ws = parent.winfo_screenwidth()  # width of the screen
         hs = parent.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -682,18 +742,17 @@ class SplashScreen(Tk.Toplevel):
 
 # root = Tk.Tk()
 # Tk.Button(root, text="Hello!").pack()
-# root.update()
+# # root.update()
+# # #
+# # # # u = CreateUserDialog(root,dataConnection)
+# # # # s = CreateSprintDialog(root, dataConnection)
+# # # # i = CreateItemDialog(root, dataConnection)
+# # # p = CreateProjectDialog(root, dataConnection)
 # #
 # # # u = CreateUserDialog(root,dataConnection)
 # # # s = CreateSprintDialog(root, dataConnection)
 # # # i = CreateItemDialog(root, dataConnection)
-# # p = CreateProjectDialog(root, dataConnection)
-#
-
-# # u = CreateUserDialog(root,dataConnection)
-# # s = CreateSprintDialog(root, dataConnection)
-# # i = CreateItemDialog(root, dataConnection)
-# # p = CreateProjectDialog(root, dataConnection)
+# # # p = CreateProjectDialog(root, dataConnection)
 # h = AboutDialog(root)
 # root.wait_window(h.top)
 

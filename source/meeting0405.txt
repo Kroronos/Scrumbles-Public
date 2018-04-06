@@ -1,0 +1,27 @@
+Combine Orange and Yellow ->  Incomplete Assignment
+
+??  Red-> Not fully Assigned , get rid of Orange and Yellow
+
+Submitted Scrumbles Orgne
+
+Completed Scumbles Green.
+
+Assigned -> Scrumbles Blue
+
+
+Make Team Manager into Scrum Master Home View
+
+Make a new more appropriate view for Admin
+	not project dependent 
+	All Project
+	?All Sprint
+	All items
+	Progress bar for each project
+	All Teams? click on project -> see users assigned
+	
+
+
+	if no existing project -> please contact admin
+
+
+

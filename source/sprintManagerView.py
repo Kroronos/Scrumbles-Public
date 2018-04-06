@@ -9,12 +9,14 @@ class sprintManagerView(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
+
+
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Sprint Manager")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
-        self.itemList = ScrumblesFrames.SList(self, "ITEMS")
-        self.subItemList = ScrumblesFrames.SList(self, "SUB-ITEMS")
+        self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS",controller)
+        self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS",controller)
 
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
@@ -50,33 +52,43 @@ class sprintManagerView(tk.Frame):
         self.itemDescriptionManager.pack(side = tk.RIGHT, fill = tk.BOTH)
 
         self.updateSprintList()
+        self.controller.dataBlock.packCallback(self.updateSprintList)
+        self.controller.dataBlock.packCallback(self.updateLists)
 
     def updateSprintList(self):
-        self.sprints.clear()
-        self.sprints = [sprint for sprint in self.controller.dataBlock.sprints]
+        self.sprints = []
+        self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
         self.sprintList.importSprintsList(self.sprints)
 
     def updateLists(self):
-        self.sprints.clear()
-        self.sprintItems.clear()
-        self.sprintItemSubItems.clear()
+        self.sprints = []
+        self.sprintItems = []
+        self.sprintItemSubItems = []
 
-        self.sprints = [sprint for sprint in self.controller.dataBlock.sprints]
-        self.sprintItems = [item for item in self.controller.dataBlock.items]
-        self.sprintItemSubItems = [item for item in self.controller.dataBlock.items]
+        self.sprintList.clearList()
+        self.itemList.clearList()
+        self.subItemList.clearList()
+
+        self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
+        self.sprintItems = [item for item in self.controller.activeProject.listOfAssignedItems]
+        self.sprintItemSubItems = [item for item in self.controller.activeProject.listOfAssignedItems]
 
         self.sprintList.importSprintsList(self.sprints)
         self.itemList.importItemList(self.sprintItems)
+        self.itemList.colorCodeListboxes()
         self.subItemList.importItemList(self.sprintItemSubItems)
+        self.itemList.colorCodeListboxes()
 
     def assignedSprintEvent(self, event):
-        for sprint in self.controller.dataBlock.sprints:
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
             if sprint.sprintName == event.widget.get(tk.ANCHOR):
                 self.selectedSprint = sprint
                 self.sprintItems = sprint.listOfAssignedItems
                 self.sprintItemSubItems = sprint.listOfAssignedItems
                 self.itemList.importItemList(self.sprintItems)
+                self.itemList.colorCodeListboxes()
                 self.subItemList.importItemList(self.sprintItemSubItems)
+                self.subItemList.colorCodeListboxes()
 
     def listboxEvents(self, event):
         if event.widget is self.sprintList.listbox:

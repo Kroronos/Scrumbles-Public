@@ -9,7 +9,6 @@ import sprintManagerView
 import backlogManagerView
 import itemManagerView
 import platform
-
 import time
 
 import webbrowser
@@ -26,30 +25,31 @@ class masterView(tk.Tk):
         print('Init masterView')
         tk.Tk.__init__(self)
         self.withdraw()
-        w = 1280
-        h = 720
+        self.w_rat, self.h_rat = getGeometryFromFile("geometry.txt")
+        self.w_rat /= 1280
+        self.h_rat/= 720
+        w = 1280*self.w_rat
+        h = 720*self.h_rat
+        print("Width: " + str(w))
+        print("Height: " + str(h))
         ws =self.winfo_screenwidth()  # width of the screen
         hs = self.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.title("Scrumbles")
-        # self.geometry("1280x720")
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.splash = Dialogs.SplashScreen(self)
+
 
         self.frames = {}
-        print('Init DataBlock')
-        self.dataBlock = DataBlock.DataBlock()
-
-        while self.dataBlock.isLoading:
-             self.splash.step_progressBar(1)
 
 
-        self.splash.kill()
 
-        self.dataBlock.packCallback(self.repointActiveObjects)
+
+
+
+
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
 
@@ -58,7 +58,7 @@ class masterView(tk.Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        self.menuBar = self.generateMenuBar()
+        self.menuBar = None
         self.hiddenMenu = tk.Menu(self)
 
         loginFrame = loginView.loginView(self.container, self)
@@ -68,14 +68,12 @@ class masterView(tk.Tk):
         
         self.add_frame(loginFrame, loginView)
 
-
-
-
-
         self.deiconify()
         self.show_frame(loginView)
         self.dataConnection = None
-        self.activeProject = self.dataBlock.projects[0]
+
+
+
 
 
         self.activeUser = None
@@ -84,7 +82,6 @@ class masterView(tk.Tk):
 
 
     def show_frame(self, cont):
-        #print("Dictionary issue")
         frame = self.frames[cont]
         print("Switching Views")
         frame.tkraise()
@@ -118,8 +115,14 @@ class masterView(tk.Tk):
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
 
         viewMenu = tk.Menu(menuBar, tearoff=0)
-        viewMenu.add_command(label="Main", command=lambda: self.show_frame(mainView))
-        viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
+        if (self.activeUser.userRole == "Admin"):
+            viewMenu.add_command(label="Administrator Home", command=lambda: self.show_frame(mainView))
+        if (self.activeUser.userRole == "Scrum Master"):
+            viewMenu.add_command(label="Scrum Master Home", command=lambda: self.show_frame(mainView))
+        
+        elif (self.activeUser.userRole == "Developer"):
+            viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
+        
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
         viewMenu.add_command(label="Sprint Manager", command=lambda: self.show_frame(sprintManagerView))
         viewMenu.add_command(label="Projects Backlog", command=lambda: self.show_frame(backlogManagerView))
@@ -129,6 +132,7 @@ class masterView(tk.Tk):
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
+        helpMenu.add_command(label = "What's with the colors", command=self.colorHelp)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Edit", menu=editMenu)
@@ -136,8 +140,11 @@ class masterView(tk.Tk):
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
-        return menuBar
+        self.menuBar = menuBar
 
+    def colorHelp(self):
+        colorPopUP = Dialogs.AboutDialog(self, self)
+        self.wait_window(colorPopUP.top)
     def raiseMenuBar(self):
         self.configure(menu=self.menuBar)
 
@@ -147,11 +154,17 @@ class masterView(tk.Tk):
     def getViews(self):
         views = []
         viewNames = []
-        views.append(mainView)
-        viewNames.append("Main")
+        if (self.activeUser.userRole == "Admin"):
+            views.append(mainView)
+            viewNames.append("Administrator Home")
 
-        views.append(developerHomeView)
-        viewNames.append("Developer Home")
+        elif (self.activeUser.userRole == "Scrum Master"):
+            views.append(mainView)
+            viewNames.append("Scrum Master Home")  
+
+        elif (self.activeUser.userRole == "Developer"):
+            views.append(developerHomeView)
+            viewNames.append("Developer Home")
 
         views.append(teamManagerView)
         viewNames.append("Team Manager")
@@ -168,7 +181,7 @@ class masterView(tk.Tk):
 
     def showCreateProjectDialog(self):
         if self.activeUser.userRole == "Admin":
-            createProjectDialog = Dialogs.CreateProjectDialog(self,self.dataBlock)
+            createProjectDialog = Dialogs.CreateProjectDialog(self, self, self.dataBlock)
             self.wait_window(createProjectDialog.top)
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
@@ -176,24 +189,42 @@ class masterView(tk.Tk):
 
     def showCreateUserDialog(self):
         if self.activeUser.userRole == "Admin":
-            createUserDialog = Dialogs.CreateUserDialog(self, self.dataBlock)
+            createUserDialog = Dialogs.CreateUserDialog(self, self, self.dataBlock)
             self.wait_window(createUserDialog.top)
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
     def showCreateSprintDialog(self):
         if self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master":
-            createSprintDialog = Dialogs.CreateSprintDialog(self, self.dataBlock)
+            createSprintDialog = Dialogs.CreateSprintDialog(self, self, self.dataBlock)
             self.wait_window(createSprintDialog.top)
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
     def showCreateItemDialog(self):
-        createItemDialog = Dialogs.CreateItemDialog(self,self.dataBlock)
+        createItemDialog = Dialogs.CreateItemDialog(self, self, self.dataBlock)
         self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):
+        print('Entring generate views')
+        self.splash = Dialogs.SplashScreen(self, self)
+
+        print('Init DataBlock')
+        self.dataBlock = DataBlock.DataBlock()
+
+        while self.dataBlock.isLoading:
+            self.splash.step_progressBar(1)
+
+        self.activeProject = self.dataBlock.projects[0]
+
+        print('Logged in %s'%loggedInUser)
+
+        for user in self.dataBlock.users:
+             if loggedInUser == user.userName:
+                 loggedInUser = user
         self.activeUser = loggedInUser
+        print('%s Loggin in'%loggedInUser.userName)
+        self.dataBlock.packCallback(self.repointActiveObjects)
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
@@ -207,7 +238,9 @@ class masterView(tk.Tk):
         self.add_frame(sprintManagerFrame, sprintManagerView)
         self.add_frame(backlogManagerFrame, backlogManagerView)
         self.add_frame(itemManagerFrame, itemManagerView)
-        
+
+        self.generateMenuBar()
+        self.splash.kill()
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         self.iconbitmap("logo.ico")
@@ -264,6 +297,7 @@ def logOut(controller):
     controller.title("Scrumbles")
 
 def exitProgram(mainwindow):
+    setGeometryFile(mainwindow)
     mainwindow.dataBlock.shutdown()
     mainwindow.destroy()
     logging.info("Shutting down gracefully")
@@ -271,3 +305,31 @@ def exitProgram(mainwindow):
 
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
+
+def getGeometryFromFile(file):
+    try:
+        geometryFile = open(file,'r')
+        w = processFile(geometryFile)
+        h = processFile(geometryFile)
+        w = int(w)
+        h = int(h)
+        geometryFile.close()
+    except:
+        print("EXCEPTION ALERTTTT")
+        w = 1280
+        h = 720
+
+    return w,h
+
+def processFile(openFile):
+    item = openFile.readline()
+    item = item.rstrip("\n\r")
+    return item
+
+def setGeometryFile(window):
+    w = window.winfo_width()
+    h = window.winfo_height()
+    f = open("geometry.txt", "w+")
+    f.write(str(w)+"\n")
+    f.write(str(h)+"\n")
+    f.close()

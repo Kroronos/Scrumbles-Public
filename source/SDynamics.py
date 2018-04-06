@@ -755,12 +755,13 @@ class SUserItemInspection(tk.Frame):
         self.roleString.set(user.userRole)
         self.updateItems(user.listOfAssignedItems)
 
-    def updateItems(self, assignedItems):
+    def updateItems(self, Items):
         assignedItems = []
         inProgressItems = []
         submittedItems = []
         completedItems = []
-        for item in assignedItems:
+        for item in Items:
+            print(item.itemStatus)
             if item.itemStatus == 1:
                 assignedItems.append(item)
             if item.itemStatus == 2:

@@ -3,6 +3,16 @@ import tkinter as tk
 from styling import styling as style
 from tkinter import ttk
 
+class ColorSchemes:
+    notAssignedToAnythingColorScheme = {'bg': 'firebrick4', 'fg': 'VioletRed1'}
+    assignedToSprintNotUserColorScheme = {'bg': 'dark orange', 'fg': 'yellow'}
+    assignedToUserNotSprintColorScheme = {'bg': 'yellow', 'fg': 'dark orange'}
+    assignedToUserAndSprintColorScheme = {'bg': 'deep sky blue', 'fg': 'navy'}
+    inProgressColorScheme = {'bg': 'khaki', 'fg': 'dark green'}
+    submittedColorScheme = {'bg': 'maroon1', 'fg': 'red4'}
+    epicItemColorScheme = {'bg': 'MediumPurple1', 'fg': 'black'}
+    completedItemColorScheme = {'bg': style.scrumbles_orange, 'fg': 'black'}
+
 
 class BaseList(tk.Frame,tk.Listbox):
     def __init__(self, controller):
@@ -173,10 +183,10 @@ class SComboList(BaseList):
         self.listFrame.pack(fill=tk.BOTH, expand=True)
 
 class SBacklogList(BaseList):
-    def __init__(self, controller, title):
+    def __init__(self, controller, title,MasterView=None):
         BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
-
+        self.MasterView = MasterView
         self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)
         self.searchFrame = tk.Frame(self.titleFrame, relief=tk.SOLID, bg=style.scrumbles_blue)
 
@@ -201,7 +211,7 @@ class SBacklogList(BaseList):
 
         self.listFrame = tk.Frame(self)
         self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL)
-        self.listbox = tk.Listbox(self.listFrame, width = 50, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
+        self.listbox = tk.Listbox(self.listFrame, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
         self.listScrollbar.config(command=self.listbox.yview)
 
         self.typeSort = "none"
@@ -215,9 +225,60 @@ class SBacklogList(BaseList):
         self.showFullList()
         self.searchEntry.delete(0,tk.END)
 
+    def colorCodeListboxes(self):
+        i = 0
+        itemTitleMap = {}
+        if self.MasterView is not None:
+            itemList = self.MasterView.activeProject.listOfAssignedItems
+            print('Master is Sent')
+            print(self.controller)
+            print(len(itemList))
+        else:
+            itemList = self.controller.controller.activeProject.listOfAssignedItems
+
+        for item in itemList:
+            itemTitleMap[item.itemTitle] = item
+
+        for title in self.listbox.get(0, tk.END):
+            if  itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is None:
+                self.listbox.itemconfig(i, ColorSchemes.notAssignedToAnythingColorScheme)
+            elif itemTitleMap[title].itemStatus == 4:
+                self.listbox.itemconfig(i, ColorSchemes.completedItemColorScheme)
+
+            elif itemTitleMap[title].itemStatus == 3:
+                self.listbox.itemconfig(i, ColorSchemes.submittedColorScheme)
+
+            elif itemTitleMap[title].itemStatus == 2:
+                self.listbox.itemconfig(i, ColorSchemes.inProgressColorScheme)
+
+            elif itemTitleMap[title].itemStatus == 1:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
+
+            elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is not None:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
+
+            elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is None:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserNotSprintColorScheme)
+
+
+
+            elif itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is not None:
+                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
+
+
+
+
+
+            else:
+                pass
+
+            if itemTitleMap[title].itemType == 'Epic':
+                self.listbox.itemconfig(i, ColorSchemes.epicItemColorScheme)
+            i += 1
+
 class SBacklogListColor(SBacklogList):
-    def __init__(self, controller, title):
-        SBacklogList.__init__(self, controller, title)
+    def __init__(self, controller, title, MasterView=None):
+        SBacklogList.__init__(self, controller, title, MasterView)
 
     def sortForward(self):
         super().sortForward()
@@ -227,18 +288,7 @@ class SBacklogListColor(SBacklogList):
         super().sortReverse()
         self.colorCodeListboxes()
 
-    def colorCodeListboxes(self):
-        i = 0
 
-        for itemTitle in self.listbox.get(0,tk.END):
-            for item in self.controller.controller.activeProject.listOfAssignedItems:
-                if itemTitle == item.itemTitle and item.itemSprintID is None:
-                    self.listbox.itemconfig(i, {'bg': 'firebrick4'})
-                    self.listbox.itemconfig(i, {'fg':'VioletRed1'})
-                elif itemTitle == item.itemTitle and item.itemSprintID is not None:
-                    self.listbox.itemconfig(i, {'bg':'dark green'})
-                    self.listbox.itemconfig(i, {'fg':'lawn green'})
-            i += 1
 
 
     def importListSorted(self, list):
