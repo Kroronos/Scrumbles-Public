@@ -89,23 +89,21 @@ class loginView(tk.Frame):
     def loginButtonClicked(self):
         username = self.usernameEntry.get()
         password = self.passwordEntry.get()
-        loggedInUser = None
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
 
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+        loggedInUserName = None
 
         try:
             loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-            for user in self.controller.dataBlock.users:
-                if loggedInUserName == user.userName:
-                    loggedInUser = user
+
         except Exception as error:
             logging.warning('Failed Login user %s'% username)
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
-            return loggedInUser
+            return loggedInUserName
 
         print('Successful login')
         self.destroy()
-        return loggedInUser
+        return loggedInUserName
 
 
 
@@ -114,29 +112,28 @@ class loginView(tk.Frame):
     def loginProcessBypassAdmin(self):
         loggedInUser = self.loginButtonClickedBypassAdmin()
         if (loggedInUser is not None):
-            self.controller.setDatabaseConnection()
+            print('loginProcessBypassAdmin')
+            #self.controller.setDatabaseConnection()
             self.controller.generateViews(loggedInUser)
 
 
     def loginButtonClickedBypassAdmin(self):
         username = "AdminUser"#self.usernameEntry.get()
         password = "Password1"#self.passwordEntry.get()
-        loggedInUser = None
+
         loggedInUserName = None
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         try:
            loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-           for user in self.controller.dataBlock.users:
-               if loggedInUserName == user.userName:
-                   loggedInUser = user
+
         except Exception as error:
             logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
-            return loggedInUser
+            return loggedInUserName
 
         print('Successful login')
         self.destroy()
-        return loggedInUser
+        return loggedInUserName
         ##################################################
     def loginProcessBypassSM(self):
         loggedInUser = self.loginButtonClickedBypassSM()
@@ -148,22 +145,20 @@ class loginView(tk.Frame):
     def loginButtonClickedBypassSM(self):
         username = "ScrumMaster"#self.usernameEntry.get()
         password = "Password1"#self.passwordEntry.get()
-        loggedInUser = None
+
         loggedInUserName = None
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         try:
            loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-           for user in self.controller.dataBlock.users:
-               if loggedInUserName == user.userName:
-                   loggedInUser = user
+
         except Exception as error:
             logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
-            return loggedInUser
+            return loggedInUserName
 
         print('Successful login')
         self.destroy()
-        return loggedInUser
+        return loggedInUserName
         ##################################################
     def loginProcessBypassDev(self):
         loggedInUser = self.loginButtonClickedBypassDev()
@@ -175,20 +170,18 @@ class loginView(tk.Frame):
     def loginButtonClickedBypassDev(self):
         username = "DevUser"#self.usernameEntry.get()
         password = "Password1"#self.passwordEntry.get()
-        loggedInUser = None
+
         loggedInUserName = None
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         try:
            loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-           for user in self.controller.dataBlock.users:
-               if loggedInUserName == user.userName:
-                   loggedInUser = user
+
         except Exception as error:
             logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
-            return loggedInUser
+            return loggedInUserName
 
         print('Successful login')
         self.destroy()
-        return loggedInUser
+        return loggedInUserName
         ##################################################

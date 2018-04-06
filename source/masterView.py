@@ -40,19 +40,16 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.splash = Dialogs.SplashScreen(self, self)
+
 
         self.frames = {}
-        print('Init DataBlock')
-        self.dataBlock = DataBlock.DataBlock()
-
-        while self.dataBlock.isLoading:
-             self.splash.step_progressBar(1)
 
 
-        self.splash.kill()
 
-        self.dataBlock.packCallback(self.repointActiveObjects)
+
+
+
+
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
 
@@ -74,7 +71,9 @@ class masterView(tk.Tk):
         self.deiconify()
         self.show_frame(loginView)
         self.dataConnection = None
-        self.activeProject = self.dataBlock.projects[0]
+
+
+
 
 
         self.activeUser = None
@@ -207,7 +206,25 @@ class masterView(tk.Tk):
         self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):
+        print('Entring generate views')
+        self.splash = Dialogs.SplashScreen(self, self)
+
+        print('Init DataBlock')
+        self.dataBlock = DataBlock.DataBlock()
+
+        while self.dataBlock.isLoading:
+            self.splash.step_progressBar(1)
+
+        self.activeProject = self.dataBlock.projects[0]
+
+        print('Logged in %s'%loggedInUser)
+
+        for user in self.dataBlock.users:
+             if loggedInUser == user.userName:
+                 loggedInUser = user
         self.activeUser = loggedInUser
+        print('%s Loggin in'%loggedInUser.userName)
+        self.dataBlock.packCallback(self.repointActiveObjects)
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
@@ -223,7 +240,7 @@ class masterView(tk.Tk):
         self.add_frame(itemManagerFrame, itemManagerView)
 
         self.generateMenuBar()
-        
+        self.splash.kill()
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         self.iconbitmap("logo.ico")
