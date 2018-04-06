@@ -4,14 +4,12 @@ from styling import styling as style
 from tkinter import ttk
 
 class ColorSchemes:
-    notAssignedToAnythingColorScheme = {'bg': 'firebrick4', 'fg': 'VioletRed1'}
-    assignedToSprintNotUserColorScheme = {'bg': 'dark orange', 'fg': 'yellow'}
-    assignedToUserNotSprintColorScheme = {'bg': 'yellow', 'fg': 'dark orange'}
-    assignedToUserAndSprintColorScheme = {'bg': 'deep sky blue', 'fg': 'navy'}
+    incompleteAssignmentColorScheme = {'bg': 'firebrick4', 'fg': 'VioletRed1'}
+    assignedScheme = {'bg': style.scrumbles_blue, 'fg': 'navy'}
     inProgressColorScheme = {'bg': 'khaki', 'fg': 'dark green'}
-    submittedColorScheme = {'bg': 'maroon1', 'fg': 'red4'}
+    submittedColorScheme = {'bg': style.scrumbles_orange, 'fg': 'black'}
     epicItemColorScheme = {'bg': 'MediumPurple1', 'fg': 'black'}
-    completedItemColorScheme = {'bg': style.scrumbles_orange, 'fg': 'black'}
+    completedItemColorScheme = {'bg': style.scrumbles_green_bg, 'fg': style.scrumbles_green_fg}
 
 
 class BaseList(tk.Frame,tk.Listbox):
@@ -240,37 +238,52 @@ class SBacklogList(BaseList):
             itemTitleMap[item.itemTitle] = item
 
         for title in self.listbox.get(0, tk.END):
-            if  itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is None:
-                self.listbox.itemconfig(i, ColorSchemes.notAssignedToAnythingColorScheme)
-            elif itemTitleMap[title].itemStatus == 4:
-                self.listbox.itemconfig(i, ColorSchemes.completedItemColorScheme)
-
-            elif itemTitleMap[title].itemStatus == 3:
-                self.listbox.itemconfig(i, ColorSchemes.submittedColorScheme)
-
+            if itemTitleMap[title].itemUserID is None or itemTitleMap[title].itemSprintID is None:
+                self.listbox.itemconfig(i, ColorSchemes.incompleteAssignmentColorScheme)
+            elif itemTitleMap[title].itemType == 'Epic':
+                self.listbox.itemconfig(i, ColorSchemes.epicItemColorScheme)
+            elif itemTitleMap[title].itemStatus == 1:
+                self.listbox.itemconfig(i, ColorSchemes.assignedScheme)
             elif itemTitleMap[title].itemStatus == 2:
                 self.listbox.itemconfig(i, ColorSchemes.inProgressColorScheme)
-
-            elif itemTitleMap[title].itemStatus == 1:
-                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
-
-            elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is not None:
-                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
-
-            elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is None:
-                self.listbox.itemconfig(i, ColorSchemes.assignedToUserNotSprintColorScheme)
-
-
-
-            elif itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is not None:
-                self.listbox.itemconfig(i, ColorSchemes.assignedToUserAndSprintColorScheme)
-
-
-
-
-
+            elif itemTitleMap[title].itemStatus == 3:
+                self.listbox.itemconfig(i, ColorSchemes.submittedColorScheme)
+            elif itemTitleMap[title].itemStatus == 4:
+                self.listbox.itemconfig(i, ColorSchemes.completedItemColorScheme)
             else:
-                pass
+              self.listbox.itemconfig(i, ColorSchemes.incompleteAssignmentColorScheme)
+
+            # if  itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is None:
+            #     self.listbox.itemconfig(i, ColorSchemes.incompleteAssignmentColorScheme)
+            # elif itemTitleMap[title].itemStatus == 4:
+            #     self.listbox.itemconfig(i, ColorSchemes.completedItemColorScheme)
+            #
+            # elif itemTitleMap[title].itemStatus == 3:
+            #     self.listbox.itemconfig(i, ColorSchemes.submittedColorScheme)
+            #
+            # elif itemTitleMap[title].itemStatus == 2:
+            #     self.listbox.itemconfig(i, ColorSchemes.inProgressColorScheme)
+            #
+            # elif itemTitleMap[title].itemStatus == 1:
+            #     self.listbox.itemconfig(i, ColorSchemes.assignedScheme)
+            #
+            # elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is not None:
+            #     self.listbox.itemconfig(i, ColorSchemes.assignedScheme)
+            #
+            # elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is None:
+            #     self.listbox.itemconfig(i, ColorSchemes.incompleteAssignmentColorScheme)
+            #
+            #
+            #
+            # elif itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is not None:
+            #     self.listbox.itemconfig(i, ColorSchemes.assignedScheme)
+            #
+            #
+            #
+            #
+            #
+            # else:
+            #     pass
 
             if itemTitleMap[title].itemType == 'Epic':
                 self.listbox.itemconfig(i, ColorSchemes.epicItemColorScheme)

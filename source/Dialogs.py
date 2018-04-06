@@ -447,10 +447,10 @@ class AboutDialog:
         self.itemListBox['height'] = len(itemList)
 
 
-        self.itemListBox.itemconfig(0, ColorSchemes.notAssignedToAnythingColorScheme) # Not Assigned To Anything
-        self.itemListBox.itemconfig(1, ColorSchemes.assignedToSprintNotUserColorScheme) #Assigned to Sprint, no User
-        self.itemListBox.itemconfig(2, ColorSchemes.assignedToUserNotSprintColorScheme) #Assigned to User, No Sprint
-        self.itemListBox.itemconfig(3, ColorSchemes.assignedToUserAndSprintColorScheme) # Assigned to User and Sprint
+        self.itemListBox.itemconfig(0, ColorSchemes.incompleteAssignmentColorScheme) # Not Assigned To Anything
+        self.itemListBox.itemconfig(1, ColorSchemes.incompleteAssignmentColorScheme) #Assigned to Sprint, no User
+        self.itemListBox.itemconfig(2, ColorSchemes.incompleteAssignmentColorScheme) #Assigned to User, No Sprint
+        self.itemListBox.itemconfig(3, ColorSchemes.assignedScheme) # Assigned to User and Sprint
         self.itemListBox.itemconfig(4, ColorSchemes.inProgressColorScheme) # In Progress
         self.itemListBox.itemconfig(5, ColorSchemes.submittedColorScheme) # Submitted
         self.itemListBox.itemconfig(6, ColorSchemes.epicItemColorScheme) # Item Is Epic

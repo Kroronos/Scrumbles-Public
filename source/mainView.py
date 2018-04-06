@@ -183,6 +183,6 @@ class mainView(tk.Frame):
         #yes it is bad practice, but getLinkPopUp is a frame that isn't going to have return value,
         #so, isUpdated is going to be modified by the popup
         #bad juju, I know, but do you have a better idea?
-        getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller.dataBlock,item,evnt,isUpdated)
+        getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller,self.controller.dataBlock,item,evnt,isUpdated)
         self.wait_window(getLinkPopUP.top)
         return isUpdated
