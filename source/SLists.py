@@ -11,7 +11,7 @@ class ColorSchemes:
     inProgressColorScheme = {'bg': 'khaki', 'fg': 'dark green'}
     submittedColorScheme = {'bg': 'maroon1', 'fg': 'red4'}
     epicItemColorScheme = {'bg': 'MediumPurple1', 'fg': 'black'}
-    completedItemColorScheme = {'bg': 'dark green', 'fg': 'lawn green'}
+    completedItemColorScheme = {'bg': style.scrumbles_orange, 'fg': 'black'}
 
 
 class BaseList(tk.Frame,tk.Listbox):
@@ -211,7 +211,7 @@ class SBacklogList(BaseList):
 
         self.listFrame = tk.Frame(self)
         self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL)
-        self.listbox = tk.Listbox(self.listFrame, width = 50, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
+        self.listbox = tk.Listbox(self.listFrame, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
         self.listScrollbar.config(command=self.listbox.yview)
 
         self.typeSort = "none"

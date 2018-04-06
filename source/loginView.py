@@ -46,7 +46,9 @@ class loginView(tk.Frame):
         self.usernameEntry = tk.Entry(self.inputFrame)
         self.passwordEntry = tk.Entry(self.inputFrame, show='*')
         self.loginButton = tk.Button(self.inputFrame, text='Login', command=lambda: self.loginProcess())
-        self.loginButtonBypass = tk.Button(self.inputFrame, text='Bypass as TestUser', command=lambda: self.loginProcessBypass())
+        self.loginButtonBypassAdmin = tk.Button(self.inputFrame, text='Bypass as AdminUser', command=lambda: self.loginProcessBypassAdmin())
+        self.loginButtonBypassSM = tk.Button(self.inputFrame, text='Bypass as ScrumMaster', command=lambda: self.loginProcessBypassSM())
+        self.loginButtonBypassDev = tk.Button(self.inputFrame, text='Bypass as DevUser', command=lambda: self.loginProcessBypassDev())
 
         self.usernameLabel.grid(row=3, column=2, sticky=tk.EW)
         self.usernameEntry.grid(row=3, column=3, columnspan=2, sticky=tk.EW)
@@ -54,7 +56,9 @@ class loginView(tk.Frame):
         self.passwordLabel.grid(row=4, column=2, sticky=tk.EW)
         self.passwordEntry.grid(row=4, column=3, columnspan=2, sticky=tk.EW)
         self.loginButton.grid(row=6, column=3, sticky=tk.EW)
-        self.loginButtonBypass.grid(row=7, column=3, sticky=tk.EW)
+        self.loginButtonBypassAdmin.grid(row=7, column=3, sticky=tk.EW)
+        self.loginButtonBypassSM.grid(row=8, column=3, sticky=tk.EW)
+        self.loginButtonBypassDev.grid(row=9, column=3, sticky=tk.EW)
 
 
 
@@ -85,51 +89,99 @@ class loginView(tk.Frame):
     def loginButtonClicked(self):
         username = self.usernameEntry.get()
         password = self.passwordEntry.get()
-        loggedInUser = None
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
 
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+        loggedInUserName = None
 
         try:
             loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-            for user in self.controller.dataBlock.users:
-                if loggedInUserName == user.userName:
-                    loggedInUser = user
+
         except Exception as error:
             logging.warning('Failed Login user %s'% username)
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
-            return loggedInUser
+            return loggedInUserName
 
         print('Successful login')
         self.destroy()
-        return loggedInUser
+        return loggedInUserName
 
 
 
         ############################################
 
-    def loginProcessBypass(self):
-        loggedInUser = self.loginButtonClickedBypass()
+    def loginProcessBypassAdmin(self):
+        loggedInUser = self.loginButtonClickedBypassAdmin()
         if (loggedInUser is not None):
-            self.controller.setDatabaseConnection()
+            print('loginProcessBypassAdmin')
+            #self.controller.setDatabaseConnection()
             self.controller.generateViews(loggedInUser)
 
-    def loginButtonClickedBypass(self):
-        username = "TestUser"#self.usernameEntry.get()
+
+    def loginButtonClickedBypassAdmin(self):
+        username = "AdminUser"#self.usernameEntry.get()
         password = "Password1"#self.passwordEntry.get()
-        loggedInUser = None
+
         loggedInUserName = None
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         try:
            loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-           for user in self.controller.dataBlock.users:
-               if loggedInUserName == user.userName:
-                   loggedInUser = user
+
         except Exception as error:
             logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
-            return loggedInUser
+            return loggedInUserName
 
         print('Successful login')
         self.destroy()
-        return loggedInUser
+        return loggedInUserName
+        ##################################################
+    def loginProcessBypassSM(self):
+        loggedInUser = self.loginButtonClickedBypassSM()
+        if (loggedInUser is not None):
+            self.controller.setDatabaseConnection()
+            self.controller.generateViews(loggedInUser)
+
+
+    def loginButtonClickedBypassSM(self):
+        username = "ScrumMaster"#self.usernameEntry.get()
+        password = "Password1"#self.passwordEntry.get()
+
+        loggedInUserName = None
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+        try:
+           loggedInUserName = authenticateUser(username, password, dbLoginInfo)
+
+        except Exception as error:
+            logging.warning('Failed login %s' % username )
+            messagebox.showerror('Invalid Login', 'Username and Password do not match')
+            return loggedInUserName
+
+        print('Successful login')
+        self.destroy()
+        return loggedInUserName
+        ##################################################
+    def loginProcessBypassDev(self):
+        loggedInUser = self.loginButtonClickedBypassDev()
+        if (loggedInUser is not None):
+            self.controller.setDatabaseConnection()
+            self.controller.generateViews(loggedInUser)
+
+
+    def loginButtonClickedBypassDev(self):
+        username = "DevUser"#self.usernameEntry.get()
+        password = "Password1"#self.passwordEntry.get()
+
+        loggedInUserName = None
+        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
+        try:
+           loggedInUserName = authenticateUser(username, password, dbLoginInfo)
+
+        except Exception as error:
+            logging.warning('Failed login %s' % username )
+            messagebox.showerror('Invalid Login', 'Username and Password do not match')
+            return loggedInUserName
+
+        print('Successful login')
+        self.destroy()
+        return loggedInUserName
         ##################################################

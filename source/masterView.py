@@ -40,19 +40,16 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.splash = Dialogs.SplashScreen(self, self)
+
 
         self.frames = {}
-        print('Init DataBlock')
-        self.dataBlock = DataBlock.DataBlock()
-
-        while self.dataBlock.isLoading:
-             self.splash.step_progressBar(1)
 
 
-        self.splash.kill()
 
-        self.dataBlock.packCallback(self.repointActiveObjects)
+
+
+
+
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
 
@@ -61,7 +58,7 @@ class masterView(tk.Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        self.menuBar = self.generateMenuBar()
+        self.menuBar = None
         self.hiddenMenu = tk.Menu(self)
 
         loginFrame = loginView.loginView(self.container, self)
@@ -74,7 +71,9 @@ class masterView(tk.Tk):
         self.deiconify()
         self.show_frame(loginView)
         self.dataConnection = None
-        self.activeProject = self.dataBlock.projects[0]
+
+
+
 
 
         self.activeUser = None
@@ -116,8 +115,14 @@ class masterView(tk.Tk):
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
 
         viewMenu = tk.Menu(menuBar, tearoff=0)
-        viewMenu.add_command(label="Main", command=lambda: self.show_frame(mainView))
-        viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
+        if (self.activeUser.userRole == "Admin"):
+            viewMenu.add_command(label="Administrator Home", command=lambda: self.show_frame(mainView))
+        if (self.activeUser.userRole == "Scrum Master"):
+            viewMenu.add_command(label="Scrum Master Home", command=lambda: self.show_frame(mainView))
+        
+        elif (self.activeUser.userRole == "Developer"):
+            viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
+        
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
         viewMenu.add_command(label="Sprint Manager", command=lambda: self.show_frame(sprintManagerView))
         viewMenu.add_command(label="Projects Backlog", command=lambda: self.show_frame(backlogManagerView))
@@ -135,7 +140,7 @@ class masterView(tk.Tk):
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
-        return menuBar
+        self.menuBar = menuBar
 
     def colorHelp(self):
         colorPopUP = Dialogs.AboutDialog(self, self)
@@ -149,11 +154,17 @@ class masterView(tk.Tk):
     def getViews(self):
         views = []
         viewNames = []
-        views.append(mainView)
-        viewNames.append("Main")
+        if (self.activeUser.userRole == "Admin"):
+            views.append(mainView)
+            viewNames.append("Administrator Home")
 
-        views.append(developerHomeView)
-        viewNames.append("Developer Home")
+        elif (self.activeUser.userRole == "Scrum Master"):
+            views.append(mainView)
+            viewNames.append("Scrum Master Home")  
+
+        elif (self.activeUser.userRole == "Developer"):
+            views.append(developerHomeView)
+            viewNames.append("Developer Home")
 
         views.append(teamManagerView)
         viewNames.append("Team Manager")
@@ -195,7 +206,25 @@ class masterView(tk.Tk):
         self.wait_window(createItemDialog.top)
 
     def generateViews(self, loggedInUser):
+        print('Entring generate views')
+        self.splash = Dialogs.SplashScreen(self, self)
+
+        print('Init DataBlock')
+        self.dataBlock = DataBlock.DataBlock()
+
+        while self.dataBlock.isLoading:
+            self.splash.step_progressBar(1)
+
+        self.activeProject = self.dataBlock.projects[0]
+
+        print('Logged in %s'%loggedInUser)
+
+        for user in self.dataBlock.users:
+             if loggedInUser == user.userName:
+                 loggedInUser = user
         self.activeUser = loggedInUser
+        print('%s Loggin in'%loggedInUser.userName)
+        self.dataBlock.packCallback(self.repointActiveObjects)
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
@@ -209,7 +238,9 @@ class masterView(tk.Tk):
         self.add_frame(sprintManagerFrame, sprintManagerView)
         self.add_frame(backlogManagerFrame, backlogManagerView)
         self.add_frame(itemManagerFrame, itemManagerView)
-        
+
+        self.generateMenuBar()
+        self.splash.kill()
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         self.iconbitmap("logo.ico")
