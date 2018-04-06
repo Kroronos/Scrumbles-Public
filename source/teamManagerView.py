@@ -18,11 +18,13 @@ class teamManagerView(tk.Frame):
         self.userListsF = tk.Frame(self)
         self.userList = ScrumblesFrames.SList(self.userListsF, "USERS")
         self.memberList = ScrumblesFrames.SList(self.userListsF, "TEAM MEMBERS")
+
+        self.dynamicF = tk.Frame(self)
         self.assignedItemInspect = ScrumblesFrames.SUserItemInspection(self, controller)
 
         self.dynamicSources, queryType = self.assignedItemInspect.getSCardDescriptionExport()
-        self.descriptionManager = ScrumblesFrames.SCardDescription(self, controller, self.dynamicSources, queryType)
-        self.recentComments = ScrumblesFrames.commentsField(self, self.controller)
+        self.descriptionManager = ScrumblesFrames.SCardDescription(self.dynamicF, controller, self.dynamicSources, queryType)
+        self.recentComments = ScrumblesFrames.commentsField(self.dynamicF, self.controller)
 
         #Dynamic Events
         # To Prevent Duplicate Tkinter Events
@@ -46,8 +48,11 @@ class teamManagerView(tk.Frame):
         self.userListsF.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.assignedItemInspect.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.recentComments.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        self.descriptionManager.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.dynamicF.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.descriptionManager.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.recentComments.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
 
     def updateFrame(self):
         self.teamMembers.clear()
