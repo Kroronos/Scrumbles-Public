@@ -65,6 +65,10 @@ class sprintManagerView(tk.Frame):
         self.sprintItems = []
         self.sprintItemSubItems = []
 
+        self.sprintList.clearList()
+        self.itemList.clearList()
+        self.subItemList.clearList()
+
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
         self.sprintItems = [item for item in self.controller.activeProject.listOfAssignedItems]
         self.sprintItemSubItems = [item for item in self.controller.activeProject.listOfAssignedItems]
