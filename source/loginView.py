@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from Query import Query
-
+import masterView
 import logging
 import ScrumblesData
 
@@ -37,7 +37,7 @@ def viewUserWindow():
 class loginView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-
+        controller.protocol('WM_DELETE_WINDOW', lambda s=controller: masterView.exitProgram(s))
         self.inputFrame = tk.Frame(self)
         self.controller = controller
 

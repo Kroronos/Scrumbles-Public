@@ -284,8 +284,11 @@ def logOut(controller):
 
 def exitProgram(mainwindow):
     setGeometryFile(mainwindow)
-    mainwindow.dataBlock.shutdown()
-    mainwindow.destroy()
+    try:
+        mainwindow.dataBlock.shutdown()
+        mainwindow.destroy()
+    except:
+        pass
     logging.info("Shutting down gracefully")
     exit()
 

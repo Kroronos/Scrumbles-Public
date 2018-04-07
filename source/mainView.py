@@ -123,7 +123,7 @@ class mainView(tk.Frame):
                                                             event.widget.get(tk.ANCHOR))
 
     def setItemToInprogress(self):
-        Item = self.myItemsPopMenu.getSelectedItemObject()
+        Item = self.myItemsPopMenu.getSelectedObject()
         Comment = ScrumblesObjects.Comment()
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
@@ -138,7 +138,7 @@ class mainView(tk.Frame):
                 logging.exception('Error Setting Item to In progress')
                 messagebox.showerror('Error', str(e))
     def setItemToSubmitted(self):
-        Item = self.myItemsPopMenu.getSelectedItemObject()
+        Item = self.myItemsPopMenu.getSelectedObject()
         Comment = ScrumblesObjects.Comment()
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
@@ -154,7 +154,7 @@ class mainView(tk.Frame):
                 logging.exception('Error Assigning Submitting item for review')
                 messagebox.showerror('Error', str(e))
     def assignItemToActiveUser(self):
-        Item = self.backlogPopMenu.getSelectedItemObject()
+        Item = self.backlogPopMenu.getSelectedObject()
         if Item.itemUserID is not None:
             messagebox.showerror('Error','Cannot Assign Item to Self!\nItem already assigned to another user')
             return False

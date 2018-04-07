@@ -19,6 +19,10 @@ class DataBlock:
     sprints = []
     updaterCallbacks = []
     itemMap = {}
+    sprintMap = {}
+    projectMap = {}
+    userMap = {}
+    commentMap = {}
 
     def __init__(self,mode=None,):
         self.dbLogin = DataBaseLoginInfo('login.txt')
@@ -113,6 +117,7 @@ class DataBlock:
         itemToProjectRelationTable = self.conn.getData(Query.getAllProjectItem)
         itemTimeLineTable = self.conn.getData('SELECT * FROM CardTimeLine')
         epicTable = self.conn.getData('SELECT * FROM EpicTable')
+
         self.conn.close()
 
         print('Tables loaded in %fms' % ((time.clock()-loopStartTime)*1000) )
@@ -125,6 +130,7 @@ class DataBlock:
         for comment in commentTable:
             Comment = ScrumblesObjects.Comment(comment)
             self.comments.append(Comment)
+            self.commentMap[Comment.commentID] = Comment
         print('Comment List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
@@ -155,6 +161,7 @@ class DataBlock:
             User.listOfAssignedItems = [ I for I in self.items if I.itemUserID == User.userID ]
             User.listOfComments = [ C for C in self.comments if C.commentUserID == User.userID ]
             self.users.append(User)
+            self.userMap[User.userID] = User
         print('User List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
@@ -163,6 +170,7 @@ class DataBlock:
             Sprint.listOfAssignedItems = [I for I in self.items if I.itemSprintID == Sprint.sprintID]
             Sprint.listOfAssignedUsers = [U for U in self.users if U.userID in [I.itemUserID for I in Sprint.listOfAssignedItems]]
             self.sprints.append(Sprint)
+            self.sprintMap[Sprint.sprintID] = Sprint
         print('Sprint List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
@@ -170,6 +178,7 @@ class DataBlock:
             Project = ScrumblesObjects.Project(project)
             Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
             self.projects.append(Project)
+            self.projectMap[Project.projectID] = Project
         print('Project List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()

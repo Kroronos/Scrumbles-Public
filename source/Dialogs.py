@@ -333,19 +333,27 @@ class EditSprintDialog(CreateSprintDialog):
         super().__init__(*args, **kwargs)
         self.sprint = sprint
         self.updateWidgets()
+        self.title('Modify Sprint')
+        self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
     def updateWidgets(self):
         self.sprintNameEntry.insert(0,self.sprint.sprintName)
         if not self.isTest:
             self.assignSprintToObject.set(self.projectIDmap[self.sprint.projectID])
+            self.assignSprintToObject['state'] = 'disabled'
         self.StartDayCombo.set(self.sprint.sprintStartDate.strftime('%d'))
         self.StartMonthCombo.set(self.sprint.sprintStartDate.strftime('%b'))
         self.StartYearCombo.set(self.sprint.sprintStartDate.strftime('%Y'))
         self.DueDayCombo.set(self.sprint.sprintDueDate.strftime('%d'))
         self.DueMonthCombo.set(self.sprint.sprintDueDate.strftime('%b'))
         self.DueYearCombo.set(self.sprint.sprintDueDate.strftime('%Y'))
+        self.createButton['text'] = 'Update'
+        self.cancelButton['command'] = self.cancel
 
     def writeData(self,obj):
         self.dataBlock.updateScrumblesObject(obj)
+    def cancel(self):
+        self.executeSuccess = False
+        self.exit()
 
 class CreateItemDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
