@@ -168,7 +168,6 @@ class masterView(tk.Tk):
         self.add_frame(teamManagerFrame, teamManagerView)
         self.add_frame(sprintManagerFrame, sprintManagerView)
         self.add_frame(backlogManagerFrame, backlogManagerView)
-        self.add_frame(itemManagerFrame, itemManagerView)
         
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
