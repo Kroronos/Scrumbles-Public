@@ -164,14 +164,14 @@ class SComboList(BaseList):
         tk.Frame.__init__(self, controller)
 
         self.box_value = tk.StringVar()
-        self.box = ttk.Combobox(self, textvariable=self.box_value)
+        self.box = ttk.Combobox(self, textvariable=self.box_value, cursor = "hand2")
         self.box['values'] = (products)
         self.box.current(0)
         self.box.pack(fill = tk.X)
 
         self.listFrame = tk.Frame(self)
-        self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL)
-        self.listbox = tk.Listbox(self.listFrame, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set)
+        self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL, cursor = "hand2")
+        self.listbox = tk.Listbox(self.listFrame, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set, cursor = "hand2")
         self.listScrollbar.config(command=self.listbox.yview)
 
         self.typeSort = "none"
@@ -189,7 +189,7 @@ class SBacklogList(BaseList):
         self.searchFrame = tk.Frame(self.titleFrame, relief=tk.SOLID, bg=style.scrumbles_blue)
 
         self.searchLabel = tk.Label(self.searchFrame, text="Search:", bg=style.scrumbles_blue)
-        self.searchEntry = tk.Entry(self.searchFrame)
+        self.searchEntry = tk.Entry(self.searchFrame, cursor = "hand2")
         self.searchButton = tk.Button(self.searchFrame, text=style.right_enter_arrow, bg=style.scrumbles_blue, command=lambda: self.search(self.searchEntry.get()), relief=tk.FLAT, cursor = "hand2")
         self.undoSearchButton = tk.Button(self.searchFrame, text=style.cancel_button, bg=style.scrumbles_blue, command=lambda: self.clearSearchEntry(), relief=tk.FLAT, cursor = "hand2")
 

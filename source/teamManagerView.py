@@ -71,7 +71,7 @@ class teamManagerView(tk.Frame):
         self.generateRemoveFromProjectMenus()
 
     def generateAddToProjectMenus(self):
-        projectOptions = tk.Menu(self.memberPopupMenu, tearoff=0)
+        projectOptions = tk.Menu(self.memberPopupMenu, tearoff=0, cursor = "hand2")
         for project in self.controller.dataBlock.projects:
             if project not in self.inspectedItem.listOfProjects:
                 projectOptions.add_command(label=project.projectName, command=
@@ -80,7 +80,7 @@ class teamManagerView(tk.Frame):
         self.memberPopupMenu.add_cascade(label="Assign User To Project", menu=projectOptions)
 
     def generateRemoveFromProjectMenus(self):
-        assignedProjects = tk.Menu(self.memberPopupMenu, tearoff=0)
+        assignedProjects = tk.Menu(self.memberPopupMenu, tearoff=0, cursor = "hand2")
         if not self.inspectedItem.listOfProjects:
             assignedProjects.add_command(label="[Empty]", state="disabled")
         for project in self.inspectedItem.listOfProjects:

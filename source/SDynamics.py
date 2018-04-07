@@ -720,12 +720,12 @@ class SUserItemInspection(tk.Frame):
         self.nametag = tk.Frame(self.textbox, relief=tk.SOLID, borderwidth=1)
         self.nameLabel = tk.Label(self.nametag, text="Name")
         self.nameString = tk.StringVar()
-        self.nameText = tk.Label(self.nametag, textvariable=self.nameString)
+        self.nameText = tk.Label(self.nametag, textvariable=self.nameString, cursor = "hand2")
 
         self.roletag = tk.Frame(self.textbox, relief=tk.SOLID, borderwidth=1)
         self.roleLabel = tk.Label(self.roletag, text="Role")
         self.roleString = tk.StringVar()
-        self.roleText = tk.Label(self.roletag, textvariable=self.roleString)
+        self.roleText = tk.Label(self.roletag, textvariable=self.roleString, cursor = "hand2")
 
         self.itembox = tk.Frame(self)
         self.assignedItemsList = SList(self.itembox, "Assigned Items")

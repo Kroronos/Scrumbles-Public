@@ -82,16 +82,16 @@ class masterView(tk.Tk):
         addedFrame.grid(row=0, column=0, sticky="nsew")
 
     def generateMenuBar(self):
-        menuBar = tk.Menu(self)
+        menuBar = tk.Menu(self, cursor = "hand2")
 
-        fileMenu = tk.Menu(menuBar, tearoff=0)
+        fileMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         self.fileMenu = fileMenu
         fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
         self.setOpenProjectsMenu(fileMenu)
         self.dataBlock.packCallback(self.updateOpenProjectsMenu)
         fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
 
-        editMenu = tk.Menu(menuBar, tearoff=0)
+        editMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         editMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
         editMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
         editMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
@@ -99,7 +99,7 @@ class masterView(tk.Tk):
         profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
 
-        viewMenu = tk.Menu(menuBar, tearoff=0)
+        viewMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         if (self.activeUser.userRole == "Admin"):
             viewMenu.add_command(label="Administrator Home", command=lambda: self.show_frame(mainView))
         if (self.activeUser.userRole == "Scrum Master"):
@@ -113,7 +113,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Projects Backlog", command=lambda: self.show_frame(backlogManagerView))
 
 
-        helpMenu = tk.Menu(menuBar, tearoff=0)
+        helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
         helpMenu.add_command(label = "What's with the colors", command=self.colorHelp)
@@ -125,8 +125,9 @@ class masterView(tk.Tk):
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
+        
         self.menuBar = menuBar
-
+        self.menuBar.config(cursor = "hand2")
     def colorHelp(self):
         Dialogs.AboutDialog(self, master=self).show()
 
