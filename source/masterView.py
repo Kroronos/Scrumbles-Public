@@ -9,14 +9,9 @@ import sprintManagerView
 import backlogManagerView
 import itemManagerView
 import platform
-import time
-
 import webbrowser
-
-
 import DataBlock
 import Dialogs
-import ScrumblesData
 
 
 class masterView(tk.Tk):
@@ -24,7 +19,7 @@ class masterView(tk.Tk):
 
         print('Init masterView')
         tk.Tk.__init__(self)
-        self.withdraw()
+
         self.w_rat, self.h_rat = getGeometryFromFile("geometry.txt")
         self.w_rat /= 1280
         self.h_rat/= 720
@@ -68,7 +63,7 @@ class masterView(tk.Tk):
         
         self.add_frame(loginFrame, loginView)
 
-        self.deiconify()
+
         self.show_frame(loginView)
         self.dataConnection = None
 
@@ -77,9 +72,6 @@ class masterView(tk.Tk):
 
 
         self.activeUser = None
-
-
-
 
     def show_frame(self, cont):
         frame = self.frames[cont]
@@ -143,8 +135,8 @@ class masterView(tk.Tk):
         self.menuBar = menuBar
 
     def colorHelp(self):
-        colorPopUP = Dialogs.AboutDialog(self, self)
-        self.wait_window(colorPopUP.top)
+        Dialogs.AboutDialog(self, master=self).show()
+
     def raiseMenuBar(self):
         self.configure(menu=self.menuBar)
 
@@ -181,35 +173,30 @@ class masterView(tk.Tk):
 
     def showCreateProjectDialog(self):
         if self.activeUser.userRole == "Admin":
-            createProjectDialog = Dialogs.CreateProjectDialog(self, self, self.dataBlock)
-            self.wait_window(createProjectDialog.top)
+            Dialogs.CreateProjectDialog(self, master=self, dataBlock=self.dataBlock).show()
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
-
     def showCreateUserDialog(self):
         if self.activeUser.userRole == "Admin":
-            createUserDialog = Dialogs.CreateUserDialog(self, self, self.dataBlock)
-            self.wait_window(createUserDialog.top)
+            Dialogs.CreateUserDialog(self, master=self, dataBlock=self.dataBlock).show()
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
     def showCreateSprintDialog(self):
         if self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master":
-            createSprintDialog = Dialogs.CreateSprintDialog(self, self, self.dataBlock)
-            self.wait_window(createSprintDialog.top)
+            Dialogs.CreateSprintDialog(self, master=self, dataBlock=self.dataBlock).show()
         else:
             messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
     def showCreateItemDialog(self):
-        createItemDialog = Dialogs.CreateItemDialog(self, self, self.dataBlock)
-        self.wait_window(createItemDialog.top)
+        Dialogs.CreateItemDialog(self, master=self, dataBlock=self.dataBlock).show()
 
     def generateViews(self, loggedInUser):
-        print('Entring generate views')
+        self.withdraw()
         self.splash = Dialogs.SplashScreen(self, self)
 
-        print('Init DataBlock')
+
         self.dataBlock = DataBlock.DataBlock()
 
         while self.dataBlock.isLoading:
@@ -241,15 +228,11 @@ class masterView(tk.Tk):
 
         self.generateMenuBar()
         self.splash.kill()
+        self.deiconify()
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         self.iconbitmap("logo.ico")
 
-    def setDatabaseConnection(self):
-        dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
-        self.dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
-
-   
     def openAPI(self):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/Scrumbles-API-Documentation')
 
@@ -288,6 +271,9 @@ class masterView(tk.Tk):
             if U.userName == self.activeUser.userName:
                 self.activeUser = U
 
+    def __str__(self):
+        return 'Scrumbles Master View Controller'
+
 def logOut(controller):
     logging.info('%s logged out'%controller.activeUser.userID)
     #Do Some Stuff Here To Clear States
@@ -298,8 +284,11 @@ def logOut(controller):
 
 def exitProgram(mainwindow):
     setGeometryFile(mainwindow)
-    mainwindow.dataBlock.shutdown()
-    mainwindow.destroy()
+    try:
+        mainwindow.dataBlock.shutdown()
+        mainwindow.destroy()
+    except:
+        pass
     logging.info("Shutting down gracefully")
     exit()
 

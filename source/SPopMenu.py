@@ -11,9 +11,11 @@ class GenericPopupMenu(Tk.Menu):
         self.widget = None
         self.event = None
         try:
-            self.selectedItem = root.selectedItem
+            self.selectedObject = root.selectedItem
         except:
-            self.selectedItem = None
+            self.selectedObject = None
+
+
 
     def context_menu(self, event, menu):
         self.widget = event.widget
@@ -22,9 +24,9 @@ class GenericPopupMenu(Tk.Menu):
         _, yoffset, _, height = self.widget.bbox(index)
         if event.y > height + yoffset + 5:
             return
-        self.selectedItem = self.widget.get(index)
+        self.selectedObject = self.widget.get(index)
         try:
-            self.root.selectedItem = self.selectedItem
+            self.root.selectedItem = self.selectedObject
         except:
             pass
         self.widget.selection_clear(0, Tk.END)
@@ -32,15 +34,27 @@ class GenericPopupMenu(Tk.Menu):
         self.widget.activate(index)
         menu.post(event.x_root, event.y_root)
 
-    def getSelectedItemObject(self):
-        if self.selectedItem is None:
+    def getSelectedObject(self):
+        if self.selectedObject is None:
             raise Exception('PopMenu Selected Item is None')
         else:
-            Item = None
-            for I in self.dataBlock.items:
-                if I.itemTitle == self.selectedItem:
-                    Item = I
-            return Item
+            return self.findSelectedObject(self.selectedObject)
+
+    def findSelectedObject(self,name):
+        for I in self.dataBlock.items:
+            if name == I.itemTitle:
+                return I
+        for U in self.dataBlock.users:
+            if name == U.userName:
+                return U
+        for P in self.dataBlock.projects:
+            if name == P.projectName:
+                return P
+        for S in self.dataBlock.sprints:
+            if name == S.sprintName:
+                return S
+
+
 
 class BacklogManPopMenu(GenericPopupMenu):
     def __init__(self,root,Master,epicList=None):

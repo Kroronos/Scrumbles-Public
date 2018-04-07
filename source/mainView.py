@@ -123,7 +123,7 @@ class mainView(tk.Frame):
                                                             event.widget.get(tk.ANCHOR))
 
     def setItemToInprogress(self):
-        Item = self.myItemsPopMenu.getSelectedItemObject()
+        Item = self.myItemsPopMenu.getSelectedObject()
         Comment = ScrumblesObjects.Comment()
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
@@ -138,13 +138,14 @@ class mainView(tk.Frame):
                 logging.exception('Error Setting Item to In progress')
                 messagebox.showerror('Error', str(e))
     def setItemToSubmitted(self):
-        Item = self.myItemsPopMenu.getSelectedItemObject()
+        Item = self.myItemsPopMenu.getSelectedObject()
         Comment = ScrumblesObjects.Comment()
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
         Comment.commentContent = 'Set to Submitted by menu action'
-        updated = self.getCodeLink(Item)
-        if updated[0]:
+        updated = Dialogs.codeLinkDialog(self.controller, master=self.controller, dataBlock=self.controller.dataBlock,
+                                         item=Item).show()
+        if updated:
             try:
                 self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
                 self.controller.dataBlock.addNewScrumblesObject(Comment)
@@ -153,7 +154,7 @@ class mainView(tk.Frame):
                 logging.exception('Error Assigning Submitting item for review')
                 messagebox.showerror('Error', str(e))
     def assignItemToActiveUser(self):
-        Item = self.backlogPopMenu.getSelectedItemObject()
+        Item = self.backlogPopMenu.getSelectedObject()
         if Item.itemUserID is not None:
             messagebox.showerror('Error','Cannot Assign Item to Self!\nItem already assigned to another user')
             return False
@@ -177,12 +178,12 @@ class mainView(tk.Frame):
                 messagebox.showerror('Error', str(e))
             return True
 
-    def getCodeLink(self,item):
-        isUpdated = [False]  #Had to make this a list because bool and int are immutable
-        evnt = self.myItemsPopMenu.event
-        #yes it is bad practice, but getLinkPopUp is a frame that isn't going to have return value,
-        #so, isUpdated is going to be modified by the popup
-        #bad juju, I know, but do you have a better idea?
-        getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller,self.controller.dataBlock,item,evnt,isUpdated)
-        self.wait_window(getLinkPopUP.top)
-        return isUpdated
+    # def getCodeLink(self,item):
+    #     isUpdated = [False]  #Had to make this a list because bool and int are immutable
+    #     evnt = self.myItemsPopMenu.event
+    #     #yes it is bad practice, but getLinkPopUp is a frame that isn't going to have return value,
+    #     #so, isUpdated is going to be modified by the popup
+    #     #bad juju, I know, but do you have a better idea?
+    #     getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller,self.controller.dataBlock,item,evnt,isUpdated)
+    #     self.wait_window(getLinkPopUP.top)
+    #     return isUpdated
