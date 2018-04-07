@@ -125,6 +125,7 @@ class masterView(tk.Tk):
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
         helpMenu.add_command(label = "What's with the colors", command=self.colorHelp)
+        helpMenu.add_command(label = 'Refresh Data',command=self.refreshData)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Edit", menu=editMenu)
@@ -212,6 +213,8 @@ class masterView(tk.Tk):
         self.activeUser = loggedInUser
         print('%s Loggin in'%loggedInUser.userName)
         self.dataBlock.packCallback(self.repointActiveObjects)
+
+
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
@@ -270,6 +273,10 @@ class masterView(tk.Tk):
         for U in self.dataBlock.users:
             if U.userName == self.activeUser.userName:
                 self.activeUser = U
+
+    def refreshData(self):
+        self.dataBlock.updateAllObjects()
+        self.dataBlock.executeUpdaterCallbacks()
 
     def __str__(self):
         return 'Scrumbles Master View Controller'
