@@ -1,7 +1,9 @@
 import tkinter as tk
-
+import SPopMenu
 import ScrumblesFrames
 import listboxEventHandler
+import Dialogs
+from tkinter import messagebox
 import ScrumblesData
 
 class sprintManagerView(tk.Frame):
@@ -9,7 +11,12 @@ class sprintManagerView(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-
+        self.sprintPopMenu = SPopMenu.GenericPopupMenu(self,self.controller)
+        roleMap = {'Developer':0,'Scrum Master':1,'Admin':2}
+        activeRole = controller.activeUser.userRole
+        if roleMap[activeRole] > 0:
+            self.sprintPopMenu.add_command(label=u'Edit Sprint',
+                                           command=self.editSprint)
 
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Sprint Manager")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
@@ -19,6 +26,9 @@ class sprintManagerView(tk.Frame):
         self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS",controller)
 
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+
+        self.sprintList.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: self.sprintPopMenu.context_menu(event, self.sprintPopMenu))
 
         self.sprints = []
         self.sprintItems = []
@@ -55,6 +65,12 @@ class sprintManagerView(tk.Frame):
         self.controller.dataBlock.packCallback(self.updateSprintList)
         self.controller.dataBlock.packCallback(self.updateLists)
 
+    def editSprint(self):
+        sprint = self.sprintPopMenu.getSelectedObject()
+        if Dialogs.EditSprintDialog(self.controller,master=self.controller,
+                                 dataBlock=self.controller.dataBlock,
+                                 sprint=sprint).show():
+            messagebox.showinfo('Success','Sprint Updated Successfully')
     def updateSprintList(self):
         self.sprints = []
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
