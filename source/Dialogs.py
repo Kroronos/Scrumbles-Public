@@ -738,7 +738,7 @@ class codeLinkDialog(GenericDialog):
 
 class SplashScreen(Tk.Toplevel):
     def __init__(self,parent, master):
-        Tk.Toplevel.__init__(self,parent,cursor="wait")
+        Tk.Toplevel.__init__(self,parent,cursor="watch")
         print('Init Splash')
 
         self.wm_overrideredirect(True)
