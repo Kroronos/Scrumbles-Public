@@ -668,7 +668,7 @@ class SCardDescription(tk.Frame):
             self.cardDescriptions["Item"].itemCodeLink.bind('<Button-1>', lambda event: self.open(event))
         else:
             self.cardDescriptions["Item"].itemCodeLink.configure(text=u'None Set', justify=tk.LEFT,
-                                                                 wraplength=300,fg='red',underline=-1,cursor='x_cursor')
+                                                                 wraplength=300,fg='red',underline=-1,cursor='X_cursor')
             self.cardDescriptions['Item'].itemCodeLink.unbind('<Button 1>')
         sprintName = ""
         for sprint in self.master.dataBlock.sprints:
