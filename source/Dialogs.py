@@ -106,9 +106,9 @@ class CreateProjectDialog(GenericDialog):
         self.projectTitleEntry = Tk.Entry(self, width=27)
         self.projectTitleEntry.grid(row=2, column=2, pady=5, sticky='W')
 
-        self.createButton = Tk.Button(self, text="Create Project", command=self.ok)
+        self.createButton = Tk.Button(self, text="Create Project", command=self.ok, cursor = "hand2")
         self.createButton.grid(row=8, column=2, pady=5)
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         self.cancelButton.grid(row=8, column=1, pady=5)
 
 
@@ -164,10 +164,10 @@ class CreateUserDialog(GenericDialog):
         self.roleCombobox.selection_clear()
 
 
-        self.createButton = Tk.Button(self, text="Create User", command=self.ok)
+        self.createButton = Tk.Button(self, text="Create User", command=self.ok, cursor = "hand2")
         self.createButton.grid(row=8,column=2,pady=5)
 
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         self.cancelButton.grid(row=8,column=1,pady=5)
 
 
@@ -251,10 +251,10 @@ class CreateSprintDialog(GenericDialog):
         self.DueYearCombo = ttk.Combobox(self, values=self.year, state='readonly',width=5)
         self.DueYearCombo.grid(row=5, column=4)
 
-        self.createButton = Tk.Button(self, text="Create Sprint", command=self.ok)
+        self.createButton = Tk.Button(self, text="Create Sprint", command=self.ok, cursor = "hand2")
         self.createButton.grid(row=8,column=2,pady=5)
 
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         self.cancelButton.grid(row=8,column=1,pady=5)
 
     @staticmethod
@@ -403,9 +403,9 @@ class CreateItemDialog(GenericDialog):
         self.commentTextBox = Tk.Text(self, height=6, width=20, wrap=Tk.WORD)
         self.commentTextBox.grid(row=10, column=2,pady=5)
 
-        self.createButton = Tk.Button(self, text="Create Item", command=self.ok)
+        self.createButton = Tk.Button(self, text="Create Item", command=self.ok, cursor = "hand2")
         self.createButton.grid(row=11,column=2,pady=5)
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         self.cancelButton.grid(row=11,column=1,pady=5)
 
     @tryExcept
@@ -563,9 +563,9 @@ class EditItemDialog(CreateItemDialog):
         self.commentTextBox = Tk.Text(self, height=6, width=20, wrap=Tk.WORD)
         self.commentTextBox.grid(row=11, column=2, pady=5, sticky='W')
 
-        createButton = Tk.Button(self, text="Update Item", command=self.ok)
+        createButton = Tk.Button(self, text="Update Item", command=self.ok, cursor = "hand2")
         createButton.grid(row=12, column=2, pady=5)
-        cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         cancelButton.grid(row=12, column=1, pady=5)
 
     @tryExcept
@@ -674,7 +674,7 @@ class AboutDialog(GenericDialog):
 
 
 
-        okayButton = Tk.Button(self, text="Okay", command=self.exit)
+        okayButton = Tk.Button(self, text="Okay", command=self.exit, cursor = "hand2")
         okayButton.grid(row=20, pady=5)
 
     def openPage(self, *args, **kwargs):
@@ -712,9 +712,9 @@ class codeLinkDialog(GenericDialog):
         self.codeLinkEntry.grid(row=2,column=1,sticky='W')
         if self.Item.itemCodeLink is not None:
             self.codeLinkEntry.insert(0,self.Item.itemCodeLink)
-        self.submitButton = Tk.Button(self, text="Update Item", command=self.ok)
+        self.submitButton = Tk.Button(self, text="Update Item", command=self.ok, cursor = "hand2")
         self.submitButton.grid(row=2, column=2, padx=3)
-        self.cancelButton = Tk.Button(self,text='Cancel',command=self.cancel)
+        self.cancelButton = Tk.Button(self,text='Cancel',command=self.cancel, cursor = "hand2")
         self.cancelButton.grid(row=2,column=3,pady=1)
     @tryExcept
     def ok(self):
