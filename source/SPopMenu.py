@@ -1,15 +1,65 @@
 import tkinter as Tk
 from tkinter import messagebox
 
-
-class PopMenu(Tk.Menu):
-    def __init__(self,root,Master,epicList=None):
+class GenericPopupMenu(Tk.Menu):
+    def __init__(self,root,Master):
         Tk.Menu.__init__(self)
         self.config(tearoff=0)
         self.root = root
         self.dataBlock = Master.dataBlock
         self.master = Master
         self.widget = None
+        self.event = None
+        try:
+            self.selectedObject = root.selectedItem
+        except:
+            self.selectedObject = None
+
+
+
+    def context_menu(self, event, menu):
+        self.widget = event.widget
+        self.event = event
+        index = self.widget.nearest(event.y)
+        _, yoffset, _, height = self.widget.bbox(index)
+        if event.y > height + yoffset + 5:
+            return
+        self.selectedObject = self.widget.get(index)
+        try:
+            self.root.selectedItem = self.selectedObject
+        except:
+            pass
+        self.widget.selection_clear(0, Tk.END)
+        self.widget.selection_set(index)
+        self.widget.activate(index)
+        menu.post(event.x_root, event.y_root)
+
+    def getSelectedObject(self):
+        if self.selectedObject is None:
+            raise Exception('PopMenu Selected Item is None')
+        else:
+            return self.findSelectedObject(self.selectedObject)
+
+    def findSelectedObject(self,name):
+        for I in self.dataBlock.items:
+            if name == I.itemTitle:
+                return I
+        for U in self.dataBlock.users:
+            if name == U.userName:
+                return U
+        for P in self.dataBlock.projects:
+            if name == P.projectName:
+                return P
+        for S in self.dataBlock.sprints:
+            if name == S.sprintName:
+                return S
+
+
+
+class BacklogManPopMenu(GenericPopupMenu):
+    def __init__(self,root,Master,epicList=None):
+        GenericPopupMenu.__init__(self,root,Master)
+
         self.add_command(label=u'Promote To Epic', command=self.promoteItemToEpic)
         try:
             self.selectedItem = root.selectedItem
@@ -22,22 +72,6 @@ class PopMenu(Tk.Menu):
             self.setEpicsMenu()
         self.listOfEpics = epicList
 
-    def context_menu(self ,event ,menu):
-        self.widget = event.widget
-        index = self.widget.nearest(event.y)
-        _, yoffset, _, height = self.widget.bbox(index)
-        if event.y > height + yoffset + 5:
-            return
-        self.selectedItem = self.widget.get(index)
-        try:
-            self.root.selectedItem = self.selectedItem
-        except:
-            pass
-        self.widget.selection_clear(0,Tk.END)
-        self.widget.selection_set(index)
-        #self.widget.activate(index)
-        # print('do something')
-        menu.post(event.x_root, event.y_root)
 
     def promoteItemToEpic(self):
         item = None
