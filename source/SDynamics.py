@@ -755,21 +755,21 @@ class SUserItemInspection(tk.Frame):
         self.roleString.set(user.userRole)
         self.updateItems(user.listOfAssignedItems)
 
-    def updateItems(self, Items):
+    def updateItems(self, items):
         assignedItems = []
         inProgressItems = []
         submittedItems = []
         completedItems = []
-        for item in Items:
-            print(item.itemStatus)
-            if item.itemStatus == 1:
-                assignedItems.append(item)
-            if item.itemStatus == 2:
-                inProgressItems.append(item)
-            if item.itemStatus == 3:
-                submittedItems.append(item)
-            if item.itemStatus == 4:
-                completedItems.append(item)
+        for item in items:
+            if item.projectID == self.master.activeProject.projectID:
+                if item.itemStatus == 1:
+                    assignedItems.append(item)
+                if item.itemStatus == 2:
+                    inProgressItems.append(item)
+                if item.itemStatus == 3:
+                    submittedItems.append(item)
+                if item.itemStatus == 4:
+                    completedItems.append(item)
 
         self.updateAssignedItems(assignedItems)
         self.updateInProgessItems(inProgressItems)
@@ -789,7 +789,8 @@ class SUserItemInspection(tk.Frame):
         self.completedItemsList.importItemList(completedItems)
 
     def getSCardDescriptionExport(self):
-        return [self.assignedItemsList.listbox, self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']
+        return [self.assignedItemsList.listbox, self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], \
+               ['Item', 'Item', 'Item', 'Item']
 
 class STabs(tk.Frame):
     def __init__(self, controller, master, viewName):
