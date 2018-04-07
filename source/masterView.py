@@ -38,12 +38,6 @@ class masterView(tk.Tk):
 
         self.frames = {}
 
-
-
-
-
-
-
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
 

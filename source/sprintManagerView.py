@@ -33,7 +33,7 @@ class SprintMgrItemPopMenu(SPopMenu.GenericPopupMenu):
             pass
         if self.root.roleMap[self.root.activeRole] > 0:
             if self.index(0) is None:
-                self.usersMenu = tk.Menu(self, tearoff=0)
+                self.usersMenu = tk.Menu(self, tearoff=0, cursor = "hand2")
                 self.add_cascade(label=u'Assign to User', menu=self.usersMenu)
                 for name in [U.userName for U in self.master.activeProject.listOfAssignedUsers]:
                     self.usersMenu.add_command(label=name, command=lambda n=name:self.root.assignToUser(n))

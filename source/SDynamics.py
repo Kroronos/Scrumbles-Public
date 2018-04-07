@@ -34,29 +34,29 @@ class itemPicker(tk.Frame):
 
         self.itemNameLabel = tk.Label(self, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
         self.itemNameEntryText = tk.StringVar()
-        self.itemNameEntry = tk.Entry(self, textvariable = self.itemNameEntryText).grid(row = 1, column = 1)
+        self.itemNameEntry = tk.Entry(self, textvariable = self.itemNameEntryText, cursor = "hand2").grid(row = 1, column = 1)
 
         self.itemDescriptionLabel =  tk.Label(self, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
         self.itemDescriptionEntryText = tk.StringVar()
-        self.itemDescriptionEntry = tk.Entry(self, textvariable = self.itemDescriptionEntryText).grid(row = 2, column = 1)
+        self.itemDescriptionEntry = tk.Entry(self, textvariable = self.itemDescriptionEntryText, cursor = "hand2").grid(row = 2, column = 1)
 
 
         self.itemPriorityLabel = tk.Label( self, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
         self.itemPriorityValue = tk.StringVar()
         self.priorities = ("Low Priority", "Medium Priority", "High Priority")
-        self.itemPrioritySelector = ttk.Combobox(self, textvariable = self.itemPriorityValue, values = self.priorities, state = "readonly").grid(row = 3, column = 1)
+        self.itemPrioritySelector = ttk.Combobox(self, textvariable = self.itemPriorityValue, values = self.priorities, state = "readonly", cursor = "hand2").grid(row = 3, column = 1)
 
 
 
         self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
         self.itemStatusValue = tk.StringVar()
         self.statuses = ("Not started", "In Progress", "Done")
-        self.itemStatusSelector = ttk.Combobox(self, textvariable = self.itemStatusValue, values = self.statuses, state = "readonly").grid(row = 4, column = 1)
+        self.itemStatusSelector = ttk.Combobox(self, textvariable = self.itemStatusValue, values = self.statuses, state = "readonly", cursor = "hand2").grid(row = 4, column = 1)
 
 
         self.itemTypeLabel = tk.Label(self, text = "Item Type: ", anchor = 'w').grid(row = 5)
         self.itemTypeValue = tk.StringVar()
-        self.itemTypeEntry = tk.Entry(self, textvariable = self.itemTypeValue).grid(row = 5, column = 1)
+        self.itemTypeEntry = tk.Entry(self, textvariable = self.itemTypeValue, cursor = "hand2").grid(row = 5, column = 1)
 
         self.itemUserLabel = tk.Label(self, text = "User: ", anchor = 'w').grid(row = 6)
         self.itemUserValue = tk.StringVar()
@@ -66,11 +66,11 @@ class itemPicker(tk.Frame):
         for user in self.master.dataBlock.users:
             self.listOfUsers.append(user.userName)
 
-        self.itemUserSelector = ttk.Combobox(self, textvariable = self.itemUserValue, values = self.listOfUsers , state = "readonly").grid(row = 6, column = 1)
+        self.itemUserSelector = ttk.Combobox(self, textvariable = self.itemUserValue, values = self.listOfUsers , state = "readonly", cursor = "hand2").grid(row = 6, column = 1)
 
-        self.submitButton = tk.Button(self, text="Submit Changes", command = self.update_item).grid( column = 2 )
+        self.submitButton = tk.Button(self, text="Submit Changes", command = self.update_item, cursor = "hand2").grid( column = 2 )
 
-        self.addButton = tk.Button(self, text = "Add Item", command = self.add_item).grid( column = 2 )
+        self.addButton = tk.Button(self, text = "Add Item", command = self.add_item, cursor = "hand2").grid( column = 2 )
 
 
 
@@ -91,38 +91,38 @@ class itemPicker(tk.Frame):
     def add_item(self):
         self.top = tk.Toplevel()
         self.top.title("New Item")
-        self.top.itemAdditionLabel = tk.Label(self.top, text = "New Item Information", anchor = 'w').grid(row = 0, column = 0)
+        self.top.itemAdditionLabel = tk.Label(self.top, text = "New Item Information", anchor = 'w', cursor = "hand2").grid(row = 0, column = 0)
 
 
         self.top.itemAdditionNameLabel = tk.Label(self.top, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
         self.top.itemAdditionNameEntryText = tk.StringVar()
-        self.top.itemAdditionNameEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionNameEntryText).grid(row = 1, column = 1)
+        self.top.itemAdditionNameEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionNameEntryText, cursor = "hand2").grid(row = 1, column = 1)
 
         self.top.itemAdditionDescriptionLabel =  tk.Label(self.top, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
         self.top.itemAdditionDescriptionEntryText = tk.StringVar()
-        self.top.itemAdditionDescriptionEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionDescriptionEntryText).grid(row = 2, column = 1)
+        self.top.itemAdditionDescriptionEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionDescriptionEntryText, cursor = "hand2").grid(row = 2, column = 1)
 
 
         self.top.itemAdditionPriorityLabel = tk.Label( self.top, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
         self.top.itemAdditionPriorityValue = tk.StringVar()
-        self.top.itemAdditionPrioritySelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionPriorityValue, values = self.priorities, state = "readonly").grid(row = 3, column = 1)
+        self.top.itemAdditionPrioritySelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionPriorityValue, values = self.priorities, state = "readonly", cursor = "hand2").grid(row = 3, column = 1)
 
 
 
         self.top.itemAdditionStatusLabel = tk.Label(self.top, text = "Status: ", anchor = 'w').grid(row = 4)
         self.top.itemAdditionStatusValue = tk.StringVar()
-        self.top.itemAdditionStatusSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionStatusValue, values = self.statuses, state = "readonly").grid(row = 4, column = 1)
+        self.top.itemAdditionStatusSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionStatusValue, values = self.statuses, state = "readonly", cursor = "hand2").grid(row = 4, column = 1)
 
         self.top.itemAdditionTypeLabel = tk.Label(self.top, text = "Item Type: ", anchor = 'w').grid(row = 5, column = 0)
         self.top.itemAdditionTypeText = tk.StringVar()
-        self.top.itemAdditionTypeEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionTypeText).grid(row = 5, column = 1)
+        self.top.itemAdditionTypeEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionTypeText, cursor = "hand2").grid(row = 5, column = 1)
 
         self.top.itemAdditionUserLabel = tk.Label(self.top, text = "User: ", anchor = 'w').grid(row = 6)
         self.top.itemAdditionUserValue = tk.StringVar()
-        self.top.itemAdditionUserSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionUserValue, values = self.listOfUsers , state = "readonly").grid(row = 6, column = 1)
+        self.top.itemAdditionUserSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionUserValue, values = self.listOfUsers , state = "readonly", cursor = "hand2").grid(row = 6, column = 1)
 
 
-        self.top.submitButton = tk.Button(self.top, text="Submit", command = self.add_item_to_database).grid( column = 2 )
+        self.top.submitButton = tk.Button(self.top, text="Submit", command = self.add_item_to_database, cursor = "hand2").grid( column = 2 )
 
     def add_item_to_database(self):
 
@@ -167,8 +167,7 @@ class itemPicker(tk.Frame):
 
         item.itemTitle = self.itemNameEntryText.get()
         item.itemDescription = self.itemDescriptionEntryText.get()
-
-
+        
         # ScrumblesData.DataBlock.updateScrumblesObject()
 
         #encode priority
@@ -211,10 +210,10 @@ class commentsField(tk.Frame):
         self.commentTextElements = []
 
         self.canvas = tk.Canvas(self.commentField, bd=1, scrollregion=(0,0,1000,1000), height=100)
-        self.scrollbar = tk.Scrollbar(self.commentField, command=self.canvas.yview)
+        self.scrollbar = tk.Scrollbar(self.commentField, command=self.canvas.yview, cursor = "hand2")
         self.canvas.config(yscrollcommand=self.scrollbar.set)
 
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y, cursor = "hand2")
         self.canvas.pack(expand=True, fill=tk.BOTH)
         self.internals = tk.Frame(self.canvas)
         self.canvasFrame = self.canvas.create_window(0, 0, window=self.internals, anchor=tk.NW)
@@ -223,9 +222,9 @@ class commentsField(tk.Frame):
         self.newCommentFieldF = tk.Frame(self)
         self.newCommentFieldFI = tk.Frame(self.newCommentFieldF)
         self.newCommentField = tk.Text(self.newCommentFieldFI, height=5)
-        self.newCommentFieldScrollBar = tk.Scrollbar(self.newCommentFieldFI, command=self.newCommentField.yview)
+        self.newCommentFieldScrollBar = tk.Scrollbar(self.newCommentFieldFI, command=self.newCommentField.yview, cursor = "hand2")
         self.newCommentField['yscrollcommand'] = self.newCommentFieldScrollBar.set
-        self.submitButton = tk.Button(self.newCommentFieldF, text="Submit", command=self.submitComment)
+        self.submitButton = tk.Button(self.newCommentFieldF, text="Submit", command=self.submitComment, cursor = "hand2")
         self.newCommentField.bind('<Control-s>', lambda event: self.submitComment(event))
         self.source = None
         self.searchParams = None
@@ -234,7 +233,7 @@ class commentsField(tk.Frame):
         self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
         self.commentField.pack(side=tk.TOP, fill=tk.BOTH, ipady=4)
 
-        self.newCommentFieldScrollBar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.newCommentFieldScrollBar.pack(side=tk.RIGHT, fill=tk.Y, cursor = "hand2")
         self.newCommentField.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.newCommentFieldFI.pack(side=tk.TOP, fill=tk.BOTH)
         self.submitButton.pack(side=tk.TOP, fill=tk.BOTH)
@@ -360,7 +359,7 @@ class SCardDescription(tk.Frame):
         self.config(relief=tk.SUNKEN, borderwidth=5)
 
         self.canvas = tk.Canvas(self, bd=1, scrollregion=(0,0,1000,1000), height=100)
-        self.scrollbar = tk.Scrollbar(self, command=self.canvas.yview)
+        self.scrollbar = tk.Scrollbar(self, command=self.canvas.yview, cursor = "hand2")
         self.canvas.config(yscrollcommand=self.scrollbar.set)
 
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -803,9 +802,9 @@ class STabs(tk.Frame):
     class viewButton(tk.Button):
         def __init__(self, controller, viewName, view, event):
             if viewName == controller.viewName:
-                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_offwhite, relief=tk.SOLID, borderwidth=1)
+                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_offwhite, relief=tk.SOLID, borderwidth=1, cursor = "hand2")
             else:
-                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_grey, relief=tk.SOLID, borderwidth=1)
+                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_grey, relief=tk.SOLID, borderwidth=1, cursor = "hand2")
 
     def generateButtons(self):
         self.buttonList.clear()
