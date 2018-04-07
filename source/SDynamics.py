@@ -254,10 +254,10 @@ class commentsField(tk.Frame):
         newComment.commentItemID = self.inspection.itemID
 
         self.newCommentField.delete("1.0", tk.END)
-
-        self.comments.append(newComment)
-        self.renderCommentField(initializedComments=True)
-        self.master.dataBlock.addNewScrumblesObject(newComment)
+        if newComment.commentContent: #check for empty string
+            self.comments.append(newComment)
+            self.renderCommentField(initializedComments=True)
+            self.master.dataBlock.addNewScrumblesObject(newComment)
 
     def updateFromListOfCommentsObject(self, source, searchParams, isUpdate=False):
         self.clearCommentField()
