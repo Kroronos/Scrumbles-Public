@@ -7,7 +7,6 @@ import developerHomeView
 import teamManagerView
 import sprintManagerView
 import backlogManagerView
-import itemManagerView
 import platform
 import webbrowser
 
@@ -90,7 +89,6 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
         viewMenu.add_command(label="Sprint Manager", command=lambda: self.show_frame(sprintManagerView))
         viewMenu.add_command(label="Projects Backlog", command=lambda: self.show_frame(backlogManagerView))
-        viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(itemManagerView))
 
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
@@ -129,8 +127,6 @@ class masterView(tk.Tk):
         views.append(backlogManagerView)
         viewNames.append("Backlog Manager")
 
-        views.append(itemManagerView)
-        viewNames.append("Item Manager")
         return views, viewNames
 
     def showCreateProjectDialog(self):
@@ -166,7 +162,6 @@ class masterView(tk.Tk):
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
         sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self)
         backlogManagerFrame = backlogManagerView.backlogManagerView(self.container, self, loggedInUser)
-        itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
 
         self.add_frame(mainFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
