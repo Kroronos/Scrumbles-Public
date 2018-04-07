@@ -217,6 +217,10 @@ class masterView(tk.Tk):
         self.add_frame(sprintManagerFrame, sprintManagerView)
         self.add_frame(backlogManagerFrame, backlogManagerView)
 
+
+        self.generateMenuBar()
+        self.splash.kill()
+        self.deiconify()
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         if platform.system() == "Windows":
