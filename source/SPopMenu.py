@@ -130,6 +130,7 @@ class BacklogManPopMenu(GenericPopupMenu):
         listOfItemsInAnEpic = []
         for I in self.dataBlock.items:
             if I.itemType == 'Epic':
+                print(I.itemTitle)
                 for subItem in I.subItemList:
                     listOfItemsInAnEpic.append(subItem)
         return item in listOfItemsInAnEpic

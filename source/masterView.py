@@ -149,7 +149,7 @@ class masterView(tk.Tk):
         viewNames = []
         if (self.activeUser.userRole == "Admin"):
             views.append(mainView)
-            viewNames.append("Administrator Home")
+            viewNames.append("Admin Home")
 
         elif (self.activeUser.userRole == "Scrum Master"):
             views.append(mainView)
