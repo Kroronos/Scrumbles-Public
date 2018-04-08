@@ -54,6 +54,9 @@ class User:
     def getTitle(self):
         return self.userName
 
+    def __str__(self):
+        return self.userName
+
 class Item:
     itemID = None
     itemType = None
@@ -137,6 +140,8 @@ class Item:
     def getFormattedCreationDate(self):
         return self.itemCreationDate.strftime("%I:%M %p, %m/%d/%y")
 
+    def __str__(self):
+        return 'Item Object, Title:%s Type:%s,'%(self.itemTitle,self.itemType)
 
 class Sprint:
     sprintID = None
@@ -167,6 +172,9 @@ class Sprint:
         self.listOfAssignedItems = []
         self.listOfAssignedUsers = []
 
+    def __str__(self):
+        return "Sprint Object:%s"%self.sprintName
+
 class Comment:
 
     #todo listOfTags = []
@@ -185,6 +193,9 @@ class Comment:
         self.commentUserID = queryResultDict['UserID']
         self.commentSignature = None
 
+    def __str__(self):
+        return self.commentContent
+
 
 class Project:
     projectID = None
@@ -200,5 +211,8 @@ class Project:
         self.listOfAssignedSprints = []
         self.listOfAssignedUsers = []
         self.listOfAssignedItems = []
+    def __str__(self):
+        return self.projectName
+
 
 #todo implement class tag:
