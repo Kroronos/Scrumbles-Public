@@ -571,6 +571,7 @@ class EditItemDialog(CreateItemDialog):
     @tryExcept
     def ok(self):
             item = self.item
+            oldItemType = item.itemType
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
             selectedSprint = None
@@ -615,6 +616,8 @@ class EditItemDialog(CreateItemDialog):
             else:
                 self.dataBlock.modifiyItemPriority(item, item.priorityTextToNumberMap[self.itemPriorityCombobox.get()])
 
+            if oldItemType == 'Epic' and item.itemType != 'Epic':
+                self.dataBlock.removeItemFromEpic(item)
             self.dataBlock.updateScrumblesObject(item)
 
 

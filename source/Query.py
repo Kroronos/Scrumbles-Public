@@ -338,6 +338,11 @@ class CommentQuery(Query):
         assert comment is not None
         query = 'DELETE FROM CommentTable WHERE CommentID=%s'
         return query, (comment.commentID,)
+    @staticmethod
+    def deleteItemFromComments(item):
+        assert type(item) is ScrumblesObjects.Item
+        query = 'DELETE FROM CommentTable WHERE CardID = %s'
+        return query, (item.itemID)
 
 class TimeLineQuery(Query):
     statusMap = {0: 'AssignedToUser', 1: 'AssignedToUser', 2: 'WorkStarted', 3: 'Submitted', 4: 'Completed'}
