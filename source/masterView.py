@@ -8,6 +8,7 @@ import teamManagerView
 import sprintManagerView
 import backlogManagerView
 import itemManagerView
+import analyticsView
 import platform
 import webbrowser
 import DataBlock
@@ -36,14 +37,7 @@ class masterView(tk.Tk):
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
-
         self.frames = {}
-
-
-
-
-
-
 
         self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
         self.container = tk.Frame(self)
@@ -63,13 +57,8 @@ class masterView(tk.Tk):
         
         self.add_frame(loginFrame, loginView)
 
-
         self.show_frame(loginView)
         self.dataConnection = None
-
-
-
-
 
         self.activeUser = None
 
@@ -119,13 +108,13 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Sprint Manager", command=lambda: self.show_frame(sprintManagerView))
         viewMenu.add_command(label="Projects Backlog", command=lambda: self.show_frame(backlogManagerView))
         viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(itemManagerView))
-
+        viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(analyticsView))
 
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
-        helpMenu.add_command(label = "What's with the colors", command=self.colorHelp)
-        helpMenu.add_command(label = 'Refresh Data',command=self.refreshData)
+        helpMenu.add_command(label = "What's With The Colors", command=self.colorHelp)
+        helpMenu.add_command(label = 'Refresh Data', command=self.refreshData)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Edit", menu=editMenu)
@@ -170,6 +159,9 @@ class masterView(tk.Tk):
 
         views.append(itemManagerView)
         viewNames.append("Item Manager")
+
+        views.append(analyticsView)
+        viewNames.append("Analytics")
         return views, viewNames
 
     def showCreateProjectDialog(self):
@@ -221,6 +213,8 @@ class masterView(tk.Tk):
         sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self)
         backlogManagerFrame = backlogManagerView.backlogManagerView(self.container, self, loggedInUser)
         itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
+        analyticsFrame = analyticsView.analyticsView(self.container, self)
+
 
         self.add_frame(mainFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
@@ -228,6 +222,7 @@ class masterView(tk.Tk):
         self.add_frame(sprintManagerFrame, sprintManagerView)
         self.add_frame(backlogManagerFrame, backlogManagerView)
         self.add_frame(itemManagerFrame, itemManagerView)
+        self.add_frame(analyticsFrame, analyticsView)
 
         self.generateMenuBar()
         self.splash.kill()
