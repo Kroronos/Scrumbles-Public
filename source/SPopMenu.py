@@ -1,5 +1,6 @@
 import tkinter as Tk
 from tkinter import messagebox
+import logging
 
 class GenericPopupMenu(Tk.Menu):
     def __init__(self,root,Master):
@@ -64,7 +65,7 @@ class BacklogManPopMenu(GenericPopupMenu):
         try:
             self.selectedItem = root.selectedItem
         except:
-            self.selectedItem = None
+            self.selectedItem = self.selectedObject
         self.hasEpics = False
 
         if epicList is not None:
@@ -111,20 +112,23 @@ class BacklogManPopMenu(GenericPopupMenu):
     def assignItemToEpic(self, epicName):
 
         epic = None
-        item = None
+        item = self.getSelectedObject()
         for I in self.master.activeProject.listOfAssignedItems:
             if I.itemTitle == epicName:
                 epic = I
-            if I.itemTitle == self.selectedItem:
-                item = I
+
 
         try:
             if self.isItemAlreadyInAnEpic(item):
                 self.dataBlock.reAssignItemToEpic(item, epic)
+                messagebox.showinfo('Success', 'Re-Assigned %s to %s' % (item.itemTitle, epic.itemTitle))
             else:
                 self.dataBlock.addItemToEpic(item, epic)
+
+                messagebox.showinfo('Success', 'Assigned %s to %s'%(item.itemTitle,epic.itemTitle))
         except Exception as e:
-            messagebox.showerror('Error', str(e))
+            logging.exception('Error assigning item: "%s" to Epic: "%s"'%(str(item),str(epic)))
+            messagebox.showerror('Error', str(e)+"Error logged to Scrumbles.log")
 
     def isItemAlreadyInAnEpic(self, item):
         listOfItemsInAnEpic = []

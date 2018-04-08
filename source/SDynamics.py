@@ -253,10 +253,10 @@ class commentsField(tk.Frame):
         newComment.commentItemID = self.inspection.itemID
 
         self.newCommentField.delete("1.0", tk.END)
-
-        self.comments.append(newComment)
-        self.renderCommentField(initializedComments=True)
-        self.master.dataBlock.addNewScrumblesObject(newComment)
+        if newComment.commentContent: #check for empty string
+            self.comments.append(newComment)
+            self.renderCommentField(initializedComments=True)
+            self.master.dataBlock.addNewScrumblesObject(newComment)
 
     def updateFromListOfCommentsObject(self, source, searchParams, isUpdate=False):
         self.clearCommentField()
@@ -304,11 +304,11 @@ class commentsField(tk.Frame):
         for comment in self.comments:
             commentFrame = tk.Frame(self.internals)
             commentLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentContent,
-                                    justify=tk.LEFT, wraplength=300,
+                                    justify=tk.LEFT, wraplength=self.master.w_rat*500,
                                     font=style.comment_font)
             if comment.commentSignature is not None:
                 commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
-                                                 justify=tk.LEFT, wraplength=300,
+                                                 justify=tk.LEFT, wraplength=self.master.w_rat*500,
                                                  font=style.comment_signature_font)
             else:
                 commentUserName = None
@@ -316,10 +316,16 @@ class commentsField(tk.Frame):
                     if user.userID == comment.commentUserID:
                         commentUserName = user.userName
                 if commentUserName is not None:
-                    comment.commentSignature = commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
+                    if type(self.inspection) is ScrumblesObjects.Item:
+                        comment.commentSignature = commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
+                    else:
+                        for item in self.inspection.listOfAssignedItems:
+                            if item.itemID == comment.commentItemID:
+                                itemName = item.itemTitle
+                        comment.commentSignature = itemName + "\n" + commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
                     commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
-                                                     justify=tk.LEFT, wraplength=300,
-                                                     font=style.comment_signature_font)
+                                                         justify=tk.LEFT, wraplength=self.master.w_rat*500,
+                                                         font=style.comment_signature_font)
             self.commentTextElements.append(commentFrame)
             commentLabel.pack(side=tk.TOP, fill=tk.X)
             commentSignatureLabel.pack(side=tk.TOP, fill=tk.X)
@@ -641,9 +647,9 @@ class SCardDescription(tk.Frame):
                 self.generateSprintFields(match)
 
     def generateUserFields(self, selectedUser):
-        self.cardDescriptions["User"].userRole.configure(text=selectedUser.userRole, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["User"].userRole.configure(text=selectedUser.userRole, justify=tk.LEFT, wraplength=self.master.w_rat*300)
         self.cardDescriptions["User"].userEmail.configure(text=selectedUser.userEmailAddress, justify=tk.LEFT,
-                                                          wraplength=300)
+                                                          wraplength=self.master.w_rat*300)
 
         self.cardDescriptions["User"].repack()
 
@@ -651,34 +657,36 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Active"] = self.cardDescriptions["User"]
 
     def generateItemFields(self, selectedItem):
-        self.cardDescriptions["Item"].itemType.configure(text=selectedItem.itemType, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemType.configure(text=selectedItem.itemType, justify=tk.LEFT, wraplength=self.master.w_rat*300)
         if selectedItem.itemPriority is not None and selectedItem.itemPriority != 0:
-            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.getPriorityString(), justify=tk.LEFT, wraplength=300)
+            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.getPriorityString(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
         else:
-            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.itemPriority, justify=tk.LEFT, wraplength=300)
+            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.itemPriority, justify=tk.LEFT, wraplength=self.master.w_rat*300)
         if selectedItem.itemDueDate is not None:
-            self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.getFormattedDueDate(), justify=tk.LEFT, wraplength=300)
+            self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.getFormattedDueDate(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
         else:
-            self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=300)
-        self.cardDescriptions["Item"].itemStatus.configure(text=selectedItem.getStatus(), justify=tk.LEFT, wraplength=300)
-        self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDescription, justify=tk.LEFT, wraplength=300)
+            self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=self.master.w_rat*300)
+        self.cardDescriptions["Item"].itemStatus.configure(text=selectedItem.getStatus(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
+        self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDescription, justify=tk.LEFT, wraplength=self.master.w_rat*300)
         if selectedItem.itemCodeLink is not None and selectedItem.itemCodeLink != '' :
-            self.cardDescriptions["Item"].itemCodeLink.configure(text=selectedItem.itemCodeLink,justify=tk.LEFT,wraplength=300,fg='blue',underline=1,cursor='gumby')
+            self.cardDescriptions["Item"].itemCodeLink.configure(text=selectedItem.itemCodeLink,justify=tk.LEFT,wraplength=self.master.w_rat*300,fg='blue',underline=1,cursor='gumby')
             self.cardDescriptions["Item"].itemCodeLink.bind('<Button-1>', lambda event: self.open(event))
         else:
             self.cardDescriptions["Item"].itemCodeLink.configure(text=u'None Set', justify=tk.LEFT,
-                                                                 wraplength=300,fg='red',underline=-1,cursor='X_cursor')
+
+                                                                 wraplength=self.master.w_rat*300,fg='red',underline=-1,cursor='X_cursor')
+            
             self.cardDescriptions['Item'].itemCodeLink.unbind('<Button 1>')
         sprintName = ""
         for sprint in self.master.dataBlock.sprints:
             if sprint.sprintID == selectedItem.itemSprintID:
                 sprintName = sprint.sprintName
-        self.cardDescriptions["Item"].itemSprint.configure(text=sprintName, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemSprint.configure(text=sprintName, justify=tk.LEFT, wraplength=self.master.w_rat*300)
         userName = ""
         for user in self.master.dataBlock.users:
             if user.userID == selectedItem.itemUserID:
                 userName = user.userName
-        self.cardDescriptions["Item"].itemUser.configure(text=userName, justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Item"].itemUser.configure(text=userName, justify=tk.LEFT, wraplength=self.master.w_rat*300)
 
         self.cardDescriptions["Item"].repack()
 
@@ -688,8 +696,8 @@ class SCardDescription(tk.Frame):
 
 
     def generateSprintFields(self, selectedSprint):
-        self.cardDescriptions["Sprint"].sprintStart.configure(text=selectedSprint.getFormattedStartDate(), justify=tk.LEFT, wraplength=300)
-        self.cardDescriptions["Sprint"].sprintDue.configure(text=selectedSprint.getFormattedDueDate(), justify=tk.LEFT, wraplength=300)
+        self.cardDescriptions["Sprint"].sprintStart.configure(text=selectedSprint.getFormattedStartDate(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
+        self.cardDescriptions["Sprint"].sprintDue.configure(text=selectedSprint.getFormattedDueDate(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
 
         self.cardDescriptions["Sprint"].repack()
 
@@ -754,21 +762,21 @@ class SUserItemInspection(tk.Frame):
         self.roleString.set(user.userRole)
         self.updateItems(user.listOfAssignedItems)
 
-    def updateItems(self, Items):
+    def updateItems(self, items):
         assignedItems = []
         inProgressItems = []
         submittedItems = []
         completedItems = []
-        for item in Items:
-            print(item.itemStatus)
-            if item.itemStatus == 1:
-                assignedItems.append(item)
-            if item.itemStatus == 2:
-                inProgressItems.append(item)
-            if item.itemStatus == 3:
-                submittedItems.append(item)
-            if item.itemStatus == 4:
-                completedItems.append(item)
+        for item in items:
+            if item.projectID == self.master.activeProject.projectID:
+                if item.itemStatus == 1:
+                    assignedItems.append(item)
+                if item.itemStatus == 2:
+                    inProgressItems.append(item)
+                if item.itemStatus == 3:
+                    submittedItems.append(item)
+                if item.itemStatus == 4:
+                    completedItems.append(item)
 
         self.updateAssignedItems(assignedItems)
         self.updateInProgessItems(inProgressItems)
@@ -788,7 +796,8 @@ class SUserItemInspection(tk.Frame):
         self.completedItemsList.importItemList(completedItems)
 
     def getSCardDescriptionExport(self):
-        return [self.assignedItemsList.listbox, self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], ['Item', 'Item', 'Item']
+        return [self.assignedItemsList.listbox, self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], \
+               ['Item', 'Item', 'Item', 'Item']
 
 class STabs(tk.Frame):
     def __init__(self, controller, master, viewName):
