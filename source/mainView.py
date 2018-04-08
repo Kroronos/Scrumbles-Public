@@ -15,7 +15,6 @@ class mainViewPopup(SPopMenu.GenericPopupMenu):
 
 
     def context_menu(self, event, menu):
-        print("TEEEEeTS")
         self.widget = event.widget
         self.event = event
         index = self.widget.nearest(event.y)
@@ -202,6 +201,7 @@ class mainView(tk.Frame):
         self.itemList.importItemList(self.sprintItems)
         self.itemList.colorCodeListboxes()
         self.subItemList.importItemList(self.sprintItemSubItems)
+        self.subItemList.colorCodeListboxes()
         self.itemList.colorCodeListboxes()
         self.activeProject = self.controller.activeProject
         del self.itemPopMenu
@@ -239,7 +239,7 @@ class mainView(tk.Frame):
         if event.widget is self.subItemList.listbox:
             self.itemDescriptionManager.changeDescription(event)
     def __str__(self):
-        return 'Scrumbles Sprint Manager View'
+        return 'Scrumbles Home View'
 
 
     # def getCodeLink(self,item):

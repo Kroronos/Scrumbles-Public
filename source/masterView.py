@@ -218,7 +218,7 @@ class masterView(tk.Tk):
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
-        sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self)
+        sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self, loggedInUser)
         backlogManagerFrame = backlogManagerView.backlogManagerView(self.container, self, loggedInUser)
         itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
 
