@@ -617,7 +617,7 @@ class EditItemDialog(CreateItemDialog):
                 self.dataBlock.modifiyItemPriority(item, item.priorityTextToNumberMap[self.itemPriorityCombobox.get()])
 
             if oldItemType == 'Epic' and item.itemType != 'Epic':
-                self.dataBlock.removeItemFromEpic(item)
+                self.dataBlock.deleteEpic(item)
             self.dataBlock.updateScrumblesObject(item)
 
 
