@@ -234,7 +234,8 @@ class masterView(tk.Tk):
         self.deiconify()
         self.show_frame(mainView)
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
-        self.iconbitmap("logo.ico")
+        if platform.system() == "Windows":
+            self.iconbitmap("logo.ico")
 
     def openAPI(self):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/Scrumbles-API-Documentation')
