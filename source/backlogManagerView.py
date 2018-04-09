@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import messagebox
+import logging
 import ScrumblesFrames, SPopMenu, Dialogs, listboxEventHandler
 
 
@@ -36,6 +38,7 @@ class backlogManagerView(tk.Frame):
 
             self.popMenu = SPopMenu.BacklogManPopMenu(self,self.controller,self.listOfEpics)
             self.popMenu.add_command(label=u'Update Item', command=self.updateItem)
+            self.popMenu.add_command(label=u'Delete Item', command=self.deleteItem)
 
 
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
@@ -70,7 +73,26 @@ class backlogManagerView(tk.Frame):
         for source in dynamicSources:
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
+    def deleteItem(self):
+        item = None
+        title = self.selectedItem
+        for i in self.controller.dataBlock.items:
+            if i.itemTitle == title:
+                item = i
 
+        if item is None:
+            print('Item Title:', title)
+            print('backlogData:')
+            for i in self.controller.activeProject.listOfAssignedItems:
+                print(i.itemTitle)
+            raise Exception('Error Loading item from title')
+        try:
+            if messagebox.askyesno('Warning','Are you sure you want to delete %s\nThis action cannot be reversed'%str(item)):
+                self.controller.dataBlock.deleteScrumblesObject(item,self.controller.activeProject)
+                messagebox.showinfo('Success', 'Item %s deleted from database'%item.itemTitle)
+        except Exception as e:
+            logging.exception('Failed to delete item %s'%str(item))
+            messagebox.showerror('Error', 'Failed to delete item\n'+str(e))
     def updateItem(self):
         item = None
         title = self.selectedItem

@@ -129,7 +129,7 @@ class ProjectQuery(Query):
     @staticmethod
     def removeItem(project, item):
         query = 'DELETE FROM ProjectItemTable WHERE ProjectID=%s AND ItemID=%s'
-        return query, (project.projecID,item.itemID)
+        return query, (project.projectID,item.itemID)
 
 
 class SprintQuery(Query):

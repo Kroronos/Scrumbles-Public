@@ -318,12 +318,13 @@ class DataBlock:
             self.conn.setData(TimeLineQuery.updateObject(obj))
 
     @dbWrap
-    def deleteScrumblesObject(self,obj):
+    def deleteScrumblesObject(self,obj,project=None):
         logging.info('Deleting object %s from database' % repr(obj))
         if type(obj) == ScrumblesObjects.Item:
+            assert project is not None, 'deleteScrumblesObject Must include project parameter to delete Item object\ndeleteScrumblesObject(item,project)'
             self.removeItemFromEpic(obj)
             self.removeItemFromSprint(obj)
-            self.removeItemFromProject(obj)
+            self.removeItemFromProject(project,obj)
             self.removeItemFromComments(obj)
 
         self.conn.setData(Query.deleteObject(obj))
