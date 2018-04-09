@@ -84,7 +84,6 @@ class ScrumblesData:
             self.dbConnection.rollback()
 
     def setData(self, query):
-        print(query)
         assert self.dbConnection is not None
         try:
             if type(query) is not tuple:
