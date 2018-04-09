@@ -32,7 +32,7 @@ class User:
     userEmailAddress = None
     userID = None
     userRole = None
-
+    userRoleMap = {'Developer':0,'Scrum Master':1,'Admin':2}
 
     #Note: ScrumblesData.getData() returns a LIST of DICTS
     # This initializer accepts a DICT not a List

@@ -10,6 +10,7 @@ import logging
 class developerHomeView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
+
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
