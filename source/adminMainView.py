@@ -8,7 +8,7 @@ import logging
 import tkinter as tk
 import Dialogs
 
-class mainViewPopup(SPopMenu.GenericPopupMenu):
+class adminMainViewPopup(SPopMenu.GenericPopupMenu):
     def __init__(self,root,Master):
         super().__init__(root,Master)
         self.isAssignDeleted = False
@@ -60,7 +60,7 @@ class mainViewPopup(SPopMenu.GenericPopupMenu):
 
 
 
-class mainView(tk.Frame):
+class adminMainView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -77,8 +77,8 @@ class mainView(tk.Frame):
             self.sprintPopMenu.add_command(label=u'Edit Sprint',
                                            command=self.editSprint)
 
-        self.itemPopMenu= mainViewPopup(self,self.controller)
-        self.subItemPopMenu= mainViewPopup(self,self.controller)
+        self.itemPopMenu= adminMainViewPopup(self,self.controller)
+        self.subItemPopMenu= adminMainViewPopup(self,self.controller)
 
 
         self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
@@ -206,7 +206,7 @@ class mainView(tk.Frame):
         self.itemList.colorCodeListboxes()
         self.activeProject = self.controller.activeProject
         del self.itemPopMenu
-        self.itemPopMenu = mainViewPopup(self, self.controller)
+        self.itemPopMenu = adminMainViewPopup(self, self.controller)
 
     def assignedSprintEvent(self, event):
         for sprint in self.controller.activeProject.listOfAssignedSprints:
