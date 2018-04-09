@@ -144,7 +144,7 @@ class developerHomeView(tk.Frame):
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
         Comment.commentContent = 'Set to Submitted by menu action'
-        updated = Dialogs.codeLinkDialog(self, master=self.master, dataBlock=self.controller.dataBlock,item=Item).show()
+        updated = Dialogs.codeLinkDialog(self, master=self.controller, dataBlock=self.controller.dataBlock,item=Item).show()
         if updated:
             try:
                 self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
