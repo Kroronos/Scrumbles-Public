@@ -195,7 +195,8 @@ class mainView(tk.Frame):
 
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
         self.sprintItems = [item for item in self.controller.activeProject.listOfAssignedItems]
-        self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
+        if (self.selectedItem != None):
+            self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
 
         self.sprintList.importSprintsList(self.sprints)
         self.itemList.importItemList(self.sprintItems)
