@@ -312,14 +312,23 @@ class DataBlock:
     @dbWrap
     def updateScrumblesObject(self,obj):
         logging.info('Updating object %s to database' % repr(obj))
+
         self.conn.setData(Query.updateObject(obj))
         if type(obj) is ScrumblesObjects.Item:
-            self.conn.setData(TimeLineQuery.newItem(obj))
+            self.conn.setData(TimeLineQuery.updateObject(obj))
 
     @dbWrap
-    def deleteScrumblesObject(self,obj):
+    def deleteScrumblesObject(self,obj,project=None):
         logging.info('Deleting object %s from database' % repr(obj))
-        self.conn.setData(Query.deleteObject(obj))
+        if type(obj) == ScrumblesObjects.Item:
+            self.conn.setMulti(Query.deleteObject(obj))
+        else:
+            self.conn.setData(Query.deleteObject(obj))
+
+    @dbWrap
+    def removeItemFromComments(self,item):
+        logging.info('Removing item from comments database')
+        self.conn.setData(CommentQuery.deleteItemFromComments(item))
 
     @dbWrap
     def modifiyItemPriority(self,item,priority):

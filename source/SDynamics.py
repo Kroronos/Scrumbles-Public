@@ -323,7 +323,7 @@ class commentsField(tk.Frame):
                         for item in self.inspection.listOfAssignedItems:
                             if item.itemID == comment.commentItemID:
                                 itemName = item.itemTitle
-                        comment.commentSignature = itemName + "\n" + commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
+                                comment.commentSignature = itemName + "\n" + commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
                     commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
                                                          justify=tk.LEFT, wraplength=self.master.w_rat*500,
                                                          font=style.comment_signature_font)
