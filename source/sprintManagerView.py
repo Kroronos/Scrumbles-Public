@@ -66,7 +66,7 @@ class sprintManagerView(tk.Frame):
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, user.userRole + " Home")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Sprint Manager")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.activeProject = controller.activeProject
