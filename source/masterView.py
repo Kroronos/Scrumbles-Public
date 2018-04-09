@@ -1,7 +1,8 @@
 import logging
 import tkinter as tk
 from tkinter import messagebox
-import mainView
+import adminMainView
+import SMmainView
 import loginView
 import developerHomeView
 import teamManagerView
@@ -57,9 +58,6 @@ class masterView(tk.Tk):
         self.hiddenMenu = tk.Menu(self)
 
         loginFrame = loginView.loginView(self.container, self)
-        #mainFrame = mainView.mainView(self.container, self)
-
-       # self.add_frame(mainFrame, mainView)
         
         self.add_frame(loginFrame, loginView)
 
@@ -111,10 +109,9 @@ class masterView(tk.Tk):
 
         viewMenu = tk.Menu(menuBar, tearoff=0)
         if (self.activeUser.userRole == "Admin"):
-            viewMenu.add_command(label="Administrator Home", command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Administrator Home", command=lambda: self.show_frame(adminMainView))
         if (self.activeUser.userRole == "Scrum Master"):
-            viewMenu.add_command(label="Scrum Master Home", command=lambda: self.show_frame(mainView))
-        
+            viewMenu.add_command(label="Scrum Master Home", command=lambda: self.show_frame(SMmainView))       
         elif (self.activeUser.userRole == "Developer"):
             viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
         
@@ -151,11 +148,11 @@ class masterView(tk.Tk):
         views = []
         viewNames = []
         if (self.activeUser.userRole == "Admin"):
-            views.append(mainView)
+            views.append(adminMainView)
             viewNames.append("Admin Home")
 
         elif (self.activeUser.userRole == "Scrum Master"):
-            views.append(mainView)
+            views.append(SMmainView)
             viewNames.append("Scrum Master Home")  
 
         elif (self.activeUser.userRole == "Developer"):
@@ -210,14 +207,16 @@ class masterView(tk.Tk):
         self.dataBlock.packCallback(self.repointActiveObjects)
 
 
-        mainFrame = mainView.mainView(self.container, self, loggedInUser)
+        AdminHomeFrame = adminMainView.adminMainView(self.container, self, loggedInUser)
+        ScrumMasterHomeFrame = SMmainView.SMmainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
         sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self, loggedInUser)
         backlogManagerFrame = backlogManagerView.backlogManagerView(self.container, self, loggedInUser)
         itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
 
-        self.add_frame(mainFrame, mainView)
+        self.add_frame(AdminHomeFrame, adminMainView)
+        self.add_frame(ScrumMasterHomeFrame, SMmainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
         self.add_frame(sprintManagerFrame, sprintManagerView)
@@ -227,7 +226,16 @@ class masterView(tk.Tk):
         self.generateMenuBar()
         self.splash.kill()
         self.deiconify()
-        self.show_frame(mainView)
+        if (self.activeUser.userRole == "Admin"):
+            self.show_frame(adminMainView)
+
+        elif (self.activeUser.userRole == "Scrum Master"):
+            self.show_frame(SMmainView)
+
+        elif (self.activeUser.userRole == "Developer"):
+            self.show_frame(developerHomeView)
+
+
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
@@ -243,14 +251,22 @@ class masterView(tk.Tk):
 
     def setOpenProjectsMenu(self,menu):
         listOfProjects = [P.projectName for P in self.dataBlock.projects]
+
+
         try:
             menu.delete('Open Project')
         except Exception:
             logging.exception('Failed to delete menu')
 
         self.popMenu = tk.Menu(menu,tearoff=0)
-        for text in listOfProjects:
-            self.popMenu.add_command(label=text, command=lambda t=text: self.setActiveProject(t))
+        if(self.activeUser != None and (self.activeUser.userRole == "Scrum Master" or self.activeUser.userRole == "Developer")):
+            for text in listOfProjects:
+                for project in self.activeUser.listOfProjects:
+                    if(project.projectName == text):
+                        self.popMenu.add_command(label=project.projectName, command=lambda t=project.projectName: self.setActiveProject(t))
+        else:
+            for text in listOfProjects:
+                self.popMenu.add_command(label=text, command=lambda t=text: self.setActiveProject(t))
 
         menu.insert_cascade(index=1, label='Open Project', menu=self.popMenu, underline=0)
 
