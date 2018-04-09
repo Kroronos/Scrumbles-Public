@@ -128,7 +128,8 @@ class ProjectQuery(Query):
 
     @staticmethod
     def removeItem(project, item):
-        query = 'DELETE FROM ProjectItemTable WHERE ProjectID=%s AND ItemID=%s'
+        query = '''DELETE FROM ProjectItemTable WHERE ProjectID=%s AND ItemID=%s;
+        '''
         return query, (project.projectID,item.itemID)
 
 
@@ -245,8 +246,15 @@ class CardQuery(Query):
     @staticmethod
     def deleteCard(item):
         assert item is not None
-        query = 'DELETE FROM CardTable WHERE CardID=%s'
-        return query,(item.itemID,)
+        ID = item.itemID
+        query = '''DELETE FROM CardTable WHERE CardID=%s;
+        DELETE FROM EpicTable WHERE SubitemID=%s;
+        DELETE FROM EpicTable WHERE EpicID=%s;
+        DELETE FROM CardTimeLine WHERE CardID=%s;
+        DELETE FROM CommentTable WHERE CardID=%s;
+        DELETE FROM ProjectItemTable WHERE ItemID=%s'''
+        parameterMap = {1: (ID,), 2:(ID,), 3:(ID,), 4:(ID,),5:(ID,),6:(ID,)}
+        return query,parameterMap
     @staticmethod
     def getEpicSubitems(item):
         assert item is not None

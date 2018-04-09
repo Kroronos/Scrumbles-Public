@@ -63,6 +63,26 @@ class ScrumblesData:
         how = 1
         return queryResult.fetch_row(maxRows, how)
 
+    def setMulti(self,query):
+        sql = query[0]
+        i = 0
+        params = query[1]
+        try:
+            for line in sql.splitlines():
+
+                i += 1
+                cursor = self.dbConnection.cursor()
+                try:
+                    cursor.execute(line,params[i])
+                except Exception as e:
+                    print(line, params[i],"Failed to execute\n",str(e))
+                    raise(e)
+                cursor.close()
+            self.dbConnection.commit()
+        except Exception:
+            logging.exception('Multi Line SQL did not commit')
+            self.dbConnection.rollback()
+
     def setData(self, query):
         print(query)
         assert self.dbConnection is not None
