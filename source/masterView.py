@@ -93,14 +93,17 @@ class masterView(tk.Tk):
 
         fileMenu = tk.Menu(menuBar, tearoff=0)
         self.fileMenu = fileMenu
-        fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
+        if (self.activeUser.userRole == "Admin"):
+            fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
         self.setOpenProjectsMenu(fileMenu)
         self.dataBlock.packCallback(self.updateOpenProjectsMenu)
         fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
 
         editMenu = tk.Menu(menuBar, tearoff=0)
-        editMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
-        editMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
+        if (self.activeUser.userRole == "Admin"):
+            editMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
+        if (self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master"):
+            editMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
         editMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
@@ -149,7 +152,7 @@ class masterView(tk.Tk):
         viewNames = []
         if (self.activeUser.userRole == "Admin"):
             views.append(mainView)
-            viewNames.append("Administrator Home")
+            viewNames.append("Admin Home")
 
         elif (self.activeUser.userRole == "Scrum Master"):
             views.append(mainView)
@@ -173,22 +176,14 @@ class masterView(tk.Tk):
         return views, viewNames
 
     def showCreateProjectDialog(self):
-        if self.activeUser.userRole == "Admin":
-            Dialogs.CreateProjectDialog(self, master=self, dataBlock=self.dataBlock).show()
-        else:
-            messagebox.showerror('Access Denied', 'Must Be An Administrator')
 
+        Dialogs.CreateProjectDialog(self, master=self, dataBlock=self.dataBlock).show()
     def showCreateUserDialog(self):
-        if self.activeUser.userRole == "Admin":
-            Dialogs.CreateUserDialog(self, master=self, dataBlock=self.dataBlock).show()
-        else:
-            messagebox.showerror('Access Denied', 'Must Be An Administrator')
+        Dialogs.CreateUserDialog(self, master=self, dataBlock=self.dataBlock).show()
+
 
     def showCreateSprintDialog(self):
-        if self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master":
-            Dialogs.CreateSprintDialog(self, master=self, dataBlock=self.dataBlock).show()
-        else:
-            messagebox.showerror('Access Denied', 'Must Be An Administrator')
+        Dialogs.CreateSprintDialog(self, master=self, dataBlock=self.dataBlock).show()
 
     def showCreateItemDialog(self):
         Dialogs.CreateItemDialog(self, master=self, dataBlock=self.dataBlock).show()
@@ -218,7 +213,7 @@ class masterView(tk.Tk):
         mainFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
-        sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self)
+        sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self, loggedInUser)
         backlogManagerFrame = backlogManagerView.backlogManagerView(self.container, self, loggedInUser)
         itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
 

@@ -61,10 +61,14 @@ class SprintMgrItemPopMenu(SPopMenu.GenericPopupMenu):
 
 
 class sprintManagerView(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
-        self.parent = parent
         self.controller = controller
+        self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, user.userRole + " Home")
+        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
+
         self.activeProject = controller.activeProject
         self.sprintPopMenu = SPopMenu.GenericPopupMenu(self,self.controller)
         self.roleMap = {'Developer':0,'Scrum Master':1,'Admin':2}
@@ -74,10 +78,8 @@ class sprintManagerView(tk.Frame):
                                            command=self.editSprint)
 
         self.itemPopMenu= SprintMgrItemPopMenu(self,self.controller)
+        self.subItemPopMenu= SprintMgrItemPopMenu(self,self.controller)
 
-
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Sprint Manager")
-        self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
         self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS",controller)
@@ -90,7 +92,7 @@ class sprintManagerView(tk.Frame):
         self.itemList.listbox.bind('<2>' if self.aqua else '<3>',
                                    lambda event: self.itemPopMenu.context_menu(event,self.itemPopMenu))
         self.subItemList.listbox.bind('<2>' if self.aqua else '<3>',
-                                   lambda event: self.itemPopMenu.context_menu(event, self.itemPopMenu))
+                                   lambda event: self.subItemPopMenu.context_menu(event, self.subItemPopMenu))
 
 
         self.sprints = []
@@ -193,12 +195,15 @@ class sprintManagerView(tk.Frame):
 
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
         self.sprintItems = [item for item in self.controller.activeProject.listOfAssignedItems]
-        self.sprintItemSubItems = [item for item in self.controller.activeProject.listOfAssignedItems]
+        
+        if (self.selectedItem != None):
+            self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
 
         self.sprintList.importSprintsList(self.sprints)
         self.itemList.importItemList(self.sprintItems)
         self.itemList.colorCodeListboxes()
         self.subItemList.importItemList(self.sprintItemSubItems)
+        self.subItemList.colorCodeListboxes()
         self.itemList.colorCodeListboxes()
         self.activeProject = self.controller.activeProject
         del self.itemPopMenu
@@ -212,7 +217,16 @@ class sprintManagerView(tk.Frame):
                 self.sprintItemSubItems = sprint.listOfAssignedItems
                 self.itemList.importItemList(self.sprintItems)
                 self.itemList.colorCodeListboxes()
-                self.subItemList.importItemList(self.sprintItemSubItems)
+                self.subItemList.clearList()
+
+    def assignedItemEvent(self, event):
+        for item in self.controller.activeProject.listOfAssignedItems:
+            if item.itemTitle == event.widget.get(tk.ANCHOR):
+
+                print(item.itemTitle)
+                self.selectedItem = item
+                self.subItemList.clearList()
+                self.subItemList.importItemList(item.subItemList)
                 self.subItemList.colorCodeListboxes()
 
     def listboxEvents(self, event):
@@ -221,6 +235,7 @@ class sprintManagerView(tk.Frame):
             self.sprintDescriptionManager.changeDescription(event)
 
         if event.widget is self.itemList.listbox:
+            self.assignedItemEvent(event)
             self.itemDescriptionManager.changeDescription(event)
 
         if event.widget is self.subItemList.listbox:

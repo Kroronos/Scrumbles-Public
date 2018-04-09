@@ -5,6 +5,60 @@ import ScrumblesFrames, SPopMenu,ScrumblesObjects,Dialogs
 import listboxEventHandler
 from styling import styling as style
 import logging
+import tkinter as tk
+import Dialogs
+
+class mainViewPopup(SPopMenu.GenericPopupMenu):
+    def __init__(self,root,Master):
+        super().__init__(root,Master)
+        self.isAssignDeleted = False
+
+
+    def context_menu(self, event, menu):
+        self.widget = event.widget
+        self.event = event
+        index = self.widget.nearest(event.y)
+        _, yoffset, _, height = self.widget.bbox(index)
+        if event.y > height + yoffset + 5:
+            return
+        self.selectedObject = self.widget.get(index)
+
+        self.selectedObject = self.findSelectedObject(self.selectedObject)
+        # for i in range(5):
+        #     print('index %i = %s'%(i,str(self.index(i))))
+        try:
+            self.delete(u'Approve Item')
+        except Exception as e:
+            pass
+        if self.root.roleMap[self.root.activeRole] > 0:
+            if self.index(0) is None:
+                self.usersMenu = tk.Menu(self, tearoff=0)
+                self.add_cascade(label=u'Assign to User', menu=self.usersMenu)
+                for name in [U.userName for U in self.master.activeProject.listOfAssignedUsers]:
+                    self.usersMenu.add_command(label=name, command=lambda n=name:self.root.assignToUser(n))
+
+            if self.selectedObject.itemStatus == 3:
+               if self.index(1) is None or self.index(1)==0:
+                   self.add_command(label=u'Approve Item', command=self.root.approveItem)
+
+
+
+
+        try:
+            self.root.selectedItem = self.selectedObject
+        except:
+            pass
+        self.widget.selection_clear(0, tk.END)
+        self.widget.selection_set(index)
+        self.widget.activate(index)
+        menu.post(event.x_root, event.y_root)
+
+
+    def getSelectedObject(self):
+        return self.selectedObject
+
+
+
 
 class mainView(tk.Frame):
     def __init__(self, parent, controller, user):
@@ -12,171 +66,182 @@ class mainView(tk.Frame):
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Scrum Master Home")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, user.userRole + " Home")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
-        self.myItemsPopMenu = SPopMenu.GenericPopupMenu(self, self.controller)
-        self.myItemsPopMenu.add_command(label=u'Begin Work', command=self.setItemToInprogress)
-        self.myItemsPopMenu.add_command(label=u'Submit For Review', command=self.setItemToSubmitted)
+        self.activeProject = controller.activeProject
+        self.sprintPopMenu = SPopMenu.GenericPopupMenu(self,self.controller)
+        self.roleMap = {'Developer':0,'Scrum Master':1,'Admin':2}
+        self.activeRole = controller.activeUser.userRole
+        if self.roleMap[self.activeRole] > 0:
+            self.sprintPopMenu.add_command(label=u'Edit Sprint',
+                                           command=self.editSprint)
 
-        self.backlogPopMenu = SPopMenu.GenericPopupMenu(self, self.controller)
-        self.backlogPopMenu.add_command(label=u'Assign To me', command=self.assignItemToActiveUser)
-
-        self.itemColumnFrame = tk.Frame(self)
-        self.userItemList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "MY ITEMS",controller)
-        self.userItemList.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.myItemsPopMenu.context_menu(event, self.myItemsPopMenu))
-
-        self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame,"BACKLOG",controller)
-
-        self.productBacklogList.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.backlogPopMenu.context_menu(event, self.backlogPopMenu) )
+        self.itemPopMenu= mainViewPopup(self,self.controller)
+        self.subItemPopMenu= mainViewPopup(self,self.controller)
 
 
+        self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
+        self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS",controller)
+        self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS",controller)
 
-        self.commentFeed = ScrumblesFrames.commentsField(self, self.controller)
+        self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
-        # progress bar
-        s = ttk.Style()
-        s.theme_use('clam')
-        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_blue, background=style.scrumbles_orange)
-
-        progressBarStyle = "scrumbles.Horizontal.TProgressbar"
-
-        self.progressBar = ttk.Progressbar(self.itemColumnFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
-
-        self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
+        self.sprintList.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: self.sprintPopMenu.context_menu(event, self.sprintPopMenu))
+        self.itemList.listbox.bind('<2>' if self.aqua else '<3>',
+                                   lambda event: self.itemPopMenu.context_menu(event,self.itemPopMenu))
+        self.subItemList.listbox.bind('<2>' if self.aqua else '<3>',
+                                   lambda event: self.subItemPopMenu.context_menu(event, self.subItemPopMenu))
 
 
-        self.backlog = []
-        self.teamMembers = []
-        self.assignedItems = []
-        self.selectedUser = None
+        self.sprints = []
+        self.sprintItems = []
+        self.sprintItemSubItems = []
+        self.selectedSprint = None
+        self.selectedItem = None
+        self.selectedSubItem = None
 
-        self.controller.dataBlock.packCallback(self.updateLists)
-        self.updateLists()
+        sprintDynamicSources = [self.sprintList.listbox]
+        sprintQueryType = ['Sprint']
+        self.sprintDescriptionManager = ScrumblesFrames.SCardDescription(self, controller, sprintDynamicSources, sprintQueryType)
 
-        #Append Any Sources for Dynamic Events to this List
-        dynamicSources = [self.productBacklogList.listbox, self.userItemList.listbox]
-        queryType = ['Item', 'Item']
-        self.descriptionManager = ScrumblesFrames.SCardDescription(self, controller, dynamicSources, queryType)
+        itemDynamicSources = [self.itemList.listbox, self.subItemList.listbox]
+        itemQueryType = ['Item', 'Item']
+        self.itemDescriptionManager = ScrumblesFrames.SCardDescription(self, controller, itemDynamicSources, itemQueryType)
 
         # To Prevent Duplicate Tkinter Events
         self.eventHandler = listboxEventHandler.listboxEventHandler()
         self.eventHandler.setEventToHandle(self.listboxEvents)
 
         #Bind Sources
-        for source in dynamicSources:
+        for source in itemDynamicSources:
+            source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
+        for source in sprintDynamicSources:
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
-        self.progressBar.pack(side=tk.TOP, fill=tk.X)
-        self.userItemList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.productBacklogList.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.sprintList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+        self.sprintDescriptionManager.pack(side = tk.TOP, fill = tk.BOTH)
+        self.itemList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+        self.subItemList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+        self.itemDescriptionManager.pack(side = tk.RIGHT, fill = tk.BOTH)
 
-        self.itemColumnFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.descriptionManager.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.commentFeed.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.updateSprintList()
+        self.controller.dataBlock.packCallback(self.updateSprintList)
+        self.controller.dataBlock.packCallback(self.updateLists)
 
-    def updateProgressBar(self):
-        self.maxTasks = len(self.assignedItems)
-        self.completedTasks = 0
-        for item in self.assignedItems:
-            if item.itemStatus == 4:
-                self.completedTasks += 1
-        self.progressBar["value"] = self.completedTasks
-        self.progressBar["maximum"] = self.maxTasks
+    def approveItem(self):
+
+        try:
+            item = self.itemPopMenu.getSelectedObject()
+            self.controller.dataBlock.modifyItemStatus(item, item.statusTextToNumberMap['Complete'])
+            comment = ScrumblesObjects.Comment()
+            comment.commentContent = '%s Has Approved Item' % self.controller.activeUser.userName
+            comment.commentItemID = item.itemID
+            comment.commentUserID = self.controller.activeUser.userID
+            self.controller.dataBlock.addNewScrumblesObject(comment)
+        except Exception as e:
+            logging.exception('Could not assign item to Complete')
+            messagebox.showerror('Error',str(e))
+
+        messagebox.showinfo('Success','Item Approved')
+
+    def assignToUser(self,username):
+        user = None
+
+        if messagebox.askyesno('Assign To User','Do you wish to assign item to user %s'%username):
+            for U in self.controller.dataBlock.users:
+                if U.userName == username:
+                    user = U
+            if user is not None:
+                try:
+                    item = self.itemPopMenu.getSelectedObject()
+                    assert item is not None
+                    self.controller.dataBlock.assignUserToItem(user,item)
+                    comment = ScrumblesObjects.Comment()
+                    comment.commentContent = '%s Has Assigned User %s to Item' % (self.controller.activeUser.userName, user.userName)
+                    comment.commentItemID = item.itemID
+                    comment.commentUserID = self.controller.activeUser.userID
+                    self.controller.dataBlock.addNewScrumblesObject(comment)
+                except Exception as e:
+                    messagebox.showerror('Error',str(e))
+                    logging.exception('Error assigning user %s to item'%username)
+                    return
+                messagebox.showinfo('Success','Item Assigned to User %s'%user.userName)
+
+
+            else:
+                messagebox.showerror('Error','User not found in DataBlock')
+                logging.error('User %s not found in dataBlock'%username)
+    def editSprint(self):
+        sprint = self.sprintPopMenu.getSelectedObject()
+        if Dialogs.EditSprintDialog(self.controller,master=self.controller,
+                                 dataBlock=self.controller.dataBlock,
+                                 sprint=sprint).show():
+            messagebox.showinfo('Success','Sprint Updated Successfully')
+    def updateSprintList(self):
+        self.sprints = []
+        self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
+        self.sprintList.importSprintsList(self.sprints)
 
     def updateLists(self):
-        self.backlog.clear()
-        self.teamMembers.clear()
-        self.assignedItems.clear()
+        self.sprints = []
+        self.sprintItems = []
+        self.sprintItemSubItems = []
 
+        self.sprintList.clearList()
+        self.itemList.clearList()
+        self.subItemList.clearList()
+
+        self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
+        self.sprintItems = [item for item in self.controller.activeProject.listOfAssignedItems]
+        if (self.selectedItem != None):
+            self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
+
+        self.sprintList.importSprintsList(self.sprints)
+        self.itemList.importItemList(self.sprintItems)
+        self.itemList.colorCodeListboxes()
+        self.subItemList.importItemList(self.sprintItemSubItems)
+        self.subItemList.colorCodeListboxes()
+        self.itemList.colorCodeListboxes()
+        self.activeProject = self.controller.activeProject
+        del self.itemPopMenu
+        self.itemPopMenu = mainViewPopup(self, self.controller)
+
+    def assignedSprintEvent(self, event):
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            if sprint.sprintName == event.widget.get(tk.ANCHOR):
+                self.selectedSprint = sprint
+                self.sprintItems = sprint.listOfAssignedItems
+                self.sprintItemSubItems = sprint.listOfAssignedItems
+                self.itemList.importItemList(self.sprintItems)
+                self.itemList.colorCodeListboxes()
+                self.subItemList.clearList()
+
+    def assignedItemEvent(self, event):
         for item in self.controller.activeProject.listOfAssignedItems:
-            if item.itemStatus == 0:
-                self.backlog.append(item)
+            if item.itemTitle == event.widget.get(tk.ANCHOR):
 
-        self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
-        for item in self.controller.activeUser.listOfAssignedItems:
-            if item.projectID == self.controller.activeProject.projectID:
-                self.assignedItems.append(item)
-
-        self.productBacklogList.clearList()
-        self.productBacklogList.importItemList(self.backlog)
-        self.productBacklogList.colorCodeListboxes()
-
-        self.userItemList.clearList()
-        self.userItemList.importItemList(self.assignedItems)
-        self.userItemList.colorCodeListboxes()
-        self.updateProgressBar()
-        self.commentFeed.updateComments()
-
+                print(item.itemTitle)
+                self.selectedItem = item
+                self.subItemList.clearList()
+                self.subItemList.importItemList(item.subItemList)
+                self.subItemList.colorCodeListboxes()
 
     def listboxEvents(self, event):
-        if event.widget is self.userItemList.listbox:
-            self.descriptionManager.changeDescription(event)
-            self.commentFeed.updateFromListOfCommentsObject(self.controller.activeProject.listOfAssignedItems,
-                                                            event.widget.get(tk.ANCHOR))
+        if event.widget is self.sprintList.listbox:
+            self.assignedSprintEvent(event)
+            self.sprintDescriptionManager.changeDescription(event)
 
-        if event.widget is self.productBacklogList.listbox:
-            self.descriptionManager.changeDescription(event)
-            self.commentFeed.updateFromListOfCommentsObject(self.controller.activeProject.listOfAssignedItems,
-                                                            event.widget.get(tk.ANCHOR))
+        if event.widget is self.itemList.listbox:
+            self.assignedItemEvent(event)
+            self.itemDescriptionManager.changeDescription(event)
 
-    def setItemToInprogress(self):
-        Item = self.myItemsPopMenu.getSelectedObject()
-        Comment = ScrumblesObjects.Comment()
-        Comment.commentItemID = Item.itemID
-        Comment.commentUserID = self.controller.activeUser.userID
-        Comment.commentContent = 'Set to In Progress by menu action'
-        result = messagebox.askyesno('Get to Work','Are you ready to begin work on this item?')
-        if result:
-            try:
-                self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
-                self.controller.dataBlock.addNewScrumblesObject(Comment)
-                messagebox.showinfo('Success','Item Status changed to In-Progress')
-            except Exception as e:
-                logging.exception('Error Setting Item to In progress')
-                messagebox.showerror('Error', str(e))
-    def setItemToSubmitted(self):
-        Item = self.myItemsPopMenu.getSelectedObject()
-        Comment = ScrumblesObjects.Comment()
-        Comment.commentItemID = Item.itemID
-        Comment.commentUserID = self.controller.activeUser.userID
-        Comment.commentContent = 'Set to Submitted by menu action'
-        updated = Dialogs.codeLinkDialog(self.controller, master=self.controller, dataBlock=self.controller.dataBlock,
-                                         item=Item).show()
-        if updated:
-            try:
-                self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
-                self.controller.dataBlock.addNewScrumblesObject(Comment)
-                messagebox.showinfo('Success','Item Submitted to Scrum Master for review')
-            except Exception as e:
-                logging.exception('Error Assigning Submitting item for review')
-                messagebox.showerror('Error', str(e))
-    def assignItemToActiveUser(self):
-        Item = self.backlogPopMenu.getSelectedObject()
-        if Item.itemUserID is not None:
-            messagebox.showerror('Error','Cannot Assign Item to Self!\nItem already assigned to another user')
-            return False
-        Comment = ScrumblesObjects.Comment()
-        Comment.commentItemID = Item.itemID
-        Comment.commentUserID = self.controller.activeUser.userID
-        Comment.commentContent = 'Assigned to self by menu action'
+        if event.widget is self.subItemList.listbox:
+            self.itemDescriptionManager.changeDescription(event)
+    def __str__(self):
+        return 'Scrumbles Home View'
 
-
-        self.assignedItems.append(Item)
-        self.userItemList.addItem(Item.itemTitle)
-        self.updateProgressBar()
-        result = messagebox.askyesno('Assign To Me','Do you want Assign this Item to yourself?')
-        if result:
-            try:
-                self.controller.dataBlock.assignUserToItem(self.controller.activeUser,Item)
-                self.controller.dataBlock.addNewScrumblesObject(Comment)
-                messagebox.showinfo('Success', 'Item Assigned to %s' % self.controller.activeUser.userName)
-            except Exception as e:
-                logging.exception('Error Assigning Item to active User')
-                messagebox.showerror('Error', str(e))
-            return True
 
     # def getCodeLink(self,item):
     #     isUpdated = [False]  #Had to make this a list because bool and int are immutable
@@ -187,3 +252,5 @@ class mainView(tk.Frame):
     #     getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller,self.controller.dataBlock,item,evnt,isUpdated)
     #     self.wait_window(getLinkPopUP.top)
     #     return isUpdated
+
+
