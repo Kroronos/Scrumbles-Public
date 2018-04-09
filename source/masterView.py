@@ -105,6 +105,7 @@ class masterView(tk.Tk):
         editMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
+        profileMenu.add_command(label=self.activeUser.userName)
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
 
         viewMenu = tk.Menu(menuBar, tearoff=0)
