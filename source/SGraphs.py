@@ -56,3 +56,31 @@ class SLineGraph(tk.Frame):
 
     def changeBackgroundColor(self, color):
         self.graph.set_facecolor(facecolor=color)
+
+
+class SHistogram(tk.Frame):
+    def __init__(self, controller):
+        tk.Frame.__init__(self, controller)
+
+    def generateGraph(self, x, y, xAxis, yAxis):
+        self.graphInitilazition()
+        self.showGraph(x, y, xAxis, yAxis)
+
+    def graphInitilazition(self):
+        self.f = Figure(figsize=(5,5), dpi=100)
+        self.canvas = FigureCanvasTkAgg(self.f, self)
+        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=False)
+
+
+    def showGraph(self, bins, y, xAxis, yAxis):
+        self.p = self.f.gca()
+        self.p.hist(y, bins)
+        self.p.set_xlabel(xAxis, fontsize=15)
+        self.p.set_ylabel(yAxis, fontsize=15)
+        self.p.set_xticks(range(0,bins))
+
+        loc = matplotlib.ticker.MultipleLocator(base=1.0)  # this locator puts ticks at regular intervals
+        self.p.yaxis.set_major_locator(loc) #we don't want to count freq to determine y max
+
+
+        self.canvas.draw()
