@@ -76,6 +76,8 @@ class SMmainView(tk.Frame):
         if self.roleMap[self.activeRole] > 0:
             self.sprintPopMenu.add_command(label=u'Edit Sprint',
                                            command=self.editSprint)
+            self.sprintPopMenu.add_command(label=u'Delete Sprint',
+                                           command=self.deleteSprint)
 
         self.itemPopMenu= SMmainViewPopup(self,self.controller)
         self.subItemPopMenu= SMmainViewPopup(self,self.controller)
@@ -179,6 +181,16 @@ class SMmainView(tk.Frame):
                                  dataBlock=self.controller.dataBlock,
                                  sprint=sprint).show():
             messagebox.showinfo('Success','Sprint Updated Successfully')
+
+    def deleteSprint(self):
+        sprint = self.sprintPopMenu.getSelectedObject()
+        self.selectedItem = None
+        if Dialogs.DeleteSprintDialog(self.controller,master=self.controller,
+                                 dataBlock=self.controller.dataBlock,
+                                 sprint=sprint).show():
+            self.selectedItem = None
+
+
     def updateSprintList(self):
         self.sprints = []
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]

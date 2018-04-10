@@ -355,6 +355,47 @@ class EditSprintDialog(CreateSprintDialog):
         self.executeSuccess = False
         self.exit()
 
+
+class DeleteSprintDialog(GenericDialog):
+    def __init__(self, *args, **kwargs):
+        sprint = kwargs.pop('sprint',None)
+        assert type(sprint) == ScrumblesObjects.Sprint, 'keyword sprint must be a ScrumblesObject.Sprint'
+        super().__init__(*args, **kwargs)
+        self.sprint = sprint
+        self.title('Delete Sprint')
+        self.createWidgets()
+        self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
+
+
+
+    @tryExcept
+    def ok(self):
+        try:
+            if not self.isTest:
+                self.dataBlock.deleteScrumblesObject(self.sprint)
+                self.exit()
+            else:
+                print('TESTMODE: self.dataBlock.addNewScrumblesObject(%s)'%repr(project))
+        except IntegrityError:
+            logging.exception('ID Collision')
+
+        else:
+            messagebox.showinfo('Info', 'Sprint Successfully Deleted')
+
+
+
+    def cancel(self):
+        self.executeSuccess = False
+        self.exit()
+
+    def createWidgets(self):
+        self.deleteButton = Tk.Button(self, text="Delete Sprint", command=self.ok)
+        self.deleteButton.grid(row=8,column=2,pady=5)
+
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.cancel)
+        self.cancelButton.grid(row=8,column=1,pady=5)
+
+
 class CreateItemDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
         print('SELF', type(self))
