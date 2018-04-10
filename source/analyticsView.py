@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
+import listboxEventHandler
 import ScrumblesFrames
+import sys
+from styling import styling as style
 
 
 class analyticsView(tk.Frame):
@@ -11,10 +14,15 @@ class analyticsView(tk.Frame):
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Analytics")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
+        self.eventHandler = listboxEventHandler.listboxEventHandler()
+        self.eventHandler.setEventToHandle(self.listboxEvents)
+
         self.selectionNotebook = ttk.Notebook(self)
 
         self.sprintAnalyticsFrame = tk.Frame(self)
+
         self.userAnalyticsFrame = tk.Frame(self)
+
         self.taskAnalyticsFrame = tk.Frame(self)
 
 
@@ -25,17 +33,19 @@ class analyticsView(tk.Frame):
                 #Number of Completed Items vs Date - Line Graph
                 #Percent Assigned Completed - Progress Bar
 
-            #Per User
-                #Tasks Completed
-                #Points Earned
-                #Best Sprint
-                #Worst Sprint
+        self.insideUser = False
         self.userList = ScrumblesFrames.SList(self.userAnalyticsFrame, "USERS")
-        self.averageMVPLabels = self.generateMVPLabels()
+        self.userAnalyticsContents = tk.Frame(self.userAnalyticsFrame)
+        self.userAnalyticsContentsOptions = []
+        self.userAnalyticsContentsOptions.append(self.userAnalyticsContents)
+        self.userLabels = self.generateUserLabels()
         self.taskUserHistogram = self.generateTaskUserHistogram()
         self.userList.pack(side=tk.LEFT, fill=tk.Y)
-        self.averageMVPLabels.pack()
-        self.taskUserHistogram.pack()
+        self.userLabels.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.taskUserHistogram.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.userList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
         #For Tasks
             #Average Time From Creation to Completion
@@ -79,9 +89,10 @@ class analyticsView(tk.Frame):
         self.teamMembers = []
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
         self.userList.importList(self.teamMembers)
-
+        if self.insideUser is True:
+            self.generateInternalUserFrame(self.userEvent)
     def generateTaskUserHistogram(self):
-        taskUserHistogram = ScrumblesFrames.SHistogram(self.userAnalyticsFrame)
+        taskUserHistogram = ScrumblesFrames.SHistogram(self.userAnalyticsContents)
         tasksCompletedByUsers = []
 
 
@@ -104,7 +115,7 @@ class analyticsView(tk.Frame):
         taskUserHistogram.generateGraph(bins+1, tasksCompletedByUsers, "Tasks Completed","Number of Users")
         return taskUserHistogram
 
-    def generateMVPLabels(self):
+    def generateUserLabels(self):
         MVPTaskName =  None
         MVPPointsName = None
         MVPTaskValue = 0
@@ -140,17 +151,119 @@ class analyticsView(tk.Frame):
         averagePointsValue = str(averagePointsValue)
         averageTasksValue = str(averageTasksValue)
 
-        MVPLabels = tk.Frame(self.userAnalyticsFrame)
+        userLabels = tk.Frame(self.userAnalyticsContents, relief=tk.SOLID, borderwidth=1)
+        MVPLabels = tk.Frame(userLabels)
         MVPTasks = tk.Label(MVPLabels, text=MVPTaskName + " completed " + MVPTaskValue
                                               +" tasks. The most out of anyone in this project so far.")
         MVPPoints = tk.Label(MVPLabels, text=MVPPointsName + " earned " + MVPPointsValue
                                               +" points. The most out of anyone in this project so far.")
-        averageTasks = tk.Label(MVPLabels, text="The average amount of tasks completed in this project is " + averageTasksValue)
-        averagePoints = tk.Label(MVPLabels, text="The average amount of points earneed in this project is " + averagePointsValue)
+        averageLabels = tk.Frame(userLabels)
+        averageTasks = tk.Label(averageLabels, text="The average amount of tasks completed in this project is " + averageTasksValue+".")
+        averagePoints = tk.Label(averageLabels, text="The average amount of points earneed in this project is " + averagePointsValue+".")
 
-        MVPTasks.pack(side=tk.TOP, fill=tk.X)
-        averageTasks.pack(side=tk.TOP, fill=tk.X)
-        MVPPoints.pack(side=tk.TOP, fill=tk.X)
-        averagePoints.pack(side=tk.TOP, fill=tk.X)
+        MVPTasks.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        MVPPoints.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        MVPLabels.pack(side=tk.TOP, fill=tk.X, expand=True)
 
-        return MVPLabels
+        averageTasks.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        averagePoints.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        averageLabels.pack(side=tk.TOP, fill=tk.X, expand=True)
+
+
+        return userLabels
+
+    def listboxEvents(self, event):
+        if event.widget is self.userList.listbox:
+            self.generateInternalUserFrame(event)
+
+    def generateInternalUserFrame(self, event):
+        self.userEvent = event
+        userName = event.widget.get(tk.ANCHOR)
+        self.insideUser = True
+
+        tasksCompleted, tasksAssigned, pointsEarned = self.getUserTaskInfo(userName)
+        if tasksAssigned == 0:
+            tasksAssigned = 1 #Prevent divide by zero when calculating percentage
+        bestSprint, worstSprint, bestSprintPoints, worstSprintPoints = self.analyzeUserSprints(userName)
+        internalUserFrame = tk.Frame(self.userAnalyticsFrame)
+        # progress bar
+        s = ttk.Style()
+        s.theme_use('clam')
+        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_blue, background=style.scrumbles_orange)
+
+        progressBarStyle = "scrumbles.Horizontal.TProgressbar"
+
+        progressBarFrame = tk.Frame(internalUserFrame)
+        userProgressBar = ttk.Progressbar(progressBarFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
+        userProgressBarLabel = tk.Label(progressBarFrame, text=userName + " has completed " + str(int((tasksCompleted/tasksAssigned)*100)) + "% of the tasks they've been assigned.")
+
+        userProgressBarLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        userProgressBar.pack(side=tk.TOP, fill=tk.X, expand=True)
+        userProgressBar["value"] = tasksCompleted
+        userProgressBar["maximum"] = tasksAssigned
+        progressBarFrame.pack(side=tk.TOP, fill=tk.X, expand=False)
+
+        statisticsFrame = tk.Frame(internalUserFrame,  relief=tk.SOLID, borderwidth=1)
+        performanceFrame = tk.Frame(statisticsFrame,  relief=tk.SOLID, borderwidth=1)
+        tasksCompletedLabel = tk.Label(performanceFrame, text="Tasks Completed: " + str(tasksCompleted))
+        pointsEarnedLabel = tk.Label(performanceFrame, text="Points Earned: " + str(pointsEarned))
+        sprintFrame = tk.Frame(statisticsFrame,  relief=tk.SOLID, borderwidth=1)
+        bestSprintLabel = tk.Label(sprintFrame, text="User performed best on sprint " + bestSprint + " earning " + str(bestSprintPoints) + " points.")
+        worstSprintLabel = tk.Label(sprintFrame, text="User performed worst on sprint " + worstSprint + " earning " + str(worstSprintPoints) + " points.")
+
+        tasksCompletedLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        pointsEarnedLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        bestSprintLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        worstSprintLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        performanceFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        sprintFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        statisticsFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.userAnalyticsContents.pack_forget()
+        if len(self.userAnalyticsContentsOptions) == 1:
+            self.userAnalyticsContentsOptions.append(internalUserFrame)
+        else:
+            self.userAnalyticsContentsOptions[1] = internalUserFrame
+        self.userAnalyticsContents = self.userAnalyticsContentsOptions[1]
+
+        self.userAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    def getUserTaskInfo(self, userName):
+        itemsAssigned = 0
+        itemsCompleted = 0
+        pointsEarned = 0
+        for user in self.controller.activeProject.listOfAssignedUsers:
+            if user.userName == userName:
+                for item in user.listOfAssignedItems:
+                    if item.projectID == self.controller.activeProject.projectID:
+                        itemsAssigned +=1
+                        if item.itemStatus == 4:
+                            itemsCompleted +=1
+                            pointsEarned += item.itemPoints
+                break #end once we found the user
+        return itemsCompleted, itemsAssigned, pointsEarned
+
+    def analyzeUserSprints(self, userName):
+        bestSprintPoints = -1
+        worstSprintPoints = sys.maxsize
+        bestSprintName = ""
+        worstSprintName = ""
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            for user in sprint.listOfAssignedUsers:
+                if user.userName == userName:
+                    localPoints = 0
+                    for item in user.listOfAssignedItems:
+                        if item.projectID == self.controller.activeProject.projectID:
+                            if item.itemStatus == 4:
+                                localPoints += item.itemPoints
+                        if localPoints < worstSprintPoints:
+                            worstSprintPoints = localPoints
+                            worstSprintName = sprint.sprintName
+                        if localPoints > bestSprintPoints:
+                            bestSprintPoints = localPoints
+                            bestSprintName = sprint.sprintName
+        return bestSprintName, worstSprintName, bestSprintPoints, worstSprintPoints
+
+
+    def clearSelection(self):
+        print("Clearing Selection")

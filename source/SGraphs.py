@@ -69,7 +69,7 @@ class SHistogram(tk.Frame):
     def graphInitilazition(self):
         self.f = Figure(figsize=(5,5), dpi=100)
         self.canvas = FigureCanvasTkAgg(self.f, self)
-        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=False)
+        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
 
     def showGraph(self, bins, y, xAxis, yAxis):
