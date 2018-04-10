@@ -322,6 +322,8 @@ class DataBlock:
         logging.info('Deleting object %s from database' % repr(obj))
         if type(obj) == ScrumblesObjects.Item:
             self.conn.setMulti(Query.deleteObject(obj))
+        elif type(obj) == ScrumblesObjects.Sprint:
+            self.conn.setMulti(Query.deleteObject(obj))
         else:
             self.conn.setData(Query.deleteObject(obj))
 
