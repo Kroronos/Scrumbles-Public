@@ -185,10 +185,11 @@ class SMmainView(tk.Frame):
     def deleteSprint(self):
         sprint = self.sprintPopMenu.getSelectedObject()
         self.selectedItem = None
+        self.selectedSubItem = None
         if Dialogs.DeleteSprintDialog(self.controller,master=self.controller,
                                  dataBlock=self.controller.dataBlock,
                                  sprint=sprint).show():
-            self.selectedItem = None
+            self.selectedSprint = None
 
 
     def updateSprintList(self):
@@ -211,8 +212,9 @@ class SMmainView(tk.Frame):
             self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
 
         self.sprintList.importSprintsList(self.sprints)
-        self.itemList.importItemList(self.sprintItems)
-        self.itemList.colorCodeListboxes()
+        if (selectedSprint != None):
+            self.itemList.importItemList(self.sprintItems)
+            self.itemList.colorCodeListboxes()
         self.subItemList.importItemList(self.sprintItemSubItems)
         self.subItemList.colorCodeListboxes()
         self.itemList.colorCodeListboxes()

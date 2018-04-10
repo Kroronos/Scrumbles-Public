@@ -389,7 +389,10 @@ class DeleteSprintDialog(GenericDialog):
         self.exit()
 
     def createWidgets(self):
-        self.deleteButton = Tk.Button(self, text="Delete Sprint", command=self.ok)
+        Tk.Label(self, text="Delete "+ self.sprint.sprintName + "?").grid(row=2, column=1, pady=5, sticky='E')
+
+
+        self.deleteButton = Tk.Button(self, text="Delete", command=self.ok)
         self.deleteButton.grid(row=8,column=2,pady=5)
 
         self.cancelButton = Tk.Button(self, text="Cancel", command=self.cancel)
