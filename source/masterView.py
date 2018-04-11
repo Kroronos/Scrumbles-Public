@@ -127,7 +127,7 @@ class masterView(tk.Tk):
         helpMenu.add_command(label = 'Refresh Data',command=self.refreshData)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
-        menuBar.add_cascade(label="Edit", menu=editMenu)
+        menuBar.add_cascade(label="Create", menu=editMenu)
         menuBar.add_cascade(label="Profile", menu=profileMenu)
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)

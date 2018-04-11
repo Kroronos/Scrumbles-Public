@@ -38,16 +38,26 @@ class SMmainViewPopup(SPopMenu.GenericPopupMenu):
             if self.index(0) is None:
                 self.usersMenu = tk.Menu(self, tearoff=0)
                 self.usersMenuEpic = tk.Menu(self, tearoff=0)
+                self.usersMenuSprint = tk.Menu(self, tearoff=0)
+
                 self.add_cascade(label=u'Assign to User', menu=self.usersMenu)
 
                 for name in [U.userName for U in self.master.activeProject.listOfAssignedUsers]:
                     self.usersMenu.add_command(label=name, command=lambda n=name:self.root.assignToUser(n))
 
-                self.listOfEpics = [I for I in self.root.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
+                self.listOfSprints = [S for S in self.master.activeProject.listOfAssignedSprints]
+                self.add_cascade(label=u'Assign to Sprint', menu=self.usersMenuSprint)
+
+                for name in [S.sprintName for S in self.listOfSprints]:
+                    self.usersMenuSprint.add_command(label=name, command=lambda n=name:self.root.assignToSprint(n))
+
+
+                self.listOfEpics = [I for I in self.master.activeProject.listOfAssignedItems if I.itemType == 'Epic']
                 self.add_cascade(label=u'Assign to Epic', menu=self.usersMenuEpic)
 
                 for name in [I.itemTitle for I in self.listOfEpics]:
                     self.usersMenuEpic.add_command(label=name, command=lambda n=name:self.root.assignToEpic(n))
+
 
                 self.add_command(label=u'Edit Item',
                                            command=self.root.updateItem)
@@ -55,11 +65,11 @@ class SMmainViewPopup(SPopMenu.GenericPopupMenu):
                                            command=self.root.deleteItem)
 
             if self.selectedObject.itemStatus == 3:
-               if self.index(4) is None or self.index(4)==0:
+               if self.index(5) is None or self.index(5)==0:
                    self.add_command(label=u'Approve Item', command=self.root.approveItem)
 
             if self.selectedObject.itemStatus == 3:
-               if self.index(5) is None or self.index(5)==0:
+               if self.index(6) is None or self.index(6)==0:
                    self.add_command(label=u'Reject Item', command=self.root.rejectItem)
 
 
@@ -190,14 +200,18 @@ class SMmainView(tk.Frame):
     def assignToUser(self,username):
         user = None
 
-        if messagebox.askyesno('Assign To User','Do you wish to assign item to user %s'%username):
+        if messagebox.askyesno('Assign To User','Do you wish to assign item to user %s?'%username):
             for U in self.controller.dataBlock.users:
                 if U.userName == username:
                     user = U
+
             if user is not None:
+
                 try:
                     item = self.itemPopMenu.getSelectedObject()
+
                     assert item is not None
+                    print(user.userName)
                     self.controller.dataBlock.assignUserToItem(user,item)
                     comment = ScrumblesObjects.Comment()
                     comment.commentContent = '%s Has Assigned User %s to Item' % (self.controller.activeUser.userName, user.userName)
@@ -215,10 +229,38 @@ class SMmainView(tk.Frame):
                 messagebox.showerror('Error','User not found in DataBlock')
                 logging.error('User %s not found in dataBlock'%username)
 
+    def assignToSprint(self,Insprint):
+        sprint = None
+
+        if messagebox.askyesno('Assign To Sprint','Do you wish to assign item to sprint %s?'%Insprint):
+            for I in self.controller.activeProject.listOfAssignedSprints:
+                if I.sprintName == Insprint:
+                    sprint = I
+            if sprint is not None:
+                try:
+                    item = self.itemPopMenu.getSelectedObject()
+                    assert item is not None
+                    self.controller.dataBlock.assignItemToSprint(sprint,item)
+                    comment = ScrumblesObjects.Comment()
+                    comment.commentContent = '%s Has Assigned Item %s to Sprint' % (self.controller.activeUser.userName, item.itemTitle)
+                    comment.commentItemID = item.itemID
+                    comment.commentUserID = self.controller.activeUser.userID
+                    self.controller.dataBlock.addNewScrumblesObject(comment)
+                except Exception as e:
+                    messagebox.showerror('Error',str(e))
+                    logging.exception('Error assigning item %s to sprint'%item.itemTitle)
+                    return
+                messagebox.showinfo('Success','Item Assigned Item to sprint, %s'%item.itemTitle)
+
+
+            else:
+                messagebox.showerror('Error','Sprint not found in DataBlock')
+                logging.error('Sprint not found in dataBlock')
+
     def assignToEpic(self,Inepic):
         epic = None
 
-        if messagebox.askyesno('Assign To Epic','Do you wish to assign item to user %s'%epic):
+        if messagebox.askyesno('Assign To Epic','Do you wish to assign item to Epic %s?'%Inepic):
             for I in self.controller.activeProject.listOfAssignedItems:
                  if I.itemType == 'Epic':
                     if I.itemTitle == Inepic:
@@ -243,6 +285,7 @@ class SMmainView(tk.Frame):
             else:
                 messagebox.showerror('Error','Epic not found in DataBlock')
                 logging.error('Epic not found in dataBlock')
+
     def editSprint(self):
         sprint = self.sprintPopMenu.getSelectedObject()
         if Dialogs.EditSprintDialog(self.controller,master=self.controller,
