@@ -39,11 +39,16 @@ class analyticsView(tk.Frame):
         self.userAnalyticsContentsOptions = []
         self.userAnalyticsContentsOptions.append(self.userAnalyticsContents)
         self.userLabels = self.generateUserLabels()
+
+        self.userGraphFrame = tk.Frame(self.userAnalyticsContents)
         self.taskUserHistogram = self.generateTaskUserHistogram()
+        self.taskUserPieChart = self.generateTaskUserPie()
         self.userList.pack(side=tk.LEFT, fill=tk.Y)
         self.userLabels.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.taskUserHistogram.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.taskUserPieChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.taskUserHistogram.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.userGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.userList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
@@ -91,8 +96,29 @@ class analyticsView(tk.Frame):
         self.userList.importList(self.teamMembers)
         if self.insideUser is True:
             self.generateInternalUserFrame(self.userEvent)
+
+    def generateTaskUserPie(self):
+        taskUserPie = ScrumblesFrames.SPie(self.userGraphFrame)
+        title = "Percentage of Tasks Completed By Users"
+        #now we need labels, values
+        labels = list()
+        values = list()
+        for user in self.controller.activeProject.listOfAssignedUsers:
+            firstTask = True
+            for task in user.listOfAssignedItems:
+                if task.projectID == self.controller.activeProject.projectID:
+                    if task.itemStatus == 4:
+                        if firstTask is True:
+                            values.append(1)
+                            labels.append(user.userName)
+                            firstTask = False
+                        else:
+                            values[-1] += 1
+
+        taskUserPie.generateGraph(labels, values, title)
+        return taskUserPie
     def generateTaskUserHistogram(self):
-        taskUserHistogram = ScrumblesFrames.SHistogram(self.userAnalyticsContents)
+        taskUserHistogram = ScrumblesFrames.SHistogram(self.userGraphFrame)
         tasksCompletedByUsers = []
 
 
