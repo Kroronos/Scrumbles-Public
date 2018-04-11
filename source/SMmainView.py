@@ -24,6 +24,10 @@ class SMmainViewPopup(SPopMenu.GenericPopupMenu):
         self.selectedObject = self.widget.get(index)
 
         self.selectedObject = self.findSelectedObject(self.selectedObject)
+        try:
+            self.root.selectedItem = self.selectedObject
+        except:
+            pass
         # for i in range(5):
         #     print('index %i = %s'%(i,str(self.index(i))))
         try:
@@ -33,21 +37,32 @@ class SMmainViewPopup(SPopMenu.GenericPopupMenu):
         if self.root.roleMap[self.root.activeRole] > 0:
             if self.index(0) is None:
                 self.usersMenu = tk.Menu(self, tearoff=0)
+                self.usersMenuEpic = tk.Menu(self, tearoff=0)
                 self.add_cascade(label=u'Assign to User', menu=self.usersMenu)
+
                 for name in [U.userName for U in self.master.activeProject.listOfAssignedUsers]:
                     self.usersMenu.add_command(label=name, command=lambda n=name:self.root.assignToUser(n))
 
+                self.listOfEpics = [I for I in self.root.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
+                self.add_cascade(label=u'Assign to Epic', menu=self.usersMenuEpic)
+
+                for name in [I.itemTitle for I in self.listOfEpics]:
+                    self.usersMenuEpic.add_command(label=name, command=lambda n=name:self.root.assignToEpic(n))
+
+                self.add_command(label=u'Edit Item',
+                                           command=self.root.updateItem)
+                self.add_command(label=u'Delete Item',
+                                           command=self.root.deleteItem)
+
             if self.selectedObject.itemStatus == 3:
-               if self.index(1) is None or self.index(1)==0:
+               if self.index(4) is None or self.index(4)==0:
                    self.add_command(label=u'Approve Item', command=self.root.approveItem)
 
+            if self.selectedObject.itemStatus == 3:
+               if self.index(5) is None or self.index(5)==0:
+                   self.add_command(label=u'Reject Item', command=self.root.rejectItem)
 
 
-
-        try:
-            self.root.selectedItem = self.selectedObject
-        except:
-            pass
         self.widget.selection_clear(0, tk.END)
         self.widget.selection_set(index)
         self.widget.activate(index)
@@ -73,22 +88,26 @@ class SMmainView(tk.Frame):
         self.sprintPopMenu = SPopMenu.GenericPopupMenu(self,self.controller)
         self.roleMap = {'Developer':0,'Scrum Master':1,'Admin':2}
         self.activeRole = controller.activeUser.userRole
+        self.FBPopMenu= SMmainViewPopup(self,self.controller)
         if self.roleMap[self.activeRole] > 0:
             self.sprintPopMenu.add_command(label=u'Edit Sprint',
                                            command=self.editSprint)
             self.sprintPopMenu.add_command(label=u'Delete Sprint',
                                            command=self.deleteSprint)
 
+
         self.itemPopMenu= SMmainViewPopup(self,self.controller)
         self.subItemPopMenu= SMmainViewPopup(self,self.controller)
 
-
+        self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
         self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
         self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS",controller)
         self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS",controller)
 
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
+        self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: self.FBPopMenu.context_menu(event, self.FBPopMenu))
         self.sprintList.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.sprintPopMenu.context_menu(event, self.sprintPopMenu))
         self.itemList.listbox.bind('<2>' if self.aqua else '<3>',
@@ -122,6 +141,8 @@ class SMmainView(tk.Frame):
         for source in sprintDynamicSources:
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
+        
+        self.fullBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.sprintList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
         self.sprintDescriptionManager.pack(side = tk.TOP, fill = tk.BOTH)
         self.itemList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
@@ -129,6 +150,7 @@ class SMmainView(tk.Frame):
         self.itemDescriptionManager.pack(side = tk.RIGHT, fill = tk.BOTH)
 
         self.updateSprintList()
+        self.updateLists()
         self.controller.dataBlock.packCallback(self.updateSprintList)
         self.controller.dataBlock.packCallback(self.updateLists)
 
@@ -147,6 +169,22 @@ class SMmainView(tk.Frame):
             messagebox.showerror('Error',str(e))
 
         messagebox.showinfo('Success','Item Approved')
+
+    def rejectItem(self):
+
+        try:
+            item = self.itemPopMenu.getSelectedObject()
+            self.controller.dataBlock.modifyItemStatus(item, item.statusTextToNumberMap['In Progress'])
+            comment = ScrumblesObjects.Comment()
+            comment.commentContent = '%s Has Rejected Item' % self.controller.activeUser.userName
+            comment.commentItemID = item.itemID
+            comment.commentUserID = self.controller.activeUser.userID
+            self.controller.dataBlock.addNewScrumblesObject(comment)
+        except Exception as e:
+            logging.exception('Could not assign item to Complete')
+            messagebox.showerror('Error',str(e))
+
+        messagebox.showinfo('Success','Item Rejected')
 
     def assignToUser(self,username):
         user = None
@@ -175,6 +213,35 @@ class SMmainView(tk.Frame):
             else:
                 messagebox.showerror('Error','User not found in DataBlock')
                 logging.error('User %s not found in dataBlock'%username)
+
+    def assignToEpic(self,Inepic):
+        epic = None
+
+        if messagebox.askyesno('Assign To Epic','Do you wish to assign item to user %s'%epic):
+            for I in self.controller.activeProject.listOfAssignedItems:
+                 if I.itemType == 'Epic':
+                    if I.itemTitle == Inepic:
+                        epic = I
+            if epic is not None:
+                try:
+                    item = self.itemPopMenu.getSelectedObject()
+                    assert item is not None
+                    self.controller.dataBlock.assignUserToItem(epic,item)
+                    comment = ScrumblesObjects.Comment()
+                    comment.commentContent = '%s Has Assigned Item %s to Epic' % (self.controller.activeUser.userName, item.itemTitle)
+                    comment.commentItemID = item.itemID
+                    comment.commentUserID = self.controller.activeUser.userID
+                    self.controller.dataBlock.addNewScrumblesObject(comment)
+                except Exception as e:
+                    messagebox.showerror('Error',str(e))
+                    logging.exception('Error assigning item %s to epic'%item.itemTitle)
+                    return
+                messagebox.showinfo('Success','Item Assigned Item to Epic, %s'%item.itemTitle)
+
+
+            else:
+                messagebox.showerror('Error','Epic not found in DataBlock')
+                logging.error('Epic not found in dataBlock')
     def editSprint(self):
         sprint = self.sprintPopMenu.getSelectedObject()
         if Dialogs.EditSprintDialog(self.controller,master=self.controller,
@@ -192,12 +259,55 @@ class SMmainView(tk.Frame):
             self.selectedSprint = None
 
 
+    def deleteItem(self):
+        item = None
+        title = self.selectedItem.itemTitle
+        for i in self.controller.dataBlock.items:
+            if i.itemTitle == title:
+                item = i
+
+        if item is None:
+            print('Item Title:', title)
+            print('backlogData:')
+            for i in self.controller.activeProject.listOfAssignedItems:
+                print(i.itemTitle)
+            raise Exception('Error Loading item from title')
+        try:
+            if messagebox.askyesno('Warning','Are you sure you want to delete %s\nThis action cannot be reversed'%str(item)):
+                self.controller.dataBlock.deleteScrumblesObject(item,self.controller.activeProject)
+                messagebox.showinfo('Success', 'Item %s deleted from database'%item.itemTitle)
+        except Exception as e:
+            logging.exception('Failed to delete item %s'%str(item))
+            messagebox.showerror('Error', 'Failed to delete item\n'+str(e))
+        self.selectedItem = None
+        self.selectedSubItem = None
+
+    def updateItem(self):
+        item = None
+        title = self.selectedItem.itemTitle
+        for i in self.controller.dataBlock.items:
+            if i.itemTitle == title:
+               item = i
+
+        if item is None:
+            print('Item Title:',title)
+            print('backlogData:')
+            for i in self.controller.activeProject.listOfAssignedItems:
+                print(i.itemTitle)
+            raise Exception('Error Loading item from title')
+
+        Dialogs.EditItemDialog(self.controller, master=self.controller, dataBlock=self.controller.dataBlock ,item=item).show()
     def updateSprintList(self):
         self.sprints = []
+        self.fullList = []
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
+        self.fullList = [item for item in self.controller.activeProject.listOfAssignedItems]
         self.sprintList.importSprintsList(self.sprints)
+        self.fullBacklog.importItemList(self.fullList)
+        self.fullBacklog.colorCodeListboxes()
 
     def updateLists(self):
+        self.fullList = []
         self.sprints = []
         self.sprintItems = []
         self.sprintItemSubItems = []
@@ -205,16 +315,20 @@ class SMmainView(tk.Frame):
         self.sprintList.clearList()
         self.itemList.clearList()
         self.subItemList.clearList()
+        self.fullBacklog.clearList()
 
+        self.fullList = [item for item in self.controller.activeProject.listOfAssignedItems]
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
-        self.sprintItems = [item for item in self.controller.activeProject.listOfAssignedItems]
-        if (self.selectedItem != None):
-            self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
-
         self.sprintList.importSprintsList(self.sprints)
-        if (selectedSprint != None):
+        self.fullBacklog.importItemList(self.fullList)
+        self.fullBacklog.colorCodeListboxes()
+        if (self.selectedSprint != None):
+            self.sprintItems = self.selectedSprint.listOfAssignedItems
             self.itemList.importItemList(self.sprintItems)
             self.itemList.colorCodeListboxes()
+            if (self.selectedItem != None):
+              self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
+
         self.subItemList.importItemList(self.sprintItemSubItems)
         self.subItemList.colorCodeListboxes()
         self.itemList.colorCodeListboxes()
@@ -241,8 +355,10 @@ class SMmainView(tk.Frame):
                 self.subItemList.clearList()
                 self.subItemList.importItemList(item.subItemList)
                 self.subItemList.colorCodeListboxes()
-
     def listboxEvents(self, event):
+        if event.widget is self.fullBacklog.listbox:
+            self.itemDescriptionManager.changeDescription(event)
+
         if event.widget is self.sprintList.listbox:
             self.assignedSprintEvent(event)
             self.sprintDescriptionManager.changeDescription(event)
