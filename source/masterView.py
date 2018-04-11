@@ -6,8 +6,6 @@ import SMmainView
 import loginView
 import developerHomeView
 import teamManagerView
-import sprintManagerView
-import backlogManagerView
 import itemManagerView
 import platform
 import webbrowser
@@ -156,18 +154,12 @@ class masterView(tk.Tk):
             views.append(SMmainView)
             viewNames.append("Scrum Master Home")  
 
-        elif (self.activeUser.userRole == "Developer"):
-            views.append(developerHomeView)
-            viewNames.append("Developer Home")
+        views.append(developerHomeView)
+        viewNames.append("Developer Home")
 
         views.append(teamManagerView)
         viewNames.append("Team Manager")
 
-        views.append(sprintManagerView)
-        viewNames.append("Sprint Manager")
-
-        views.append(backlogManagerView)
-        viewNames.append("Backlog Manager")
 
         views.append(itemManagerView)
         viewNames.append("Item Manager")
@@ -212,16 +204,12 @@ class masterView(tk.Tk):
         ScrumMasterHomeFrame = SMmainView.SMmainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
-        sprintManagerFrame = sprintManagerView.sprintManagerView(self.container, self, loggedInUser)
-        backlogManagerFrame = backlogManagerView.backlogManagerView(self.container, self, loggedInUser)
         itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
 
         self.add_frame(AdminHomeFrame, adminMainView)
         self.add_frame(ScrumMasterHomeFrame, SMmainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
-        self.add_frame(sprintManagerFrame, sprintManagerView)
-        self.add_frame(backlogManagerFrame, backlogManagerView)
         self.add_frame(itemManagerFrame, itemManagerView)
 
         self.generateMenuBar()
