@@ -119,6 +119,7 @@ class SMmainView(tk.Frame):
         self.sprints = []
         self.sprintItems = []
         self.sprintItemSubItems = []
+
         self.selectedSprint = None
         self.selectedItem = None
         self.selectedSubItem = None
@@ -127,7 +128,7 @@ class SMmainView(tk.Frame):
         sprintQueryType = ['Sprint']
         self.sprintDescriptionManager = ScrumblesFrames.SCardDescription(self, controller, sprintDynamicSources, sprintQueryType)
 
-        itemDynamicSources = [self.itemList.listbox, self.subItemList.listbox]
+        itemDynamicSources = [self.fullBacklog.listbox, self.itemList.listbox, self.subItemList.listbox]
         itemQueryType = ['Item', 'Item']
         self.itemDescriptionManager = ScrumblesFrames.SCardDescription(self, controller, itemDynamicSources, itemQueryType)
 
