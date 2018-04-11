@@ -174,8 +174,10 @@ class SprintQuery(Query):
     @staticmethod
     def deleteSprint(sprint):
         assert sprint is not None
-        query = 'DELETE FROM SprintTable WHERE SprintID=%s'
-        return query, (sprint.sprintID,)
+        query = '''DELETE FROM SprintTable WHERE SprintID=%s
+                   UPDATE CardTable SET SprintID=%s WHERE SprintID=%s'''
+        parameterMap = {1:(sprint.sprintID,),2:(None,sprint.sprintID)}
+        return query,parameterMap
 
 
 class CardQuery(Query):
