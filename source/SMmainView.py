@@ -1,21 +1,20 @@
 import tkinter as tk
 from tkinter import messagebox
-import SPopMenu
-import ScrumblesFrames
+from tkinter import ttk
+import ScrumblesFrames, SPopMenu,ScrumblesObjects,Dialogs
 import listboxEventHandler
-import Dialogs
-from tkinter import messagebox
+from styling import styling as style
 import logging
-import ScrumblesObjects
+import tkinter as tk
+import Dialogs
 
-class SprintMgrItemPopMenu(SPopMenu.GenericPopupMenu):
+class SMmainViewPopup(SPopMenu.GenericPopupMenu):
     def __init__(self,root,Master):
         super().__init__(root,Master)
-        print(root)
         self.isAssignDeleted = False
 
 
-    def context_menu(self,event, menu):
+    def context_menu(self, event, menu):
         self.widget = event.widget
         self.event = event
         index = self.widget.nearest(event.y)
@@ -33,7 +32,7 @@ class SprintMgrItemPopMenu(SPopMenu.GenericPopupMenu):
             pass
         if self.root.roleMap[self.root.activeRole] > 0:
             if self.index(0) is None:
-                self.usersMenu = tk.Menu(self, tearoff=0, cursor = "hand2")
+                self.usersMenu = tk.Menu(self, tearoff=0)
                 self.add_cascade(label=u'Assign to User', menu=self.usersMenu)
                 for name in [U.userName for U in self.master.activeProject.listOfAssignedUsers]:
                     self.usersMenu.add_command(label=name, command=lambda n=name:self.root.assignToUser(n))
@@ -54,19 +53,20 @@ class SprintMgrItemPopMenu(SPopMenu.GenericPopupMenu):
         self.widget.activate(index)
         menu.post(event.x_root, event.y_root)
 
+
     def getSelectedObject(self):
         return self.selectedObject
 
 
 
 
-class sprintManagerView(tk.Frame):
+class SMmainView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Sprint Manager")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, user.userRole + " Home")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.activeProject = controller.activeProject
@@ -77,8 +77,8 @@ class sprintManagerView(tk.Frame):
             self.sprintPopMenu.add_command(label=u'Edit Sprint',
                                            command=self.editSprint)
 
-        self.itemPopMenu= SprintMgrItemPopMenu(self,self.controller)
-        self.subItemPopMenu= SprintMgrItemPopMenu(self,self.controller)
+        self.itemPopMenu= SMmainViewPopup(self,self.controller)
+        self.subItemPopMenu= SMmainViewPopup(self,self.controller)
 
 
         self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
@@ -195,7 +195,6 @@ class sprintManagerView(tk.Frame):
 
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
         self.sprintItems = [item for item in self.controller.activeProject.listOfAssignedItems]
-        
         if (self.selectedItem != None):
             self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
 
@@ -207,7 +206,7 @@ class sprintManagerView(tk.Frame):
         self.itemList.colorCodeListboxes()
         self.activeProject = self.controller.activeProject
         del self.itemPopMenu
-        self.itemPopMenu = SprintMgrItemPopMenu(self, self.controller)
+        self.itemPopMenu = SMmainViewPopup(self, self.controller)
 
     def assignedSprintEvent(self, event):
         for sprint in self.controller.activeProject.listOfAssignedSprints:
@@ -241,4 +240,17 @@ class sprintManagerView(tk.Frame):
         if event.widget is self.subItemList.listbox:
             self.itemDescriptionManager.changeDescription(event)
     def __str__(self):
-        return 'Scrumbles Sprint Manager View'
+        return 'Scrumbles Home View'
+
+
+    # def getCodeLink(self,item):
+    #     isUpdated = [False]  #Had to make this a list because bool and int are immutable
+    #     evnt = self.myItemsPopMenu.event
+    #     #yes it is bad practice, but getLinkPopUp is a frame that isn't going to have return value,
+    #     #so, isUpdated is going to be modified by the popup
+    #     #bad juju, I know, but do you have a better idea?
+    #     getLinkPopUP = Dialogs.codeLinkDialog(self,self.controller,self.controller.dataBlock,item,evnt,isUpdated)
+    #     self.wait_window(getLinkPopUP.top)
+    #     return isUpdated
+
+

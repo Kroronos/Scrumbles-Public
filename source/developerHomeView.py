@@ -10,6 +10,7 @@ import logging
 class developerHomeView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
+
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
@@ -144,7 +145,7 @@ class developerHomeView(tk.Frame):
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
         Comment.commentContent = 'Set to Submitted by menu action'
-        updated = Dialogs.codeLinkDialog(self, master=self.master, dataBlock=self.controller.dataBlock,item=Item).show()
+        updated = Dialogs.codeLinkDialog(self, master=self.controller, dataBlock=self.controller.dataBlock,item=Item).show()
         if updated:
             try:
                 self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
