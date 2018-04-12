@@ -216,8 +216,15 @@ class masterView(tk.Tk):
         self.splash.kill()
         self.deiconify()
 
-        self.show_frame(mainView)
 
+        if (self.activeUser.userRole == "Admin"):
+            self.show_frame(mainView)
+
+        elif (self.activeUser.userRole == "Scrum Master"):
+            self.show_frame(mainView)
+ 
+        elif (self.activeUser.userRole == "Developer"):
+            self.show_frame(developerHomeView)
 
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         if platform.system() == "Windows":
