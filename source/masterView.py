@@ -5,8 +5,9 @@ import mainView
 import loginView
 import developerHomeView
 import teamManagerView
-import itemManagerView
+
 import analyticsView
+
 import platform
 import webbrowser
 import DataBlock
@@ -73,9 +74,9 @@ class masterView(tk.Tk):
         addedFrame.grid(row=0, column=0, sticky="nsew")
 
     def generateMenuBar(self):
-        menuBar = tk.Menu(self)
+        menuBar = tk.Menu(self, cursor = "hand2")
 
-        fileMenu = tk.Menu(menuBar, tearoff=0)
+        fileMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         self.fileMenu = fileMenu
         if (self.activeUser.userRole == "Admin"):
             fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
@@ -94,19 +95,22 @@ class masterView(tk.Tk):
         profileMenu.add_command(label=self.activeUser.userName)
         profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
 
-        viewMenu = tk.Menu(menuBar, tearoff=0)
+        viewMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         if (self.activeUser.userRole == "Admin"):
             viewMenu.add_command(label="Administrator Main", command=lambda: self.show_frame(mainView))
         if (self.activeUser.userRole == "Scrum Master"):
-            viewMenu.add_command(label="Scrum Master Main", command=lambda: self.show_frame(mainView))       
+            viewMenu.add_command(label="Scrum Master Main", command=lambda: self.show_frame(mainView))
         elif (self.activeUser.userRole == "Developer"):
             viewMenu.add_command(label="Developer Main", command=lambda: self.show_frame(mainView))
-        
+
+        viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
-        viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(itemManagerView))
+
+       
         viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(analyticsView))
 
-        helpMenu = tk.Menu(menuBar, tearoff=0)
+
+        helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
         helpMenu.add_command(label = "What's With The Colors", command=self.colorHelp)
@@ -118,8 +122,9 @@ class masterView(tk.Tk):
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
-        self.menuBar = menuBar
 
+        self.menuBar = menuBar
+        self.menuBar.config(cursor = "hand2")
     def colorHelp(self):
         Dialogs.AboutDialog(self, master=self).show()
 
@@ -138,11 +143,11 @@ class masterView(tk.Tk):
 
         elif (self.activeUser.userRole == "Scrum Master"):
             views.append(mainView)
-            viewNames.append("Scrum Master Main")  
+            viewNames.append("Scrum Master Main")
 
         elif (self.activeUser.userRole == "Developer"):
             views.append(mainView)
-            viewNames.append("Developer Main")  
+            viewNames.append("Developer Main")
 
         views.append(developerHomeView)
         viewNames.append("Developer Home")
@@ -151,11 +156,11 @@ class masterView(tk.Tk):
         viewNames.append("Team Manager")
 
 
-        views.append(itemManagerView)
-        viewNames.append("Item Manager")
+
 
         views.append(analyticsView)
         viewNames.append("Analytics")
+
         return views, viewNames
 
     def showCreateProjectDialog(self):
@@ -196,7 +201,7 @@ class masterView(tk.Tk):
         HomeFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
-        itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
+
         analyticsFrame = analyticsView.analyticsView(self.container, self)
 
 
@@ -204,8 +209,9 @@ class masterView(tk.Tk):
         self.add_frame(HomeFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
-        self.add_frame(itemManagerFrame, itemManagerView)
+
         self.add_frame(analyticsFrame, analyticsView)
+
 
         self.generateMenuBar()
         self.splash.kill()
@@ -217,7 +223,7 @@ class masterView(tk.Tk):
 
         elif (self.activeUser.userRole == "Scrum Master"):
             self.show_frame(mainView)
- 
+
         elif (self.activeUser.userRole == "Developer"):
             self.show_frame(developerHomeView)
 

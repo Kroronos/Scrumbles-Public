@@ -99,7 +99,7 @@ class BacklogManPopMenu(GenericPopupMenu):
         except Exception:
             pass
 
-        self.popMenu = Tk.Menu(self, tearoff=0)
+        self.popMenu = Tk.Menu(self, tearoff=0, cursor = "hand2")
         for text in listOfEpics:
             self.popMenu.add_command(label=text, command=lambda t=text: self.assignItemToEpic(t))
 
