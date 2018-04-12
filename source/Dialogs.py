@@ -106,9 +106,9 @@ class CreateProjectDialog(GenericDialog):
         self.projectTitleEntry = Tk.Entry(self, width=27)
         self.projectTitleEntry.grid(row=2, column=2, pady=5, sticky='W')
 
-        self.createButton = Tk.Button(self, text="Create Project", command=self.ok)
+        self.createButton = Tk.Button(self, text="Create Project", command=self.ok, cursor = "hand2")
         self.createButton.grid(row=8, column=2, pady=5)
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         self.cancelButton.grid(row=8, column=1, pady=5)
 
 
@@ -141,33 +141,33 @@ class CreateUserDialog(GenericDialog):
     def createWidgets(self):
 
         Tk.Label(self, text="User Name").grid(row=2, column=1, pady=5, sticky='E')
-        self.userNameEntry = Tk.Entry(self)
+        self.userNameEntry = Tk.Entry(self, cursor = "hand2")
         self.userNameEntry.grid(row=2,column=2,pady=5)
 
         Tk.Label(self, text="User Password").grid(row=3, column=1, pady=5, sticky='E')
-        self.passwordEntry = Tk.Entry(self,show='*')
+        self.passwordEntry = Tk.Entry(self,show='*', cursor = "hand2")
         self.passwordEntry.grid(row=3,column=2,pady=5)
 
         Tk.Label(self, text="Re-enter Password").grid(row=4, column=1, pady=5, sticky='E')
-        self.reEnterPasswordEntry = Tk.Entry(self,show='*')
+        self.reEnterPasswordEntry = Tk.Entry(self,show='*', cursor = "hand2")
         self.reEnterPasswordEntry.grid(row=4,column=2,pady=5)
 
         Tk.Label(self, text="User Email Address").grid(row=5, column=1, pady=5, sticky='E')
-        self.emailEntry =Tk.Entry(self)
+        self.emailEntry =Tk.Entry(self, cursor = "hand2")
         self.emailEntry.grid(row=5,column=2,pady=5)
 
         Tk.Label(self, text="User Role").grid(row=6, column=1, pady=5, sticky='E')
         roleVar = Tk.StringVar()
         items = ('Admin', 'Scrum Master', 'Developer')
-        self.roleCombobox = ttk.Combobox(self,textvariable=roleVar,state='readonly',values=items)
+        self.roleCombobox = ttk.Combobox(self,textvariable=roleVar,state='readonly',values=items, cursor = "hand2")
         self.roleCombobox.grid(row=6, column=2)
         self.roleCombobox.selection_clear()
 
 
-        self.createButton = Tk.Button(self, text="Create User", command=self.ok)
+        self.createButton = Tk.Button(self, text="Create User", command=self.ok, cursor = "hand2")
         self.createButton.grid(row=8,column=2,pady=5)
 
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         self.cancelButton.grid(row=8,column=1,pady=5)
 
 
@@ -222,39 +222,39 @@ class CreateSprintDialog(GenericDialog):
         monthVar = 'Jan'
 
         Tk.Label(self, text="Sprint Name").grid(row=2, column=1, pady=5, sticky='E')
-        self.sprintNameEntry = Tk.Entry(self)
+        self.sprintNameEntry = Tk.Entry(self, cursor = "hand2")
         self.sprintNameEntry.grid(row=2, column=2, pady=5)
         self.projectNameVar = Tk.StringVar()
 
         if not self.isTest:
             Tk.Label(self, text="Project").grid(row=3, column=1, pady=5, sticky='E')
-            self.assignSprintToObject = ttk.Combobox(self,textvariable=self.projectNameVar,state='readonly',values=self.projects)
+            self.assignSprintToObject = ttk.Combobox(self,textvariable=self.projectNameVar,state='readonly',values=self.projects, cursor = "hand2")
             self.assignSprintToObject.grid(row=3,column=2,pady=5)
 
         Tk.Label(self, text="Start Date").grid(row=4, column=1, pady=5, sticky='E')
-        self.StartMonthCombo = ttk.Combobox(self,textvariable=monthVar,values=self.month,state='readonly',width=5)
+        self.StartMonthCombo = ttk.Combobox(self,textvariable=monthVar,values=self.month,state='readonly',width=5, cursor = "hand2")
         self.StartMonthCombo.grid(row=4,column=2)
 
-        self.StartDayCombo = ttk.Combobox(self,values=self.day,state='readonly',width=3)
+        self.StartDayCombo = ttk.Combobox(self,values=self.day,state='readonly',width=3, cursor = "hand2")
         self.StartDayCombo.grid(row=4,column=3)
 
-        self.StartYearCombo = ttk.Combobox(self,values=self.year,state='readonly',width=5)
+        self.StartYearCombo = ttk.Combobox(self,values=self.year,state='readonly',width=5, cursor = "hand2")
         self.StartYearCombo.grid(row=4,column=4)
 
         Tk.Label(self, text="Due Date").grid(row=5, column=1, pady=5, sticky='E')
-        self.DueMonthCombo = ttk.Combobox(self, values=self.month, state='readonly',width=5)
+        self.DueMonthCombo = ttk.Combobox(self, values=self.month, state='readonly',width=5, cursor = "hand2")
         self.DueMonthCombo.grid(row=5, column=2)
 
-        self.DueDayCombo = ttk.Combobox(self, values=self.day, state='readonly',width=3)
+        self.DueDayCombo = ttk.Combobox(self, values=self.day, state='readonly',width=3, cursor = "hand2")
         self.DueDayCombo.grid(row=5, column=3)
 
-        self.DueYearCombo = ttk.Combobox(self, values=self.year, state='readonly',width=5)
+        self.DueYearCombo = ttk.Combobox(self, values=self.year, state='readonly',width=5, cursor = "hand2")
         self.DueYearCombo.grid(row=5, column=4)
 
-        self.createButton = Tk.Button(self, text="Create Sprint", command=self.ok)
+        self.createButton = Tk.Button(self, text="Create Sprint", command=self.ok, cursor = "hand2")
         self.createButton.grid(row=8,column=2,pady=5)
 
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         self.cancelButton.grid(row=8,column=1,pady=5)
 
     @staticmethod
@@ -417,39 +417,39 @@ class CreateItemDialog(GenericDialog):
     def createWidgets(self):
 
         Tk.Label(self, text="Item Title").grid(row=2, column=1, pady=5, sticky='E')
-        self.itemTitleEntry = Tk.Entry(self, width=27)
+        self.itemTitleEntry = Tk.Entry(self, width=27, cursor = "hand2")
         self.itemTitleEntry.grid(row=2, column=2, pady=5, sticky='W')
 
         Tk.Label(self, text="Item Description").grid(row=3, column=1, pady=5, sticky='E')
-        self.itemDescriptionEntry = Tk.Text(self, height=6, width=20, wrap=Tk.WORD)
+        self.itemDescriptionEntry = Tk.Text(self, height=6, width=20, wrap=Tk.WORD, cursor = "hand2")
         self.itemDescriptionEntry.grid(row=3, column=2, pady=5)
 
         Tk.Label(self, text="Item Type").grid(row=6, column=1, pady=5, sticky='E')
         self.ItemTypeVar = Tk.StringVar()
         self.itemTypes = ('User Story', 'Epic', 'Bug','Chore','Feature')
-        self.ItemTypebox = ttk.Combobox(self,textvariable=self.ItemTypeVar,state='readonly',values=self.itemTypes)
+        self.ItemTypebox = ttk.Combobox(self,textvariable=self.ItemTypeVar,state='readonly',values=self.itemTypes, cursor = "hand2")
         self.ItemTypebox.grid(row=6, column=2,sticky='W')
         self.ItemTypebox.current(0)
 
         self.itemPriorityLabel = Tk.Label(self,text='Item Priority').grid(row=7,column=1,sticky='E')
         self.itemPriorities = ( "Low Priority", "Medium Priority", "High Priority")
         self.itemPriorityVar = Tk.StringVar()
-        self.itemPriorityCombobox = ttk.Combobox(self,textvariable=self.itemPriorityVar,state='readonly')
+        self.itemPriorityCombobox = ttk.Combobox(self,textvariable=self.itemPriorityVar,state='readonly', cursor = "hand2")
         self.itemPriorityCombobox['values'] = self.itemPriorities
         self.itemPriorityCombobox.current(0)
         self.itemPriorityCombobox.grid(row=7,column=2,sticky='W')
 
         self.pointsEntryLabel = Tk.Label(self, text="Points").grid(row=8,column=1,sticky='E')
-        self.pointsEntry = Tk.Entry(self)
+        self.pointsEntry = Tk.Entry(self, cursor = "hand2")
         self.pointsEntry.grid(row=8,column=2)
 
         self.commentTextBoxLabel = Tk.Label(self, text='Comment').grid(row=10, column=1, sticky='E')
-        self.commentTextBox = Tk.Text(self, height=6, width=20, wrap=Tk.WORD)
+        self.commentTextBox = Tk.Text(self, height=6, width=20, wrap=Tk.WORD, cursor = "hand2")
         self.commentTextBox.grid(row=10, column=2,pady=5)
 
-        self.createButton = Tk.Button(self, text="Create Item", command=self.ok)
+        self.createButton = Tk.Button(self, text="Create Item", command=self.ok, cursor = "hand2")
         self.createButton.grid(row=11,column=2,pady=5)
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         self.cancelButton.grid(row=11,column=1,pady=5)
 
     @tryExcept
@@ -554,18 +554,18 @@ class EditItemDialog(CreateItemDialog):
 
 
 
-        self.itemTitleEntry = Tk.Entry(self, width=27)
+        self.itemTitleEntry = Tk.Entry(self, width=27, cursor = "hand2")
         self.itemTitleEntry.insert(0, self.item.itemTitle)
         self.itemTitleEntry.grid(row=2, column=2, pady=5, sticky='W')
 
-        self.itemDescriptionEntry = Tk.Text(self, height=6, width=20, wrap=Tk.WORD)
+        self.itemDescriptionEntry = Tk.Text(self, height=6, width=20, wrap=Tk.WORD, cursor = "hand2")
 
         self.itemDescriptionEntry.insert(Tk.END, self.item.itemDescription)
         self.itemDescriptionEntry.grid(row=3, column=2, pady=5)
 
         itemTypes = self.item.validItemTypes
         self.ItemTypebox = ttk.Combobox(self, textvariable=self.ItemTypeVar, state='readonly',
-                                        values=self.item.validItemTypes)
+                                        values=self.item.validItemTypes, cursor = "hand2")
         self.ItemTypebox.grid(row=6, column=2, sticky='W')
 
 
@@ -577,7 +577,7 @@ class EditItemDialog(CreateItemDialog):
             users = ('user1','user2')
             sprints = ('sprint1','sprint2')
 
-        self.usersComboBox = ttk.Combobox(self, textvariable=self.itemUserVar, state='readonly', values=users)
+        self.usersComboBox = ttk.Combobox(self, textvariable=self.itemUserVar, state='readonly', values=users, cursor = "hand2")
         self.usersComboBox.current(0)
         self.usersComboBox.grid(row=7, column=2, sticky='W')
         if self.item.itemUserID is not None and self.item.itemUserID != 0:
@@ -607,9 +607,9 @@ class EditItemDialog(CreateItemDialog):
         self.commentTextBox = Tk.Text(self, height=6, width=20, wrap=Tk.WORD)
         self.commentTextBox.grid(row=11, column=2, pady=5, sticky='W')
 
-        createButton = Tk.Button(self, text="Update Item", command=self.ok)
+        createButton = Tk.Button(self, text="Update Item", command=self.ok, cursor = "hand2")
         createButton.grid(row=12, column=2, pady=5)
-        cancelButton = Tk.Button(self, text="Cancel", command=self.exit)
+        cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         cancelButton.grid(row=12, column=1, pady=5)
 
     @tryExcept
@@ -721,7 +721,7 @@ class AboutDialog(GenericDialog):
 
 
 
-        okayButton = Tk.Button(self, text="Okay", command=self.exit)
+        okayButton = Tk.Button(self, text="Okay", command=self.exit, cursor = "hand2")
         okayButton.grid(row=20, pady=5)
 
     def openPage(self, *args, **kwargs):
@@ -760,9 +760,9 @@ class codeLinkDialog(GenericDialog):
         self.codeLinkEntry.grid(row=2,column=1,sticky='W')
         if self.Item.itemCodeLink is not None:
             self.codeLinkEntry.insert(0,self.Item.itemCodeLink)
-        self.submitButton = Tk.Button(self, text="Update Item", command=self.ok)
+        self.submitButton = Tk.Button(self, text="Update Item", command=self.ok, cursor = "hand2")
         self.submitButton.grid(row=2, column=2, padx=3)
-        self.cancelButton = Tk.Button(self,text='Cancel',command=self.cancel)
+        self.cancelButton = Tk.Button(self,text='Cancel',command=self.cancel, cursor = "hand2")
         self.cancelButton.grid(row=2,column=3,pady=1)
     @tryExcept
     def ok(self):
