@@ -107,11 +107,11 @@ class masterView(tk.Tk):
 
         viewMenu = tk.Menu(menuBar, tearoff=0)
         if (self.activeUser.userRole == "Admin"):
-            viewMenu.add_command(label="Administrator Home", command=lambda: self.show_frame(adminMainView))
+            viewMenu.add_command(label="Administrator Main", command=lambda: self.show_frame(mainView))
         if (self.activeUser.userRole == "Scrum Master"):
-            viewMenu.add_command(label="Scrum Master Home", command=lambda: self.show_frame(SMmainView))       
+            viewMenu.add_command(label="Scrum Master Main", command=lambda: self.show_frame(mainView))       
         elif (self.activeUser.userRole == "Developer"):
-            viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
+            viewMenu.add_command(label="Developer Main", command=lambda: self.show_frame(mainView))
         
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
         viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(itemManagerView))
@@ -145,15 +145,15 @@ class masterView(tk.Tk):
         viewNames = []
         if (self.activeUser.userRole == "Admin"):
             views.append(mainView)
-            viewNames.append("Admin Home")
+            viewNames.append("Admin Main")
 
         elif (self.activeUser.userRole == "Scrum Master"):
             views.append(mainView)
-            viewNames.append("Scrum Master Home")  
+            viewNames.append("Scrum Master Main")  
 
         elif (self.activeUser.userRole == "Developer"):
             views.append(mainView)
-            viewNames.append("Main View")  
+            viewNames.append("Developer Main")  
 
         views.append(developerHomeView)
         viewNames.append("Developer Home")

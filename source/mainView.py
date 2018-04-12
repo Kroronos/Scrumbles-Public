@@ -9,9 +9,10 @@ import tkinter as tk
 import Dialogs
 
 class mainViewPopup(SPopMenu.GenericPopupMenu):
-    def __init__(self,root,Master):
+    def __init__(self,root,Master,isSubItem):
         super().__init__(root,Master)
         self.isAssignDeleted = False
+        self.isSubItem = isSubItem
 
 
     def context_menu(self, event, menu):
@@ -63,6 +64,10 @@ class mainViewPopup(SPopMenu.GenericPopupMenu):
                                            command=self.root.updateItem)
                 self.add_command(label=u'Delete Item',
                                            command=self.root.deleteItem)
+                if self.isSubItem:
+                    self.add_command(label=u'Remove Subitem',
+                                               command=self.root.removeFromEpic)
+
 
             if self.selectedObject.itemStatus == 3:
                 self.add_command(label=u'Approve Item', command=self.root.approveItem)
@@ -89,7 +94,7 @@ class mainView(tk.Frame):
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, user.userRole + " Home")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, user.userRole + " Main")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.activeProject = controller.activeProject
@@ -148,7 +153,7 @@ class mainView(tk.Frame):
         self.itemList.listbox.bind('<2>' if self.aqua else '<3>',
                                    lambda event: (self.generatePopupThing(), self.itemPopMenu.context_menu(event,self.itemPopMenu)))
         self.subItemList.listbox.bind('<2>' if self.aqua else '<3>',
-                                   lambda event: (self.generatePopupThing(), self.subItemPopMenu.context_menu(event, self.subItemPopMen)))
+                                   lambda event: (self.generatePopupThing(), self.subItemPopMenu.context_menu(event, self.subItemPopMenu)))
 
         
         self.fullBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -164,7 +169,7 @@ class mainView(tk.Frame):
         self.controller.dataBlock.packCallback(self.updateLists)
     def generatePopupThing(self):
 
-        self.FBPopMenu= mainViewPopup(self,self.controller)
+        self.FBPopMenu= mainViewPopup(self,self.controller, False)
         self.sprintPopMenu = SPopMenu.GenericPopupMenu(self,self.controller)
         if self.roleMap[self.activeRole] > 0:
             self.sprintPopMenu.add_command(label=u'Edit Sprint',
@@ -173,8 +178,8 @@ class mainView(tk.Frame):
                                            command=self.deleteSprint)
 
 
-        self.itemPopMenu= mainViewPopup(self,self.controller)
-        self.subItemPopMenu= mainViewPopup(self,self.controller)
+        self.itemPopMenu= mainViewPopup(self,self.controller, False)
+        self.subItemPopMenu= mainViewPopup(self,self.controller, True)
 
     def approveItem(self):
         item = None
@@ -195,6 +200,28 @@ class mainView(tk.Frame):
             messagebox.showerror('Error',str(e))
 
         messagebox.showinfo('Success','Item Approved')
+
+    def removeFromEpic(self):
+        item = None
+        epic = None
+
+        try:
+            title = self.selectedItem.itemTitle
+            for i in self.controller.dataBlock.items:
+                if i.itemTitle == title:
+                    item = i
+
+            self.controller.dataBlock.removeItemFromEpic(item)
+            comment = ScrumblesObjects.Comment()
+            comment.commentContent = '%s Has Removed Item from epic' % self.controller.activeUser.userName
+            comment.commentItemID = item.itemID
+            comment.commentUserID = self.controller.activeUser.userID
+            self.controller.dataBlock.addNewScrumblesObject(comment)
+        except Exception as e:
+            logging.exception('Could not remove item from epic')
+            messagebox.showerror('Error',str(e))
+
+        messagebox.showinfo('Success','Item Removed')
 
     def rejectItem(self):
         item = None
@@ -413,7 +440,7 @@ class mainView(tk.Frame):
         self.itemList.colorCodeListboxes()
         self.activeProject = self.controller.activeProject
         del self.itemPopMenu
-        self.itemPopMenu = mainViewPopup(self, self.controller)
+        self.itemPopMenu = mainViewPopup(self, self.controller, False)
         self.generatePopupThing()
 
     def assignedFBEvent(self, event):
