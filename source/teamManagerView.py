@@ -107,6 +107,8 @@ class teamManagerView(tk.Frame):
                                                                    event.widget.get(tk.ANCHOR))
 
     def memberPopup(self, event):
+        if (self.controller.activeUser.userRole == "Developer"):
+            return
         widget = event.widget
         index = widget.nearest(event.y)
         _, yoffset, _, height = widget.bbox(index)
