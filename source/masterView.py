@@ -1,8 +1,7 @@
 import logging
 import tkinter as tk
 from tkinter import messagebox
-import adminMainView
-import SMmainView
+import mainView
 import loginView
 import developerHomeView
 import teamManagerView
@@ -115,8 +114,6 @@ class masterView(tk.Tk):
             viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
         
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
-        viewMenu.add_command(label="Sprint Manager", command=lambda: self.show_frame(sprintManagerView))
-        viewMenu.add_command(label="Projects Backlog", command=lambda: self.show_frame(backlogManagerView))
         viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(itemManagerView))
 
 
@@ -127,7 +124,7 @@ class masterView(tk.Tk):
         helpMenu.add_command(label = 'Refresh Data',command=self.refreshData)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
-        menuBar.add_cascade(label="Create", menu=editMenu)
+        menuBar.add_cascade(label="Edit", menu=editMenu)
         menuBar.add_cascade(label="Profile", menu=profileMenu)
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
@@ -147,12 +144,16 @@ class masterView(tk.Tk):
         views = []
         viewNames = []
         if (self.activeUser.userRole == "Admin"):
-            views.append(adminMainView)
+            views.append(mainView)
             viewNames.append("Admin Home")
 
         elif (self.activeUser.userRole == "Scrum Master"):
-            views.append(SMmainView)
+            views.append(mainView)
             viewNames.append("Scrum Master Home")  
+
+        elif (self.activeUser.userRole == "Developer"):
+            views.append(mainView)
+            viewNames.append("Main View")  
 
         views.append(developerHomeView)
         viewNames.append("Developer Home")
@@ -200,14 +201,13 @@ class masterView(tk.Tk):
         self.dataBlock.packCallback(self.repointActiveObjects)
 
 
-        AdminHomeFrame = adminMainView.adminMainView(self.container, self, loggedInUser)
-        ScrumMasterHomeFrame = SMmainView.SMmainView(self.container, self, loggedInUser)
+        HomeFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
         itemManagerFrame = itemManagerView.ItemManagerView(self.container, self)
 
-        self.add_frame(AdminHomeFrame, adminMainView)
-        self.add_frame(ScrumMasterHomeFrame, SMmainView)
+
+        self.add_frame(HomeFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
         self.add_frame(itemManagerFrame, itemManagerView)
@@ -215,14 +215,8 @@ class masterView(tk.Tk):
         self.generateMenuBar()
         self.splash.kill()
         self.deiconify()
-        if (self.activeUser.userRole == "Admin"):
-            self.show_frame(adminMainView)
 
-        elif (self.activeUser.userRole == "Scrum Master"):
-            self.show_frame(SMmainView)
-
-        elif (self.activeUser.userRole == "Developer"):
-            self.show_frame(developerHomeView)
+        self.show_frame(mainView)
 
 
         self.title("Scrumbles"+" - "+self.activeProject.projectName)

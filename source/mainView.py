@@ -8,7 +8,7 @@ import logging
 import tkinter as tk
 import Dialogs
 
-class SMmainViewPopup(SPopMenu.GenericPopupMenu):
+class mainViewPopup(SPopMenu.GenericPopupMenu):
     def __init__(self,root,Master):
         super().__init__(root,Master)
         self.isAssignDeleted = False
@@ -65,12 +65,11 @@ class SMmainViewPopup(SPopMenu.GenericPopupMenu):
                                            command=self.root.deleteItem)
 
             if self.selectedObject.itemStatus == 3:
-               if self.index(5) is None or self.index(5)==0:
-                   self.add_command(label=u'Approve Item', command=self.root.approveItem)
+                print (self.index(0))
+                self.add_command(label=u'Approve Item', command=self.root.approveItem)
 
             if self.selectedObject.itemStatus == 3:
-               if self.index(6) is None or self.index(6)==0:
-                   self.add_command(label=u'Reject Item', command=self.root.rejectItem)
+                self.add_command(label=u'Reject Item', command=self.root.rejectItem)
 
 
         self.widget.selection_clear(0, tk.END)
@@ -85,7 +84,7 @@ class SMmainViewPopup(SPopMenu.GenericPopupMenu):
 
 
 
-class SMmainView(tk.Frame):
+class mainView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -95,41 +94,31 @@ class SMmainView(tk.Frame):
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.activeProject = controller.activeProject
-        self.sprintPopMenu = SPopMenu.GenericPopupMenu(self,self.controller)
+
         self.roleMap = {'Developer':0,'Scrum Master':1,'Admin':2}
         self.activeRole = controller.activeUser.userRole
-        self.FBPopMenu= SMmainViewPopup(self,self.controller)
-        if self.roleMap[self.activeRole] > 0:
-            self.sprintPopMenu.add_command(label=u'Edit Sprint',
-                                           command=self.editSprint)
-            self.sprintPopMenu.add_command(label=u'Delete Sprint',
-                                           command=self.deleteSprint)
+        
 
-
-        self.itemPopMenu= SMmainViewPopup(self,self.controller)
-        self.subItemPopMenu= SMmainViewPopup(self,self.controller)
-
-        self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
+        self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS", controller)
         self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
         self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS",controller)
         self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS",controller)
 
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+        self.FBPopMenu= None
+        self.sprintPopMenu = None
+        self.itemPopMenu= None
+        self.subItemPopMenu= None
 
-        self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.FBPopMenu.context_menu(event, self.FBPopMenu))
-        self.sprintList.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.sprintPopMenu.context_menu(event, self.sprintPopMenu))
-        self.itemList.listbox.bind('<2>' if self.aqua else '<3>',
-                                   lambda event: self.itemPopMenu.context_menu(event,self.itemPopMenu))
-        self.subItemList.listbox.bind('<2>' if self.aqua else '<3>',
-                                   lambda event: self.subItemPopMenu.context_menu(event, self.subItemPopMenu))
+        self.generatePopupThing()
+
 
 
         self.sprints = []
         self.sprintItems = []
         self.sprintItemSubItems = []
 
+        self.selectedFB = None
         self.selectedSprint = None
         self.selectedItem = None
         self.selectedSubItem = None
@@ -152,6 +141,16 @@ class SMmainView(tk.Frame):
         for source in sprintDynamicSources:
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
+
+        self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: (self.generatePopupThing(), self.FBPopMenu.context_menu(event, self.FBPopMenu)))
+        self.sprintList.listbox.bind('<2>' if self.aqua else '<3>',
+                                        lambda event: (self.generatePopupThing(), self.sprintPopMenu.context_menu(event, self.sprintPopMenu)))
+        self.itemList.listbox.bind('<2>' if self.aqua else '<3>',
+                                   lambda event: (self.generatePopupThing(), self.itemPopMenu.context_menu(event,self.itemPopMenu)))
+        self.subItemList.listbox.bind('<2>' if self.aqua else '<3>',
+                                   lambda event: (self.generatePopupThing(), self.subItemPopMenu.context_menu(event, self.subItemPopMen)))
+
         
         self.fullBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.sprintList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
@@ -164,8 +163,22 @@ class SMmainView(tk.Frame):
         self.updateLists()
         self.controller.dataBlock.packCallback(self.updateSprintList)
         self.controller.dataBlock.packCallback(self.updateLists)
+    def generatePopupThing(self):
 
-    def approveItem(self, item):
+        self.FBPopMenu= mainViewPopup(self,self.controller)
+        self.sprintPopMenu = SPopMenu.GenericPopupMenu(self,self.controller)
+        if self.roleMap[self.activeRole] > 0:
+            self.sprintPopMenu.add_command(label=u'Edit Sprint',
+                                           command=self.editSprint)
+            self.sprintPopMenu.add_command(label=u'Delete Sprint',
+                                           command=self.deleteSprint)
+
+
+        self.itemPopMenu= mainViewPopup(self,self.controller)
+        self.subItemPopMenu= mainViewPopup(self,self.controller)
+
+    def approveItem(self):
+        item = None
 
         try:
             title = self.selectedItem.itemTitle
@@ -184,7 +197,9 @@ class SMmainView(tk.Frame):
 
         messagebox.showinfo('Success','Item Approved')
 
-    def rejectItem(self, item):
+    def rejectItem(self):
+        item = None
+
 
         try:
             title = self.selectedItem.itemTitle
@@ -363,6 +378,7 @@ class SMmainView(tk.Frame):
         self.sprintList.importSprintsList(self.sprints)
         self.fullBacklog.importItemList(self.fullList)
         self.fullBacklog.colorCodeListboxes()
+        self.generatePopupThing()
 
     def updateLists(self):
         self.fullList = []
@@ -381,18 +397,31 @@ class SMmainView(tk.Frame):
         self.fullBacklog.importItemList(self.fullList)
         self.fullBacklog.colorCodeListboxes()
         if (self.selectedSprint != None):
+            for sprint in self.controller.activeProject.listOfAssignedSprints:
+                if (sprint.sprintName == self.selectedSprint.sprintName):
+                    self.selectedSprint = sprint
             self.sprintItems = self.selectedSprint.listOfAssignedItems
             self.itemList.importItemList(self.sprintItems)
             self.itemList.colorCodeListboxes()
             if (self.selectedItem != None):
-              self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
+                for item in self.controller.activeProject.listOfAssignedItems:
+                    if (item.itemTitle == self.selectedItem.itemTitle):
+                        self.selectedItem = item
+                self.sprintItemSubItems = [item for item in self.selectedItem.subItemList]
 
         self.subItemList.importItemList(self.sprintItemSubItems)
         self.subItemList.colorCodeListboxes()
         self.itemList.colorCodeListboxes()
         self.activeProject = self.controller.activeProject
         del self.itemPopMenu
-        self.itemPopMenu = SMmainViewPopup(self, self.controller)
+        self.itemPopMenu = mainViewPopup(self, self.controller)
+        self.generatePopupThing()
+
+    def assignedFBEvent(self, event):
+        for item in self.controller.activeProject.listOfAssignedItems:
+            if item.itemTitle == event.widget.get(tk.ANCHOR):
+                self.selectedFB = item
+
 
     def assignedSprintEvent(self, event):
         for sprint in self.controller.activeProject.listOfAssignedSprints:
@@ -414,7 +443,9 @@ class SMmainView(tk.Frame):
                 self.subItemList.importItemList(item.subItemList)
                 self.subItemList.colorCodeListboxes()
     def listboxEvents(self, event):
+        
         if event.widget is self.fullBacklog.listbox:
+            self.assignedFBEvent
             self.itemDescriptionManager.changeDescription(event)
 
         if event.widget is self.sprintList.listbox:
@@ -427,6 +458,7 @@ class SMmainView(tk.Frame):
 
         if event.widget is self.subItemList.listbox:
             self.itemDescriptionManager.changeDescription(event)
+        self.generatePopupThing()
     def __str__(self):
         return 'Scrumbles Home View'
 
