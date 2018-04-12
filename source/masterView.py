@@ -56,13 +56,8 @@ class masterView(tk.Tk):
         
         self.add_frame(loginFrame, loginView)
 
-
         self.show_frame(loginView)
         self.dataConnection = None
-
-
-
-
 
         self.activeUser = None
 
@@ -125,7 +120,7 @@ class masterView(tk.Tk):
         menuBar.add_cascade(label="View", menu=viewMenu)
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
-        
+
         self.menuBar = menuBar
         self.menuBar.config(cursor = "hand2")
     def colorHelp(self):
