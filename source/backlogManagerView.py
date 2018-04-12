@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import messagebox
+import logging
 import ScrumblesFrames, SPopMenu, Dialogs, listboxEventHandler
 
 
@@ -6,9 +8,12 @@ class backlogManagerView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        userRoleMap = controller.activeUser.userRoleMap
+        self.activeRole = userRoleMap[self.controller.activeUser.userRole]
+
         self.selectedItem = None
         self.selectedSprint = None
-        self.listOfEpics = [I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
+
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
 
@@ -25,11 +30,15 @@ class backlogManagerView(tk.Frame):
         self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS")
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.popMenu.context_menu(event, self.popMenu))
 
-        self.popMenu = SPopMenu.BacklogManPopMenu(self,self.controller,self.listOfEpics)
-        self.popMenu.add_command(label=u'Update Item', command=self.updateItem)
+        if self.activeRole > 0:
+            self.listOfEpics = [I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
+            self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
+                                            lambda event: self.popMenu.context_menu(event, self.popMenu))
+
+            self.popMenu = SPopMenu.BacklogManPopMenu(self,self.controller,self.listOfEpics)
+            self.popMenu.add_command(label=u'Update Item', command=self.updateItem)
+            self.popMenu.add_command(label=u'Delete Item', command=self.deleteItem)
 
 
         self.sprintList = ScrumblesFrames.SBacklogList(self, "SPRINTS")
@@ -40,7 +49,8 @@ class backlogManagerView(tk.Frame):
         self.sprintBacklog = ScrumblesFrames.SBacklogList(self, "SPRINT BACKLOG")
         self.sprintBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.popMenu.context_menu(event, self.popMenu))
+        if self.activeRole > 0:
+            self.sprintBacklog.listbox.bind('<2>' if self.aqua else '<3>',lambda event: self.popMenu.context_menu(event, self.popMenu))
 
 
         self.sprintListData = self.controller.activeProject.listOfAssignedSprints
@@ -63,7 +73,26 @@ class backlogManagerView(tk.Frame):
         for source in dynamicSources:
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
+    def deleteItem(self):
+        item = None
+        title = self.selectedItem
+        for i in self.controller.dataBlock.items:
+            if i.itemTitle == title:
+                item = i
 
+        if item is None:
+            print('Item Title:', title)
+            print('backlogData:')
+            for i in self.controller.activeProject.listOfAssignedItems:
+                print(i.itemTitle)
+            raise Exception('Error Loading item from title')
+        try:
+            if messagebox.askyesno('Warning','Are you sure you want to delete %s\nThis action cannot be reversed'%str(item)):
+                self.controller.dataBlock.deleteScrumblesObject(item,self.controller.activeProject)
+                messagebox.showinfo('Success', 'Item %s deleted from database'%item.itemTitle)
+        except Exception as e:
+            logging.exception('Failed to delete item %s'%str(item))
+            messagebox.showerror('Error', 'Failed to delete item\n'+str(e))
     def updateItem(self):
         item = None
         title = self.selectedItem
@@ -97,9 +126,9 @@ class backlogManagerView(tk.Frame):
 
         self.fullBacklog.importItemList(self.controller.activeProject.listOfAssignedItems)
         self.fullBacklog.colorCodeListboxes()
-
-        self.listOfEpics = [ I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
-        self.popMenu.updateEpicsMenu()
+        if self.activeRole > 0:
+            self.listOfEpics = [ I for I in self.controller.activeProject.listOfAssignedItems if I.itemType == 'Epic']
+            self.popMenu.updateEpicsMenu()
 
 
 
