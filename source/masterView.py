@@ -52,13 +52,8 @@ class masterView(tk.Tk):
         
         self.add_frame(loginFrame, loginView)
 
-
         self.show_frame(loginView)
         self.dataConnection = None
-
-
-
-
 
         self.activeUser = None
 
