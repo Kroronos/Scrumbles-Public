@@ -6,6 +6,8 @@ import loginView
 import developerHomeView
 import teamManagerView
 
+import analyticsView
+
 import platform
 import webbrowser
 import DataBlock
@@ -33,7 +35,6 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
 
         self.frames = {}
 
@@ -105,12 +106,15 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
 
+       
+        viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(analyticsView))
+
 
         helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
-        helpMenu.add_command(label = "What's with the colors", command=self.colorHelp)
-        helpMenu.add_command(label = 'Refresh Data',command=self.refreshData)
+        helpMenu.add_command(label = "What's With The Colors", command=self.colorHelp)
+        helpMenu.add_command(label = 'Refresh Data', command=self.refreshData)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Edit", menu=editMenu)
@@ -151,6 +155,11 @@ class masterView(tk.Tk):
         views.append(teamManagerView)
         viewNames.append("Team Manager")
 
+
+
+
+        views.append(analyticsView)
+        viewNames.append("Analytics")
 
         return views, viewNames
 
@@ -193,10 +202,16 @@ class masterView(tk.Tk):
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
 
+        analyticsFrame = analyticsView.analyticsView(self.container, self)
+
+
 
         self.add_frame(HomeFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
+
+        self.add_frame(analyticsFrame, analyticsView)
+
 
         self.generateMenuBar()
         self.splash.kill()
