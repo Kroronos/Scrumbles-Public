@@ -112,8 +112,9 @@ class masterView(tk.Tk):
             viewMenu.add_command(label="Scrum Master Main", command=lambda: self.show_frame(mainView))       
         elif (self.activeUser.userRole == "Developer"):
             viewMenu.add_command(label="Developer Main", command=lambda: self.show_frame(mainView))
-        
+
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
+        viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(itemManagerView))
 
 
