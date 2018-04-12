@@ -65,7 +65,6 @@ class mainViewPopup(SPopMenu.GenericPopupMenu):
                                            command=self.root.deleteItem)
 
             if self.selectedObject.itemStatus == 3:
-                print (self.index(0))
                 self.add_command(label=u'Approve Item', command=self.root.approveItem)
 
             if self.selectedObject.itemStatus == 3:
