@@ -97,7 +97,7 @@ class DataBlock:
             time.sleep(1)
         self.isLoading = True
         funcStartTime = time.clock()
-        print('connecting')
+        #print('connecting')
         self.conn.connect()
         self.users.clear()
         self.items.clear()
@@ -106,7 +106,11 @@ class DataBlock:
         self.tags.clear()
         self.sprints.clear()
         self.itemMap = {}
-        print('getting tables')
+        self.sprintMap = {}
+        self.commentMap = {}
+        self.projectMap = {}
+        self.userMap = {}
+        #print('getting tables')
         loopStartTime = time.clock()
         userTable = self.conn.getData(Query.getAllUsers)
         itemTable = self.conn.getData(Query.getAllCards)
@@ -120,10 +124,10 @@ class DataBlock:
 
         self.conn.close()
 
-        print('Tables loaded in %fms' % ((time.clock()-loopStartTime)*1000) )
+        #print('Tables loaded in %fms' % ((time.clock()-loopStartTime)*1000) )
 
         loopStartTime = time.clock()
-        print('splicing vectors')
+        #print('splicing vectors')
 
         timeLineMap = self.mapTimeline(itemTimeLineTable)
         epicMap = self.buildEpicMap(epicTable)
@@ -131,7 +135,7 @@ class DataBlock:
             Comment = ScrumblesObjects.Comment(comment)
             self.comments.append(Comment)
             self.commentMap[Comment.commentID] = Comment
-        print('Comment List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
+        #print('Comment List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
         for item in itemTable:
@@ -147,13 +151,13 @@ class DataBlock:
             #self.populateItemTimeLine(Item,timeLineMap)
             self.itemMap[Item.itemID] = Item
             self.items.append(Item)
-        print('Item List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
+        #print('Item List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
         for I in self.items:
             if I.itemID in epicMap:  #epicMap[subitemID]->EpicID
                 self.itemMap[epicMap[I.itemID]].subItemList.append(I) #itemMap[itemID]->Item
-        print('Item subitems spliced in %fms' % ((time.clock() - loopStartTime) * 1000))
+        #print('Item subitems spliced in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
         for user in userTable:
@@ -162,7 +166,7 @@ class DataBlock:
             User.listOfComments = [ C for C in self.comments if C.commentUserID == User.userID ]
             self.users.append(User)
             self.userMap[User.userID] = User
-        print('User List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
+        #print('User List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
         for sprint in sprintTable:
@@ -171,7 +175,7 @@ class DataBlock:
             Sprint.listOfAssignedUsers = [U for U in self.users if U.userID in [I.itemUserID for I in Sprint.listOfAssignedItems]]
             self.sprints.append(Sprint)
             self.sprintMap[Sprint.sprintID] = Sprint
-        print('Sprint List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
+        #print('Sprint List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
         for project in projectTable:
@@ -179,7 +183,7 @@ class DataBlock:
             Project.listOfAssignedSprints = [S for S in self.sprints if S.projectID == Project.projectID]
             self.projects.append(Project)
             self.projectMap[Project.projectID] = Project
-        print('Project List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
+        #print('Project List Built in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
         for user in self.users:
@@ -188,7 +192,7 @@ class DataBlock:
                     for project in self.projects:
                         if dict['ProjectID'] == project.projectID:
                             user.listOfProjects.append(project)
-        print('Users Spliced to Projects in %fms' % ((time.clock() - loopStartTime) * 1000))
+        #print('Users Spliced to Projects in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         loopStartTime = time.clock()
         for project in self.projects:
@@ -197,7 +201,7 @@ class DataBlock:
                     for user in self.users:
                         if dict['UserID'] == user.userID:
                             project.listOfAssignedUsers.append(user)
-            print('Projects spliced to users in %fms' % ((time.clock() - loopStartTime) * 1000))
+            #print('Projects spliced to users in %fms' % ((time.clock() - loopStartTime) * 1000))
 
             loopStartTime = time.clock()
             for dict in itemToProjectRelationTable:
@@ -207,10 +211,10 @@ class DataBlock:
                             item.projectID = project.projectID
 
                             project.listOfAssignedItems.append(item)
-        print('Items Spliced to Projects in %fms' % ((time.clock() - loopStartTime) * 1000))
+        #print('Items Spliced to Projects in %fms' % ((time.clock() - loopStartTime) * 1000))
 
         #self.debugDump()
-        print('Data Loaded in %fs' % (time.clock()-funcStartTime))
+        #print('Data Loaded in %fs' % (time.clock()-funcStartTime))
         self.isLoading = False
         return True
 
@@ -220,7 +224,7 @@ class DataBlock:
         except KeyError as e:
             time.sleep(1)
             print(str(e))
-            print('re-applying timeline')
+            #print('re-applying timeline')
             self.applyItemLine( Item, self.reloadTimeLineMap() )
         return
 
@@ -312,14 +316,25 @@ class DataBlock:
     @dbWrap
     def updateScrumblesObject(self,obj):
         logging.info('Updating object %s to database' % repr(obj))
+
         self.conn.setData(Query.updateObject(obj))
         if type(obj) is ScrumblesObjects.Item:
-            self.conn.setData(TimeLineQuery.newItem(obj))
+            self.conn.setData(TimeLineQuery.updateObject(obj))
 
     @dbWrap
-    def deleteScrumblesObject(self,obj):
+    def deleteScrumblesObject(self,obj,project=None):
         logging.info('Deleting object %s from database' % repr(obj))
-        self.conn.setData(Query.deleteObject(obj))
+        if type(obj) == ScrumblesObjects.Item:
+            self.conn.setMulti(Query.deleteObject(obj))
+        elif type(obj) == ScrumblesObjects.Sprint:
+            self.conn.setMulti(Query.deleteObject(obj))
+        else:
+            self.conn.setData(Query.deleteObject(obj))
+
+    @dbWrap
+    def removeItemFromComments(self,item):
+        logging.info('Removing item from comments database')
+        self.conn.setData(CommentQuery.deleteItemFromComments(item))
 
     @dbWrap
     def modifiyItemPriority(self,item,priority):

@@ -128,8 +128,9 @@ class ProjectQuery(Query):
 
     @staticmethod
     def removeItem(project, item):
-        query = 'DELETE FROM ProjectItemTable WHERE ProjectID=%s AND ItemID=%s'
-        return query, (project.projecID,item.itemID)
+        query = '''DELETE FROM ProjectItemTable WHERE ProjectID=%s AND ItemID=%s;
+        '''
+        return query, (project.projectID,item.itemID)
 
 
 class SprintQuery(Query):
@@ -173,8 +174,10 @@ class SprintQuery(Query):
     @staticmethod
     def deleteSprint(sprint):
         assert sprint is not None
-        query = 'DELETE FROM SprintTable WHERE SprintID=%s'
-        return query, (sprint.sprintID,)
+        query = '''DELETE FROM SprintTable WHERE SprintID=%s
+                   UPDATE CardTable SET SprintID=%s WHERE SprintID=%s'''
+        parameterMap = {1:(sprint.sprintID,),2:(None,sprint.sprintID)}
+        return query,parameterMap
 
 
 class CardQuery(Query):
@@ -245,8 +248,15 @@ class CardQuery(Query):
     @staticmethod
     def deleteCard(item):
         assert item is not None
-        query = 'DELETE FROM CardTable WHERE CardID=%s'
-        return query,(item.itemID,)
+        ID = item.itemID
+        query = '''DELETE FROM CardTable WHERE CardID=%s;
+        DELETE FROM EpicTable WHERE SubitemID=%s;
+        DELETE FROM EpicTable WHERE EpicID=%s;
+        DELETE FROM CardTimeLine WHERE CardID=%s;
+        DELETE FROM CommentTable WHERE CardID=%s;
+        DELETE FROM ProjectItemTable WHERE ItemID=%s'''
+        parameterMap = {1: (ID,), 2:(ID,), 3:(ID,), 4:(ID,),5:(ID,),6:(ID,)}
+        return query,parameterMap
     @staticmethod
     def getEpicSubitems(item):
         assert item is not None
@@ -338,6 +348,11 @@ class CommentQuery(Query):
         assert comment is not None
         query = 'DELETE FROM CommentTable WHERE CommentID=%s'
         return query, (comment.commentID,)
+    @staticmethod
+    def deleteItemFromComments(item):
+        assert type(item) is ScrumblesObjects.Item
+        query = 'DELETE FROM CommentTable WHERE CardID = %s'
+        return query, (item.itemID)
 
 class TimeLineQuery(Query):
     statusMap = {0: 'AssignedToUser', 1: 'AssignedToUser', 2: 'WorkStarted', 3: 'Submitted', 4: 'Completed'}

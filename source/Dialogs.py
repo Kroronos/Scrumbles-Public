@@ -355,6 +355,50 @@ class EditSprintDialog(CreateSprintDialog):
         self.executeSuccess = False
         self.exit()
 
+
+class DeleteSprintDialog(GenericDialog):
+    def __init__(self, *args, **kwargs):
+        sprint = kwargs.pop('sprint',None)
+        assert type(sprint) == ScrumblesObjects.Sprint, 'keyword sprint must be a ScrumblesObject.Sprint'
+        super().__init__(*args, **kwargs)
+        self.sprint = sprint
+        self.title('Delete Sprint')
+        self.createWidgets()
+        self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
+
+
+
+    @tryExcept
+    def ok(self):
+        try:
+            if not self.isTest:
+                self.dataBlock.deleteScrumblesObject(self.sprint)
+                self.exit()
+            else:
+                print('TESTMODE: self.dataBlock.addNewScrumblesObject(%s)'%repr(project))
+        except IntegrityError:
+            logging.exception('ID Collision')
+
+        else:
+            messagebox.showinfo('Info', 'Sprint Successfully Deleted')
+
+
+
+    def cancel(self):
+        self.executeSuccess = False
+        self.exit()
+
+    def createWidgets(self):
+        Tk.Label(self, text="Delete "+ self.sprint.sprintName + "?").grid(row=2, column=1, pady=5, sticky='E')
+
+
+        self.deleteButton = Tk.Button(self, text="Delete", command=self.ok)
+        self.deleteButton.grid(row=8,column=2,pady=5)
+
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.cancel)
+        self.cancelButton.grid(row=8,column=1,pady=5)
+
+
 class CreateItemDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
         print('SELF', type(self))
@@ -571,6 +615,7 @@ class EditItemDialog(CreateItemDialog):
     @tryExcept
     def ok(self):
             item = self.item
+            oldItemType = item.itemType
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
             selectedSprint = None
@@ -615,6 +660,8 @@ class EditItemDialog(CreateItemDialog):
             else:
                 self.dataBlock.modifiyItemPriority(item, item.priorityTextToNumberMap[self.itemPriorityCombobox.get()])
 
+            if oldItemType == 'Epic' and item.itemType != 'Epic':
+                self.dataBlock.deleteEpic(item)
             self.dataBlock.updateScrumblesObject(item)
 
 
@@ -695,13 +742,14 @@ class codeLinkDialog(GenericDialog):
 
         self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
         if not self.isTest:
-            w = 600*self.master.w_rat
-            h = 80*self.master.h_rat
-            ws = self.parent.winfo_screenwidth()  # width of the screen
-            hs = self.parent.winfo_screenheight()  # height of the screen
-            x = (ws / 2) - (w / 2)
-            y = (hs / 2) - (h / 2)
-            self.geometry('%dx%d+%d+%d'%(w,h,x,y))
+            # w = 600*self.master.w_rat
+            # h = 80*self.master.h_rat
+            # ws = self.parent.winfo_screenwidth()  # width of the screen
+            # hs = self.parent.winfo_screenheight()  # height of the screen
+            # x = (ws / 2) - (w / 2)
+            # y = (hs / 2) - (h / 2)
+            # self.geometry('%dx%d+%d+%d'%(w,h,x,y))
+            pass
         self.createWidgets()
     @tryExcept
     def createWidgets(self):
