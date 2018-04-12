@@ -132,7 +132,7 @@ class mainView(tk.Frame):
         self.sprintDescriptionManager = ScrumblesFrames.SCardDescription(self, controller, sprintDynamicSources, sprintQueryType)
 
         itemDynamicSources = [self.fullBacklog.listbox, self.itemList.listbox, self.subItemList.listbox]
-        itemQueryType = ['Item', 'Item']
+        itemQueryType = ['Item', 'Item', 'Item']
         self.itemDescriptionManager = ScrumblesFrames.SCardDescription(self, controller, itemDynamicSources, itemQueryType)
 
         # To Prevent Duplicate Tkinter Events
