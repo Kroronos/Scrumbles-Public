@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
-from frames import SPopMenu, ScrumblesObjects, Dialogs, ScrumblesFrames
-import listboxEventHandler
+from frames import SPopMenu, Dialogs, ScrumblesFrames, listboxEventHandler
+from data import ScrumblesObjects
 from styling import styling as style
 import logging
 

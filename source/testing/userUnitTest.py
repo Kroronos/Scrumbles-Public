@@ -1,7 +1,6 @@
 ### test creation and deletion of a User object
 import MySQLdb
-from frames import ScrumblesObjects
-from data import ScrumblesData
+from data import ScrumblesData, ScrumblesObjects
 
 
 def testUsers(dataConnection):

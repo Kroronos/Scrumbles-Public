@@ -3,8 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from MySQLdb import IntegrityError
 from views import masterView
-from frames import ScrumblesObjects
-from data import DataBlock
+from data import DataBlock, ScrumblesObjects
 import webbrowser
 import sys, traceback
 import datetime

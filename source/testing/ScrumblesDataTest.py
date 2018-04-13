@@ -1,5 +1,5 @@
 from data.ScrumblesData import *
-from frames.ScrumblesObjects import *
+from data.ScrumblesObjects import *
 
 username = 'TestUser'
 password = 'PASSWORD'

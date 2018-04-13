@@ -1,7 +1,6 @@
 ### test creation and deletion of a Sprint object
-from frames import ScrumblesObjects
 import datetime
-from data import ScrumblesData
+from data import ScrumblesData, ScrumblesObjects
 
 
 def testSprints(dataConnection):

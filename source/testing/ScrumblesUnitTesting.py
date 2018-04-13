@@ -1,5 +1,4 @@
-from data import ScrumblesData
-from frames import ScrumblesObjects
+from data import ScrumblesData, ScrumblesObjects
 
 ScrumblesUser_username = 'TestUser'
 ScrumblesUser_password = 'Password1'

@@ -1,6 +1,6 @@
 import tkinter as tk
-from frames import ScrumblesFrames
-import listboxEventHandler
+from frames import ScrumblesFrames, listboxEventHandler
+
 
 class teamManagerView(tk.Frame):
     def __init__(self, parent, controller, user):

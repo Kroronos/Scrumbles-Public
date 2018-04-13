@@ -1,5 +1,4 @@
-from data import ScrumblesData
-from frames import ScrumblesObjects
+from data import ScrumblesData, ScrumblesObjects
 
 
 def testItems(dataConnection):

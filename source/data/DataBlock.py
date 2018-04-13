@@ -1,7 +1,6 @@
 from data.ScrumblesData import DataBaseLoginInfo, ScrumblesData, debug_ObjectdumpList
 from data.Query import *
-from data import RemoteUpdate
-from frames import ScrumblesObjects
+from data import RemoteUpdate, ScrumblesObjects
 import logging, threading, time
 
 def dbWrap(func):
