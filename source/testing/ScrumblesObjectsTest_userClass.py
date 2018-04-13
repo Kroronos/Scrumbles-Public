@@ -1,5 +1,5 @@
-import ScrumblesData 
-import ScrumblesObjects
+from data import ScrumblesData, ScrumblesObjects
+
 
 def printUserDetails(user):
     print(user.userID)

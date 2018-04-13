@@ -1,5 +1,4 @@
-import DataBlock
-import ScrumblesObjects
+from data import DataBlock, ScrumblesObjects
 from datetime import datetime
 import time
 import logging
