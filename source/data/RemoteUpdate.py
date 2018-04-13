@@ -1,4 +1,4 @@
-import logging,socket, time, threading
+import logging,socket, time, threading, select
 
 
 #this will connect to a remote server on port 5005
@@ -32,26 +32,27 @@ class RemoteUpdate:
         self.keepAlive()
 
     def keepAlive(self):
-
         while self.alive:
             try:
                 self.socket.send(self.MSG)
                 time.sleep(5)
+
             except:
                 logging.error('Connection to %s Lost'%self.TCP_IP)
-
                 self.socket.close()
+                self.isAlive = False
                 self.alive = False
                 return False
         return False
 
 
     def getMessages(self):
+        #read_list = [self.socket]
         try:
             data = self.socket.recv(self.BUFF)
-            
+            print(data.decode())            
             if data == b'CHANGE':
-                self.lock.acquire()
+                self.lock.acquire(timeout=2)
                 self.isDBChanged = True
                 self.lock.release()
                 logging.info('Received Message from DB Server: %s' % data.decode() )
@@ -65,6 +66,8 @@ class RemoteUpdate:
         logging.info('Socket thread %s started' % threading.get_ident())
         logging.info('Connecting to %s on port %s' % (self.TCP_IP,self.TCP_PORT))
         self.conn = self.socket.connect((self.TCP_IP, self.TCP_PORT))
+        self.socket.setblocking(False)
+        self.socket.settimeout(6)
         self.keepAliveThread.start()
         loop = True
 
@@ -77,3 +80,4 @@ class RemoteUpdate:
     def stop(self):
         self.alive = False
         self.socket.close()
+
