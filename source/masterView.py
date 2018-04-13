@@ -12,7 +12,7 @@ import platform
 import webbrowser
 import DataBlock
 import Dialogs
-
+import time
 
 class masterView(tk.Tk):
     def __init__(self):
@@ -286,6 +286,10 @@ class masterView(tk.Tk):
 
 def logOut(controller):
     logging.info('%s logged out'%controller.activeUser.userID)
+    controller.dataBlock.shutdown()
+    messagebox.showinfo('Logout','Shutting Down Active Threads')
+    time.sleep(3)
+    del controller.dataBlock
     #Do Some Stuff Here To Clear States
     loginFrame = loginView.loginView(controller.container, controller)
     controller.add_frame(loginFrame, loginView)
