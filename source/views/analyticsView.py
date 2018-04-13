@@ -26,7 +26,13 @@ class analyticsView(tk.Frame):
 
         self.taskAnalyticsFrame = tk.Frame(self)
 
+        self.insideSprint = False
+        self.sprintList = ScrumblesFrames.SList(self.sprintAnalyticsFrame, "SPRINTS")
+        self.sprintAnalyticsContents = tk.Frame(self.sprintAnalyticsFrame)
+        self.sprintAnalyticsContentsOptions = []
+        self.sprintAnalyticsContentsOptions.append(self.sprintAnalyticsContents)
 
+        self.sprintList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
         #Percent of Sprints Done - Progress Task
         #Tasks Completed Per Sprint - Bar Graph
         #Weighed Tasks Completed Per Sprint (Points) - Bar Graph
@@ -42,6 +48,11 @@ class analyticsView(tk.Frame):
 
         self.userList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
+        self.insideTask = False
+        self.taskList = ScrumblesFrames.SList(self.taskAnalyticsFrame, "TASKS")
+        self.taskAnalyticsContents = tk.Frame(self.sprintAnalyticsFrame)
+        self.taskAnalyticsContentsOptions = []
+        self.taskAnalyticsContentsOptions.append(self.taskAnalyticsContents)
         #For Tasks
             #Average Time From Creation to Completion
             #Average Time From Creation to Submission
@@ -84,6 +95,14 @@ class analyticsView(tk.Frame):
         self.teamMembers = []
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
         self.userList.importList(self.teamMembers)
+
+        self.sprintListing = []
+        self.sprintListing = [sprint.sprintName for sprint in self.controller.activeProject.listOfAssignedSprints]
+        self.sprintList.importList(self.sprintListing)
+
+        self.taskListing = []
+        self.taskListing =  [item.itemTitle for item in self.controller.activeProject.listOfAssignedItems]
+        self.taskList.importList(self.taskListing)
 
         self.updateSprintFrame()
         self.updateUserFrame()
@@ -195,9 +214,12 @@ class analyticsView(tk.Frame):
         if event.widget is self.userList.listbox:
             self.generateInternalUserFrame(event)
 
-    def generateInternalUserFrame(self, event):
-        self.userEvent = event
-        userName = event.widget.get(tk.ANCHOR)
+    def generateInternalUserFrame(self, event=None, userEventName=None):
+        if event is not None:
+            userName = event.widget.get(tk.ANCHOR)
+            self.userEventName = userName
+        if userEventName is not None:
+            userName = userEventName
 
         tasksCompleted, tasksAssigned, pointsEarned = self.getUserTaskInfo(userName)
         if tasksAssigned == 0:
@@ -309,19 +331,23 @@ class analyticsView(tk.Frame):
         self.taskUserPieChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.taskUserHistogram.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        if self.insideUser:
+            self.generateInternalUserFrame(userEventName=self.userEventName)
         self.userGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 
     def updateSprintFrame(self):
-        print()
+        self.sprintList.pack(side=tk.LEFT, fill=tk.Y)
 
     def updateTaskFrame(self):
-        print()
+        self.taskList.pack(side=tk.LEFT, fill=tk.Y)
 
     def clearSelection(self, listbox, view):
         if view == 0: #sprint analytics
-            self.sprintAnalyticsContents.pack_forget()
+            self.sprintAnalyticsContents[1].pack_forget()
             self.sprintAnalyticsContents = self.sprintAnalyticsContentsOptions[0]
+            self.sprintAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+            self.insideSprint = False
         if view == 1: #user analytics
             self.userAnalyticsContentsOptions[1].pack_forget()
             self.userAnalyticsContents = self.userAnalyticsContentsOptions[0]
@@ -329,7 +355,9 @@ class analyticsView(tk.Frame):
             self.insideUser = False
 
         if view == 2: #task analytics
-            self.taskAnalyticsContents.pack_forget()
+            self.taskAnalyticsContents[1].pack_forget()
             self.taskAnalyticsContents = self.taskAnalyticsContentsOptions[0]
+            self.taskAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+            self.insideTask = False
 
         listbox.selection_clear(0, tk.END)
