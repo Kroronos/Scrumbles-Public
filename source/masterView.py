@@ -62,9 +62,12 @@ class masterView(tk.Tk):
         self.bind('<Control-i>', self.showCreateItemDialog)
         self.bind('<Control-s>', self.showCreateSprintDialog)
         
+        self.bind('<Control-m>', self.showMainView)
+        self.bind('<Control-h>', self.showHomeView)
+        self.bind('<Control-t>', self.showTeamView)
+        self.bind('<Control-a>', self.showAnalyticsView)
 
-    def output_test(self,event):
-        print("output")
+
 
     def show_frame(self, cont):
         frame = self.frames[cont]
@@ -182,6 +185,20 @@ class masterView(tk.Tk):
 
     def showCreateItemDialog(self,event):
         Dialogs.CreateItemDialog(self, master=self, dataBlock=self.dataBlock).show()
+
+
+
+    def showMainView(self, event):
+        self.show_frame(mainView)
+
+    def showHomeView(self, event):
+        self.show_frame(developerHomeView)
+
+    def showTeamView(self, event):
+        self.show_frame(teamManagerView)
+
+    def showAnalyticsView(self, event):
+        self.show_frame(analyticsView)
 
     def generateViews(self, loggedInUser):
         self.withdraw()
