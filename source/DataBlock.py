@@ -50,6 +50,15 @@ class DataBlock:
             self.shutdown()
             
 
+    def onConnectionLoss(self,func):
+        while self.listener.alive:
+            time.sleep(1)
+            if not self.alive:
+                return
+
+        func()
+
+
     def getLen(self):
         rv = len(self.items)
         return rv

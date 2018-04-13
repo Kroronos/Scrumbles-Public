@@ -13,6 +13,7 @@ import webbrowser
 import DataBlock
 import Dialogs
 import time
+import threading
 
 class masterView(tk.Tk):
     def __init__(self):
@@ -188,6 +189,9 @@ class masterView(tk.Tk):
 
         self.activeProject = self.dataBlock.projects[0]
 
+        #todo
+        threading.Thread(target=self.dataBlock.onConnectionLoss,args=(self.connectionLosshandler,)).start()
+
         print('Logged in %s'%loggedInUser)
 
         for user in self.dataBlock.users:
@@ -230,6 +234,10 @@ class masterView(tk.Tk):
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
+
+    def connectionLosshandler(self):
+        messagebox.showerror('Loss of Connection','Network Connection Lost, Logging Out of App')
+        logOut(self)
 
     def openAPI(self):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/Scrumbles-API-Documentation')
