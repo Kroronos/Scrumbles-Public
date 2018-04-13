@@ -1,6 +1,6 @@
-from ScrumblesData import DataBaseLoginInfo, ScrumblesData, debug_ObjectdumpList
-from Query import *
-import ScrumblesObjects, remoteUpdate
+from data.ScrumblesData import DataBaseLoginInfo, ScrumblesData, debug_ObjectdumpList
+from data.Query import *
+from data import RemoteUpdate, ScrumblesObjects
 import logging, threading, time
 
 def dbWrap(func):
@@ -34,7 +34,7 @@ class DataBlock:
             logging.info('Initializing DataBlock Object')
             self.alive = True
 
-            self.listener = remoteUpdate.RemoteUpdate()
+            self.listener = RemoteUpdate.RemoteUpdate()
             self.lock = threading.Lock()
             self.size = self.getLen()
             self.updaterThread = threading.Thread(target = self.updater, name='UpdaterThread')

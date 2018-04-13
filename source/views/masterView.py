@@ -1,17 +1,12 @@
 import logging
 import tkinter as tk
-from tkinter import messagebox
-import mainView
-import loginView
-import developerHomeView
-import teamManagerView
-
-import analyticsView
+from views import developerHomeView, mainView, teamManagerView, loginView, analyticsView
 
 import platform
 import webbrowser
-import DataBlock
-import Dialogs
+from data import DataBlock
+from frames import Dialogs
+
 import time
 import threading
 
@@ -64,7 +59,7 @@ class masterView(tk.Tk):
         print("Switching Views")
         frame.tkraise()
 
-        if(cont!=loginView):
+        if(cont!= loginView):
             self.raiseMenuBar()
         else:
             self.hideMenuBar()

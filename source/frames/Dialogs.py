@@ -2,16 +2,14 @@ import tkinter as Tk
 from tkinter import ttk
 from tkinter import messagebox
 from MySQLdb import IntegrityError
-import ScrumblesData
-import masterView
-import ScrumblesObjects
-import DataBlock
+from views import masterView
+from data import DataBlock, ScrumblesObjects
 import webbrowser
 import sys, traceback
 import datetime
 import logging
-from SLists import ColorSchemes
-import time
+from frames.SLists import ColorSchemes
+
 
 def tryExcept(f):
     def wrapper(self):

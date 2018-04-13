@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
-from Query import Query
-import masterView
+from data.Query import Query
+from views import masterView
 import logging
-import ScrumblesData
+from data import ScrumblesData
 from _mysql_exceptions import OperationalError
 
 
