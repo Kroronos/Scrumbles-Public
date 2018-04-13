@@ -196,7 +196,6 @@ class analyticsView(tk.Frame):
     def generateInternalUserFrame(self, event):
         self.userEvent = event
         userName = event.widget.get(tk.ANCHOR)
-        self.insideUser = True
 
         tasksCompleted, tasksAssigned, pointsEarned = self.getUserTaskInfo(userName)
         if tasksAssigned == 0:
@@ -212,9 +211,12 @@ class analyticsView(tk.Frame):
 
         progressBarFrame = tk.Frame(internalUserFrame)
         userProgressBar = ttk.Progressbar(progressBarFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
-        userProgressBarLabel = tk.Label(progressBarFrame, text=userName + " has completed " + str(int((tasksCompleted/tasksAssigned)*100)) + "% of the tasks they've been assigned.")
-
+        userProgressBarTopping = tk.Frame(progressBarFrame)
+        userProgressBarLabel = tk.Label(userProgressBarTopping, text=userName + " has completed " + str(int((tasksCompleted/tasksAssigned)*100)) + "% of the tasks they've been assigned.")
+        userClearButton = tk.Button(userProgressBarTopping, text=style.left_arrow, command=lambda:self.clearSelection(self.userList.listbox,1), font=('Helvetica', '13'))
+        userClearButton.pack(side=tk.LEFT)
         userProgressBarLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        userProgressBarTopping.pack(side=tk.TOP, fill=tk.X, expand=True)
         userProgressBar.pack(side=tk.TOP, fill=tk.X, expand=True)
         userProgressBar["value"] = tasksCompleted
         userProgressBar["maximum"] = tasksAssigned
@@ -244,6 +246,7 @@ class analyticsView(tk.Frame):
         self.userAnalyticsContents = self.userAnalyticsContentsOptions[1]
 
         self.userAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.insideUser = True
 
     def getUserTaskInfo(self, userName):
         itemsAssigned = 0
@@ -292,7 +295,7 @@ class analyticsView(tk.Frame):
             self.taskUserHistogram.pack_forget()
             self.userAnalyticsContents.pack_forget()
             self.userGraphFrame.pack_forget()
-            
+
         self.userLabels = self.generateUserLabels()
 
         self.userGraphFrame = tk.Frame(self.userAnalyticsContents)
@@ -307,5 +310,17 @@ class analyticsView(tk.Frame):
         self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.userGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    def clearSelection(self):
-        print("Clearing Selection")
+    def clearSelection(self, listbox, view):
+        if view == 0: #sprint analytics
+            self.sprintAnalyticsContents.pack_forget()
+            self.sprintAnalyticsContents = self.sprintAnalyticsContentsOptions[0]
+        if view == 1: #user analytics
+            self.userAnalyticsContents.pack_forget()
+            self.userAnalyticsContents = self.userAnalyticsContentsOptions[0]
+            self.userAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+        if view == 2: #task analytics
+            self.taskAnalyticsContents.pack_forget()
+            self.taskAnalyticsContents = self.taskAnalyticsContentsOptions[0]
+
+        listbox.selection_clear(0, tk.END)
