@@ -373,7 +373,7 @@ class SCardDescription(tk.Frame):
         self.internals = tk.Frame(self.canvas)
         self.canvasFrame = self.canvas.create_window(0,0,window=self.internals, anchor=tk.NW)
         self.titleText = tk.StringVar()
-        self.titleText.set("Item Description")
+        self.titleText.set(str(datatype[0]) + " Description")
         self.title = tk.Label(self.internals, textvariable=self.titleText,
                               font=(style.header_family, style.header_size, style.header_weight))
         self.title.pack(fill=tk.BOTH)
