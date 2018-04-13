@@ -1,4 +1,4 @@
-import logging,socket, time, threading
+import logging,socket, time, threading, select
 
 
 #this will connect to a remote server on port 5005
@@ -51,8 +51,11 @@ class RemoteUpdate:
 
 
     def getMessages(self):
+        #read_list = [self.socket]
         try:
+            #read,write,error = select.select(read_list,[],[],1)
             print('%s <listener Thread> alive'%threading.get_ident())
+
             data = self.socket.recv(self.BUFF)
             print(data.decode())            
             if data == b'CHANGE':
@@ -70,6 +73,8 @@ class RemoteUpdate:
         logging.info('Socket thread %s started' % threading.get_ident())
         logging.info('Connecting to %s on port %s' % (self.TCP_IP,self.TCP_PORT))
         self.conn = self.socket.connect((self.TCP_IP, self.TCP_PORT))
+        self.socket.setblocking(False)
+        self.socket.settimeout(6)
         self.keepAliveThread.start()
         loop = True
 
