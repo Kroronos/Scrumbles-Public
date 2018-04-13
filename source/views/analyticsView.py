@@ -85,7 +85,9 @@ class analyticsView(tk.Frame):
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
         self.userList.importList(self.teamMembers)
 
+        self.updateSprintFrame()
         self.updateUserFrame()
+        self.updateTaskFrame()
         self.initalRun = False
 
     def generateTaskUserPie(self):
@@ -168,7 +170,7 @@ class analyticsView(tk.Frame):
         averagePointsValue = str(averagePointsValue)
         averageTasksValue = str(averageTasksValue)
 
-        userLabels = tk.Frame(self.userAnalyticsContents, relief=tk.SOLID, borderwidth=1)
+        userLabels = tk.Frame(self.userAnalyticsContentsOptions[0], relief=tk.SOLID, borderwidth=1)
         MVPLabels = tk.Frame(userLabels)
         MVPTasks = tk.Label(MVPLabels, text=MVPTaskName + " completed " + MVPTaskValue
                                               +" tasks. The most out of anyone in this project so far.")
@@ -285,23 +287,22 @@ class analyticsView(tk.Frame):
         return bestSprintName, worstSprintName, bestSprintPoints, worstSprintPoints
 
     def updateUserFrame(self):
-        if self.insideUser is True:
-            self.generateInternalUserFrame(self.userEvent)
-
         if self.initalRun is False:
             self.userList.pack_forget()
             self.userLabels.pack_forget()
             self.taskUserPieChart.pack_forget()
             self.taskUserHistogram.pack_forget()
+            if len(self.userAnalyticsContentsOptions) == 2:
+                self.userAnalyticsContentsOptions[0].pack_forget()
+                self.userAnalyticsContentsOptions[1].pack_forget()
             self.userAnalyticsContents.pack_forget()
             self.userGraphFrame.pack_forget()
 
         self.userLabels = self.generateUserLabels()
 
-        self.userGraphFrame = tk.Frame(self.userAnalyticsContents)
+        self.userGraphFrame = tk.Frame(self.userAnalyticsContentsOptions[0])
         self.taskUserHistogram = self.generateTaskUserHistogram()
         self.taskUserPieChart = self.generateTaskUserPie()
-
 
         self.userList.pack(side=tk.LEFT, fill=tk.Y)
         self.userLabels.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -310,14 +311,22 @@ class analyticsView(tk.Frame):
         self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.userGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+
+    def updateSprintFrame(self):
+        print()
+
+    def updateTaskFrame(self):
+        print()
+
     def clearSelection(self, listbox, view):
         if view == 0: #sprint analytics
             self.sprintAnalyticsContents.pack_forget()
             self.sprintAnalyticsContents = self.sprintAnalyticsContentsOptions[0]
         if view == 1: #user analytics
-            self.userAnalyticsContents.pack_forget()
+            self.userAnalyticsContentsOptions[1].pack_forget()
             self.userAnalyticsContents = self.userAnalyticsContentsOptions[0]
             self.userAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+            self.insideUser = False
 
         if view == 2: #task analytics
             self.taskAnalyticsContents.pack_forget()
