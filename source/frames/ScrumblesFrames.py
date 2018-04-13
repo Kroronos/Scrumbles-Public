@@ -1,4 +1,4 @@
-from SDynamics import *
-from SGraphs import *
-from SLists import *
+from frames.SDynamics import *
+from frames.SGraphs import *
+from frames.SLists import *
 
