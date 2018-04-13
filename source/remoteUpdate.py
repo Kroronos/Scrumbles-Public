@@ -41,6 +41,7 @@ class RemoteUpdate:
                 logging.error('Connection to %s Lost'%self.TCP_IP)
 
                 self.socket.close()
+                self.alive = False
                 return False
         return False
 
