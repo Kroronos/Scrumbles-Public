@@ -303,9 +303,9 @@ def exitProgram(mainwindow):
     except:
         logging.exception('Shutdown Failure')
     try:
-        print('deleting datablock')
+
         del mainwindow.dataBlock
-        print('databloc deleted')
+
         mainwindow.destroy()
     except:
         logging.exception('Shutdown Failure')

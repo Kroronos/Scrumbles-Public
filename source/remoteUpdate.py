@@ -25,7 +25,6 @@ class RemoteUpdate:
 
 
     def __del__(self):
-        print('Remote Update __del__ called')
         self.stop()
 
     def kickstartKeepAlive(self):
@@ -33,17 +32,13 @@ class RemoteUpdate:
         self.keepAlive()
 
     def keepAlive(self):
-        print('keep alive called')
         while self.alive:
-            print('%s <keepAlive> thread alive'%threading.get_ident())
             try:
-                print('sending message')
                 self.socket.send(self.MSG)
                 time.sleep(5)
-                print('message sent')
+
             except:
                 logging.error('Connection to %s Lost'%self.TCP_IP)
-
                 self.socket.close()
                 self.isAlive = False
                 return False
@@ -53,9 +48,6 @@ class RemoteUpdate:
     def getMessages(self):
         #read_list = [self.socket]
         try:
-            #read,write,error = select.select(read_list,[],[],1)
-            print('%s <listener Thread> alive'%threading.get_ident())
-
             data = self.socket.recv(self.BUFF)
             print(data.decode())            
             if data == b'CHANGE':
@@ -85,9 +77,6 @@ class RemoteUpdate:
 
 
     def stop(self):
-        print('remoteUpdate stop called')
         self.alive = False
-        print('self alive is:',self.alive)
-        print('closing socke')
         self.socket.close()
 
