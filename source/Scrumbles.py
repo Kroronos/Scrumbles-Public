@@ -1,5 +1,5 @@
 import logging
-import masterView
+from views import masterView
 import ctypes
 import sys
 

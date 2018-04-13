@@ -1,6 +1,6 @@
-from ScrumblesData import *
-from ScrumblesObjects import *
-import datetime
+from data.ScrumblesData import *
+from frames.ScrumblesObjects import *
+
 username = 'TestUser'
 password = 'PASSWORD'
 

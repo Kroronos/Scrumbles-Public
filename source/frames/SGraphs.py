@@ -1,22 +1,9 @@
-import tkinter as tk
-import webbrowser
 import matplotlib
 matplotlib.use("TKAgg")
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
 
-import csv
-import tkcalendar
-import datetime
-import ScrumblesData
-import ScrumblesObjects
+from frames.SDynamics import *
+from frames.SLists import *
 
-from SDynamics import *
-from SLists import *
-
-from styling import styling as style
-from tkinter import ttk
 
 class SLineGraph(tk.Frame):
     def __init__(self, controller):

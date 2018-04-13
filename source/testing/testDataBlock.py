@@ -1,6 +1,5 @@
 import tkinter as tk
-import ScrumblesData
-import ScrumblesFrames
+from data import ScrumblesData
 
 root = tk.Tk()
 

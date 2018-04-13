@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
-import ScrumblesFrames, SPopMenu,ScrumblesObjects,Dialogs
+from frames import SPopMenu, ScrumblesObjects, Dialogs, ScrumblesFrames
 import listboxEventHandler
 from styling import styling as style
 import logging
@@ -25,11 +25,11 @@ class developerHomeView(tk.Frame):
         self.backlogPopMenu.add_command(label=u'Assign To me', command=self.assignItemToActiveUser)
 
         self.itemColumnFrame = tk.Frame(self)
-        self.userItemList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "MY ITEMS",controller)
+        self.userItemList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "MY ITEMS", controller)
         self.userItemList.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.myItemsPopMenu.context_menu(event, self.myItemsPopMenu))
 
-        self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame,"BACKLOG",controller)
+        self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "BACKLOG", controller)
 
         self.productBacklogList.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.backlogPopMenu.context_menu(event, self.backlogPopMenu) )
@@ -145,7 +145,7 @@ class developerHomeView(tk.Frame):
         Comment.commentItemID = Item.itemID
         Comment.commentUserID = self.controller.activeUser.userID
         Comment.commentContent = 'Set to Submitted by menu action'
-        updated = Dialogs.codeLinkDialog(self, master=self.controller, dataBlock=self.controller.dataBlock,item=Item).show()
+        updated = Dialogs.codeLinkDialog(self, master=self.controller, dataBlock=self.controller.dataBlock, item=Item).show()
         if updated:
             try:
                 self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])

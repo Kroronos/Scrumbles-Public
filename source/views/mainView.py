@@ -1,12 +1,9 @@
-import tkinter as tk
 from tkinter import messagebox
-from tkinter import ttk
-import ScrumblesFrames, SPopMenu,ScrumblesObjects,Dialogs
+from frames import SPopMenu, ScrumblesObjects, Dialogs, ScrumblesFrames
 import listboxEventHandler
-from styling import styling as style
 import logging
 import tkinter as tk
-import Dialogs
+
 
 class mainViewPopup(SPopMenu.GenericPopupMenu):
     def __init__(self,root,Master,isSubItem):
@@ -103,10 +100,10 @@ class mainView(tk.Frame):
         self.activeRole = controller.activeUser.userRole
         
 
-        self.fullBacklog = ScrumblesFrames.SBacklogListColor(self,"ALL ITEMS", controller)
+        self.fullBacklog = ScrumblesFrames.SBacklogListColor(self, "ALL ITEMS", controller)
         self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
-        self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS",controller)
-        self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS",controller)
+        self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS", controller)
+        self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS", controller)
 
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
         self.FBPopMenu= None
@@ -170,7 +167,7 @@ class mainView(tk.Frame):
     def generatePopupThing(self):
 
         self.FBPopMenu= mainViewPopup(self,self.controller, False)
-        self.sprintPopMenu = SPopMenu.GenericPopupMenu(self,self.controller)
+        self.sprintPopMenu = SPopMenu.GenericPopupMenu(self, self.controller)
         if self.roleMap[self.activeRole] > 0:
             self.sprintPopMenu.add_command(label=u'Edit Sprint',
                                            command=self.editSprint)
@@ -343,18 +340,18 @@ class mainView(tk.Frame):
 
     def editSprint(self):
         sprint = self.sprintPopMenu.getSelectedObject()
-        if Dialogs.EditSprintDialog(self.controller,master=self.controller,
-                                 dataBlock=self.controller.dataBlock,
-                                 sprint=sprint).show():
+        if Dialogs.EditSprintDialog(self.controller, master=self.controller,
+                                    dataBlock=self.controller.dataBlock,
+                                    sprint=sprint).show():
             messagebox.showinfo('Success','Sprint Updated Successfully')
 
     def deleteSprint(self):
         sprint = self.sprintPopMenu.getSelectedObject()
         self.selectedItem = None
         self.selectedSubItem = None
-        if Dialogs.DeleteSprintDialog(self.controller,master=self.controller,
-                                 dataBlock=self.controller.dataBlock,
-                                 sprint=sprint).show():
+        if Dialogs.DeleteSprintDialog(self.controller, master=self.controller,
+                                      dataBlock=self.controller.dataBlock,
+                                      sprint=sprint).show():
             self.selectedSprint = None
 
 
@@ -395,7 +392,7 @@ class mainView(tk.Frame):
                 print(i.itemTitle)
             raise Exception('Error Loading item from title')
 
-        Dialogs.EditItemDialog(self.controller, master=self.controller, dataBlock=self.controller.dataBlock ,item=item).show()
+        Dialogs.EditItemDialog(self.controller, master=self.controller, dataBlock=self.controller.dataBlock, item=item).show()
     def updateSprintList(self):
         self.sprints = []
         self.fullList = []

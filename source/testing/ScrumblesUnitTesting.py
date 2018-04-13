@@ -1,5 +1,5 @@
-import ScrumblesData
-import ScrumblesObjects
+from data import ScrumblesData
+from frames import ScrumblesObjects
 
 ScrumblesUser_username = 'TestUser'
 ScrumblesUser_password = 'Password1'
@@ -113,7 +113,7 @@ print('Scrumbles Objects created successfully')
 
 ## Test Authentication Query
 dataConnection.connect()
-authUserQuery = ScrumblesData.Query.getUserByUsernameAndPassword(ScrumblesUser_username,ScrumblesUser_password)
+authUserQuery = ScrumblesData.Query.getUserByUsernameAndPassword(ScrumblesUser_username, ScrumblesUser_password)
 authUserQueryResult = dataConnection.getData(authUserQuery)
 dataConnection.close()
 print(authUserQueryResult)

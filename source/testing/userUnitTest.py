@@ -1,7 +1,8 @@
 ### test creation and deletion of a User object
 import MySQLdb
-import ScrumblesObjects
-import ScrumblesData
+from frames import ScrumblesObjects
+from data import ScrumblesData
+
 
 def testUsers(dataConnection):
     testUser = ScrumblesObjects.User()

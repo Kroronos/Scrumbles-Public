@@ -1,6 +1,3 @@
-import ScrumblesData
-import time
-
 # print('Initializing DataBlock')
 # db = ScrumblesData.DataBlock()
 # db.lockDown()
@@ -50,7 +47,7 @@ import time
 
 
 
-from DataBlock import *
+from data.DataBlock import *
 from datetime import datetime
 db = DataBlock(mode='test')
 

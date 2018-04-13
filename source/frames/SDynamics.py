@@ -1,14 +1,5 @@
-import tkinter as tk
-import webbrowser
-
-import csv
-import tkcalendar
-import datetime
-import ScrumblesData
-import ScrumblesObjects
-
-from SGraphs import *
-from SLists import *
+from frames.SGraphs import *
+from frames.SLists import *
 
 from styling import styling as style
 from tkinter import ttk

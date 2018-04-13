@@ -1,5 +1,5 @@
 import MySQLdb, logging
-import ScrumblesObjects
+from frames import ScrumblesObjects
 import base64
 
 

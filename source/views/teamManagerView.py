@@ -1,5 +1,5 @@
 import tkinter as tk
-import ScrumblesFrames
+from frames import ScrumblesFrames
 import listboxEventHandler
 
 class teamManagerView(tk.Frame):

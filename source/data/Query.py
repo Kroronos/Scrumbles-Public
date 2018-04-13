@@ -1,4 +1,4 @@
-import ScrumblesObjects
+from frames import ScrumblesObjects
 import hashlib,re
 from datetime import datetime
 
