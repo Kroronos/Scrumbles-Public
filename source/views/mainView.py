@@ -418,7 +418,10 @@ class mainView(tk.Frame):
         self.sprints = [sprint for sprint in self.controller.activeProject.listOfAssignedSprints]
         self.sprintList.importSprintsList(self.sprints)
         self.fullBacklog.importItemList(self.fullList)
-        self.fullBacklog.colorCodeListboxes()
+        try:
+            self.fullBacklog.colorCodeListboxes()
+        except Exception as e:
+            logging.exception('Error coloring list boxes',str(e))
         if (self.selectedSprint != None):
             for sprint in self.controller.activeProject.listOfAssignedSprints:
                 if (sprint.sprintName == self.selectedSprint.sprintName):

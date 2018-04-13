@@ -7,6 +7,8 @@ import webbrowser
 from data import DataBlock
 from frames import Dialogs
 
+import time
+import threading
 
 class masterView(tk.Tk):
     def __init__(self):
@@ -182,6 +184,9 @@ class masterView(tk.Tk):
 
         self.activeProject = self.dataBlock.projects[0]
 
+        #todo
+        threading.Thread(target=self.dataBlock.onConnectionLoss,args=(self.connectionLosshandler,)).start()
+
         print('Logged in %s'%loggedInUser)
 
         for user in self.dataBlock.users:
@@ -224,6 +229,10 @@ class masterView(tk.Tk):
         self.title("Scrumbles"+" - "+self.activeProject.projectName)
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
+
+    def connectionLosshandler(self):
+        messagebox.showerror('Loss of Connection','Network Connection Lost, Logging Out of App')
+        logOut(self)
 
     def openAPI(self):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/Scrumbles-API-Documentation')
@@ -280,6 +289,10 @@ class masterView(tk.Tk):
 
 def logOut(controller):
     logging.info('%s logged out'%controller.activeUser.userID)
+    controller.dataBlock.shutdown()
+    messagebox.showinfo('Logout','Shutting Down Active Threads')
+    time.sleep(3)
+    del controller.dataBlock
     #Do Some Stuff Here To Clear States
     loginFrame = loginView.loginView(controller.container, controller)
     controller.add_frame(loginFrame, loginView)
