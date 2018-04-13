@@ -3,14 +3,14 @@ from tkinter import ttk
 from frames import ScrumblesFrames, listboxEventHandler
 import sys
 from styling import styling as style
-
+from datetime import datetime
 
 
 class analyticsView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        self.initalRun = True
+        self.initialRun = True
 
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Analytics")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
@@ -50,7 +50,7 @@ class analyticsView(tk.Frame):
 
         self.insideTask = False
         self.taskList = ScrumblesFrames.SList(self.taskAnalyticsFrame, "TASKS")
-        self.taskAnalyticsContents = tk.Frame(self.sprintAnalyticsFrame)
+        self.taskAnalyticsContents = tk.Frame(self.taskAnalyticsFrame)
         self.taskAnalyticsContentsOptions = []
         self.taskAnalyticsContentsOptions.append(self.taskAnalyticsContents)
         #For Tasks
@@ -107,7 +107,45 @@ class analyticsView(tk.Frame):
         self.updateSprintFrame()
         self.updateUserFrame()
         self.updateTaskFrame()
-        self.initalRun = False
+        self.initialRun = False
+
+    def listboxEvents(self, event):
+        if event.widget is self.sprintList.listbox:
+            self.generateInternalSprintFrame(event)
+        if event.widget is self.userList.listbox:
+            self.generateInternalUserFrame(event)
+        if event.widget is self.taskList.listbox:
+            print()
+
+    def updateUserFrame(self):
+        if self.initialRun is False:
+            self.userList.pack_forget()
+            self.userLabels.pack_forget()
+            self.taskUserPieChart.pack_forget()
+            self.taskUserHistogram.pack_forget()
+            if len(self.userAnalyticsContentsOptions) == 2:
+                self.userAnalyticsContentsOptions[0].pack_forget()
+                self.userAnalyticsContentsOptions[1].pack_forget()
+            self.userAnalyticsContents.pack_forget()
+            self.userGraphFrame.pack_forget()
+
+        self.userLabels = self.generateUserLabels()
+
+        self.userGraphFrame = tk.Frame(self.userAnalyticsContentsOptions[0])
+        self.taskUserHistogram = self.generateTaskUserHistogram()
+        self.taskUserPieChart = self.generateTaskUserPie()
+
+        if self.insideUser is False:
+            self.userAnalyticsContents = self.userAnalyticsContentsOptions[0]
+
+        self.userList.pack(side=tk.LEFT, fill=tk.Y)
+        self.userGraphFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.userLabels.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.taskUserPieChart.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.taskUserHistogram.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        if self.insideUser is True:
+            self.generateInternalUserFrame(userEventName=self.userEventName)
 
     def generateTaskUserPie(self):
         taskUserPie = ScrumblesFrames.SPie(self.userGraphFrame)
@@ -129,6 +167,7 @@ class analyticsView(tk.Frame):
 
         taskUserPie.generateGraph(labels, values, title)
         return taskUserPie
+
     def generateTaskUserHistogram(self):
         taskUserHistogram = ScrumblesFrames.SHistogram(self.userGraphFrame)
         tasksCompletedByUsers = []
@@ -209,10 +248,6 @@ class analyticsView(tk.Frame):
 
 
         return userLabels
-
-    def listboxEvents(self, event):
-        if event.widget is self.userList.listbox:
-            self.generateInternalUserFrame(event)
 
     def generateInternalUserFrame(self, event=None, userEventName=None):
         if event is not None:
@@ -308,49 +343,205 @@ class analyticsView(tk.Frame):
                             bestSprintName = sprint.sprintName
         return bestSprintName, worstSprintName, bestSprintPoints, worstSprintPoints
 
-    def updateUserFrame(self):
-        if self.initalRun is False:
-            self.userList.pack_forget()
-            self.userLabels.pack_forget()
-            self.taskUserPieChart.pack_forget()
-            self.taskUserHistogram.pack_forget()
-            if len(self.userAnalyticsContentsOptions) == 2:
-                self.userAnalyticsContentsOptions[0].pack_forget()
-                self.userAnalyticsContentsOptions[1].pack_forget()
-            self.userAnalyticsContents.pack_forget()
-            self.userGraphFrame.pack_forget()
-
-        self.userLabels = self.generateUserLabels()
-
-        self.userGraphFrame = tk.Frame(self.userAnalyticsContentsOptions[0])
-        self.taskUserHistogram = self.generateTaskUserHistogram()
-        self.taskUserPieChart = self.generateTaskUserPie()
-
-        if self.insideUser is False:
-            self.userAnalyticsContents = self.userAnalyticsContentsOptions[0]
-
-        self.userList.pack(side=tk.LEFT, fill=tk.Y)
-        self.userLabels.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.taskUserPieChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.taskUserHistogram.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        if self.insideUser is True:
-            self.generateInternalUserFrame(userEventName=self.userEventName)
-        self.userGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-
     def updateSprintFrame(self):
+        if self.initialRun is False:
+            self.sprintAnalyticsContentsOptions[0].pack_forget()
+            if len(self.sprintAnalyticsContentsOptions) == 2:
+                self.sprintAnalyticsContentsOptions[1].pack_forget()
+            self.sprintAnalyticsContents.pack_forget()
+            self.sprintList.pack_forget()
+
+            self.sprintAnalyticsContentsOptions[0] = tk.Frame(self.sprintAnalyticsFrame)
+
+        self.generateSprintProgressBar()
+
+        self.generateSprintGraphs()
+
+        if self.insideSprint is False:
+            self.sprintAnalyticsContents = self.sprintAnalyticsContentsOptions[0]
+
         self.sprintList.pack(side=tk.LEFT, fill=tk.Y)
+        self.sprintAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        if self.insideSprint is True:
+            self.generateInternalSprintFrame(userEventName=self.sprintEventName)
+
+    def generateSprintProgressBar(self):
+        progressBarStyle = "scrumbles.Horizontal.TProgressbar"
+        maxValue = len(self.controller.activeProject.listOfAssignedSprints)
+        currValue = maxValue
+        sprintProgressBarFrame = tk.Frame(self.sprintAnalyticsContentsOptions[0])
+        sprintProgressBar = ttk.Progressbar(sprintProgressBarFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            for item in sprint.listOfAssignedItems:
+                if item.itemStatus != 4:
+                    currValue -= 1
+                    break
+        sprintProgressBar["value"] = currValue
+        sprintProgressBar["maximum"] = maxValue
+
+        sprintProgressBarLabel = tk.Label(sprintProgressBarFrame, text=str(currValue)+" Sprints have been fully completed out of " + str(maxValue) + " .")
+
+        sprintProgressBarLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        sprintProgressBar.pack(side=tk.TOP, fill=tk.X, expand=True)
+        sprintProgressBarFrame.pack(side=tk.TOP, fill=tk.X)
+
+    def generateSprintGraphs(self):
+        self.sprintGraphFrame = tk.Frame(self.sprintAnalyticsContentsOptions[0])
+        sprintNames, sprintTaskValues, sprintPointValues = self.analyzeSprints()
+        self.generateSprintTaskBarGraph(sprintNames, sprintTaskValues)
+        self.generateSprintPointBarGraph(sprintNames, sprintPointValues)
+        self.sprintGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    def analyzeSprints(self):
+        sprintNames = list()
+        sprintTasks = list()
+        sprintPoints = list()
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            firstRun = True
+            sprintNames.append(sprint.sprintName)
+            for item in sprint.listOfAssignedItems:
+                if firstRun is True:
+                    if item.itemStatus == 4:
+                        sprintTasks.append(1)
+                        sprintPoints.append(item.itemPoints)
+                    else:
+                        sprintTasks.append(0)
+                        sprintPoints.append(0)
+                    firstRun = False
+                else:
+                    if item.itemStatus == 4:
+                        sprintTasks[-1] += 1
+                        sprintPoints[-1] += item.itemPoints
+        return sprintNames, sprintTasks, sprintPoints
+
+    def generateSprintTaskBarGraph(self, sprintNames, sprintTaskValues):
+        sprintBarGraph = ScrumblesFrames.SBar(self.sprintGraphFrame)
+        sprintBarGraph.generateGraph(sprintNames, sprintTaskValues, "Sprints", "Tasks Completed")
+        sprintBarGraph.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    def generateSprintPointBarGraph(self, sprintNames, sprintPointValues):
+        sprintBarGraph = ScrumblesFrames.SBar(self.sprintGraphFrame)
+        sprintBarGraph.generateGraph(sprintNames, sprintPointValues, "Sprints", "Points Earned", isOrange=True, tickValue=5)
+        sprintBarGraph.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    def generateInternalSprintFrame(self, event=None, sprintEventName=None):
+        if event is not None:
+            sprintName = event.widget.get(tk.ANCHOR)
+            self.sprintEventName = sprintName
+        if sprintEventName is not None:
+            sprintName = sprintEventName
+
+
+        internalSprintFrame = tk.Frame(self.sprintAnalyticsFrame)
+        # progress bar
+        s = ttk.Style()
+        s.theme_use('clam')
+        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_blue, background=style.scrumbles_orange)
+
+        tasksAssigned = 0
+        tasksCompleted = 0
+
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            if sprint.sprintName == sprintName:
+                for item in sprint.listOfAssignedItems:
+                    tasksAssigned +=1
+                    if item.itemStatus == 4:
+                        tasksCompleted += 1
+                break  #escape once sprint has been found
+        if tasksAssigned == 0:
+            tasksAssigned += 1
+        progressBarStyle = "scrumbles.Horizontal.TProgressbar"
+
+        progressBarFrame = tk.Frame(internalSprintFrame)
+        sprintProgressBar = ttk.Progressbar(progressBarFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
+        sprintProgressBarTopping = tk.Frame(progressBarFrame)
+        sprintProgressBarLabel = tk.Label(sprintProgressBarTopping, text=sprintName + " has completed " + str(int((tasksCompleted/tasksAssigned)*100)) + "% of the tasks assigned to it.")
+        sprintClearButton = tk.Button(sprintProgressBarTopping, text=style.left_arrow, command=lambda:self.clearSelection(self.sprintList.listbox,0), font=('Helvetica', '13'))
+
+        sprintClearButton.pack(side=tk.LEFT)
+        sprintProgressBarLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        sprintProgressBarTopping.pack(side=tk.TOP, fill=tk.X, expand=True)
+        sprintProgressBar.pack(side=tk.TOP, fill=tk.X, expand=True)
+        sprintProgressBar["value"] = tasksCompleted
+        sprintProgressBar["maximum"] = tasksAssigned
+        progressBarFrame.pack(side=tk.TOP, fill=tk.X, expand=False)
+
+        statisticsFrame = tk.Frame(internalSprintFrame,  relief=tk.SOLID, borderwidth=1)
+        self.generateInternalSprintLineGraph(statisticsFrame, sprintName)
+        statisticsFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.sprintAnalyticsContents.pack_forget()
+        if len(self.sprintAnalyticsContentsOptions) == 1:
+            self.sprintAnalyticsContentsOptions.append(internalSprintFrame)
+        else:
+            self.sprintAnalyticsContentsOptions[1] = internalSprintFrame
+        self.sprintAnalyticsContents = self.sprintAnalyticsContentsOptions[1]
+
+        self.sprintAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.insideSprint = True
+
+    def generateInternalSprintLineGraph(self, controller, sprintName):
+        completedItemDatePair = {}
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            if sprint.sprintName == sprintName:
+                completedItemDatePair.update({sprint.sprintStartDate: 0})
+                for item in sprint.listOfAssignedItems:
+                    if item.itemStatus == 4:
+                        if item.itemTimeLine["Completed"] != datetime(9999, 12, 31, 23, 59, 59):
+                            alreadyInDict = False
+                            alreadyKeyed = None
+                            for key in completedItemDatePair.keys():
+                                if key.strftime("%y%m%d") == item.itemTimeLine["Completed"].strftime("%y%m%d"):
+                                    alreadyInDict = True
+                                    alreadyKeyed = key
+                                    break
+
+                            if alreadyInDict is True:
+                                completedItemDatePair[alreadyKeyed] += 1
+                            else:
+                                completedItemDatePair.update({item.itemTimeLine["Completed"]: 1})
+
+                if sprint.sprintDueDate not in completedItemDatePair.keys():
+                    completedItemDatePair.update({sprint.sprintDueDate: 0})
+                break
+        labels = list()
+        xvalues = list()
+        for date in completedItemDatePair.keys():
+            labels.append(date.strftime("%m/%d/%y"))
+            xvalues.append(int(date.strftime("%y%m%d"))) #so that our x's are actually chronological
+        yvalues = list(completedItemDatePair.values())
+
+        newLabels = list()
+        labelsPositions = list()
+        lastStoredValue = 0
+        for i in range(0, len(xvalues)): #this fixes overlapping labels on x axis
+            if i == 0:
+                lastStoredValue = xvalues[i]
+                labelsPositions.append(xvalues[i])
+                newLabels.append(labels[i])
+            else:
+                if xvalues[i]-lastStoredValue >= int((xvalues[0] - xvalues[-1])/5): #about a month off
+                    lastStoredValue = xvalues[i]
+                    labelsPositions.append(xvalues[i])
+                    newLabels.append(labels[i])
+
+
+        internalSprintLineGraph = ScrumblesFrames.SLine(controller)
+        internalSprintLineGraph.generateGraph(xvalues, yvalues, labelsPositions, newLabels, "Date of Completion","Completed Tasks")
+        internalSprintLineGraph.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # For Sprint
+        # Number of Completed Items vs Date - Line Graph
 
     def updateTaskFrame(self):
         self.taskList.pack(side=tk.LEFT, fill=tk.Y)
 
     def clearSelection(self, listbox, view):
         if view == 0: #sprint analytics
-            self.sprintAnalyticsContents[1].pack_forget()
+            self.sprintAnalyticsContentsOptions[1].pack_forget()
             self.sprintAnalyticsContents = self.sprintAnalyticsContentsOptions[0]
             self.sprintAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
             self.insideSprint = False
+
         if view == 1: #user analytics
             self.userAnalyticsContentsOptions[1].pack_forget()
             self.userAnalyticsContents = self.userAnalyticsContentsOptions[0]

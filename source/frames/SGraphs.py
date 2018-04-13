@@ -1,5 +1,6 @@
 import tkinter as tk
 import webbrowser
+import numpy as np
 import matplotlib
 matplotlib.use("TKAgg")
 import matplotlib.pyplot as plt
@@ -18,47 +19,73 @@ from frames.SLists import *
 from styling import styling as style
 from tkinter import ttk
 
-class SLineGraph(tk.Frame):
+class SLine(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
 
-        self.x = [1,2,3,4,5,6,7,8,9,10]
-        self.y = [1,4,2,5,1,4,2,5,1,4]
-        self.label = None
+    def generateGraph(self, x, y, labelsPosition=None, labels=None, xtitle=None, ytitle=None):
+        self.graphInitialization()
+        self.showGraph(x, y, labelsPosition, labels, xtitle, ytitle)
 
-        self.figure = Figure(figsize=(4, 4), dpi=100)
-        self.graph = self.figure.add_subplot(1,1,1)
+    def graphInitialization(self):
+        self.f = plt.figure(figsize=(4, 4), dpi=100)
+        #self.ax = self.figure.add_subplot(1,1,1)
+
+    def showGraph(self, x, y, labelsPosition, labels, xtitle, ytitle):
+        print(x)
+        print(y)
+        self.p = plt.plot(x,y)
+        plt.xlabel(xtitle)
+        plt.ylabel(ytitle)
+        plt.xticks(labelsPosition, labels)
+
+        #self.ax.set_xticklabels(labels)
+
+        self.canvas = FigureCanvasTkAgg(self.f, self)
+        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        self.canvas.draw()
 
 
-    def setTitle(self, title):
-        self.label = tk.Label(self, text=title)
+class SBar(tk.Frame):
+    def __init__(self, controller):
+        tk.Frame.__init__(self,controller)
 
-    def setAxes(self, xAxis, yAxis):
-        self.graph.set_xlabel(xAxis)
-        self.graph.set_ylabel(yAxis)
-        self.figure.subplots_adjust(left=.15)
-        self.figure.subplots_adjust(bottom=.15)
-
-    def importDataFromCSV(self, fileName, delimeter):
-        with open(fileName, 'r') as file:
-            plots = csv.reader(file, delimeter)
-            for row in plots:
-                self.x.append(int(row[0]))
-                self.y.append(int(row[1]))
-
-    def displayGraph(self):
-        self.graph.plot(self.x, self.y)
-        canvas = FigureCanvasTkAgg(self.figure, self)
+    def generateGraph(self, titles, values, xtitle, ytitle, isOrange=False, tickValue=1):
+        self.graphInitialization()
+        self.showGraph(titles, values, xtitle, ytitle, isOrange, tickValue)
+    def graphInitialization(self):
+        self.f = Figure(figsize=(4,5), dpi=100)
+        self.ax = self.f.add_subplot(111)
+    def showGraph(self, titles, values, xtitle, ytitle, isOrange=False, tickValue=1):
+        ind = np.arange(len(values))
+        width = .5
+        bars = self.ax.bar(ind, values, width)
+        self.ax.set_ylabel(ytitle)
+        self.ax.set_xlabel(xtitle)
+        loc = matplotlib.ticker.MultipleLocator(base=tickValue)  # this locator puts ticks at regular intervals
+        self.ax.yaxis.set_major_locator(loc) #we don't want to count freq to determine y max
+        self.ax.set_xticks(ind)
+        self.ax.set_xticklabels(titles)
+        #pretty colors
+        children = self.ax.get_children()
+        barlist = filter(lambda x: isinstance(x, matplotlib.patches.Rectangle), children)
+        itera = 0
+        for bar in barlist:
+            itera += 1
+            if isOrange is True:
+                bar.set_color(style.scrumbles_orange)
+                isOrange = False
+            else:
+                bar.set_color(style.scrumbles_blue)
+                isOrange = True
+        barlist = filter(lambda x: isinstance(x, matplotlib.patches.Rectangle), children)
+        for i in range(0, itera):
+            item = next(barlist)
+            if i == itera-1:
+                item.set_color('w')
+        canvas = FigureCanvasTkAgg(self.f, self)
         canvas.draw()
-        if self.label is not None:
-            self.label.pack(side=tk.TOP, fill=tk.X)
-
-        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=1, pady=1)
-
-    def changeBackgroundColor(self, color):
-        self.graph.set_facecolor(facecolor=color)
-
-
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 class SHistogram(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
