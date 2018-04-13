@@ -326,12 +326,15 @@ class analyticsView(tk.Frame):
         self.taskUserHistogram = self.generateTaskUserHistogram()
         self.taskUserPieChart = self.generateTaskUserPie()
 
+        if self.insideUser is False:
+            self.userAnalyticsContents = self.userAnalyticsContentsOptions[0]
+
         self.userList.pack(side=tk.LEFT, fill=tk.Y)
         self.userLabels.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.taskUserPieChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.taskUserHistogram.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        if self.insideUser:
+        if self.insideUser is True:
             self.generateInternalUserFrame(userEventName=self.userEventName)
         self.userGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
