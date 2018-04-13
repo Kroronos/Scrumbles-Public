@@ -103,7 +103,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
 
        
-        viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(analyticsView))
+        viewMenu.add_command(label="Analytics", command = lambda: self.show_frame(analyticsView))
 
 
         helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
