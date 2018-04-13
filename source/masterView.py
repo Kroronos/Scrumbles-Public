@@ -58,6 +58,14 @@ class masterView(tk.Tk):
 
         self.activeUser = None
 
+        self.bind('<Control-u>', self.showCreateUserDialog)
+        self.bind('<Control-i>', self.showCreateItemDialog)
+        self.bind('<Control-s>', self.showCreateSprintDialog)
+        
+
+    def output_test(self,event):
+        print("output")
+
     def show_frame(self, cont):
         frame = self.frames[cont]
         print("Switching Views")
@@ -105,8 +113,6 @@ class masterView(tk.Tk):
 
         viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
-
-       
         viewMenu.add_command(label="Analytics View", command = lambda: self.show_frame(analyticsView))
 
 
@@ -163,17 +169,18 @@ class masterView(tk.Tk):
 
         return views, viewNames
 
-    def showCreateProjectDialog(self):
+    def showCreateProjectDialog(self,event):
 
         Dialogs.CreateProjectDialog(self, master=self, dataBlock=self.dataBlock).show()
-    def showCreateUserDialog(self):
+   
+    def showCreateUserDialog(self,event):
         Dialogs.CreateUserDialog(self, master=self, dataBlock=self.dataBlock).show()
 
 
-    def showCreateSprintDialog(self):
+    def showCreateSprintDialog(self,event):
         Dialogs.CreateSprintDialog(self, master=self, dataBlock=self.dataBlock).show()
 
-    def showCreateItemDialog(self):
+    def showCreateItemDialog(self,event):
         Dialogs.CreateItemDialog(self, master=self, dataBlock=self.dataBlock).show()
 
     def generateViews(self, loggedInUser):
