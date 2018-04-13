@@ -8,12 +8,12 @@ logging.basicConfig(format='%(levelname)s:  %(asctime)s:  %(message)s', filename
 logging.info('Application starting')
 
 
-
-if 'win' in sys.platform:
-        ctypes.windll.shcore.SetProcessDpiAwareness(1)
-
+try:
+        if 'win' in sys.platform:
+                ctypes.windll.shcore.SetProcessDpiAwareness(1)
+except:
+        logging.warning('SetProcessDpiAwareness.dll not found')
 app = masterView.masterView()
 
 app.mainloop()
 
-logging.info('Terminating Application')
