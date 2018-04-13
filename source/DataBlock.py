@@ -146,8 +146,7 @@ class DataBlock:
             print('Calling listener.stop()')
             self.listener.stop()
             print('Listener should be stopped')
-            del self.listenerThread
-            del self.updaterThread
+
 
 
 

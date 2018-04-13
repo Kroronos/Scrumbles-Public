@@ -90,7 +90,4 @@ class RemoteUpdate:
         print('self alive is:',self.alive)
         print('closing socke')
         self.socket.close()
-        print('deleting socket')
-        del self.socket
-        print('socket should be deleted')
-        del self.keepAliveThread
+
