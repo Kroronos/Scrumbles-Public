@@ -4,15 +4,14 @@ import webbrowser
 import csv
 import tkcalendar
 import datetime
-import ScrumblesData
-import ScrumblesObjects
+from data import ScrumblesData
+from data import ScrumblesObjects
 
-from SGraphs import *
-from SLists import *
+from frames.SGraphs import *
+from frames.SLists import *
 
 from styling import styling as style
 from tkinter import ttk
-
 
 class SCalendar(tk.Frame):
     def __init__(self, controller):

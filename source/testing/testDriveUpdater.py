@@ -1,4 +1,4 @@
-import remoteUpdate
+from data import RemoteUpdate
 
-updater = remoteUpdate.RemoteUpdate()
+updater = RemoteUpdate.RemoteUpdate()
 updater.start()

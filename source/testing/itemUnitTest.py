@@ -1,6 +1,5 @@
-import ScrumblesData
-import ScrumblesObjects
-import datetime
+from data import ScrumblesData, ScrumblesObjects
+
 
 def testItems(dataConnection):
     testItem = ScrumblesObjects.Item()
