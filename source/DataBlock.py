@@ -46,8 +46,9 @@ class DataBlock:
 
     def __del__(self):
         if self.mode != 'test':
+            print('Datablock __del__ called')
             self.shutdown()
-            del self.listener
+            
 
     def getLen(self):
         rv = len(self.items)
@@ -99,17 +100,19 @@ class DataBlock:
 
         while self.alive:
             time.sleep(1)
+            print('%s Alive'% threading.get_ident())
             if self.listener.isDBChanged:
+                print('db is changed')
                 #time.sleep(2)   # <<--- This is the thread timing tweak.
                 # with self.cv:
                 #     self.cv.wait_for(self.updateAllObjects)
-                self.lock.acquire()
+                self.lock.acquire(timeout=2)
                 self.updateAllObjects()
                 self.lock.release()
-                self.lock.acquire()
+                self.lock.acquire(timeout=2)
                 self.executeUpdaterCallbacks()
                 self.lock.release()
-                self.lock.acquire()
+                self.lock.acquire(timeout=2)
                 self.listener.isDBChanged = False
                 self.lock.release()
 
@@ -134,10 +137,17 @@ class DataBlock:
                     logging.exception('Excepition is funciton %s\n'%str(func),str(e))
 
     def shutdown(self):
+        print('Datablock Shutdown method called')
         logging.info('Shutting down Thread %s'%threading.get_ident())
+        print('Self alive:',self.alive)
         self.alive = False
+        print('Self alive:',self.alive)
         if self.mode != 'test':
+            print('Calling listener.stop()')
             self.listener.stop()
+            print('Listener should be stopped')
+            del self.listenerThread
+            del self.updaterThread
 
 
 

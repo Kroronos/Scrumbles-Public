@@ -25,6 +25,7 @@ class RemoteUpdate:
 
 
     def __del__(self):
+        print('Remote Update __del__ called')
         self.stop()
 
     def kickstartKeepAlive(self):
@@ -32,25 +33,30 @@ class RemoteUpdate:
         self.keepAlive()
 
     def keepAlive(self):
-
+        print('keep alive called')
         while self.alive:
+            print('%s <keepAlive> thread alive'%threading.get_ident())
             try:
+                print('sending message')
                 self.socket.send(self.MSG)
                 time.sleep(5)
+                print('message sent')
             except:
                 logging.error('Connection to %s Lost'%self.TCP_IP)
 
                 self.socket.close()
+                self.isAlive = False
                 return False
         return False
 
 
     def getMessages(self):
         try:
+            print('%s <listener Thread> alive'%threading.get_ident())
             data = self.socket.recv(self.BUFF)
-            
+            print(data.decode())            
             if data == b'CHANGE':
-                self.lock.acquire()
+                self.lock.acquire(timeout=2)
                 self.isDBChanged = True
                 self.lock.release()
                 logging.info('Received Message from DB Server: %s' % data.decode() )
@@ -74,5 +80,12 @@ class RemoteUpdate:
 
 
     def stop(self):
+        print('remoteUpdate stop called')
         self.alive = False
+        print('self alive is:',self.alive)
+        print('closing socke')
         self.socket.close()
+        print('deleting socket')
+        del self.socket
+        print('socket should be deleted')
+        del self.keepAliveThread

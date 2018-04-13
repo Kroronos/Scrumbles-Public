@@ -300,9 +300,17 @@ def exitProgram(mainwindow):
     setGeometryFile(mainwindow)
     try:
         mainwindow.dataBlock.shutdown()
+    except:
+        logging.exception('Shutdown Failure')
+    try:
+        print('deleting datablock')
+        del mainwindow.dataBlock
+        print('databloc deleted')
         mainwindow.destroy()
     except:
-        pass
+        logging.exception('Shutdown Failure')
+    finally:
+        exit()
     logging.info("Shutting down gracefully")
     exit()
 
