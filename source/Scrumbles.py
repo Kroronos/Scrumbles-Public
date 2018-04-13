@@ -4,7 +4,7 @@ import ctypes
 import sys
 
 
-logging.basicConfig(format='%(levelname)s:  %(asctime)s:  %(message)s', filename='Scrumbles.log',level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s:  %(asctime)s: %(threadName)s > %(message)s', filename='Scrumbles.log',level=logging.DEBUG)
 logging.info('Application starting')
 
 
