@@ -10,6 +10,7 @@ class analyticsView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        self.initalRun = True
 
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Analytics")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
@@ -38,17 +39,6 @@ class analyticsView(tk.Frame):
         self.userAnalyticsContents = tk.Frame(self.userAnalyticsFrame)
         self.userAnalyticsContentsOptions = []
         self.userAnalyticsContentsOptions.append(self.userAnalyticsContents)
-        self.userLabels = self.generateUserLabels()
-
-        self.userGraphFrame = tk.Frame(self.userAnalyticsContents)
-        self.taskUserHistogram = self.generateTaskUserHistogram()
-        self.taskUserPieChart = self.generateTaskUserPie()
-        self.userList.pack(side=tk.LEFT, fill=tk.Y)
-        self.userLabels.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.taskUserPieChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.taskUserHistogram.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.userGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.userList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
@@ -94,8 +84,9 @@ class analyticsView(tk.Frame):
         self.teamMembers = []
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
         self.userList.importList(self.teamMembers)
-        if self.insideUser is True:
-            self.generateInternalUserFrame(self.userEvent)
+
+        self.updateUserFrame()
+        self.initalRun = False
 
     def generateTaskUserPie(self):
         taskUserPie = ScrumblesFrames.SPie(self.userGraphFrame)
@@ -290,6 +281,31 @@ class analyticsView(tk.Frame):
                             bestSprintName = sprint.sprintName
         return bestSprintName, worstSprintName, bestSprintPoints, worstSprintPoints
 
+    def updateUserFrame(self):
+        if self.insideUser is True:
+            self.generateInternalUserFrame(self.userEvent)
+
+        if self.initalRun is False:
+            self.userList.pack_forget()
+            self.userLabels.pack_forget()
+            self.taskUserPieChart.pack_forget()
+            self.taskUserHistogram.pack_forget()
+            self.userAnalyticsContents.pack_forget()
+            self.userGraphFrame.pack_forget()
+            
+        self.userLabels = self.generateUserLabels()
+
+        self.userGraphFrame = tk.Frame(self.userAnalyticsContents)
+        self.taskUserHistogram = self.generateTaskUserHistogram()
+        self.taskUserPieChart = self.generateTaskUserPie()
+
+
+        self.userList.pack(side=tk.LEFT, fill=tk.Y)
+        self.userLabels.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.taskUserPieChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.taskUserHistogram.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.userAnalyticsContents.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.userGraphFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def clearSelection(self):
         print("Clearing Selection")
