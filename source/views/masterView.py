@@ -259,15 +259,13 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
 
-<<<<<<< HEAD:source/masterView.py
     def openUserGuide(self):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/User-Guide')
 
-=======
+
     def connectionLosshandler(self):
         messagebox.showerror('Loss of Connection','Network Connection Lost, Logging Out of App')
         logOut(self)
->>>>>>> ce4a122b1c7b7b02373c7b700ef026fb2b4ee181:source/views/masterView.py
 
     def openAPI(self):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/Scrumbles-API-Documentation')
