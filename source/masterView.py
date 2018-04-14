@@ -97,10 +97,10 @@ class masterView(tk.Tk):
 
         editMenu = tk.Menu(menuBar, tearoff=0)
         if (self.activeUser.userRole == "Admin"):
-            editMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
+            editMenu.add_command(label="Create New User", underline= 11, command=self.showCreateUserDialog)
         if (self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master"):
-            editMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
-        editMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
+            editMenu.add_command(label="Create New Sprint", underline=11, command=self.showCreateSprintDialog)
+        editMenu.add_command(label="Create New Item",  underline=11,command=self.showCreateItemDialog)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label=self.activeUser.userName)
@@ -108,18 +108,23 @@ class masterView(tk.Tk):
 
         viewMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         if (self.activeUser.userRole == "Admin"):
-            viewMenu.add_command(label="Administrator Main", command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Administrator Main", underline=0, command=lambda: self.show_frame(mainView))
+        
         if (self.activeUser.userRole == "Scrum Master"):
-            viewMenu.add_command(label="Scrum Master Main", command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Scrum Master Main", underline=0, command=lambda: self.show_frame(mainView))
+        
         elif (self.activeUser.userRole == "Developer"):
-            viewMenu.add_command(label="Developer Main", command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Developer Main", underline=0, command=lambda: self.show_frame(mainView))
 
-        viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
-        viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
-        viewMenu.add_command(label="Analytics View", command = lambda: self.show_frame(analyticsView))
+
+
+        viewMenu.add_command(label="Developer Home", underline=11, command=lambda: self.show_frame(developerHomeView))
+        viewMenu.add_command(label="Team Manager", underline=0, command=lambda: self.show_frame(teamManagerView))
+        viewMenu.add_command(label="Analytics View", underline=0, command = lambda: self.show_frame(analyticsView))
 
 
         helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
+        helpMenu.add_command(label = "User Guide", command = self.openUserGuide)
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
         helpMenu.add_command(label = "What's With The Colors", command=self.colorHelp)
@@ -255,6 +260,10 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
 
+    def openUserGuide(self):
+        webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/User-Guide')
+
+
     def openAPI(self):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/Scrumbles-API-Documentation')
 
@@ -283,7 +292,7 @@ class masterView(tk.Tk):
             for text in listOfProjects:
                 self.popMenu.add_command(label=text, command=lambda t=text: self.setActiveProject(t))
 
-        menu.insert_cascade(index=1, label='Open Project', menu=self.popMenu, underline=0)
+        menu.insert_cascade(index=1, label='Open Project', menu=self.popMenu)
 
     def setActiveProject(self,projectName):
         for P in self.dataBlock.projects:
