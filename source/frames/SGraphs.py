@@ -32,8 +32,7 @@ class SLine(tk.Frame):
         #self.ax = self.figure.add_subplot(1,1,1)
 
     def showGraph(self, x, y, labelsPosition, labels, xtitle, ytitle):
-        print(x)
-        print(y)
+
         self.p = plt.plot(x,y)
         plt.xlabel(xtitle)
         plt.ylabel(ytitle)

@@ -501,8 +501,14 @@ class analyticsView(tk.Frame):
                             else:
                                 completedItemDatePair.update({item.itemTimeLine["Completed"]: 1})
 
-                if sprint.sprintDueDate not in completedItemDatePair.keys():
-                    completedItemDatePair.update({sprint.sprintDueDate: 0})
+                isCurrentMatch = False
+                for key in completedItemDatePair.keys():
+                    if datetime.now().strftime("%y%m%d") == key.strftime("%y%m%d"):
+                        isCurrentMatch = True
+
+
+                if isCurrentMatch is False:
+                    completedItemDatePair.update({datetime.now(): 0})
                 break
         labels = list()
         xvalues = list()
