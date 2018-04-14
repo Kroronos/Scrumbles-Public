@@ -2,7 +2,6 @@ import tkinter as tk
 import webbrowser
 
 import csv
-import tkcalendar
 import datetime
 from data import ScrumblesData
 from data import ScrumblesObjects
