@@ -46,8 +46,9 @@ class DataBlock:
 
     def __del__(self):
         if self.mode != 'test':
+
             self.shutdown()
-            del self.listener
+            
 
     def onConnectionLoss(self,func):
         while self.listener.alive:
@@ -108,17 +109,19 @@ class DataBlock:
 
         while self.alive:
             time.sleep(1)
+
             if self.listener.isDBChanged:
+
                 #time.sleep(2)   # <<--- This is the thread timing tweak.
                 # with self.cv:
                 #     self.cv.wait_for(self.updateAllObjects)
-                self.lock.acquire()
+                self.lock.acquire(timeout=2)
                 self.updateAllObjects()
                 self.lock.release()
-                self.lock.acquire()
+                self.lock.acquire(timeout=2)
                 self.executeUpdaterCallbacks()
                 self.lock.release()
-                self.lock.acquire()
+                self.lock.acquire(timeout=2)
                 self.listener.isDBChanged = False
                 self.lock.release()
 
@@ -143,10 +146,13 @@ class DataBlock:
                     logging.exception('Excepition is funciton %s\n'%str(func),str(e))
 
     def shutdown(self):
+
         logging.info('Shutting down Thread %s'%threading.get_ident())
         self.alive = False
         if self.mode != 'test':
             self.listener.stop()
+
+
 
 
 
@@ -282,7 +288,7 @@ class DataBlock:
         except KeyError as e:
             time.sleep(1)
             print(str(e))
-            #print('re-applying timeline')
+
             self.applyItemLine( Item, self.reloadTimeLineMap() )
         return
 
@@ -329,7 +335,7 @@ class DataBlock:
         self.conn.setData(ProjectQuery.removeUser(project,user))
 
 
-    ##### DUPLICATE CODE TODO Remove below and change callers to addNewScrumblesObject
+
     @dbWrap
     def addComment(self,comment):
         logging.warning('Depreciated function call: Adding Comment to database: %s' % comment.commentContent)
