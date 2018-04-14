@@ -1,6 +1,6 @@
-from ScrumblesData import DataBaseLoginInfo, ScrumblesData, debug_ObjectdumpList
-from Query import *
-import ScrumblesObjects, remoteUpdate
+from data.ScrumblesData import DataBaseLoginInfo, ScrumblesData, debug_ObjectdumpList
+from data.Query import *
+from data import RemoteUpdate, ScrumblesObjects
 import logging, threading, time
 
 def dbWrap(func):
@@ -34,18 +34,30 @@ class DataBlock:
             logging.info('Initializing DataBlock Object')
             self.alive = True
 
-            self.listener = remoteUpdate.RemoteUpdate()
+            self.listener = RemoteUpdate.RemoteUpdate()
             self.lock = threading.Lock()
             self.size = self.getLen()
-            self.updaterThread = threading.Thread(target = self.updater, args=())
+            self.updaterThread = threading.Thread(target = self.updater, name='UpdaterThread')
+            self.listenerThread = threading.Thread(target=self.listener.start, name='UpdateListener')
             self.cv = threading.Condition()
 
+            self.listenerThread.start()
             self.updaterThread.start()
 
     def __del__(self):
         if self.mode != 'test':
+
             self.shutdown()
-            del self.listener
+            
+
+    def onConnectionLoss(self,func):
+        while self.listener.alive:
+            time.sleep(1)
+            if not self.alive:
+                return
+
+        func()
+
 
     def getLen(self):
         rv = len(self.items)
@@ -88,6 +100,58 @@ class DataBlock:
             debug_ObjectdumpList(I.subItemList)
         print('\nDumping Comments')
         debug_ObjectdumpList(self.comments)
+
+    def updater(self):
+        logging.info('Updater Thread %s started' % threading.get_ident())
+        if self.firstLoad:
+            self.updateAllObjects()
+            self.firstLoad = False
+
+        while self.alive:
+            time.sleep(1)
+
+            if self.listener.isDBChanged:
+
+                #time.sleep(2)   # <<--- This is the thread timing tweak.
+                # with self.cv:
+                #     self.cv.wait_for(self.updateAllObjects)
+                self.lock.acquire(timeout=2)
+                self.updateAllObjects()
+                self.lock.release()
+                self.lock.acquire(timeout=2)
+                self.executeUpdaterCallbacks()
+                self.lock.release()
+                self.lock.acquire(timeout=2)
+                self.listener.isDBChanged = False
+                self.lock.release()
+
+    def turnOffListener(self):
+        self.alive = False
+    def turnOnListener(self):
+        self.alive = True
+
+    def packCallback(self,callback):
+        logging.info('Packing Callback %s' % str(callback))
+        self.updaterCallbacks.append(callback)
+
+    def executeUpdaterCallbacks(self):
+        if len(self.updaterCallbacks) > 0:
+            for func in self.updaterCallbacks:
+                logging.info('Thread %s Executing Updater Func %s' % ( threading.get_ident(), str(func) ) )
+                print('There are %i active threads'%threading.active_count())
+
+                try:
+                    func()
+                except Exception as e:
+                    logging.exception('Excepition is funciton %s\n'%str(func),str(e))
+
+    def shutdown(self):
+
+        logging.info('Shutting down Thread %s'%threading.get_ident())
+        self.alive = False
+        if self.mode != 'test':
+            self.listener.stop()
+
 
 
 
@@ -224,7 +288,7 @@ class DataBlock:
         except KeyError as e:
             time.sleep(1)
             print(str(e))
-            #print('re-applying timeline')
+
             self.applyItemLine( Item, self.reloadTimeLineMap() )
         return
 
@@ -271,7 +335,7 @@ class DataBlock:
         self.conn.setData(ProjectQuery.removeUser(project,user))
 
 
-    ##### DUPLICATE CODE TODO Remove below and change callers to addNewScrumblesObject
+
     @dbWrap
     def addComment(self,comment):
         logging.warning('Depreciated function call: Adding Comment to database: %s' % comment.commentContent)
@@ -412,45 +476,3 @@ class DataBlock:
         self.conn.setData(CardQuery.deleteEpic(item))
 
 
-    def populateSubItems(self,item,epicMap):
-       pass
-
-
-    def updater(self):
-        logging.info('Updater Thread %s started' % threading.get_ident())
-        threading.Thread(target=self.listener.start,args=()).start()
-        if self.firstLoad:
-            self.updateAllObjects()
-            self.firstLoad = False
-
-        while self.alive:
-            time.sleep(1)
-            if self.listener.isDBChanged:
-                time.sleep(2)   # <<--- This is the thread timing tweak.
-                with self.cv:
-                    self.cv.wait_for(self.updateAllObjects)
-
-                    self.executeUpdaterCallbacks()
-                    self.listener.isDBChanged = False
-
-
-    def turnOffListener(self):
-        self.alive = False
-    def turnOnListener(self):
-        self.alive = True
-
-    def packCallback(self,callback):
-        logging.info('Packing Callback %s' % str(callback))
-        self.updaterCallbacks.append(callback)
-
-    def executeUpdaterCallbacks(self):
-        if len(self.updaterCallbacks) > 0:
-            for func in self.updaterCallbacks:
-                logging.info('Thread %s Executing Updater Func %s' % ( threading.get_ident(), str(func) ) )
-                func()
-
-    def shutdown(self):
-        logging.info('Shutting down Thread %s'%threading.get_ident())
-        self.alive = False
-        if self.mode != 'test':
-            self.listener.stop()

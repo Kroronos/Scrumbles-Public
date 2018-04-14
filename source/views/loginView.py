@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import messagebox
-from Query import Query
-import masterView
+from data.Query import Query
+from views import masterView
 import logging
-import ScrumblesData
+from data import ScrumblesData
+from _mysql_exceptions import OperationalError
 
 
 
@@ -96,8 +97,13 @@ class loginView(tk.Frame):
         try:
             loggedInUserName = authenticateUser(username, password, dbLoginInfo)
 
+        except OperationalError as e:
+            logging.exception('Login Failed')
+            messagebox.showerror('Login Failed',str(e))
+            self.destroy()
+            exit()
         except Exception as error:
-            logging.warning('Failed Login user %s'% username)
+            logging.exception('Failed Login user %s'% username)
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUserName
 
@@ -125,7 +131,11 @@ class loginView(tk.Frame):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         try:
            loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-
+        except OperationalError as e:
+            logging.exception('Login Failed')
+            messagebox.showerror('Login Failed',str(e))
+            self.destroy()
+            exit()
         except Exception as error:
             logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
@@ -150,7 +160,11 @@ class loginView(tk.Frame):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         try:
            loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-
+        except OperationalError as e:
+            logging.exception('Login Failed')
+            messagebox.showerror('Login Failed',str(e))
+            self.destroy()
+            exit()
         except Exception as error:
             logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
@@ -175,7 +189,11 @@ class loginView(tk.Frame):
         dbLoginInfo = ScrumblesData.DataBaseLoginInfo("login.txt")
         try:
            loggedInUserName = authenticateUser(username, password, dbLoginInfo)
-
+        except OperationalError as e:
+            logging.exception('Login Failed')
+            messagebox.showerror('Login Failed',str(e))
+            self.destroy()
+            exit()
         except Exception as error:
             logging.warning('Failed login %s' % username )
             messagebox.showerror('Invalid Login', 'Username and Password do not match')

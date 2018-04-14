@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import listboxEventHandler
-import ScrumblesFrames
+from frames import ScrumblesFrames, listboxEventHandler
 import sys
 from styling import styling as style
 

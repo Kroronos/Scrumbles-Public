@@ -1,4 +1,4 @@
-import logging,socket, time, threading
+import logging,socket, time, threading, select
 
 
 #this will connect to a remote server on port 5005
@@ -7,6 +7,7 @@ import logging,socket, time, threading
 #MySQL Database hosted on the remote server.
 
 #to test, execute this script and then make some change to the database
+
 
 class RemoteUpdate:
     def __init__(self):
@@ -18,42 +19,55 @@ class RemoteUpdate:
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.conn = None
-        self.keepAliveThread = threading.Thread(target = self.keepAlive, args=())
+        self.keepAliveThread = threading.Thread(target=self.kickstartKeepAlive, name='KeepConnAlive')
+        self.lock = threading.Lock()
         self.alive = True
 
-    def __del__(self):
 
+    def __del__(self):
         self.stop()
+
+    def kickstartKeepAlive(self):
+        logging.info('Starting up keep alive')
+        self.keepAlive()
+
     def keepAlive(self):
-        logging.info('Socket keep alive thread %s started'%threading.get_ident())
         while self.alive:
             try:
                 self.socket.send(self.MSG)
                 time.sleep(5)
+
             except:
                 logging.error('Connection to %s Lost'%self.TCP_IP)
-
                 self.socket.close()
+                self.isAlive = False
+                self.alive = False
                 return False
         return False
 
 
     def getMessages(self):
+        #read_list = [self.socket]
         try:
             data = self.socket.recv(self.BUFF)
-            
+            print(data.decode())            
             if data == b'CHANGE':
+                self.lock.acquire(timeout=2)
                 self.isDBChanged = True
+                self.lock.release()
                 logging.info('Received Message from DB Server: %s' % data.decode() )
         except:
-            logging.exception('Failed to connect to remote server')
+            logging.error('disconnected from host')
             self.socket.close()
             return False
         return True
+
     def start(self):
         logging.info('Socket thread %s started' % threading.get_ident())
         logging.info('Connecting to %s on port %s' % (self.TCP_IP,self.TCP_PORT))
         self.conn = self.socket.connect((self.TCP_IP, self.TCP_PORT))
+        self.socket.setblocking(False)
+        self.socket.settimeout(6)
         self.keepAliveThread.start()
         loop = True
 

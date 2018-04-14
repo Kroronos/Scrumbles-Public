@@ -4,22 +4,14 @@ import webbrowser
 import csv
 import tkcalendar
 import datetime
-import ScrumblesData
-import ScrumblesObjects
+from data import ScrumblesData
+from data import ScrumblesObjects
 
-from SGraphs import *
-from SLists import *
+from frames.SGraphs import *
+from frames.SLists import *
 
 from styling import styling as style
 from tkinter import ttk
-
-
-class SCalendar(tk.Frame):
-    def __init__(self, controller):
-        tk.Frame.__init__(self, controller)
-        now = datetime.datetime.now()
-        self.cal = tkcalendar.Calendar(self, font="Arial 14", selectmode='day', year=now.year, month=now.month, day=now.day)
-        self.cal.pack(side=tk.TOP, fill=tk.BOTH)
 
 class itemPicker(tk.Frame):
 

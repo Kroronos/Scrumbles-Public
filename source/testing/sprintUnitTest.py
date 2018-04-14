@@ -1,7 +1,7 @@
 ### test creation and deletion of a Sprint object
-import ScrumblesObjects
 import datetime
-import ScrumblesData
+from data import ScrumblesData, ScrumblesObjects
+
 
 def testSprints(dataConnection):
     getAllSprintsQuery = ScrumblesData.Query.getAllSprints

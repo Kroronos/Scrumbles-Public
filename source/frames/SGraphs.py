@@ -9,11 +9,11 @@ from matplotlib.figure import Figure
 import csv
 import tkcalendar
 import datetime
-import ScrumblesData
-import ScrumblesObjects
+from data import ScrumblesData
+from data import ScrumblesObjects
 
-from SDynamics import *
-from SLists import *
+from frames.SDynamics import *
+from frames.SLists import *
 
 from styling import styling as style
 from tkinter import ttk
