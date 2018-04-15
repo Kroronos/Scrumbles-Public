@@ -552,6 +552,21 @@ class SCardDescription(tk.Frame):
             self.sprintDueT = tk.Label(self.sprintDueF, text = "Due Date: ")
             self.sprintDue = tk.Label(self.sprintDueF, text = "")
 
+            # progress bar
+            s = ttk.Style()
+            s.theme_use('clam')
+            s.configure("scrumbles.Horizontal.TProgressbar",
+                        troughcolor = 'gray',
+                        background = style.scrumbles_green_fg)
+
+            progressBarStyle = "scrumbles.Horizontal.TProgressbar"
+
+            self.sprintProgressBar = ttk.Progressbar(self,
+                                                     style = progressBarStyle,
+                                                     length = 200,
+                                                     orient = "horizontal",
+                                                     mode = "determinate")
+
             self.sprintStartT.pack(side = tk.LEFT)
             self.sprintStart.pack(side = tk.LEFT)
             self.sprintDueT.pack(side = tk.LEFT)
@@ -559,6 +574,7 @@ class SCardDescription(tk.Frame):
 
             self.sprintStartF.pack(side = tk.TOP)
             self.sprintDueF.pack(side = tk.TOP)
+            self.sprintProgressBar.pack(side = tk.TOP)
 
         def repack(self):
             self.sprintStartT.pack_forget()
@@ -568,6 +584,7 @@ class SCardDescription(tk.Frame):
 
             self.sprintStartF.pack_forget()
             self.sprintDueF.pack_forget()
+            self.sprintProgressBar.pack_forget()
 
             self.sprintStartT.pack(side = tk.LEFT)
             self.sprintStart.pack(side = tk.LEFT)
@@ -576,6 +593,7 @@ class SCardDescription(tk.Frame):
 
             self.sprintStartF.pack(side = tk.TOP)
             self.sprintDueF.pack(side = tk.TOP)
+            self.sprintProgressBar.pack(side=tk.TOP)
 
     def repack(self):
         self.title.pack(fill = tk.X)
@@ -712,6 +730,12 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Sprint"].sprintDue.configure(text = selectedSprint.getFormattedDueDate(),
                                                             justify = tk.LEFT,
                                                             wraplength = self.master.w_rat*300)
+        self.completedTasks = 0
+        for item in selectedSprint.listOfAssignedItems:
+            if item.itemStatus == 4:
+                self.completedTasks += 1
+        self.cardDescriptions["Sprint"].sprintProgressBar["value"] = self.completedTasks
+        self.cardDescriptions["Sprint"].sprintProgressBar["maximum"] = len(selectedSprint.listOfAssignedItems)
 
         self.cardDescriptions["Sprint"].repack()
 
