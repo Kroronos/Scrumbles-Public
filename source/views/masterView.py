@@ -70,8 +70,12 @@ class masterView(tk.Tk):
         except Exception as inst:
             print("User is not logged in")
 
+        self.bind('<F1>', self.openUserGuide)
+
         self.bind('<Control-q>', self.windowQuit)
         self.bind('<Control-w>', self.windowMin)
+
+
 
 
 
@@ -272,7 +276,7 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
 
-    def openUserGuide(self):
+    def openUserGuide(self,event):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/User-Guide')
 
 
