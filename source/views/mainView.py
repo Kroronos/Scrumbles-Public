@@ -6,11 +6,10 @@ import tkinter as tk
 
 
 class mainViewPopup(SPopMenu.GenericPopupMenu):
-    def __init__(self,root,Master,isSubItem):
-        super().__init__(root,Master)
+    def __init__(self,root, Master, isSubItem):
+        super().__init__(root, Master)
         self.isAssignDeleted = False
         self.isSubItem = isSubItem
-
 
     def context_menu(self, event, menu):
         self.widget = event.widget
@@ -85,7 +84,7 @@ class mainView(tk.Frame):
 
         self.activeProject = controller.activeProject
 
-        self.roleMap = {'Developer': 0, 'Scrum Master': 1, 'Admin': 2 }
+        self.roleMap = {'Developer': 0, 'Scrum Master': 1, 'Admin': 2}
         self.activeRole = controller.activeUser.userRole
 
         self.fullBacklog = ScrumblesFrames.SBacklogListColor(self, "ALL ITEMS", controller)
@@ -130,21 +129,21 @@ class mainView(tk.Frame):
             source.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
         self.fullBacklog.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: (self.generatePopupThing(),
-                                                       self.FBPopMenu.context_menu(event,
-                                                       self.FBPopMenu)))
+                                      lambda event: (self.generatePopupThing(),
+                                                     self.FBPopMenu.context_menu(event,
+                                                     self.FBPopMenu)))
         self.sprintList.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: (self.generatePopupThing(),
-                                                       self.sprintPopMenu.context_menu(event,
-                                                       self.sprintPopMenu)))
+                                     lambda event: (self.generatePopupThing(),
+                                                    self.sprintPopMenu.context_menu(event,
+                                                    self.sprintPopMenu)))
         self.itemList.listbox.bind('<2>' if self.aqua else '<3>',
                                    lambda event: (self.generatePopupThing(),
                                                   self.itemPopMenu.context_menu(event,
                                                   self.itemPopMenu)))
         self.subItemList.listbox.bind('<2>' if self.aqua else '<3>',
-                                   lambda event: (self.generatePopupThing(),
-                                                  self.subItemPopMenu.context_menu(event,
-                                                  self.subItemPopMenu)))
+                                      lambda event: (self.generatePopupThing(),
+                                                     self.subItemPopMenu.context_menu(event,
+                                                     self.subItemPopMenu)))
 
         self.fullBacklog.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.sprintList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
@@ -167,8 +166,8 @@ class mainView(tk.Frame):
             self.sprintPopMenu.add_command(label=u'Delete Sprint',
                                            command=self.deleteSprint)
 
-        self.itemPopMenu = mainViewPopup(self,self.controller, False)
-        self.subItemPopMenu = mainViewPopup(self,self.controller, True)
+        self.itemPopMenu = mainViewPopup(self, self.controller, False)
+        self.subItemPopMenu = mainViewPopup(self, self.controller, True)
 
     def approveItem(self):
         item = None
@@ -416,13 +415,16 @@ class mainView(tk.Frame):
             self.fullBacklog.colorCodeListboxes()
         except Exception as e:
             logging.exception('Error coloring list boxes', str(e))
+
         if self.selectedSprint is not None:
             for sprint in self.controller.activeProject.listOfAssignedSprints:
                 if sprint.sprintName == self.selectedSprint.sprintName:
                     self.selectedSprint = sprint
+
             self.sprintItems = self.selectedSprint.listOfAssignedItems
             self.itemList.importItemList(self.sprintItems)
             self.itemList.colorCodeListboxes()
+
             if self.selectedItem is not None:
                 for item in self.controller.activeProject.listOfAssignedItems:
                     if item.itemTitle == self.selectedItem.itemTitle:

@@ -11,10 +11,14 @@ class splashView(tk.Frame):
         self.waitLabel.pack()
         self.isAlive = True
 
+        s = ttk.Style()
+        s.theme_use('clam')
+        s.configure("green.Horizontal.TProgressbar", troughcolor ='white', foreground = 'lime green', background = 'lime green')
+
         self.pbarList = []
         for i in range(30):
             pbar = None
-            pbar = ttk.Progressbar(self, length=1000, maximum=10 * i, mode='indeterminate')
+            pbar = ttk.Progressbar(self, style = "green.Horizontal.TProgressbar", length=1000, maximum=10 * i, mode='indeterminate')
             pbar.pack()
             self.pbarList.append(pbar)
 
