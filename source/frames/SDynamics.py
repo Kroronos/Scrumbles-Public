@@ -268,8 +268,11 @@ class commentsField(tk.Frame):
                 self.titleText.set("Comments")
             self.renderCommentField()
 
-    def updateComments(self):
-        self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate = True)
+    def updateComments(self, searchParamsSpec = None):
+        if searchParamsSpec is None:
+            self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate = True)
+        else:
+            self.updateFromListOfCommentsObject([searchParamsSpec], searchParamsSpec.userName)
 
     def renderCommentField(self, initializedComments = False):
         if initializedComments is True:
@@ -799,9 +802,24 @@ class SUserItemInspection(tk.Frame):
         self.itembox.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
 
     def update(self, user):
-        self.nameString.set(user.userName)
-        self.roleString.set(user.userRole)
-        self.updateItems(user.listOfAssignedItems)
+        if user is None:
+            return
+        matchFound = False
+        for userP in self.master.activeProject.listOfAssignedUsers:
+            if user.userID == userP.userID:
+                matchFound = True
+                break
+        if matchFound == True:
+            self.nameString.set(user.userName)
+            self.roleString.set(user.userRole)
+            self.updateItems(user.listOfAssignedItems)
+        else:
+            self.resetToStart()
+
+    def resetToStart(self):
+        self.nameString.set("")
+        self.roleString.set("")
+        self.updateItems([])
 
     def updateItems(self, items):
         assignedItems = []
