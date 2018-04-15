@@ -299,7 +299,7 @@ class mainView(tk.Frame):
 
         if messagebox.askyesno('Assign To Epic', 'Do you wish to assign item to Epic %s?' % inEpic):
             for i in self.controller.activeProject.listOfAssignedItems:
-                 if i.itemType == 'Epic':
+                if i.itemType == 'Epic':
                     if i.itemTitle == inEpic:
                         epic = i
             if epic is not None:
