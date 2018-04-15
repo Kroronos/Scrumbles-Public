@@ -258,7 +258,7 @@ class analyticsView(tk.Frame):
         # progress bar
         s = ttk.Style()
         s.theme_use('clam')
-        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_blue, background=style.scrumbles_orange)
+        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor = 'gray', background = style.scrumbles_green_fg)
 
         progressBarStyle = "scrumbles.Horizontal.TProgressbar"
 
@@ -434,7 +434,7 @@ class analyticsView(tk.Frame):
         # progress bar
         s = ttk.Style()
         s.theme_use('clam')
-        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_blue, background=style.scrumbles_orange)
+        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor='gray', background=style.scrumbles_green_fg)
 
         tasksAssigned = 0
         tasksCompleted = 0
