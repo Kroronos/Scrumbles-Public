@@ -102,8 +102,8 @@ class mainView(tk.Frame):
 
         self.fullBacklog = ScrumblesFrames.SBacklogListColor(self, "ALL ITEMS", controller)
         self.sprintList = ScrumblesFrames.SList(self, "SPRINTS")
-        self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS", controller)
-        self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS", controller)
+        self.itemList = ScrumblesFrames.SBacklogListColor(self, "ITEMS", controller, canAdd=False)
+        self.subItemList = ScrumblesFrames.SBacklogListColor(self, "SUB-ITEMS", controller, canAdd=False)
 
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
         self.FBPopMenu= None

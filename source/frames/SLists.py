@@ -181,7 +181,7 @@ class SComboList(BaseList):
         self.listFrame.pack(fill=tk.BOTH, expand=True)
 
 class SBacklogList(BaseList):
-    def __init__(self, controller, title,MasterView=None):
+    def __init__(self, controller, title, MasterView=None, canAdd=True):
         BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
         self.MasterView = MasterView
@@ -204,6 +204,10 @@ class SBacklogList(BaseList):
         self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT, cursor = "hand2")
 
         self.titleLabel.pack(side = tk.LEFT)
+        if MasterView is not None and canAdd is True:
+            self.addButton = tk.Button(self.titleFrame, text=style.big_plus, font='Helvetica 14', bg=style.scrumbles_blue,
+                                       command=lambda: MasterView.showCreateItemDialog(), relief=tk.FLAT,cursor="hand2")
+            self.addButton.pack(side=tk.LEFT, fill=tk.BOTH)
         self.sortButton.pack(side = tk.RIGHT)
         self.searchFrame.pack(side = tk.RIGHT)
 
@@ -290,8 +294,8 @@ class SBacklogList(BaseList):
             i += 1
 
 class SBacklogListColor(SBacklogList):
-    def __init__(self, controller, title, MasterView=None):
-        SBacklogList.__init__(self, controller, title, MasterView)
+    def __init__(self, controller, title, MasterView=None, canAdd=True):
+        SBacklogList.__init__(self, controller, title, MasterView, canAdd)
 
     def sortForward(self):
         super().sortForward()

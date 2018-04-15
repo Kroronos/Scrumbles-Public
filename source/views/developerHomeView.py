@@ -25,7 +25,7 @@ class developerHomeView(tk.Frame):
         self.backlogPopMenu.add_command(label=u'Assign To me', command=self.assignItemToActiveUser)
 
         self.itemColumnFrame = tk.Frame(self)
-        self.userItemList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "MY ITEMS", controller)
+        self.userItemList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "MY ITEMS", controller, canAdd=False)
         self.userItemList.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.myItemsPopMenu.context_menu(event, self.myItemsPopMenu))
 

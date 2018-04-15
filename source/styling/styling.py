@@ -24,6 +24,7 @@ scrumbles_offwhite = '#f5f5f5'
 scrumbles_green_bg = '#0f6811'  #full 6 digit hex so @Koronos does not have an aneurysm
 scrumbles_green_fg = '#33e037'
 #unicode icons
+big_plus = u'\uFF0B'
 updown_arrow = u'\u2B0D'
 up_arrow = u'\u2B06'
 down_arrow = u'\u2B07'
