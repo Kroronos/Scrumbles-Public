@@ -23,7 +23,7 @@ class splashView(tk.Frame):
             pbar = ttk.Progressbar(self,
                                    style = "green.Horizontal.TProgressbar",
                                    length = 1000,
-                                   maximum = 10 * i,
+                                   maximum = 10 * (i+1),
                                    mode = 'indeterminate')
             pbar.pack()
             self.pbarList.append(pbar)
