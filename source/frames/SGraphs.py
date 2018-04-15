@@ -23,21 +23,22 @@ class SLine(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
 
-    def generateGraph(self, x, y, labelsPosition=None, labels=None, xtitle=None, ytitle=None):
+    def generateGraph(self, x, y, labelsPosition=None, labels=None, xtitle=None, ytitle=None, yticks=1):
         self.graphInitialization()
-        self.showGraph(x, y, labelsPosition, labels, xtitle, ytitle)
+        self.showGraph(x, y, labelsPosition, labels, xtitle, ytitle, yticks)
 
     def graphInitialization(self):
         self.f = plt.figure(figsize=(4, 4), dpi=100)
         #self.ax = self.figure.add_subplot(1,1,1)
 
-    def showGraph(self, x, y, labelsPosition, labels, xtitle, ytitle):
-
+    def showGraph(self, x, y, labelsPosition, labels, xtitle, ytitle, yticks=1):
         self.p = plt.plot(x,y)
         plt.xlabel(xtitle)
         plt.ylabel(ytitle)
         plt.xticks(labelsPosition, labels, rotation=65)
-        #self.ax.set_xticklabels(labels)
+        if yticks == 0:
+            yticks +=1
+        plt.yticks(range(0,max(y)+1, yticks))
 
         self.canvas = FigureCanvasTkAgg(self.f, self)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -63,7 +64,6 @@ class SBar(tk.Frame):
         loc = matplotlib.ticker.MultipleLocator(base=tickValue)  # this locator puts ticks at regular intervals
         self.ax.yaxis.set_major_locator(loc) #we don't want to count freq to determine y max
         self.ax.set_xticks(ind)
-        self.ax.set_xticklabels(titles)
         #pretty colors
         children = self.ax.get_children()
         barlist = filter(lambda x: isinstance(x, matplotlib.patches.Rectangle), children)

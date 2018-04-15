@@ -31,18 +31,12 @@ class analyticsView(tk.Frame):
         self.taskAnalyticsFrame = tk.Frame(self)
 
         self.insideSprint = False
+        self.velocityWanted = True
         self.sprintList = ScrumblesFrames.SList(self.sprintAnalyticsFrame, "SPRINTS")
         self.sprintAnalyticsContents = tk.Frame(self.sprintAnalyticsFrame)
         self.sprintAnalyticsContentsOptions = []
         self.sprintAnalyticsContentsOptions.append(self.sprintAnalyticsContents)
-
         self.sprintList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
-        #Percent of Sprints Done - Progress Task
-        #Tasks State Per Sprint - Bar Graph
-        #Weighed Tasks State Per Sprint (Points) - Bar Graph
-            #For Sprint
-                #Number of State Items vs Date - Line Graph
-                #Percent Assigned State - Progress Bar
 
         self.insideUser = False
         self.userList = ScrumblesFrames.SList(self.userAnalyticsFrame, "USERS")
@@ -154,7 +148,18 @@ class analyticsView(tk.Frame):
                             firstTask = False
                         else:
                             values[-1] += 1
-
+        if len(labels) == 0:
+            labels.append("Completed By Active Users")
+            labels.append("Completed By Former Users")
+            values.append(0)
+            values.append(0)
+        for item in self.controller.activeProject.listOfAssignedItems:
+            if item.itemStatus == 4:
+                values[0] += 1
+        if values[0] == 0:
+            labels[0] = "Complete"
+            labels[1] = "Incomplete"
+            values[1] = 1
         taskUserPie.generateGraph(labels, values, title)
         return taskUserPie
 
@@ -215,6 +220,11 @@ class analyticsView(tk.Frame):
         averagePointsValue = str("%.2f"%averagePointsValue)
         averageTasksValue = str("%.2f"%averageTasksValue)
 
+        if MVPTaskName == "":
+            MVPTaskName = "No one"
+            MVPPointsName = "No one"
+            MVPTaskValue = "any"
+            MVPPointsValue = "any"
         userLabels = tk.Frame(self.userAnalyticsContentsOptions[0], relief=tk.SOLID, borderwidth=1)
 
         MVPLabels = tk.Frame(userLabels)
@@ -432,7 +442,7 @@ class analyticsView(tk.Frame):
         sprintBarGraph.generateGraph(sprintNames, sprintPointValues, "Sprints", "Points Earned", isOrange=True, tickValue=tickValue)
         sprintBarGraph.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-    def generateInternalSprintFrame(self, event=None, sprintEventName=None):
+    def generateInternalSprintFrame(self, event=None, sprintEventName=None, velocityWanted=True):
         if event is not None:
             sprintName = event.widget.get(tk.ANCHOR)
             self.sprintEventName = sprintName
@@ -473,6 +483,17 @@ class analyticsView(tk.Frame):
         sprintProgressBarLabel = tk.Label(sprintProgressBarTopping, text=sprintName + " has completed " + str(int((tasksCompleted/tasksAssigned)*100)) + "% of the tasks assigned to it.")
         sprintClearButton = tk.Button(sprintProgressBarTopping, text=style.left_arrow, command=lambda:self.clearSelection(self.sprintList.listbox,0), font=('Helvetica', '13'))
 
+        selectorFrame = tk.Frame(internalSprintFrame)
+        selectorTopFrame = tk.Frame(selectorFrame)
+        velocityButton = tk.Button(selectorTopFrame, text="Velocity", command=lambda: self.changeSprintGraph(True))
+        tasksButton = tk.Button(selectorTopFrame, text="Completed Tasks", command=lambda: self.changeSprintGraph(False))
+        if velocityWanted is True:
+            velocityButton.config(bg= style.scrumbles_offwhite)
+            tasksButton.config(bg = style.scrumbles_grey)
+        else:
+            velocityButton.config(bg=style.scrumbles_grey)
+            tasksButton.config(bg=style.scrumbles_offwhite)
+
         sprintClearButton.pack(side=tk.LEFT)
         sprintProgressBarLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
         sprintProgressBarTopping.pack(side=tk.TOP, fill=tk.X, expand=True)
@@ -481,8 +502,16 @@ class analyticsView(tk.Frame):
         sprintProgressBar["maximum"] = tasksAssigned
         progressBarFrame.pack(side=tk.TOP, fill=tk.X, expand=False)
 
+        velocityButton.pack(side=tk.LEFT)
+        tasksButton.pack(side=tk.LEFT)
+        selectorTopFrame.pack(side=tk.TOP, fill=tk.X)
+        selectorFrame.pack(side=tk.TOP, fill=tk.X)
+
         statisticsFrame = tk.Frame(internalSprintFrame,  relief=tk.SOLID, borderwidth=1)
-        self.generateInternalSprintLineGraph(statisticsFrame, sprintName)
+        if velocityWanted is True:
+            self.generateInternalVelocityLineGraph(statisticsFrame, sprintName)
+        else:
+            self.generateInternalSprintLineGraph(statisticsFrame, sprintName)
         statisticsFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.sprintAnalyticsContents.pack_forget()
@@ -494,6 +523,66 @@ class analyticsView(tk.Frame):
 
         self.sprintAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.insideSprint = True
+    
+    def generateInternalVelocityLineGraph(self,controller, sprintName):
+        CompletedItemDatePair = {}
+        for sprint in self.controller.activeProject.listOfAssignedSprints:
+            if sprint.sprintName == sprintName:
+                CompletedItemDatePair.update({sprint.sprintStartDate: 0})
+                for item in sprint.listOfAssignedItems:
+                    if item.itemStatus == 4:
+                        if item.itemTimeLine["Completed"] != datetime(9999, 12, 31, 23, 59, 59):
+                            alreadyInDict = False
+                            alreadyKeyed = None
+                            for key in CompletedItemDatePair.keys():
+                                if key.strftime("%y%m%d") == item.itemTimeLine["Completed"].strftime("%y%m%d"):
+                                    alreadyInDict = True
+                                    alreadyKeyed = key
+                                    break
+
+                            if alreadyInDict is True:
+                                CompletedItemDatePair[alreadyKeyed] += item.itemPoints
+                            else:
+                                CompletedItemDatePair.update({item.itemTimeLine["Completed"]: item.itemPoints})
+
+                isCurrentMatch = False
+                for key in CompletedItemDatePair.keys():
+                    if datetime.now().strftime("%y%m%d") == key.strftime("%y%m%d"):
+                        isCurrentMatch = True
+
+
+                if isCurrentMatch is False:
+                    CompletedItemDatePair.update({datetime.now(): 0})
+                break
+        labels = list()
+        xvalues = list()
+        for date in CompletedItemDatePair.keys():
+            labels.append(date.strftime("%m/%d/%y"))
+            xvalues.append(int(date.strftime("%y%m%d"))) #so that our x's are actually chronological
+        yvalues = list(CompletedItemDatePair.values())
+
+        newLabels = list()
+        labelsPositions = list()
+        lastStoredValue = 0
+
+        xvalues, yvalues, labels = (list(t) for t in zip(*sorted(zip(xvalues, yvalues, labels)))) #sort for proper behavior
+        for i in range(0, len(xvalues)): #this fixes overlapping labels on x axis
+            if i == 0:
+                lastStoredValue = xvalues[i]
+                labelsPositions.append(xvalues[i])
+                newLabels.append(labels[i])
+            else:
+                if xvalues[i]-lastStoredValue >= int((xvalues[0] - xvalues[-1])/5): #about a month off
+                    if xvalues[i]-lastStoredValue > 5: #5 day min
+                        lastStoredValue = xvalues[i]
+                        labelsPositions.append(xvalues[i])
+                        newLabels.append(labels[i])
+
+        internalSprintPointsGraph = ScrumblesFrames.SLine(controller)
+        internalSprintPointsGraph.generateGraph(xvalues, yvalues, labelsPositions, newLabels,
+                                                "Date of Completion","Points Earned",
+                                                yticks=int(max(yvalues)/10))
+        internalSprintPointsGraph.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def generateInternalSprintLineGraph(self, controller, sprintName):
         CompletedItemDatePair = {}
@@ -739,6 +828,14 @@ class analyticsView(tk.Frame):
         for item in self.controller.activeProject.listOfAssignedItems:
             values[item.itemStatus] += 1
 
+        #check for 0%s
+        for index, value in enumerate(values):
+            if value == 0:
+                del values[index]
+                del labels[index]
+        for index, value in enumerate(values):
+            if value == 0:
+                labels[index] = "Other"
         taskStatePie.generateGraph(labels, values, title)
         taskStatePie.pack(side=tk.TOP, fill=tk.BOTH)
 
@@ -997,6 +1094,9 @@ class analyticsView(tk.Frame):
             self.insideTask = False
 
         listbox.selection_clear(0, tk.END)
+
+    def changeSprintGraph(self, isVelocity):
+        self.generateInternalSprintFrame(sprintEventName=self.sprintEventName,velocityWanted=isVelocity)
 
     #utlity function for week/day strings
     def weekOrWeeks(self, weekNumber):
