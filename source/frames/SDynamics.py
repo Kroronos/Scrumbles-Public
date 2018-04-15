@@ -2,7 +2,6 @@ import tkinter as tk
 import webbrowser
 
 import csv
-import tkcalendar
 import datetime
 from data import ScrumblesData
 from data import ScrumblesObjects
@@ -703,6 +702,8 @@ class SCardDescription(tk.Frame):
 
     def open(self, event):
         link = event.widget.cget('text')
+        print(link)
+
         webbrowser.open(link)
 
 class SUserItemInspection(tk.Frame):

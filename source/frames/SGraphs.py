@@ -9,7 +9,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 import csv
-import tkcalendar
 import datetime
 from data import ScrumblesData
 from data import ScrumblesObjects
@@ -144,7 +143,7 @@ class SHistogram(tk.Frame):
     def generateGraph(self, x, y, xAxis, yAxis, xticks=1):
         self.graphInitialization()
         self.showGraph(x, y, xAxis, yAxis, xticks)
-
+        
     def graphInitialization(self):
         self.f = Figure(figsize=(4,5), dpi=100)
         self.canvas = FigureCanvasTkAgg(self.f, self)

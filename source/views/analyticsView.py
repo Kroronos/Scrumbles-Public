@@ -3,10 +3,12 @@ from tkinter import ttk
 from frames import ScrumblesFrames, listboxEventHandler
 import sys
 from styling import styling as style
+
 from datetime import datetime
 from datetime import timedelta
 import matplotlib.pyplot as plt
 import collections
+
 
 class analyticsView(tk.Frame):
     def __init__(self, parent, controller):
@@ -47,7 +49,6 @@ class analyticsView(tk.Frame):
         self.userAnalyticsContents = tk.Frame(self.userAnalyticsFrame)
         self.userAnalyticsContentsOptions = []
         self.userAnalyticsContentsOptions.append(self.userAnalyticsContents)
-
         self.userList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
         self.insideTask = False
@@ -157,6 +158,7 @@ class analyticsView(tk.Frame):
         taskUserPie.generateGraph(labels, values, title)
         return taskUserPie
 
+
     def generateTaskUserHistogram(self):
         taskUserHistogram = ScrumblesFrames.SHistogram(self.userGraphFrame)
         tasksStateByUsers = []
@@ -214,6 +216,7 @@ class analyticsView(tk.Frame):
         averageTasksValue = str("%.2f"%averageTasksValue)
 
         userLabels = tk.Frame(self.userAnalyticsContentsOptions[0], relief=tk.SOLID, borderwidth=1)
+
         MVPLabels = tk.Frame(userLabels)
         MVPTasks = tk.Label(MVPLabels, text=MVPTaskName + " completed " + MVPTaskValue
                                               +" tasks. The most out of anyone in this project so far.")
@@ -222,6 +225,7 @@ class analyticsView(tk.Frame):
         averageLabels = tk.Frame(userLabels)
         averageTasks = tk.Label(averageLabels, text="The average amount of tasks completed in this project is " + averageTasksValue+".")
         averagePoints = tk.Label(averageLabels, text="The average amount of points earned in this project is " + averagePointsValue+".")
+
 
         MVPTasks.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         MVPPoints.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -246,6 +250,7 @@ class analyticsView(tk.Frame):
         if matchFound is False:
             self.clearSelection(self.userList.listbox, 1)
             return
+          
         if tasksAssigned == 0:
             tasksAssigned = 1 #Prevent divide by zero when calculating percentage
         bestSprint, worstSprint, bestSprintPoints, worstSprintPoints = self.analyzeUserSprints(userName)
@@ -265,6 +270,7 @@ class analyticsView(tk.Frame):
         userClearButton.pack(side=tk.LEFT)
         userProgressBarLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
         userProgressBarTopping.pack(side=tk.TOP, fill=tk.X, expand=True)
+
         userProgressBar.pack(side=tk.TOP, fill=tk.X, expand=True)
         userProgressBar["value"] = tasksCompleted
         userProgressBar["maximum"] = tasksAssigned
@@ -295,6 +301,7 @@ class analyticsView(tk.Frame):
 
         self.userAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.insideUser = True
+
 
     def getUserTaskInfo(self, userName):
         itemsAssigned = 0
@@ -333,7 +340,7 @@ class analyticsView(tk.Frame):
                             bestSprintPoints = localPoints
                             bestSprintName = sprint.sprintName
         return bestSprintName, worstSprintName, bestSprintPoints, worstSprintPoints
-
+      
     def updateSprintFrame(self):
         if self.initialRun is False:
             self.sprintAnalyticsContentsOptions[0].pack_forget()
@@ -973,3 +980,4 @@ class analyticsView(tk.Frame):
             return "days"
         else:
             return "day"
+
