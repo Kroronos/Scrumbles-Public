@@ -80,11 +80,11 @@ class itemPicker(tk.Frame):
         self.top.itemAdditionNameEntryText = tk.StringVar()
         self.top.itemAdditionNameEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionNameEntryText, cursor = "hand2").grid(row = 1, column = 1)
 
-        self.top.itemAdditionDescriptionLabel =  tk.Label(self.top, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
+        self.top.itemAdditionDescriptionLabel = tk.Label(self.top, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
         self.top.itemAdditionDescriptionEntryText = tk.StringVar()
         self.top.itemAdditionDescriptionEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionDescriptionEntryText, cursor = "hand2").grid(row = 2, column = 1)
 
-        self.top.itemAdditionPriorityLabel = tk.Label( self.top, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
+        self.top.itemAdditionPriorityLabel = tk.Label(self.top, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
         self.top.itemAdditionPriorityValue = tk.StringVar()
         self.top.itemAdditionPrioritySelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionPriorityValue, values = self.priorities, state = "readonly", cursor = "hand2").grid(row = 3, column = 1)
 
@@ -216,7 +216,7 @@ class commentsField(tk.Frame):
         self.internals.bind("<Configure>", self.OnFrameConfigure)
         self.canvas.bind('<Configure>', self.FrameWidth)
 
-    def submitComment(self, event=None):
+    def submitComment(self, event = None):
         newComment = ScrumblesObjects.Comment()
         newComment.commentContent = self.newCommentField.get("1.0", tk.END)
         newComment.commentContent = str(newComment.commentContent)
@@ -641,7 +641,7 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Item"].itemType.configure(text = selectedItem.itemType,
                                                          justify = tk.LEFT,
                                                          wraplength = self.master.w_rat*300)
-        if selectedItem.itemPriority is not None and selectedItem.itemPriority != 0:
+        if selectedItem.itemPriority is not None:
             self.cardDescriptions["Item"].itemPriority.configure(text = selectedItem.getPriorityString(),
                                                                  justify = tk.LEFT,
                                                                  wraplength = self.master.w_rat*300)
