@@ -19,12 +19,12 @@ class masterView(tk.Tk):
 
         self.w_rat, self.h_rat = getGeometryFromFile("geometry.txt")
         self.w_rat /= 1280
-        self.h_rat/= 720
+        self.h_rat /= 720
         w = 1280*self.w_rat
         h = 720*self.h_rat
         print("Width: " + str(w))
         print("Height: " + str(h))
-        ws =self.winfo_screenwidth()  # width of the screen
+        ws = self.winfo_screenwidth()  # width of the screen
         hs = self.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
@@ -35,13 +35,13 @@ class masterView(tk.Tk):
 
         self.frames = {}
 
-        self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
+        self.protocol('WM_DELETE_WINDOW', lambda s = self: exitProgram(s))
         self.container = tk.Frame(self)
 
-        self.container.pack(side="top", fill="both", expand=True)
+        self.container.pack(side = "top", fill = "both", expand = True)
 
-        self.container.grid_rowconfigure(0, weight=1)
-        self.container.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight = 1)
+        self.container.grid_columnconfigure(0, weight = 1)
 
         self.menuBar = None
         self.hiddenMenu = tk.Menu(self)
@@ -60,89 +60,86 @@ class masterView(tk.Tk):
         print("Switching Views")
         frame.tkraise()
 
-        if(cont!= loginView):
+        if cont != loginView:
             self.raiseMenuBar()
         else:
             self.hideMenuBar()
 
     def add_frame(self, addedFrame, addedFrameClass):
-        logging.info('Packing Frame %s'% str(addedFrame))
+        logging.info('Packing Frame %s' % str(addedFrame))
         self.frames[addedFrameClass] = addedFrame
-        addedFrame.grid(row=0, column=0, sticky="nsew")
+        addedFrame.grid(row = 0, column = 0, sticky = "nsew")
 
     def generateMenuBar(self):
         menuBar = tk.Menu(self, cursor = "hand2")
 
-        fileMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
+        fileMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
         self.fileMenu = fileMenu
-        if (self.activeUser.userRole == "Admin"):
-            fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
+        if self.activeUser.userRole == "Admin":
+            fileMenu.add_command(label = "Create New Project", command = self.showCreateProjectDialog)
         self.setOpenProjectsMenu(fileMenu)
         self.dataBlock.packCallback(self.updateOpenProjectsMenu)
-        fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
+        fileMenu.add_command(label = "Exit", command = lambda:exitProgram(self))
 
-        editMenu = tk.Menu(menuBar, tearoff=0)
-        if (self.activeUser.userRole == "Admin"):
-            editMenu.add_command(label="Create New User", command=self.showCreateUserDialog)
-        if (self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master"):
-            editMenu.add_command(label="Create New Sprint", command=self.showCreateSprintDialog)
-        editMenu.add_command(label="Create New Item", command=self.showCreateItemDialog)
+        editMenu = tk.Menu(menuBar, tearoff = 0)
+        if self.activeUser.userRole == "Admin":
+            editMenu.add_command(label = "Create New User", command = self.showCreateUserDialog)
+        if self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master":
+            editMenu.add_command(label = "Create New Sprint", command = self.showCreateSprintDialog)
+        editMenu.add_command(label = "Create New Item", command = self.showCreateItemDialog)
 
-        profileMenu = tk.Menu(menuBar, tearoff=0)
-        profileMenu.add_command(label=self.activeUser.userName)
-        profileMenu.add_command(label="Log Out", command=lambda: logOut(self))
+        profileMenu = tk.Menu(menuBar, tearoff = 0)
+        profileMenu.add_command(label = self.activeUser.userName)
+        profileMenu.add_command(label = "Log Out", command=lambda: logOut(self))
 
-        viewMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
-        if (self.activeUser.userRole == "Admin"):
-            viewMenu.add_command(label="Administrator Main", command=lambda: self.show_frame(mainView))
-        if (self.activeUser.userRole == "Scrum Master"):
-            viewMenu.add_command(label="Scrum Master Main", command=lambda: self.show_frame(mainView))
-        elif (self.activeUser.userRole == "Developer"):
-            viewMenu.add_command(label="Developer Main", command=lambda: self.show_frame(mainView))
+        viewMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
+        if self.activeUser.userRole == "Admin":
+            viewMenu.add_command(label = "Administrator Main", command = lambda: self.show_frame(mainView))
+        if self.activeUser.userRole == "Scrum Master":
+            viewMenu.add_command(label = "Scrum Master Main", command = lambda: self.show_frame(mainView))
+        elif self.activeUser.userRole == "Developer":
+            viewMenu.add_command(label = "Developer Main", command = lambda: self.show_frame(mainView))
 
-        viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
-        viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
+        viewMenu.add_command(label = "Developer Home", command = lambda: self.show_frame(developerHomeView))
+        viewMenu.add_command(label = "Team Manager", command = lambda: self.show_frame(teamManagerView))
+        viewMenu.add_command(label = "Item Manager", command = lambda: self.show_frame(analyticsView))
 
-       
-        viewMenu.add_command(label="Item Manager", command = lambda: self.show_frame(analyticsView))
-
-
-        helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
+        helpMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
-        helpMenu.add_command(label = "What's With The Colors", command=self.colorHelp)
-        helpMenu.add_command(label = 'Refresh Data', command=self.refreshData)
+        helpMenu.add_command(label = "What's With The Colors", command = self.colorHelp)
+        helpMenu.add_command(label = 'Refresh Data', command = self.refreshData)
 
-        menuBar.add_cascade(label="File", menu=fileMenu)
-        menuBar.add_cascade(label="Edit", menu=editMenu)
-        menuBar.add_cascade(label="Profile", menu=profileMenu)
-        menuBar.add_cascade(label="View", menu=viewMenu)
-        menuBar.add_cascade(label="Help", menu=helpMenu)
-
+        menuBar.add_cascade(label = "File", menu = fileMenu)
+        menuBar.add_cascade(label = "Edit", menu = editMenu)
+        menuBar.add_cascade(label = "Profile", menu = profileMenu)
+        menuBar.add_cascade(label = "View", menu = viewMenu)
+        menuBar.add_cascade(label = "Help", menu = helpMenu)
 
         self.menuBar = menuBar
         self.menuBar.config(cursor = "hand2")
+
     def colorHelp(self):
-        Dialogs.AboutDialog(self, master=self).show()
+        Dialogs.AboutDialog(self, master = self).show()
 
     def raiseMenuBar(self):
-        self.configure(menu=self.menuBar)
+        self.configure(menu = self.menuBar)
 
     def hideMenuBar(self):
-        self.configure(menu=self.hiddenMenu)
+        self.configure(menu = self.hiddenMenu)
 
     def getViews(self):
         views = []
         viewNames = []
-        if (self.activeUser.userRole == "Admin"):
+        if self.activeUser.userRole == "Admin":
             views.append(mainView)
             viewNames.append("Admin Main")
 
-        elif (self.activeUser.userRole == "Scrum Master"):
+        elif self.activeUser.userRole == "Scrum Master":
             views.append(mainView)
             viewNames.append("Scrum Master Main")
 
-        elif (self.activeUser.userRole == "Developer"):
+        elif self.activeUser.userRole == "Developer":
             views.append(mainView)
             viewNames.append("Developer Main")
 
@@ -152,31 +149,26 @@ class masterView(tk.Tk):
         views.append(teamManagerView)
         viewNames.append("Team Manager")
 
-
-
-
         views.append(analyticsView)
         viewNames.append("Analytics")
 
         return views, viewNames
 
     def showCreateProjectDialog(self):
-
-        Dialogs.CreateProjectDialog(self, master=self, dataBlock=self.dataBlock).show()
+        Dialogs.CreateProjectDialog(self, master = self, dataBlock=self.dataBlock).show()
+        
     def showCreateUserDialog(self):
-        Dialogs.CreateUserDialog(self, master=self, dataBlock=self.dataBlock).show()
-
+        Dialogs.CreateUserDialog(self, master = self, dataBlock=self.dataBlock).show()
 
     def showCreateSprintDialog(self):
-        Dialogs.CreateSprintDialog(self, master=self, dataBlock=self.dataBlock).show()
+        Dialogs.CreateSprintDialog(self, master = self, dataBlock = self.dataBlock).show()
 
     def showCreateItemDialog(self):
-        Dialogs.CreateItemDialog(self, master=self, dataBlock=self.dataBlock).show()
+        Dialogs.CreateItemDialog(self, master = self, dataBlock = self.dataBlock).show()
 
     def generateViews(self, loggedInUser):
         self.withdraw()
         self.splash = Dialogs.SplashScreen(self, self)
-
 
         self.dataBlock = DataBlock.DataBlock()
 
@@ -186,17 +178,16 @@ class masterView(tk.Tk):
         self.activeProject = self.dataBlock.projects[0]
 
         #todo
-        threading.Thread(target=self.dataBlock.onConnectionLoss,args=(self.connectionLosshandler,)).start()
+        threading.Thread(target = self.dataBlock.onConnectionLoss, args = (self.connectionLossHandler,)).start()
 
-        print('Logged in %s'%loggedInUser)
+        print('Logged in %s' % loggedInUser)
 
         for user in self.dataBlock.users:
-             if loggedInUser == user.userName:
-                 loggedInUser = user
+            if loggedInUser == user.userName:
+                loggedInUser = user
         self.activeUser = loggedInUser
-        print('%s Loggin in'%loggedInUser.userName)
+        print('%s Loggin in' % loggedInUser.userName)
         self.dataBlock.packCallback(self.repointActiveObjects)
-
 
         HomeFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
@@ -204,35 +195,30 @@ class masterView(tk.Tk):
 
         analyticsFrame = analyticsView.analyticsView(self.container, self)
 
-
-
         self.add_frame(HomeFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
-
         self.add_frame(analyticsFrame, analyticsView)
-
 
         self.generateMenuBar()
         self.splash.kill()
         self.deiconify()
 
-
-        if (self.activeUser.userRole == "Admin"):
+        if self.activeUser.userRole == "Admin":
             self.show_frame(mainView)
 
-        elif (self.activeUser.userRole == "Scrum Master"):
+        elif self.activeUser.userRole == "Scrum Master":
             self.show_frame(mainView)
 
-        elif (self.activeUser.userRole == "Developer"):
+        elif self.activeUser.userRole == "Developer":
             self.show_frame(developerHomeView)
 
-        self.title("Scrumbles"+" - "+self.activeProject.projectName)
+        self.title("Scrumbles" + " - " + self.activeProject.projectName)
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
 
-    def connectionLosshandler(self):
-        messagebox.showerror('Loss of Connection','Network Connection Lost, Logging Out of App')
+    def connectionLossHandler(self):
+        messagebox.showerror('Loss of Connection', 'Network Connection Lost, Logging Out of App')
         logOut(self)
 
     def openAPI(self):
@@ -244,32 +230,33 @@ class masterView(tk.Tk):
     def updateOpenProjectsMenu(self):
         self.setOpenProjectsMenu(self.fileMenu)
 
-    def setOpenProjectsMenu(self,menu):
+    def setOpenProjectsMenu(self, menu):
         listOfProjects = [P.projectName for P in self.dataBlock.projects]
-
 
         try:
             menu.delete('Open Project')
         except Exception:
             logging.exception('Failed to delete menu')
 
-        self.popMenu = tk.Menu(menu,tearoff=0)
-        if(self.activeUser != None and (self.activeUser.userRole == "Scrum Master" or self.activeUser.userRole == "Developer")):
+        self.popMenu = tk.Menu(menu, tearoff = 0)
+        if self.activeUser is None and (self.activeUser.userRole == "Scrum Master" or 
+                                        self.activeUser.userRole == "Developer"):
             for text in listOfProjects:
                 for project in self.activeUser.listOfProjects:
-                    if(project.projectName == text):
-                        self.popMenu.add_command(label=project.projectName, command=lambda t=project.projectName: self.setActiveProject(t))
+                    if project.projectName == text:
+                        self.popMenu.add_command(label = project.projectName, 
+                                                 command = lambda t = project.projectName: self.setActiveProject(t))
         else:
             for text in listOfProjects:
-                self.popMenu.add_command(label=text, command=lambda t=text: self.setActiveProject(t))
+                self.popMenu.add_command(label = text, command = lambda t = text: self.setActiveProject(t))
 
-        menu.insert_cascade(index=1, label='Open Project', menu=self.popMenu, underline=0)
+        menu.insert_cascade(index = 1, label = 'Open Project', menu = self.popMenu, underline = 0)
 
-    def setActiveProject(self,projectName):
+    def setActiveProject(self, projectName):
         for P in self.dataBlock.projects:
             if P.projectName == projectName:
                 self.activeProject = P
-        self.title("Scrumbles"+" - "+self.activeProject.projectName)
+        self.title("Scrumbles" + " - " + self.activeProject.projectName)
         logging.info('Active Project set to %s' % self.activeProject.projectName)
         self.dataBlock.executeUpdaterCallbacks()
 
@@ -289,9 +276,9 @@ class masterView(tk.Tk):
         return 'Scrumbles Master View Controller'
 
 def logOut(controller):
-    logging.info('%s logged out'%controller.activeUser.userID)
+    logging.info('%s logged out' % controller.activeUser.userID)
     controller.dataBlock.shutdown()
-    messagebox.showinfo('Logout','Shutting Down Active Threads')
+    messagebox.showinfo('Logout', 'Shutting Down Active Threads')
     time.sleep(3)
     del controller.dataBlock
     #Do Some Stuff Here To Clear States
@@ -300,17 +287,17 @@ def logOut(controller):
     controller.show_frame(loginView)
     controller.title("Scrumbles")
 
-def exitProgram(mainwindow):
-    setGeometryFile(mainwindow)
+def exitProgram(mainWindow):
+    setGeometryFile(mainWindow)
     try:
-        mainwindow.dataBlock.shutdown()
+        mainWindow.dataBlock.shutdown()
     except:
         logging.exception('Shutdown Failure')
     try:
 
-        del mainwindow.dataBlock
+        del mainWindow.dataBlock
 
-        mainwindow.destroy()
+        mainWindow.destroy()
     except:
         logging.exception('Shutdown Failure')
     finally:
@@ -323,18 +310,18 @@ def showGettingStartedText():
 
 def getGeometryFromFile(file):
     try:
-        geometryFile = open(file,'r')
+        geometryFile = open(file, 'r')
         w = processFile(geometryFile)
         h = processFile(geometryFile)
         w = int(w)
         h = int(h)
         geometryFile.close()
     except:
-        print("EXCEPTION ALERTTTT")
+        print("EXCEPTION ALERT")
         w = 1280
         h = 720
 
-    return w,h
+    return w, h
 
 def processFile(openFile):
     item = openFile.readline()
@@ -345,6 +332,6 @@ def setGeometryFile(window):
     w = window.winfo_width()
     h = window.winfo_height()
     f = open("geometry.txt", "w+")
-    f.write(str(w)+"\n")
-    f.write(str(h)+"\n")
+    f.write(str(w) + "\n")
+    f.write(str(h) + "\n")
     f.close()

@@ -783,8 +783,8 @@ class codeLinkDialog(GenericDialog):
 
 
 class SplashScreen(Tk.Toplevel):
-    def __init__(self,parent, master):
-        Tk.Toplevel.__init__(self,parent,cursor="watch")
+    def __init__(self, parent, master):
+        Tk.Toplevel.__init__(self, parent, cursor = "watch")
         print('Init Splash')
 
         self.wm_overrideredirect(True)
@@ -796,18 +796,17 @@ class SplashScreen(Tk.Toplevel):
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.waitLabel = Tk.Label(self,text='Please wait while Scrumbles Loads')
+        self.waitLabel = Tk.Label(self, text = 'Please wait while Scrumbles Loads')
         self.waitLabel.pack()
         self.isAlive = True
 
         self.pbarList = []
         for i in range(30):
             pbar = None
-            pbar= ttk.Progressbar(self,length=1000,maximum=10*(i),mode='indeterminate')
+            pbar = ttk.Progressbar(self, length = 1000, maximum = 10*i, mode = 'indeterminate')
             pbar.pack()
             #pbar.start(10)
             self.pbarList.append(pbar)
-
 
         self.update()
         #self.start_progressBar()
@@ -816,7 +815,7 @@ class SplashScreen(Tk.Toplevel):
         self.isAlive = False
         self.destroy()
 
-    def step_progressBar(self,interval):
+    def step_progressBar(self, interval):
         for pbar in self.pbarList:
             pbar.step(interval)
             self.update()
