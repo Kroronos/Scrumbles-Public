@@ -13,6 +13,7 @@ class developerHomeView(tk.Frame):
 
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+        self.firstRun = True
 
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
@@ -113,7 +114,9 @@ class developerHomeView(tk.Frame):
         self.userItemList.colorCodeListboxes()
         self.updateProgressBar()
         self.commentFeed.updateComments()
-
+        if self.firstRun is False:
+            self.descriptionManager.resetToStart()
+        self.firstRun = False
 
     def listboxEvents(self, event):
         if event.widget is self.userItemList.listbox:

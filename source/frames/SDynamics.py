@@ -264,6 +264,8 @@ class commentsField(tk.Frame):
                 for comment in self.inspection.listOfComments:
                     self.comments.append(comment)
 
+            else:
+                self.titleText.set("Comments")
             self.renderCommentField()
 
     def updateComments(self):
@@ -743,7 +745,7 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Active"] = self.cardDescriptions["Sprint"]
 
     def resetToStart(self):
-        self.titleText.set("Item Description")
+        self.titleText.set(self.dataTypeText + " Description")
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions['Start']
         self.cardDescriptions['Active'].pack(side = tk.TOP)
