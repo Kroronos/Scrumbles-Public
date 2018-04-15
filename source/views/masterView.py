@@ -19,7 +19,7 @@ class masterView(tk.Tk):
         print('Init masterView')
         tk.Tk.__init__(self)
 
-        self.w_rat, self.h_rat = getGeometryFromFile("geometry.txt")
+        self.w_rat, self.h_rat, full = getGeometryFromFile("geometry.txt")
         self.w_rat /= 1280
         self.h_rat /= 720
         w = 1280*self.w_rat
@@ -34,7 +34,8 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
+        if full == 1:
+            self.state('zoomed')
         self.frames = {}
 
         self.protocol('WM_DELETE_WINDOW', lambda s = self: exitProgram(s))
@@ -326,15 +327,18 @@ def getGeometryFromFile(file):
         geometryFile = open(file, 'r')
         w = processFile(geometryFile)
         h = processFile(geometryFile)
+        full = processFile(geometryFile)
         w = int(w)
         h = int(h)
+        full = int(full)
         geometryFile.close()
     except:
         print("EXCEPTION ALERT")
         w = 1280
         h = 720
+        full = 0
 
-    return w, h
+    return w, h, full
 
 def processFile(openFile):
     item = openFile.readline()
@@ -342,9 +346,16 @@ def processFile(openFile):
     return item
 
 def setGeometryFile(window):
+    window.update()
     w = window.winfo_width()
     h = window.winfo_height()
+    full = window.wm_state()
+    if full == "zoomed":
+        full = 1
+    else:
+        full = 0
     f = open("geometry.txt", "w+")
     f.write(str(w) + "\n")
     f.write(str(h) + "\n")
+    f.write(str(full)+"\n")
     f.close()
