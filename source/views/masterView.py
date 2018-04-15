@@ -101,17 +101,17 @@ class masterView(tk.Tk):
         fileMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         self.fileMenu = fileMenu
         if (self.activeUser.userRole == "Admin"):
-            fileMenu.add_command(label="Create New Project            Ctrl+p", command=self.showCreateProjectDialog)
+            fileMenu.add_command(label="Create New Project \t \t \t \t \t \t CTRL+P", command=self.showCreateProjectDialog)
         self.setOpenProjectsMenu(fileMenu)
         self.dataBlock.packCallback(self.updateOpenProjectsMenu)
-        fileMenu.add_command(label="Exit                                      Ctrl+q", command=lambda:exitProgram(self))
+        fileMenu.add_command(label="Exit \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t  \t \t \t \t \t \t \t \t \t \t \t \t CTRL+Q", command=lambda:exitProgram(self))
 
         editMenu = tk.Menu(menuBar, tearoff=0)
         if (self.activeUser.userRole == "Admin"):
-            editMenu.add_command(label="Create New User                  Ctrl+u", underline= 11, command=self.showCreateUserDialog)
+            editMenu.add_command(label="Create New User \t \t \t \t \t \t \t \t \t CTRL+U", underline= 11, command=self.showCreateUserDialog)
         if (self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master"):
-            editMenu.add_command(label="Create New Sprint                Ctrl+s", underline=11, command=self.showCreateSprintDialog)
-        editMenu.add_command(label="Create New Item                  Ctrl+i",  underline=11,command=self.showCreateItemDialog)
+            editMenu.add_command(label="Create New Sprint \t \t \t \t \t \t CTRL+S", underline=11, command=self.showCreateSprintDialog)
+        editMenu.add_command(label="Create New Item \t \t \t \t \t \t \t \t CTRL+I",  underline=11,command=self.showCreateItemDialog)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label=self.activeUser.userName)
@@ -119,19 +119,19 @@ class masterView(tk.Tk):
 
         viewMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         if (self.activeUser.userRole == "Admin"):
-            viewMenu.add_command(label="Administrator Main     Ctrl+m", underline=0, command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Administrator Main \t \t \t CTRL+M", underline=0, command=lambda: self.show_frame(mainView))
         
         if (self.activeUser.userRole == "Scrum Master"):
-            viewMenu.add_command(label="Scrum Master Main     Ctrl+m", underline=0, command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Scrum Master Main \t \t \t CTRL+M", underline=0, command=lambda: self.show_frame(mainView))
         
         elif (self.activeUser.userRole == "Developer"):
-            viewMenu.add_command(label="Developer Main           Ctrl+m", underline=0, command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Developer Main \t \t \t CTRL+M", underline=0, command=lambda: self.show_frame(mainView))
 
 
 
-        viewMenu.add_command(label="Developer Home         Ctrl+h", underline=11, command=lambda: self.show_frame(developerHomeView))
-        viewMenu.add_command(label="Team Manager             Ctrl+t", underline=0, command=lambda: self.show_frame(teamManagerView))
-        viewMenu.add_command(label="Analytics View              Ctrl+a", underline=0, command = lambda: self.show_frame(analyticsView))
+        viewMenu.add_command(label="Developer Home \t \t \t \t \t \t CTRL+H", underline=11, command=lambda: self.show_frame(developerHomeView))
+        viewMenu.add_command(label="Team Manager \t \t \t \t \t \t \t \t \t \t CTRL+T", underline=0, command=lambda: self.show_frame(teamManagerView))
+        viewMenu.add_command(label="Analytics View \t \t \t \t \t \t \t \t \t \t \t \tCTRL+A", underline=0, command = lambda: self.show_frame(analyticsView))
 
 
         helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
@@ -139,7 +139,7 @@ class masterView(tk.Tk):
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
         helpMenu.add_command(label = "What's With The Colors", command=self.colorHelp)
-        helpMenu.add_command(label = 'Refresh Data                Ctrl+r', command=self.refreshData)
+        helpMenu.add_command(label = 'Refresh Data \t \t \t \t CTRL+R', command=self.refreshData)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Edit", menu=editMenu)
