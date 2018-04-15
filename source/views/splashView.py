@@ -15,7 +15,6 @@ class splashView(tk.Frame):
         s.theme_use('clam')
         s.configure("green.Horizontal.TProgressbar",
                     troughcolor = 'white',
-                    foreground = 'lime green',
                     background = 'lime green')
 
         self.pbarList = []
