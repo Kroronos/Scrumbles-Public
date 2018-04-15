@@ -291,9 +291,8 @@ class masterView(tk.Tk):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/User-Guide')
 
 
-    def connectionLosshandler(self):
+    def connectionLossHandler(self):
         messagebox.showerror('Loss of Connection','Network Connection Lost, Logging Out of App')
-
         logOut(self)
 
     def openAPI(self):
