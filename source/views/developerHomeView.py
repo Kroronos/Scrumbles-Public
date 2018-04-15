@@ -32,23 +32,25 @@ class developerHomeView(tk.Frame):
         self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "BACKLOG", controller)
 
         self.productBacklogList.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.backlogPopMenu.context_menu(event, self.backlogPopMenu) )
-
-
+                                        lambda event: self.backlogPopMenu.context_menu(event, self.backlogPopMenu))
 
         self.commentFeed = ScrumblesFrames.commentsField(self, self.controller)
 
         # progress bar
         s = ttk.Style()
         s.theme_use('clam')
-        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_blue, background=style.scrumbles_orange)
+        s.configure("scrumbles.Horizontal.TProgressbar",
+                    troughcolor = 'gray',
+                    background = style.scrumbles_green_fg)
 
         progressBarStyle = "scrumbles.Horizontal.TProgressbar"
 
-        self.progressBar = ttk.Progressbar(self.itemColumnFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
+        self.progressBar = ttk.Progressbar(self.itemColumnFrame,
+                                           style = progressBarStyle,
+                                           orient = "horizontal",
+                                           mode = "determinate")
 
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
-
 
         self.backlog = []
         self.teamMembers = []
