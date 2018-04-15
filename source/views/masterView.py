@@ -54,17 +54,28 @@ class masterView(tk.Tk):
 
         self.activeUser = None
 
-        self.bind('<Control-u>', self.showCreateUserDialog)
-        self.bind('<Control-i>', self.showCreateItemDialog)
-        self.bind('<Control-s>', self.showCreateSprintDialog)
-        
-        self.bind('<Control-m>', self.showMainView)
-        self.bind('<Control-h>', self.showHomeView)
-        self.bind('<Control-t>', self.showTeamView)
-        self.bind('<Control-a>', self.showAnalyticsView)
+        try:
+            self.bind('<Control-u>', self.showCreateUserDialog)
+            self.bind('<Control-i>', self.showCreateItemDialog)
+            self.bind('<Control-s>', self.showCreateSprintDialog)
+            self.bind('<Control-p>', self.showCreateProjectDialog)
+            
+            self.bind('<Control-m>', self.showMainView)
+            self.bind('<Control-h>', self.showHomeView)
+            self.bind('<Control-t>', self.showTeamView)
+            self.bind('<Control-a>', self.showAnalyticsView)
+
+            self.bind('<Control-r>', self.refreshData)
+
+        except Exception as inst:
+            print("User is not logged in")
+
+        self.bind('<Control-q>', self.windowQuit)
+        self.bind('<Control-m>', self.windowMin)
 
 
 
+  
     def show_frame(self, cont):
         frame = self.frames[cont]
         print("Switching Views")
@@ -86,17 +97,17 @@ class masterView(tk.Tk):
         fileMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         self.fileMenu = fileMenu
         if (self.activeUser.userRole == "Admin"):
-            fileMenu.add_command(label="Create New Project", command=self.showCreateProjectDialog)
+            fileMenu.add_command(label="Create New Project        Ctrl+p", command=self.showCreateProjectDialog)
         self.setOpenProjectsMenu(fileMenu)
         self.dataBlock.packCallback(self.updateOpenProjectsMenu)
         fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
 
         editMenu = tk.Menu(menuBar, tearoff=0)
         if (self.activeUser.userRole == "Admin"):
-            editMenu.add_command(label="Create New User", underline= 11, command=self.showCreateUserDialog)
+            editMenu.add_command(label="Create New User    Ctrl+u", underline= 11, command=self.showCreateUserDialog)
         if (self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master"):
-            editMenu.add_command(label="Create New Sprint", underline=11, command=self.showCreateSprintDialog)
-        editMenu.add_command(label="Create New Item",  underline=11,command=self.showCreateItemDialog)
+            editMenu.add_command(label="Create New Sprint    Ctrl+s", underline=11, command=self.showCreateSprintDialog)
+        editMenu.add_command(label="Create New Item    Ctrl+i",  underline=11,command=self.showCreateItemDialog)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label=self.activeUser.userName)
@@ -114,9 +125,9 @@ class masterView(tk.Tk):
 
 
 
-        viewMenu.add_command(label="Developer Home", underline=11, command=lambda: self.show_frame(developerHomeView))
-        viewMenu.add_command(label="Team Manager", underline=0, command=lambda: self.show_frame(teamManagerView))
-        viewMenu.add_command(label="Analytics View", underline=0, command = lambda: self.show_frame(analyticsView))
+        viewMenu.add_command(label="Developer Home    Ctrl+h", underline=11, command=lambda: self.show_frame(developerHomeView))
+        viewMenu.add_command(label="Team Manager    Ctrl+T", underline=0, command=lambda: self.show_frame(teamManagerView))
+        viewMenu.add_command(label="Analytics View    Ctrl+a", underline=0, command = lambda: self.show_frame(analyticsView))
 
 
         helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
@@ -165,9 +176,6 @@ class masterView(tk.Tk):
         views.append(teamManagerView)
         viewNames.append("Team Manager")
 
-
-
-
         views.append(analyticsView)
         viewNames.append("Analytics")
 
@@ -188,6 +196,11 @@ class masterView(tk.Tk):
         Dialogs.CreateItemDialog(self, master=self, dataBlock=self.dataBlock).show()
 
 
+    def windowMin(self, event):
+        minimize(self)
+
+    def windowQuit(self, event):
+        exitProgram(self)
 
     def showMainView(self, event):
         self.show_frame(mainView)
@@ -313,7 +326,7 @@ class masterView(tk.Tk):
             if U.userName == self.activeUser.userName:
                 self.activeUser = U
 
-    def refreshData(self):
+    def refreshData(self, event):
         self.dataBlock.updateAllObjects()
         self.dataBlock.executeUpdaterCallbacks()
 
@@ -349,6 +362,11 @@ def exitProgram(mainwindow):
         exit()
     logging.info("Shutting down gracefully")
     exit()
+
+
+
+def minimize(mainwindow):
+    mainwindow.iconify()
 
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
