@@ -71,7 +71,7 @@ class masterView(tk.Tk):
             print("User is not logged in")
 
         self.bind('<Control-q>', self.windowQuit)
-        self.bind('<Control-m>', self.windowMin)
+        self.bind('<Control-w>', self.windowMin)
 
 
 
@@ -115,17 +115,17 @@ class masterView(tk.Tk):
 
         viewMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         if (self.activeUser.userRole == "Admin"):
-            viewMenu.add_command(label="Administrator Main", underline=0, command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Administrator Main     Ctrl+m", underline=0, command=lambda: self.show_frame(mainView))
         
         if (self.activeUser.userRole == "Scrum Master"):
-            viewMenu.add_command(label="Scrum Master Main", underline=0, command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Scrum Master Main     Ctrl+m", underline=0, command=lambda: self.show_frame(mainView))
         
         elif (self.activeUser.userRole == "Developer"):
-            viewMenu.add_command(label="Developer Main", underline=0, command=lambda: self.show_frame(mainView))
+            viewMenu.add_command(label="Developer Main           Ctrl+m", underline=0, command=lambda: self.show_frame(mainView))
 
 
 
-        viewMenu.add_command(label="Developer Home          Ctrl+h", underline=11, command=lambda: self.show_frame(developerHomeView))
+        viewMenu.add_command(label="Developer Home         Ctrl+h", underline=11, command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Team Manager             Ctrl+t", underline=0, command=lambda: self.show_frame(teamManagerView))
         viewMenu.add_command(label="Analytics View              Ctrl+a", underline=0, command = lambda: self.show_frame(analyticsView))
 
@@ -135,7 +135,7 @@ class masterView(tk.Tk):
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
         helpMenu.add_command(label = "What's With The Colors", command=self.colorHelp)
-        helpMenu.add_command(label = 'Refresh Data', command=self.refreshData)
+        helpMenu.add_command(label = 'Refresh Data                Ctrl+r', command=self.refreshData)
 
         menuBar.add_cascade(label="File", menu=fileMenu)
         menuBar.add_cascade(label="Edit", menu=editMenu)
