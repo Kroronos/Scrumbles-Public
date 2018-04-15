@@ -7,7 +7,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 import csv
-import tkcalendar
 import datetime
 from data import ScrumblesData
 from data import ScrumblesObjects
