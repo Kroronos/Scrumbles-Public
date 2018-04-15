@@ -50,7 +50,7 @@ class RemoteUpdate:
         #read_list = [self.socket]
         try:
             data = self.socket.recv(self.BUFF)
-            print(data.decode())            
+
             if data == b'CHANGE':
                 self.lock.acquire(timeout=2)
                 self.isDBChanged = True
