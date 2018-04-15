@@ -4,7 +4,9 @@ from frames import ScrumblesFrames, listboxEventHandler
 import sys
 from styling import styling as style
 from datetime import datetime
-
+from datetime import timedelta
+import matplotlib.pyplot as plt
+import collections
 
 class analyticsView(tk.Frame):
     def __init__(self, parent, controller):
@@ -34,11 +36,11 @@ class analyticsView(tk.Frame):
 
         self.sprintList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
         #Percent of Sprints Done - Progress Task
-        #Tasks Completed Per Sprint - Bar Graph
-        #Weighed Tasks Completed Per Sprint (Points) - Bar Graph
+        #Tasks State Per Sprint - Bar Graph
+        #Weighed Tasks State Per Sprint (Points) - Bar Graph
             #For Sprint
-                #Number of Completed Items vs Date - Line Graph
-                #Percent Assigned Completed - Progress Bar
+                #Number of State Items vs Date - Line Graph
+                #Percent Assigned State - Progress Bar
 
         self.insideUser = False
         self.userList = ScrumblesFrames.SList(self.userAnalyticsFrame, "USERS")
@@ -53,22 +55,8 @@ class analyticsView(tk.Frame):
         self.taskAnalyticsContents = tk.Frame(self.taskAnalyticsFrame)
         self.taskAnalyticsContentsOptions = []
         self.taskAnalyticsContentsOptions.append(self.taskAnalyticsContents)
-        #For Tasks
-            #Average Time From Creation to Completion
-            #Average Time From Creation to Submission
-            #Average Time From Creation to Progress
-            #Average Time From Creation to Assignent
-            #Average Number of Points
-            #Graph Point Distribution
-                #Per Task
-                    #TFCC
-                    #TFCS
-                    #TFCP
-                    #TFCA
-                    #Number of Points
 
-
-
+        self.taskList.listbox.bind('<<ListboxSelect>>', lambda event: self.eventHandler.handle(event))
 
         #removes the stupid lines around selections in notebooks
         style = ttk.Style()
@@ -92,6 +80,7 @@ class analyticsView(tk.Frame):
         self.controller.dataBlock.packCallback(self.updateFrame)
 
     def updateFrame(self):
+        plt.close('all')
         self.teamMembers = []
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
         self.userList.importList(self.teamMembers)
@@ -101,7 +90,7 @@ class analyticsView(tk.Frame):
         self.sprintList.importList(self.sprintListing)
 
         self.taskListing = []
-        self.taskListing =  [item.itemTitle for item in self.controller.activeProject.listOfAssignedItems]
+        self.taskListing = [item.itemTitle for item in self.controller.activeProject.listOfAssignedItems]
         self.taskList.importList(self.taskListing)
 
         self.updateSprintFrame()
@@ -115,7 +104,7 @@ class analyticsView(tk.Frame):
         if event.widget is self.userList.listbox:
             self.generateInternalUserFrame(event)
         if event.widget is self.taskList.listbox:
-            print()
+            self.generateInternalTaskFrame(event)
 
     def updateUserFrame(self):
         if self.initialRun is False:
@@ -170,10 +159,10 @@ class analyticsView(tk.Frame):
 
     def generateTaskUserHistogram(self):
         taskUserHistogram = ScrumblesFrames.SHistogram(self.userGraphFrame)
-        tasksCompletedByUsers = []
+        tasksStateByUsers = []
 
 
-        #get tasks completed per user
+        #get tasks State per user
         bins = 0
         for user in self.controller.activeProject.listOfAssignedUsers:
             count = 0
@@ -183,18 +172,14 @@ class analyticsView(tk.Frame):
                         count = count + 1
             if count > bins:
                 bins = count
-            tasksCompletedByUsers.append(count)
+            tasksStateByUsers.append(count)
 
-        print(bins)
-        for i in range(0, len(tasksCompletedByUsers)):
-            if tasksCompletedByUsers[i] != 0:
-                tasksCompletedByUsers[i] += 1
-        taskUserHistogram.generateGraph(bins+1, tasksCompletedByUsers, "Tasks Completed","Number of Users")
+        taskUserHistogram.generateGraph(bins+1, tasksStateByUsers, "Tasks State","Number of Users")
         return taskUserHistogram
 
     def generateUserLabels(self):
-        MVPTaskName =  None
-        MVPPointsName = None
+        MVPTaskName = ""
+        MVPPointsName = ""
         MVPTaskValue = 0
         MVPPointsValue = 0
         averageTasksValue = 0
@@ -225,8 +210,8 @@ class analyticsView(tk.Frame):
         #convert to strings for concatination
         MVPTaskValue = str(MVPTaskValue)
         MVPPointsValue = str(MVPPointsValue)
-        averagePointsValue = str(averagePointsValue)
-        averageTasksValue = str(averageTasksValue)
+        averagePointsValue = str("%.2f"%averagePointsValue)
+        averageTasksValue = str("%.2f"%averageTasksValue)
 
         userLabels = tk.Frame(self.userAnalyticsContentsOptions[0], relief=tk.SOLID, borderwidth=1)
         MVPLabels = tk.Frame(userLabels)
@@ -236,7 +221,7 @@ class analyticsView(tk.Frame):
                                               +" points. The most out of anyone in this project so far.")
         averageLabels = tk.Frame(userLabels)
         averageTasks = tk.Label(averageLabels, text="The average amount of tasks completed in this project is " + averageTasksValue+".")
-        averagePoints = tk.Label(averageLabels, text="The average amount of points earneed in this project is " + averagePointsValue+".")
+        averagePoints = tk.Label(averageLabels, text="The average amount of points earned in this project is " + averagePointsValue+".")
 
         MVPTasks.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         MVPPoints.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -256,7 +241,11 @@ class analyticsView(tk.Frame):
         if userEventName is not None:
             userName = userEventName
 
-        tasksCompleted, tasksAssigned, pointsEarned = self.getUserTaskInfo(userName)
+        tasksCompleted, tasksAssigned, pointsEarned, matchFound = self.getUserTaskInfo(userName)
+
+        if matchFound is False:
+            self.clearSelection(self.userList.listbox, 1)
+            return
         if tasksAssigned == 0:
             tasksAssigned = 1 #Prevent divide by zero when calculating percentage
         bestSprint, worstSprint, bestSprintPoints, worstSprintPoints = self.analyzeUserSprints(userName)
@@ -311,6 +300,7 @@ class analyticsView(tk.Frame):
         itemsAssigned = 0
         itemsCompleted = 0
         pointsEarned = 0
+        matchFound = False
         for user in self.controller.activeProject.listOfAssignedUsers:
             if user.userName == userName:
                 for item in user.listOfAssignedItems:
@@ -319,8 +309,9 @@ class analyticsView(tk.Frame):
                         if item.itemStatus == 4:
                             itemsCompleted +=1
                             pointsEarned += item.itemPoints
+                matchFound = True
                 break #end once we found the user
-        return itemsCompleted, itemsAssigned, pointsEarned
+        return itemsCompleted, itemsAssigned, pointsEarned, matchFound
 
     def analyzeUserSprints(self, userName):
         bestSprintPoints = -1
@@ -363,7 +354,7 @@ class analyticsView(tk.Frame):
         self.sprintList.pack(side=tk.LEFT, fill=tk.Y)
         self.sprintAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         if self.insideSprint is True:
-            self.generateInternalSprintFrame(userEventName=self.sprintEventName)
+            self.generateInternalSprintFrame(sprintEventName=self.sprintEventName)
 
     def generateSprintProgressBar(self):
         progressBarStyle = "scrumbles.Horizontal.TProgressbar"
@@ -441,13 +432,20 @@ class analyticsView(tk.Frame):
         tasksAssigned = 0
         tasksCompleted = 0
 
+        matchFound = False
         for sprint in self.controller.activeProject.listOfAssignedSprints:
             if sprint.sprintName == sprintName:
                 for item in sprint.listOfAssignedItems:
                     tasksAssigned +=1
                     if item.itemStatus == 4:
                         tasksCompleted += 1
+                matchFound = True
                 break  #escape once sprint has been found
+
+        if matchFound is False:
+            self.clearSelection(self.sprintList.listbox, 0)
+            return
+
         if tasksAssigned == 0:
             tasksAssigned += 1
         progressBarStyle = "scrumbles.Horizontal.TProgressbar"
@@ -481,41 +479,41 @@ class analyticsView(tk.Frame):
         self.insideSprint = True
 
     def generateInternalSprintLineGraph(self, controller, sprintName):
-        completedItemDatePair = {}
+        CompletedItemDatePair = {}
         for sprint in self.controller.activeProject.listOfAssignedSprints:
             if sprint.sprintName == sprintName:
-                completedItemDatePair.update({sprint.sprintStartDate: 0})
+                CompletedItemDatePair.update({sprint.sprintStartDate: 0})
                 for item in sprint.listOfAssignedItems:
                     if item.itemStatus == 4:
                         if item.itemTimeLine["Completed"] != datetime(9999, 12, 31, 23, 59, 59):
                             alreadyInDict = False
                             alreadyKeyed = None
-                            for key in completedItemDatePair.keys():
+                            for key in CompletedItemDatePair.keys():
                                 if key.strftime("%y%m%d") == item.itemTimeLine["Completed"].strftime("%y%m%d"):
                                     alreadyInDict = True
                                     alreadyKeyed = key
                                     break
 
                             if alreadyInDict is True:
-                                completedItemDatePair[alreadyKeyed] += 1
+                                CompletedItemDatePair[alreadyKeyed] += 1
                             else:
-                                completedItemDatePair.update({item.itemTimeLine["Completed"]: 1})
+                                CompletedItemDatePair.update({item.itemTimeLine["Completed"]: 1})
 
                 isCurrentMatch = False
-                for key in completedItemDatePair.keys():
+                for key in CompletedItemDatePair.keys():
                     if datetime.now().strftime("%y%m%d") == key.strftime("%y%m%d"):
                         isCurrentMatch = True
 
 
                 if isCurrentMatch is False:
-                    completedItemDatePair.update({datetime.now(): 0})
+                    CompletedItemDatePair.update({datetime.now(): 0})
                 break
         labels = list()
         xvalues = list()
-        for date in completedItemDatePair.keys():
+        for date in CompletedItemDatePair.keys():
             labels.append(date.strftime("%m/%d/%y"))
             xvalues.append(int(date.strftime("%y%m%d"))) #so that our x's are actually chronological
-        yvalues = list(completedItemDatePair.values())
+        yvalues = list(CompletedItemDatePair.values())
 
         newLabels = list()
         labelsPositions = list()
@@ -535,11 +533,396 @@ class analyticsView(tk.Frame):
         internalSprintLineGraph = ScrumblesFrames.SLine(controller)
         internalSprintLineGraph.generateGraph(xvalues, yvalues, labelsPositions, newLabels, "Date of Completion","Completed Tasks")
         internalSprintLineGraph.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        # For Sprint
-        # Number of Completed Items vs Date - Line Graph
 
     def updateTaskFrame(self):
+        if self.initialRun is False:
+            self.taskAnalyticsContentsOptions[0].pack_forget()
+            if len(self.taskAnalyticsContentsOptions) == 2:
+                self.taskAnalyticsContentsOptions[1].pack_forget()
+            self.taskAnalyticsContents.pack_forget()
+            self.taskAnalyticsContentsTop.pack_forget()
+            self.taskList.pack_forget()
+
+            self.taskAnalyticsContentsOptions[0] = tk.Frame(self.taskAnalyticsFrame)
+
+        self.taskAnalyticsContentsTop = tk.Frame(self.taskAnalyticsContentsOptions[0])
+        self.generateTaskGraphs()
+        self.generateAverageCreationToStateLabels()
+
+        self.taskAnalyticsContentsTop.pack(side=tk.TOP, fill=tk.X, expand=True)
+
+        if self.insideTask is False:
+            self.taskAnalyticsContents = self.taskAnalyticsContentsOptions[0]
+
         self.taskList.pack(side=tk.LEFT, fill=tk.Y)
+        self.taskAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        if self.insideTask is True:
+            self.generateInternalTaskFrame(taskEventName=self.taskEventName)
+
+    def generateAverageCreationToStateLabels(self):
+        totalCreationCompletion = timedelta(0)
+        totalCreationCompletionTasks = 0
+        totalCreationSubmission = timedelta(0)
+        totalCreationSubmissionTasks = 0
+        totalCreationProgress = timedelta(0)
+        totalCreationProgressTasks = 0
+        totalCreationUserAssignment = timedelta(0)
+        totalCreationUserAssignmentTasks = 0
+        totalNumberOfPoints = 0
+        numberOfItems = 0
+        maxDate = datetime(9999, 12, 31, 23, 59, 59)
+        for item in self.controller.activeProject.listOfAssignedItems:
+            if item.itemTimeLine["Completed"] != maxDate:
+                totalCreationCompletion = totalCreationCompletion + (item.itemTimeLine["Completed"] - item.itemCreationDate)
+                totalCreationCompletionTasks +=1
+            if item.itemTimeLine["Submitted"] != maxDate:
+                totalCreationSubmission = totalCreationSubmission + (item.itemTimeLine["Submitted"] - item.itemCreationDate)
+                totalCreationSubmissionTasks += 1
+            if item.itemTimeLine["WorkStarted"] != maxDate:
+                totalCreationProgress = totalCreationProgress + (item.itemTimeLine["WorkStarted"] - item.itemCreationDate)
+                totalCreationProgressTasks += 1
+            if item.itemTimeLine["AssignedToUser"] != maxDate:
+                totalCreationUserAssignment = totalCreationUserAssignment + (item.itemTimeLine["AssignedToUser"] - item.itemCreationDate)
+                totalCreationUserAssignmentTasks +=1
+            totalNumberOfPoints += item.itemPoints
+            numberOfItems += 1
+
+        if totalCreationSubmissionTasks == 0:
+            totalCreationSubmissionTasks += 1
+        if totalCreationCompletionTasks == 0:
+            totalCreationCompletionTasks += 1
+        if totalCreationUserAssignmentTasks == 0:
+            totalCreationUserAssignmentTasks +=1
+        if totalCreationProgressTasks == 0:
+            totalCreationProgressTasks += 1
+
+        averageCreationCompletion = totalCreationCompletion/totalCreationCompletionTasks
+        averageCreationSubmission = totalCreationSubmission/totalCreationSubmissionTasks
+        averageCreationProgress = totalCreationProgress/totalCreationProgressTasks
+        averageCreationUserAssignment = totalCreationUserAssignment/totalCreationUserAssignmentTasks
+        averageNumberOfPoints = totalNumberOfPoints/numberOfItems
+
+        averageCreationCompletionWeeks = int(averageCreationCompletion.days/7)
+        averageCreationSubmissionWeeks = int(averageCreationSubmission.days/7)
+        averageCreationProgressWeeks = int(averageCreationProgress.days/7)
+        averageCreationUserAssignmentWeeks = int(averageCreationUserAssignment.days/7)
+
+        averageCreationCompletionDays = averageCreationCompletion.days - averageCreationCompletionWeeks*7
+        averageCreationSubmissionDays = averageCreationSubmission.days - averageCreationSubmissionWeeks*7
+        averageCreationProgressDays = averageCreationProgress.days - averageCreationProgressWeeks*7
+        averageCreationUserAssignmentDays  = averageCreationUserAssignment.days - averageCreationUserAssignmentWeeks*7
+
+        if averageCreationCompletionWeeks == 0:
+            averageCreationCompletionString = "The average time for tasks to be completed after creation is "\
+                                              + str(averageCreationCompletionDays) + " " \
+                                              + self.dayOrDays(averageCreationCompletionDays) + "."
+        elif averageCreationCompletionDays == 0 and averageCreationCompletionWeeks != 1:
+            averageCreationCompletionString = "The average time for tasks to be completed after creation is "\
+                                              + str(averageCreationCompletionWeeks) + " " \
+                                              + self.weekOrWeeks(averageCreationCompletionWeeks) + "."
+        else:
+            averageCreationCompletionString = "The average time for tasks to be completed after creation is " \
+                                              + str(averageCreationCompletionWeeks) + " " \
+                                              + self.weekOrWeeks(averageCreationCompletionWeeks) + " and " \
+                                              + str(averageCreationCompletionDays) + " "\
+                                              + self.dayOrDays(averageCreationCompletionDays) + "."
+        if averageCreationSubmissionWeeks == 0:
+            averageCreationSubmissionString = "The average time for tasks to be submitted after creation is "\
+                                              + str(averageCreationSubmissionDays) + " " \
+                                              + self.dayOrDays(averageCreationSubmissionDays) + "."
+        elif averageCreationSubmissionDays == 0:
+            averageCreationSubmissionString = "The average time for tasks to be submitted after creation is "\
+                                              + str(averageCreationSubmissionWeeks) + " "\
+                                              + self.weekOrWeeks(averageCreationSubmissionWeeks) + "."
+        else:
+            averageCreationSubmissionString = "The average time for tasks to be submitted after creation is " \
+                                              + str(averageCreationSubmissionWeeks) + " " \
+                                              + self.weekOrWeeks(averageCreationSubmissionWeeks) + " and " \
+                                              + str(averageCreationSubmissionDays) + " " \
+                                              + self.dayOrDays(averageCreationSubmissionDays) + "."
+
+        if averageCreationProgressWeeks == 0:
+            averageCreationProgressString = "The average time for work to begin on tasks is "\
+                                              + str(averageCreationProgressDays) + " " \
+                                            + self.dayOrDays(averageCreationProgressDays) + "."
+        elif averageCreationProgressDays == 0:
+            averageCreationProgressString = "The average time for work to begin on tasks is "\
+                                              + str(averageCreationProgressWeeks) + " "\
+                                            + self.weekOrWeeks(averageCreationProgressWeeks) + "."
+        else:
+            averageCreationProgressString = "The average time for work to begin on tasks is "\
+                                              + str(averageCreationProgressWeeks) + " " \
+                                            + self.weekOrWeeks(averageCreationProgressWeeks) + " and " \
+                                              + str(averageCreationProgressDays) + " " + \
+                                            self.dayOrDays(averageCreationProgressDays) + "."
+
+        if averageCreationUserAssignmentWeeks == 0:
+            averageCreationUserAssignmentString = "The average time for tasks to be assigned to users is "\
+                                              + str(averageCreationUserAssignmentDays) + " " \
+                                                  + self.dayOrDays(averageCreationUserAssignmentDays) + "."
+        elif averageCreationUserAssignmentDays == 0:
+            averageCreationUserAssignmentString = "The average time for tasks to be assigned to users is "\
+                                              + str(averageCreationUserAssignmentWeeks) + " " \
+                                                  + self.weekOrWeeks(averageCreationUserAssignmentWeeks) + "."
+        else:
+            averageCreationUserAssignmentString = "The average time for tasks to be assigned to users is " \
+                                              + str(averageCreationUserAssignmentWeeks) + " " \
+                                                  + self.weekOrWeeks(averageCreationUserAssignmentWeeks) + " and " \
+                                              + str(averageCreationUserAssignmentDays) + " " \
+                                                  + self.dayOrDays(averageCreationUserAssignmentDays) + "."
+        labelFrame = tk.Frame(self.taskAnalyticsContentsTop, highlightthickness=1)
+        creationCompletionLabel = tk.Label(labelFrame,
+                                           text=averageCreationCompletionString)
+        creationSubmissionLabel = tk.Label(labelFrame,
+                                           text=averageCreationSubmissionString)
+        creationProgressLabel = tk.Label(labelFrame,
+                                           text=averageCreationProgressString)
+        creationUserAssignmentLabel = tk.Label(labelFrame,
+                                           text=averageCreationUserAssignmentString)
+        numberOfPointsLabel = tk.Label(labelFrame,
+                                       text="The average number of points assigned to each task is "
+                                            + str("%.2f"%averageNumberOfPoints) + ".")
+
+        creationCompletionLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        creationSubmissionLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        creationProgressLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        creationUserAssignmentLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        numberOfPointsLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        labelFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    def generateTaskGraphs(self):
+        self.taskStatePieFrame = tk.Frame(self.taskAnalyticsContentsTop)
+        self.generateTaskStatePieChart()
+        self.taskStatePieFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.taskPointDistributionFrame = tk.Frame(self.taskAnalyticsContentsOptions[0], highlightthickness=1)
+        self.generatePointDistributionGraph()
+        self.taskPointDistributionFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+
+    def generatePointDistributionGraph(self):
+        pointsDistribution = list()
+        bins = 0
+        for item in self.controller.activeProject.listOfAssignedItems:
+            bins+=1
+            pointsDistribution.append(item.itemPoints)
+
+        pointDistributionHistogram = ScrumblesFrames.SHistogram(self.taskPointDistributionFrame)
+        pointDistributionHistogram.generateGraph(max(pointsDistribution), pointsDistribution, "Point Value", "Number Of Tasks", max(pointsDistribution)/(max(pointsDistribution)/10))
+        pointDistributionHistogram.pack(side=tk.TOP, fill=tk.X, expand=True)
+        
+    def generateTaskStatePieChart(self):
+        taskStatePie = ScrumblesFrames.SPie(self.taskStatePieFrame)
+        title = "State Of Project Tasks"
+        #now we need labels, values
+        labels = ["Not Assigned", "Assigned", "In Progress", "Submitted", "Completed"]
+        values = [0, 0, 0, 0, 0]
+
+        for item in self.controller.activeProject.listOfAssignedItems:
+            values[item.itemStatus] += 1
+
+        taskStatePie.generateGraph(labels, values, title)
+        taskStatePie.pack(side=tk.TOP, fill=tk.BOTH)
+
+    def generateInternalTaskFrame(self, event=None, taskEventName=None):
+        if event is not None:
+            taskName = event.widget.get(tk.ANCHOR)
+            self.taskEventName = taskName
+        if taskEventName is not None:
+            taskName = taskEventName
+
+
+        internalTaskFrame = tk.Frame(self.taskAnalyticsFrame)
+        
+        creationCompletion = timedelta(0)
+        creationSubmission = timedelta(0)
+        creationProgress = timedelta(0)
+        creationUserAssignment = timedelta(0)
+        numberOfPoints = 0
+
+        maxDate = datetime(9999, 12, 31, 23, 59, 59)
+        trueItem = None
+        matchFound = False
+        for item in self.controller.activeProject.listOfAssignedItems:
+            if item.itemTitle == taskName:
+                if item.itemTimeLine["Completed"] != maxDate:
+                    creationCompletion = (item.itemTimeLine["Completed"] - item.itemCreationDate)
+                if item.itemTimeLine["Submitted"] != maxDate:
+                    creationSubmission = (item.itemTimeLine["Submitted"] - item.itemCreationDate)
+                if item.itemTimeLine["WorkStarted"] != maxDate:
+                    creationProgress = (item.itemTimeLine["WorkStarted"] - item.itemCreationDate)
+                if item.itemTimeLine["AssignedToUser"] != maxDate:
+                    creationUserAssignment = (item.itemTimeLine["AssignedToUser"] - item.itemCreationDate)
+
+                numberOfPoints += item.itemPoints
+                matchFound = True
+                trueItem = item
+                break
+
+        if matchFound is False:
+            self.clearSelection(self.taskList.listbox, 2)
+            return
+
+        taskInternalTopFrame = tk.Frame(internalTaskFrame)
+        taskClearButton = tk.Button(taskInternalTopFrame, text=style.left_arrow, command=lambda:self.clearSelection(self.taskList.listbox, 2), font=('Helvetica', '13'))
+        taskNameLabel = tk.Label(taskInternalTopFrame, text=taskName, font=style.comment_font, relief="solid", borderwidth=.5)
+
+        taskClearButton.pack(side=tk.LEFT)
+        taskNameLabel.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        taskInternalTopFrame.pack(side=tk.TOP, fill=tk.X)
+
+        creationCompletionWeeks = int(creationCompletion.days/7)
+        creationSubmissionWeeks = int(creationSubmission.days/7)
+        creationProgressWeeks = int(creationProgress.days/7)
+        creationUserAssignmentWeeks = int(creationUserAssignment.days/7)
+
+        creationCompletionDays = creationCompletion.days - creationCompletionWeeks*7
+        creationSubmissionDays = creationSubmission.days - creationSubmissionWeeks*7
+        creationProgressDays = creationProgress.days - creationProgressWeeks*7
+        creationUserAssignmentDays = creationUserAssignment.days - creationUserAssignmentWeeks*7
+
+        if creationCompletionWeeks == 0:
+            creationCompletionString = "This task was completed in  "\
+                                              + str(creationCompletionDays) + " " \
+                                              + self.dayOrDays(creationCompletionDays) + "."
+        elif creationCompletionDays == 0 and creationCompletionWeeks != 1:
+            creationCompletionString = "This task was completed in "\
+                                              + str(creationCompletionWeeks) + " " \
+                                              + self.weekOrWeeks(creationCompletionWeeks) + "."
+        else:
+            creationCompletionString = "This task was completed in " \
+                                              + str(creationCompletionWeeks) + " " \
+                                              + self.weekOrWeeks(creationCompletionWeeks) + " and " \
+                                              + str(creationCompletionDays) + " "\
+                                              + self.dayOrDays(creationCompletionDays) + "."
+        if creationSubmissionWeeks == 0:
+            creationSubmissionString = "This task was submitted in "\
+                                              + str(creationSubmissionDays) + " " \
+                                              + self.dayOrDays(creationSubmissionDays) + "."
+        elif creationSubmissionDays == 0:
+            creationSubmissionString = "This task was submitted in "\
+                                              + str(creationSubmissionWeeks) + " "\
+                                              + self.weekOrWeeks(creationSubmissionWeeks) + "."
+        else:
+            creationSubmissionString = "This task was submitted in " \
+                                              + str(creationSubmissionWeeks) + " " \
+                                              + self.weekOrWeeks(creationSubmissionWeeks) + " and " \
+                                              + str(creationSubmissionDays) + " " \
+                                              + self.dayOrDays(creationSubmissionDays) + "."
+
+        if creationProgressWeeks == 0:
+            creationProgressString = "Work began on this task in "\
+                                              + str(creationProgressDays) + " " \
+                                            + self.dayOrDays(creationProgressDays) + "."
+        elif creationProgressDays == 0:
+            creationProgressString = "Work began on this task in "\
+                                              + str(creationProgressWeeks) + " "\
+                                            + self.weekOrWeeks(creationProgressWeeks) + "."
+        else:
+            creationProgressString = "Work began on this task in "\
+                                              + str(creationProgressWeeks) + " " \
+                                            + self.weekOrWeeks(creationProgressWeeks) + " and " \
+                                              + str(creationProgressDays) + " " + \
+                                            self.dayOrDays(creationProgressDays) + "."
+
+        if creationUserAssignmentWeeks == 0:
+            creationUserAssignmentString = "This task was assigned to a user in "\
+                                              + str(creationUserAssignmentDays) + " " \
+                                                  + self.dayOrDays(creationUserAssignmentDays) + "."
+        elif creationUserAssignmentDays == 0:
+            creationUserAssignmentString = "This task was assigned to a user in "\
+                                              + str(creationUserAssignmentWeeks) + " " \
+                                                  + self.weekOrWeeks(creationUserAssignmentWeeks) + "."
+        else:
+            creationUserAssignmentString = "This task was assigned to a user in " \
+                                              + str(creationUserAssignmentWeeks) + " " \
+                                                  + self.weekOrWeeks(creationUserAssignmentWeeks) + " and " \
+                                              + str(creationUserAssignmentDays) + " " \
+                                                  + self.dayOrDays(creationUserAssignmentDays) + "."
+
+        labelFrame = tk.Frame(internalTaskFrame, highlightthickness=1)
+        creationCompletionLabel = tk.Label(labelFrame,
+                                           text=creationCompletionString)
+        creationSubmissionLabel = tk.Label(labelFrame,
+                                           text=creationSubmissionString)
+        creationProgressLabel = tk.Label(labelFrame,
+                                           text=creationProgressString)
+        creationUserAssignmentLabel = tk.Label(labelFrame,
+                                           text=creationUserAssignmentString)
+        numberOfPointsLabel = tk.Label(labelFrame,
+                                       text="The average number of points assigned to each task is "
+                                            + str("%.2f"%numberOfPoints) + ".")
+
+        if trueItem.itemStatus == 4:
+            creationCompletionLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        if trueItem.itemStatus >= 3:
+            creationSubmissionLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        if trueItem.itemStatus >= 2:
+            creationProgressLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        if trueItem.itemStatus >= 1:
+            creationUserAssignmentLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+        if trueItem.itemStatus == 0:
+            lazyLabel = tk.Label(labelFrame, text="No progress on this item has been made since creation")
+            lazyLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+
+        numberOfPointsLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
+
+        labelFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        statisticsFrame = tk.Frame(internalTaskFrame,  relief=tk.SOLID, borderwidth=1)
+        self.generateTaskGanttChart(statisticsFrame, taskName)
+        statisticsFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.taskAnalyticsContents.pack_forget()
+        if len(self.taskAnalyticsContentsOptions) == 1:
+            self.taskAnalyticsContentsOptions.append(internalTaskFrame)
+        else:
+            self.taskAnalyticsContentsOptions[1] = internalTaskFrame
+        self.taskAnalyticsContents = self.taskAnalyticsContentsOptions[1]
+
+        self.taskAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.insideTask = True
+
+    def generateTaskGanttChart(self,controller, taskName):
+        pointNames = list()
+        pointPoints = list()
+        beginningPoints = list()
+        endingPoints = list()
+        statusLabels = list()
+        inspectedItem = None
+        for item in self.controller.activeProject.listOfAssignedItems:
+            if item.itemTitle == taskName:
+                inspectedItem = item
+
+        if inspectedItem.itemStatus >= 1:
+            beginningPoints.append(int(inspectedItem.itemCreationDate.strftime("%y%m%d")))
+            pointNames.append(inspectedItem.itemCreationDate.strftime("%m/%d/%y"))
+            endingPoints.append(int(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%y%m%d")))
+            pointNames.append(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%m/%d/%y"))
+            pointPoints.append(int(inspectedItem.itemCreationDate.strftime("%y%m%d")))
+            pointPoints.append(int(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%y%m%d")))
+            statusLabels.append("Assignment")
+        if inspectedItem.itemStatus >= 2:
+            beginningPoints.append(int(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%y%m%d")))
+            endingPoints.append(int(inspectedItem.itemTimeLine["WorkStarted"].strftime("%y%m%d")))
+            pointNames.append(inspectedItem.itemTimeLine["WorkStarted"].strftime("%m/%d/%y"))
+            pointPoints.append(int(inspectedItem.itemTimeLine["WorkStarted"].strftime("%y%m%d")))
+            statusLabels.append("Waiting To Be Started")
+        if inspectedItem.itemStatus >= 3:
+            beginningPoints.append(int(inspectedItem.itemTimeLine["WorkStarted"].strftime("%y%m%d")))
+            endingPoints.append(int(inspectedItem.itemTimeLine["Submitted"].strftime("%y%m%d")))
+            pointNames.append(inspectedItem.itemTimeLine["Submitted"].strftime("%m/%d/%y"))
+            pointPoints.append(int(inspectedItem.itemTimeLine["Submitted"].strftime("%y%m%d")))
+            statusLabels.append("Work")
+        if inspectedItem.itemStatus == 4:
+            beginningPoints.append(int(inspectedItem.itemTimeLine["Submitted"].strftime("%y%m%d")))
+            endingPoints.append(int(inspectedItem.itemTimeLine["Completed"].strftime("%y%m%d")))
+            pointNames.append(inspectedItem.itemTimeLine["Completed"].strftime("%m/%d/%y"))
+            pointPoints.append(int(inspectedItem.itemTimeLine["Completed"].strftime("%y%m%d")))
+            statusLabels.append("Submission")
+
+        taskGanttChart = ScrumblesFrames.SGantt(controller)
+        taskGanttChart.generateGraph(beginningPoints, endingPoints, statusLabels, pointPoints, pointNames,
+                                         "Status of Task", "Dates")
+        taskGanttChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def clearSelection(self, listbox, view):
         if view == 0: #sprint analytics
@@ -555,9 +938,22 @@ class analyticsView(tk.Frame):
             self.insideUser = False
 
         if view == 2: #task analytics
-            self.taskAnalyticsContents[1].pack_forget()
+            self.taskAnalyticsContentsOptions[1].pack_forget()
             self.taskAnalyticsContents = self.taskAnalyticsContentsOptions[0]
             self.taskAnalyticsContents.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
             self.insideTask = False
 
         listbox.selection_clear(0, tk.END)
+
+    #utlity function for week/day strings
+    def weekOrWeeks(self, weekNumber):
+        if weekNumber != 1:
+            return "weeks"
+        else:
+            return "week"
+
+    def dayOrDays(self, dayNumber):
+        if dayNumber != 1:
+            return "days"
+        else:
+            return "day"

@@ -600,7 +600,6 @@ class SCardDescription(tk.Frame):
     def setTitle(self, title):
         self.titleText.set(title)
 
-
     def eventSetTitle(self, widget):
         selection = widget.get(tk.ANCHOR)
         self.setTitle(selection)
@@ -704,7 +703,6 @@ class SCardDescription(tk.Frame):
 
     def open(self, event):
         link = event.widget.cget('text')
-        print(link)
         webbrowser.open(link)
 
 class SUserItemInspection(tk.Frame):

@@ -1,7 +1,7 @@
 import logging
 import tkinter as tk
 from views import developerHomeView, mainView, teamManagerView, loginView, analyticsView
-
+import matplotlib.pyplot as plt
 import platform
 import webbrowser
 from data import DataBlock
@@ -301,6 +301,7 @@ def logOut(controller):
 
 def exitProgram(mainwindow):
     setGeometryFile(mainwindow)
+    plt.close('all')
     try:
         mainwindow.dataBlock.shutdown()
     except:
@@ -329,7 +330,6 @@ def getGeometryFromFile(file):
         h = int(h)
         geometryFile.close()
     except:
-        print("EXCEPTION ALERTTTT")
         w = 1280
         h = 720
 
