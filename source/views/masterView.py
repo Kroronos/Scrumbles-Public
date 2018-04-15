@@ -1,7 +1,7 @@
 import logging
 import tkinter as tk
 from tkinter import messagebox
-from views import developerHomeView, mainView, teamManagerView, loginView, analyticsView
+from views import splashView, developerHomeView, mainView, teamManagerView, loginView, analyticsView
 
 import platform
 import webbrowser
@@ -47,12 +47,14 @@ class masterView(tk.Tk):
         self.hiddenMenu = tk.Menu(self)
 
         loginFrame = loginView.loginView(self.container, self)
-        
         self.add_frame(loginFrame, loginView)
 
-        self.show_frame(loginView)
-        self.dataConnection = None
+        self.splashFrame = splashView.splashView(self.container, self)
+        self.add_frame(self.splashFrame, splashView)
 
+        self.show_frame(loginView)
+
+        self.dataConnection = None
         self.activeUser = None
 
     def show_frame(self, cont):
@@ -60,7 +62,7 @@ class masterView(tk.Tk):
         print("Switching Views")
         frame.tkraise()
 
-        if cont != loginView:
+        if cont != (loginView or splashView):
             self.raiseMenuBar()
         else:
             self.hideMenuBar()
@@ -131,6 +133,7 @@ class masterView(tk.Tk):
     def getViews(self):
         views = []
         viewNames = []
+
         if self.activeUser.userRole == "Admin":
             views.append(mainView)
             viewNames.append("Admin Main")
@@ -167,13 +170,14 @@ class masterView(tk.Tk):
         Dialogs.CreateItemDialog(self, master = self, dataBlock = self.dataBlock).show()
 
     def generateViews(self, loggedInUser):
-        self.withdraw()
-        self.splash = Dialogs.SplashScreen(self, self)
 
         self.dataBlock = DataBlock.DataBlock()
 
+        if self.dataBlock.isLoading is True:
+            self.show_frame(splashView)
+
         while self.dataBlock.isLoading:
-            self.splash.step_progressBar(1)
+            self.splashFrame.stepProgressBar(1)
 
         self.activeProject = self.dataBlock.projects[0]
 
@@ -189,20 +193,17 @@ class masterView(tk.Tk):
         print('%s Loggin in' % loggedInUser.userName)
         self.dataBlock.packCallback(self.repointActiveObjects)
 
-        HomeFrame = mainView.mainView(self.container, self, loggedInUser)
+        homeFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
-
         analyticsFrame = analyticsView.analyticsView(self.container, self)
 
-        self.add_frame(HomeFrame, mainView)
+        self.add_frame(homeFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
         self.add_frame(analyticsFrame, analyticsView)
 
         self.generateMenuBar()
-        self.splash.kill()
-        self.deiconify()
 
         if self.activeUser.userRole == "Admin":
             self.show_frame(mainView)
