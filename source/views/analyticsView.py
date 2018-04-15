@@ -174,7 +174,7 @@ class analyticsView(tk.Frame):
                 bins = count
             tasksStateByUsers.append(count)
 
-        taskUserHistogram.generateGraph(bins+1, tasksStateByUsers, "Tasks State","Number of Users")
+        taskUserHistogram.generateGraph(bins+1, tasksStateByUsers, "Tasks Complete","Number of Users")
         return taskUserHistogram
 
     def generateUserLabels(self):
