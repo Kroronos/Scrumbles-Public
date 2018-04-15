@@ -532,7 +532,7 @@ class analyticsView(tk.Frame):
                 newLabels.append(labels[i])
             else:
                 if xvalues[i]-lastStoredValue >= int((xvalues[0] - xvalues[-1])/5): #about a month off
-                    if xvalues[i]-lastStoredValue > 2: #3 day min
+                    if xvalues[i]-lastStoredValue > 1: #2 day min
                         lastStoredValue = xvalues[i]
                         labelsPositions.append(xvalues[i])
                         newLabels.append(labels[i])
