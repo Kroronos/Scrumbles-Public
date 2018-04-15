@@ -36,8 +36,7 @@ class SLine(tk.Frame):
         self.p = plt.plot(x,y)
         plt.xlabel(xtitle)
         plt.ylabel(ytitle)
-        plt.xticks(labelsPosition, labels)
-
+        plt.xticks(labelsPosition, labels, rotation=65)
         #self.ax.set_xticklabels(labels)
 
         self.canvas = FigureCanvasTkAgg(self.f, self)
