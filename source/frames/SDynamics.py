@@ -2,7 +2,6 @@ import tkinter as tk
 import webbrowser
 
 import csv
-import tkcalendar
 import datetime
 from data import ScrumblesData
 from data import ScrumblesObjects
@@ -16,35 +15,30 @@ from tkinter import ttk
 class itemPicker(tk.Frame):
 
     def __init__(self, controller, master):
-        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
+        tk.Frame.__init__(self, controller, relief = tk.SOLID, borderwidth = 1)
         self.controller = controller
         self.master = master
         self.top = None
 
         self.itemEditorLabel = tk.Label(self, text = "Item Editor", anchor = 'w').grid(row = 0, column = 0)
 
-
         self.itemNameLabel = tk.Label(self, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
         self.itemNameEntryText = tk.StringVar()
         self.itemNameEntry = tk.Entry(self, textvariable = self.itemNameEntryText, cursor = "hand2").grid(row = 1, column = 1)
 
-        self.itemDescriptionLabel =  tk.Label(self, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
+        self.itemDescriptionLabel = tk.Label(self, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
         self.itemDescriptionEntryText = tk.StringVar()
         self.itemDescriptionEntry = tk.Entry(self, textvariable = self.itemDescriptionEntryText, cursor = "hand2").grid(row = 2, column = 1)
-
 
         self.itemPriorityLabel = tk.Label( self, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
         self.itemPriorityValue = tk.StringVar()
         self.priorities = ("Low Priority", "Medium Priority", "High Priority")
         self.itemPrioritySelector = ttk.Combobox(self, textvariable = self.itemPriorityValue, values = self.priorities, state = "readonly", cursor = "hand2").grid(row = 3, column = 1)
 
-
-
         self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
         self.itemStatusValue = tk.StringVar()
         self.statuses = ("Not started", "In Progress", "Done")
         self.itemStatusSelector = ttk.Combobox(self, textvariable = self.itemStatusValue, values = self.statuses, state = "readonly", cursor = "hand2").grid(row = 4, column = 1)
-
 
         self.itemTypeLabel = tk.Label(self, text = "Item Type: ", anchor = 'w').grid(row = 5)
         self.itemTypeValue = tk.StringVar()
@@ -58,14 +52,11 @@ class itemPicker(tk.Frame):
         for user in self.master.dataBlock.users:
             self.listOfUsers.append(user.userName)
 
-        self.itemUserSelector = ttk.Combobox(self, textvariable = self.itemUserValue, values = self.listOfUsers , state = "readonly", cursor = "hand2").grid(row = 6, column = 1)
+        self.itemUserSelector = ttk.Combobox(self, textvariable = self.itemUserValue, values = self.listOfUsers, state = "readonly", cursor = "hand2").grid(row = 6, column = 1)
 
-        self.submitButton = tk.Button(self, text="Submit Changes", command = self.update_item, cursor = "hand2").grid( column = 2 )
+        self.submitButton = tk.Button(self, text = "Submit Changes", command = self.update_item, cursor = "hand2").grid(column = 2)
 
-        self.addButton = tk.Button(self, text = "Add Item", command = self.add_item, cursor = "hand2").grid( column = 2 )
-
-
-
+        self.addButton = tk.Button(self, text = "Add Item", command = self.add_item, cursor = "hand2").grid(column = 2)
 
     def selectItem(text):
         print("Item Selected")
@@ -85,21 +76,17 @@ class itemPicker(tk.Frame):
         self.top.title("New Item")
         self.top.itemAdditionLabel = tk.Label(self.top, text = "New Item Information", anchor = 'w', cursor = "hand2").grid(row = 0, column = 0)
 
-
         self.top.itemAdditionNameLabel = tk.Label(self.top, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
         self.top.itemAdditionNameEntryText = tk.StringVar()
         self.top.itemAdditionNameEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionNameEntryText, cursor = "hand2").grid(row = 1, column = 1)
 
-        self.top.itemAdditionDescriptionLabel =  tk.Label(self.top, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
+        self.top.itemAdditionDescriptionLabel = tk.Label(self.top, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
         self.top.itemAdditionDescriptionEntryText = tk.StringVar()
         self.top.itemAdditionDescriptionEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionDescriptionEntryText, cursor = "hand2").grid(row = 2, column = 1)
 
-
-        self.top.itemAdditionPriorityLabel = tk.Label( self.top, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
+        self.top.itemAdditionPriorityLabel = tk.Label(self.top, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
         self.top.itemAdditionPriorityValue = tk.StringVar()
         self.top.itemAdditionPrioritySelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionPriorityValue, values = self.priorities, state = "readonly", cursor = "hand2").grid(row = 3, column = 1)
-
-
 
         self.top.itemAdditionStatusLabel = tk.Label(self.top, text = "Status: ", anchor = 'w').grid(row = 4)
         self.top.itemAdditionStatusValue = tk.StringVar()
@@ -111,10 +98,9 @@ class itemPicker(tk.Frame):
 
         self.top.itemAdditionUserLabel = tk.Label(self.top, text = "User: ", anchor = 'w').grid(row = 6)
         self.top.itemAdditionUserValue = tk.StringVar()
-        self.top.itemAdditionUserSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionUserValue, values = self.listOfUsers , state = "readonly", cursor = "hand2").grid(row = 6, column = 1)
+        self.top.itemAdditionUserSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionUserValue, values = self.listOfUsers, state = "readonly", cursor = "hand2").grid(row = 6, column = 1)
 
-
-        self.top.submitButton = tk.Button(self.top, text="Submit", command = self.add_item_to_database, cursor = "hand2").grid( column = 2 )
+        self.top.submitButton = tk.Button(self.top, text="Submit", command = self.add_item_to_database, cursor = "hand2").grid(column = 2)
 
     def add_item_to_database(self):
 
@@ -147,9 +133,7 @@ class itemPicker(tk.Frame):
 
         self.master.dataBlock.addNewScrumblesObject(itemToAdd)
 
-
         self.top.destroy()
-
 
     def remove_item(self):
         #do things
@@ -189,51 +173,50 @@ class itemPicker(tk.Frame):
 
 class commentsField(tk.Frame):
     def __init__(self, controller, master):
-        tk.Frame.__init__(self, controller, relief=tk.SOLID, borderwidth=1)
+        tk.Frame.__init__(self, controller, relief = tk.SOLID, borderwidth = 1)
 
         self.master = master
 
         self.titleText = tk.StringVar()
         self.titleText.set("Comments")
-        self.commentTitleF = tk.Frame(self, relief=tk.SOLID, borderwidth=1)
-        self.commentTitle = tk.Label(self.commentTitleF, textvariable=self.titleText)
+        self.commentTitleF = tk.Frame(self, relief = tk.SOLID, borderwidth = 1)
+        self.commentTitle = tk.Label(self.commentTitleF, textvariable = self.titleText)
         self.commentField = tk.Frame(self)
         self.comments = []
         self.commentTextElements = []
 
-        self.canvas = tk.Canvas(self.commentField, bd=1, scrollregion=(0,0,1000,1000), height=100)
-        self.scrollbar = tk.Scrollbar(self.commentField, command=self.canvas.yview, cursor = "hand2")
-        self.canvas.config(yscrollcommand=self.scrollbar.set)
+        self.canvas = tk.Canvas(self.commentField, bd = 1, scrollregion = (0,0,1000,1000), height = 100)
+        self.scrollbar = tk.Scrollbar(self.commentField, command = self.canvas.yview, cursor = "hand2")
+        self.canvas.config(yscrollcommand = self.scrollbar.set)
 
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.canvas.pack(expand=True, fill=tk.BOTH)
+        self.scrollbar.pack(side = tk.RIGHT, fill = tk.Y)
+        self.canvas.pack(expand = True, fill = tk.BOTH)
         self.internals = tk.Frame(self.canvas)
-        self.canvasFrame = self.canvas.create_window(0, 0, window=self.internals, anchor=tk.NW)
-
+        self.canvasFrame = self.canvas.create_window(0, 0, window = self.internals, anchor = tk.NW)
 
         self.newCommentFieldF = tk.Frame(self)
         self.newCommentFieldFI = tk.Frame(self.newCommentFieldF)
-        self.newCommentField = tk.Text(self.newCommentFieldFI, height=5)
-        self.newCommentFieldScrollBar = tk.Scrollbar(self.newCommentFieldFI, command=self.newCommentField.yview, cursor = "hand2")
+        self.newCommentField = tk.Text(self.newCommentFieldFI, height = 5)
+        self.newCommentFieldScrollBar = tk.Scrollbar(self.newCommentFieldFI, command = self.newCommentField.yview, cursor = "hand2")
         self.newCommentField['yscrollcommand'] = self.newCommentFieldScrollBar.set
-        self.submitButton = tk.Button(self.newCommentFieldF, text="Submit", command=self.submitComment, cursor = "hand2")
+        self.submitButton = tk.Button(self.newCommentFieldF, text = "Submit", command = self.submitComment, cursor = "hand2")
         self.newCommentField.bind('<Control-s>', lambda event: self.submitComment(event))
         self.source = None
         self.searchParams = None
 
-        self.commentTitle.pack(side=tk.TOP, fill=tk.X)
-        self.commentTitleF.pack(side=tk.TOP, fill=tk.X)
-        self.commentField.pack(side=tk.TOP, fill=tk.BOTH, ipady=4)
+        self.commentTitle.pack(side = tk.TOP, fill = tk.X)
+        self.commentTitleF.pack(side = tk.TOP, fill = tk.X)
+        self.commentField.pack(side = tk.TOP, fill = tk.BOTH, ipady = 4)
 
-        self.newCommentFieldScrollBar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.newCommentField.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        self.newCommentFieldFI.pack(side=tk.TOP, fill=tk.BOTH)
-        self.submitButton.pack(side=tk.TOP, fill=tk.BOTH)
+        self.newCommentFieldScrollBar.pack(side = tk.RIGHT, fill = tk.Y)
+        self.newCommentField.pack(side = tk.LEFT, fill = tk.X, expand = True)
+        self.newCommentFieldFI.pack(side = tk.TOP, fill = tk.BOTH)
+        self.submitButton.pack(side = tk.TOP, fill = tk.BOTH)
 
         self.internals.bind("<Configure>", self.OnFrameConfigure)
         self.canvas.bind('<Configure>', self.FrameWidth)
 
-    def submitComment(self, event=None):
+    def submitComment(self, event = None):
         newComment = ScrumblesObjects.Comment()
         newComment.commentContent = self.newCommentField.get("1.0", tk.END)
         newComment.commentContent = str(newComment.commentContent)
@@ -247,10 +230,10 @@ class commentsField(tk.Frame):
         self.newCommentField.delete("1.0", tk.END)
         if newComment.commentContent: #check for empty string
             self.comments.append(newComment)
-            self.renderCommentField(initializedComments=True)
+            self.renderCommentField(initializedComments = True)
             self.master.dataBlock.addNewScrumblesObject(newComment)
 
-    def updateFromListOfCommentsObject(self, source, searchParams, isUpdate=False):
+    def updateFromListOfCommentsObject(self, source, searchParams, isUpdate = False):
         self.clearCommentField()
 
         if source is not None and searchParams is not None:
@@ -284,24 +267,30 @@ class commentsField(tk.Frame):
             self.renderCommentField()
 
     def updateComments(self):
-        self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate=True)
+        self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate = True)
 
-    def renderCommentField(self, initializedComments=False):
+    def renderCommentField(self, initializedComments = False):
         if initializedComments is True:
             for element in self.commentTextElements:
                 element.pack_forget()
             self.commentTextElements.clear()
 
-        self.comments = sorted(self.comments, reverse=True, key=lambda s: s.commentTimeStamp)
+        self.comments = sorted(self.comments, reverse = True, key = lambda s: s.commentTimeStamp)
         for comment in self.comments:
             commentFrame = tk.Frame(self.internals)
-            commentLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentContent,
-                                    justify=tk.LEFT, wraplength=self.master.w_rat*500,
-                                    font=style.comment_font)
+            commentLabel = tk.Label(commentFrame, 
+                                    anchor = tk.W, 
+                                    text = comment.commentContent,
+                                    justify = tk.LEFT, 
+                                    wraplength = self.master.w_rat*500,
+                                    font = style.comment_font)
             if comment.commentSignature is not None:
-                commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
-                                                 justify=tk.LEFT, wraplength=self.master.w_rat*500,
-                                                 font=style.comment_signature_font)
+                commentSignatureLabel = tk.Label(commentFrame, 
+                                                 anchor = tk.W, 
+                                                 text = comment.commentSignature,
+                                                 justify = tk.LEFT, 
+                                                 wraplength = self.master.w_rat*500,
+                                                 font = style.comment_signature_font)
             else:
                 commentUserName = None
                 for user in self.master.dataBlock.users:
@@ -315,22 +304,24 @@ class commentsField(tk.Frame):
                             if item.itemID == comment.commentItemID:
                                 itemName = item.itemTitle
                                 comment.commentSignature = itemName + "\n" + commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
-                    commentSignatureLabel = tk.Label(commentFrame, anchor=tk.W, text=comment.commentSignature,
-                                                         justify=tk.LEFT, wraplength=self.master.w_rat*500,
-                                                         font=style.comment_signature_font)
+                    commentSignatureLabel = tk.Label(commentFrame,
+                                                     anchor = tk.W, 
+                                                     text = comment.commentSignature,
+                                                     justify = tk.LEFT, 
+                                                     wraplength = self.master.w_rat*500,
+                                                     font = style.comment_signature_font)
             self.commentTextElements.append(commentFrame)
-            commentLabel.pack(side=tk.TOP, fill=tk.X)
-            commentSignatureLabel.pack(side=tk.TOP, fill=tk.X)
-            commentFrame.pack(side=tk.TOP, fill=tk.X, pady=10)
+            commentLabel.pack(side = tk.TOP, fill = tk.X)
+            commentSignatureLabel.pack(side = tk.TOP, fill = tk.X)
+            commentFrame.pack(side = tk.TOP, fill = tk.X, pady=10)
 
-        self.commentField.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.commentField.pack(side = tk.TOP, fill = tk.BOTH, expand=True)
 
         if type(self.inspection) is ScrumblesObjects.Item:
             self.newCommentFieldF.pack_forget()
-            self.newCommentFieldF.pack(side=tk.BOTTOM, fill=tk.X)
+            self.newCommentFieldF.pack(side = tk.BOTTOM, fill = tk.X)
         else:
             self.newCommentFieldF.pack_forget()
-
 
     def clearCommentField(self):
         self.comments.clear()
@@ -342,11 +333,10 @@ class commentsField(tk.Frame):
 
     def FrameWidth(self, event):
         canvas_width = event.width
-        self.canvas.itemconfig(self.canvasFrame, width=canvas_width)
+        self.canvas.itemconfig(self.canvasFrame, width = canvas_width)
 
     def OnFrameConfigure(self, event):
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-
+        self.canvas.configure(scrollregion = self.canvas.bbox("all"))
 
 class SCardDescription(tk.Frame):
     def __init__(self, controller, master, sources, datatype):
@@ -354,45 +344,49 @@ class SCardDescription(tk.Frame):
         self.master = master
         self.controller = controller
         self.dataBlock = master.dataBlock
-        self.config(relief=tk.SUNKEN, borderwidth=5)
+        self.config(relief = tk.SUNKEN, borderwidth = 5)
+        self.dataTypeText = datatype[0]
 
-        self.canvas = tk.Canvas(self, bd=1, scrollregion=(0,0,1000,1000), height=100)
-        self.scrollbar = tk.Scrollbar(self, command=self.canvas.yview, cursor = "hand2")
-        self.canvas.config(yscrollcommand=self.scrollbar.set)
+        self.canvas = tk.Canvas(self, bd = 1, scrollregion = (0, 0, 1000, 1000), height = 100)
+        self.scrollbar = tk.Scrollbar(self, command = self.canvas.yview, cursor = "hand2")
+        self.canvas.config(yscrollcommand = self.scrollbar.set)
 
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.canvas.pack(expand=True, fill=tk.BOTH)
+        self.scrollbar.pack(side = tk.RIGHT, fill = tk.Y)
+        self.canvas.pack(expand = True, fill = tk.BOTH)
 
         self.internals = tk.Frame(self.canvas)
-        self.canvasFrame = self.canvas.create_window(0,0,window=self.internals, anchor=tk.NW)
+        self.canvasFrame = self.canvas.create_window(0, 0, window = self.internals, anchor = tk.NW)
         self.titleText = tk.StringVar()
-        self.titleText.set(str(datatype[0]) + " Description")
-        self.title = tk.Label(self.internals, textvariable=self.titleText,
-                              font=(style.header_family, style.header_size, style.header_weight))
-        self.title.pack(fill=tk.BOTH)
+        self.titleText.set(self.dataTypeText + " Description")
+        self.title = tk.Label(self.internals,
+                              textvariable = self.titleText,
+                              font = (style.header_family, style.header_size, style.header_weight))
+        self.title.pack(fill = tk.BOTH)
         self.internals.bind("<Configure>", self.OnFrameConfigure)
         self.canvas.bind('<Configure>', self.FrameWidth)
         # Reference datatype with widget code as key, allowing data calls from ScrumblesFrames
         self.datatype = dict((source, table) for source, table in zip(sources, datatype))
 
         self.cardDescriptions = {}
-        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self.internals)
+        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self.internals, self.dataTypeText)
         self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self.internals)
         self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self.internals)
         self.cardDescriptions['Sprint'] = self.cardDescriptionSprintFrame(self.internals)
+
         self.cardDescriptions['Active'] = self.cardDescriptions['Start']
-        self.cardDescriptions['Active'].pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+        self.cardDescriptions['Active'].pack(side = tk.TOP, expand = True, fill = tk.BOTH)
 
     def FrameWidth(self, event):
         canvas_width = event.width
-        self.canvas.itemconfig(self.canvasFrame, width= canvas_width)
+        self.canvas.itemconfig(self.canvasFrame, width = canvas_width)
+
     def OnFrameConfigure(self, event):
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        self.canvas.configure(scrollregion = self.canvas.bbox("all"))
 
     class cardDescriptionStartFrame(tk.Frame):
-        def __init__(self, controller):
+        def __init__(self, controller, dataTypeText):
             tk.Frame.__init__(self, controller)
-            tk.helpMeLabel = tk.Label(self, text="Click on a card to obtain information about it!")
+            tk.helpMeLabel = tk.Label(self, text = "Click on any " + dataTypeText.lower() + " to obtain information about it!")
             tk.helpMeLabel.pack()
 
     class cardDescriptionItemFrame(tk.Frame):
@@ -400,63 +394,62 @@ class SCardDescription(tk.Frame):
             tk.Frame.__init__(self, controller)
 
             self.itemTypeF = tk.Frame(self)
-            self.itemTypeT = tk.Label(self.itemTypeF, text="Type: ")
-            self.itemType = tk.Label(self.itemTypeF, text="")
+            self.itemTypeT = tk.Label(self.itemTypeF, text = "Type: ")
+            self.itemType = tk.Label(self.itemTypeF, text = "")
 
             self.itemPriorityF = tk.Frame(self)
-            self.itemPriorityT = tk.Label(self.itemPriorityF, text="Priority: ")
-            self.itemPriority = tk.Label(self.itemPriorityF, text="")
+            self.itemPriorityT = tk.Label(self.itemPriorityF, text = "Priority: ")
+            self.itemPriority = tk.Label(self.itemPriorityF, text = "")
 
             self.itemDueDateF = tk.Frame(self)
-            self.itemDueDateT = tk.Label(self.itemDueDateF , text="Due Date: ")
-            self.itemDueDate = tk.Label(self.itemDueDateF , text="")
+            self.itemDueDateT = tk.Label(self.itemDueDateF, text = "Due Date: ")
+            self.itemDueDate = tk.Label(self.itemDueDateF, text = "")
 
             self.itemStatusF = tk.Frame(self)
-            self.itemStatusT = tk.Label(self.itemStatusF, text="Status: ")
-            self.itemStatus = tk.Label(self.itemStatusF, text="")
+            self.itemStatusT = tk.Label(self.itemStatusF, text = "Status: ")
+            self.itemStatus = tk.Label(self.itemStatusF, text = "")
 
             self.itemUserF = tk.Frame(self)
-            self.itemUserT = tk.Label(self.itemUserF, text="Assigned Users: ")
-            self.itemUser = tk.Label(self.itemUserF, text="")
+            self.itemUserT = tk.Label(self.itemUserF, text = "Assigned Users: ")
+            self.itemUser = tk.Label(self.itemUserF, text = "")
 
             self.itemSprintF = tk.Frame(self)
-            self.itemSprintT = tk.Label(self.itemSprintF, text="Assigned Sprint:")
-            self.itemSprint = tk.Label(self.itemSprintF, text="")
+            self.itemSprintT = tk.Label(self.itemSprintF, text = "Assigned Sprint:")
+            self.itemSprint = tk.Label(self.itemSprintF, text = "")
 
             self.itemDescriptionF = tk.Frame(self)
-            self.itemDescriptionT = tk.Label(self.itemDescriptionF, text="Description: ")
-            self.itemDescription = tk.Label(self.itemDescriptionF, text="")
+            self.itemDescriptionT = tk.Label(self.itemDescriptionF, text = "Description: ")
+            self.itemDescription = tk.Label(self.itemDescriptionF, text = "")
 
             self.itemCodeLinkF = tk.Frame(self)
-            self.itemCodeLinkT = tk.Label(self.itemCodeLinkF,text='Link to Code: ')
-            self.itemCodeLink = tk.Label(self.itemCodeLinkF,text="")
+            self.itemCodeLinkT = tk.Label(self.itemCodeLinkF, text = 'Link to Code: ')
+            self.itemCodeLink = tk.Label(self.itemCodeLinkF, text = "")
 
+            self.itemTypeT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemType.pack(side = tk.LEFT, fill = tk.X)
+            self.itemPriorityT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemPriority.pack(side = tk.LEFT, fill = tk.X)
+            self.itemDueDateT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemDueDate.pack(side = tk.LEFT, fill = tk.X)
+            self.itemStatusT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemStatus.pack(side = tk.LEFT, fill = tk.X)
+            self.itemUserT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemUser.pack(side = tk.LEFT, fill = tk.X)
+            self.itemSprintT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemSprint.pack(side = tk.LEFT, fill = tk.X)
+            self.itemDescriptionT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemDescription.pack(side = tk.LEFT, fill = tk.X)
+            self.itemCodeLinkT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemCodeLink.pack(side = tk.LEFT, fill = tk.X)
 
-            self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemType.pack(side=tk.LEFT, fill=tk.X)
-            self.itemPriorityT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemPriority.pack(side=tk.LEFT, fill=tk.X)
-            self.itemDueDateT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemDueDate.pack(side=tk.LEFT, fill=tk.X)
-            self.itemStatusT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemStatus.pack(side=tk.LEFT, fill=tk.X)
-            self.itemUserT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemUser.pack(side=tk.LEFT, fill=tk.X)
-            self.itemSprintT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemSprint.pack(side=tk.LEFT, fill=tk.X)
-            self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
-            self.itemCodeLinkT.pack(side=tk.LEFT,fill=tk.X)
-            self.itemCodeLink.pack(side=tk.LEFT,fill=tk.X)
-
-            self.itemTypeF.pack(side=tk.TOP, fill=tk.X)
-            self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
-            self.itemDueDateF.pack(side=tk.TOP, fill=tk.X)
-            self.itemStatusF.pack(side=tk.TOP, fill=tk.X)
-            self.itemUserF.pack(side=tk.TOP, fill=tk.X)
-            self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
-            self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
-            self.itemCodeLinkF.pack(side=tk.TOP,fill=tk.X)
+            self.itemTypeF.pack(side = tk.TOP, fill = tk.X)
+            self.itemPriorityF.pack(side = tk.TOP, fill = tk.X)
+            self.itemDueDateF.pack(side = tk.TOP, fill = tk.X)
+            self.itemStatusF.pack(side = tk.TOP, fill = tk.X)
+            self.itemUserF.pack(side = tk.TOP, fill = tk.X)
+            self.itemSprintF.pack(side = tk.TOP, fill = tk.X)
+            self.itemDescriptionF.pack(side = tk.TOP, fill = tk.X)
+            self.itemCodeLinkF.pack(side = tk.TOP, fill = tk.X)
 
         def repack(self):
             self.itemTypeT.pack_forget()
@@ -485,51 +478,51 @@ class SCardDescription(tk.Frame):
             self.itemSprintF.pack_forget()
             self.itemCodeLinkF.pack_forget()
 
-            self.itemTypeT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemType.pack(side=tk.LEFT, fill=tk.X)
-            self.itemPriorityT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemPriority.pack(side=tk.LEFT, fill=tk.X)
-            self.itemDueDateT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemDueDate.pack(side=tk.LEFT, fill=tk.X)
-            self.itemStatusT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemStatus.pack(side=tk.LEFT, fill=tk.X)
-            self.itemUserT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemUser.pack(side=tk.LEFT, fill=tk.X)
-            self.itemSprintT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemSprint.pack(side=tk.LEFT, fill=tk.X)
-            self.itemDescriptionT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemDescription.pack(side=tk.LEFT, fill=tk.X)
-            self.itemCodeLinkT.pack(side=tk.LEFT, fill=tk.X)
-            self.itemCodeLink.pack(side=tk.LEFT, fill=tk.X)
+            self.itemTypeT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemType.pack(side = tk.LEFT, fill = tk.X)
+            self.itemPriorityT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemPriority.pack(side = tk.LEFT, fill = tk.X)
+            self.itemDueDateT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemDueDate.pack(side = tk.LEFT, fill = tk.X)
+            self.itemStatusT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemStatus.pack(side = tk.LEFT, fill = tk.X)
+            self.itemUserT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemUser.pack(side = tk.LEFT, fill = tk.X)
+            self.itemSprintT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemSprint.pack(side = tk.LEFT, fill = tk.X)
+            self.itemDescriptionT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemDescription.pack(side = tk.LEFT, fill = tk.X)
+            self.itemCodeLinkT.pack(side = tk.LEFT, fill = tk.X)
+            self.itemCodeLink.pack(side = tk.LEFT, fill = tk.X)
 
-            self.itemTypeF.pack(side=tk.TOP, fill=tk.X)
-            self.itemPriorityF.pack(side=tk.TOP, fill=tk.X)
-            self.itemDueDateF.pack(side=tk.TOP, fill=tk.X)
-            self.itemStatusF.pack(side=tk.TOP, fill=tk.X)
-            self.itemUserF.pack(side=tk.TOP, fill=tk.X)
-            self.itemSprintF.pack(side=tk.TOP, fill=tk.X)
-            self.itemDescriptionF.pack(side=tk.TOP, fill=tk.X)
-            self.itemCodeLinkF.pack(side=tk.TOP, fill=tk.X)
+            self.itemTypeF.pack(side = tk.TOP, fill = tk.X)
+            self.itemPriorityF.pack(side = tk.TOP, fill = tk.X)
+            self.itemDueDateF.pack(side = tk.TOP, fill = tk.X)
+            self.itemStatusF.pack(side = tk.TOP, fill = tk.X)
+            self.itemUserF.pack(side = tk.TOP, fill = tk.X)
+            self.itemSprintF.pack(side = tk.TOP, fill = tk.X)
+            self.itemDescriptionF.pack(side = tk.TOP, fill = tk.X)
+            self.itemCodeLinkF.pack(side = tk.TOP, fill = tk.X)
 
     class cardDescriptionUserFrame(tk.Frame):
         def __init__(self, controller):
             tk.Frame.__init__(self, controller)
 
             self.userRoleF = tk.Frame(self)
-            self.userRoleT = tk.Label(self.userRoleF, text="Role: ")
-            self.userRole = tk.Label(self.userRoleF, text="")
+            self.userRoleT = tk.Label(self.userRoleF, text = "Role: ")
+            self.userRole = tk.Label(self.userRoleF, text = "")
 
             self.userEmailF = tk.Frame(self)
-            self.userEmailT = tk.Label(self.userEmailF, text="Email: ")
-            self.userEmail = tk.Label(self.userEmailF, text="")
+            self.userEmailT = tk.Label(self.userEmailF, text = "Email: ")
+            self.userEmail = tk.Label(self.userEmailF, text = "")
 
-            self.userRoleT.pack(side=tk.LEFT)
-            self.userRole.pack(side=tk.LEFT)
-            self.userEmailT.pack(side=tk.LEFT)
-            self.userEmail.pack(side=tk.LEFT)
+            self.userRoleT.pack(side = tk.LEFT)
+            self.userRole.pack(side = tk.LEFT)
+            self.userEmailT.pack(side = tk.LEFT)
+            self.userEmail.pack(side = tk.LEFT)
 
-            self.userRoleF.pack(side=tk.TOP)
-            self.userEmailF.pack(side=tk.TOP)
+            self.userRoleF.pack(side = tk.TOP)
+            self.userEmailF.pack(side = tk.TOP)
 
         def repack(self):
             self.userRoleT.pack_forget()
@@ -540,32 +533,48 @@ class SCardDescription(tk.Frame):
             self.userRoleF.pack_forget()
             self.userEmailF.pack_forget()
 
-            self.userRoleT.pack(side=tk.LEFT)
-            self.userRole.pack(side=tk.LEFT)
-            self.userEmailT.pack(side=tk.LEFT)
-            self.userEmail.pack(side=tk.LEFT)
+            self.userRoleT.pack(side = tk.LEFT)
+            self.userRole.pack(side = tk.LEFT)
+            self.userEmailT.pack(side = tk.LEFT)
+            self.userEmail.pack(side = tk.LEFT)
 
-            self.userRoleF.pack(side=tk.TOP)
-            self.userEmailF.pack(side=tk.TOP)
+            self.userRoleF.pack(side = tk.TOP)
+            self.userEmailF.pack(side = tk.TOP)
 
     class cardDescriptionSprintFrame(tk.Frame):
         def __init__(self, controller):
             tk.Frame.__init__(self, controller)
             self.sprintStartF = tk.Frame(self)
-            self.sprintStartT = tk.Label(self.sprintStartF, text="Start Date: ")
-            self.sprintStart = tk.Label(self.sprintStartF, text="")
+            self.sprintStartT = tk.Label(self.sprintStartF, text = "Start Date: ")
+            self.sprintStart = tk.Label(self.sprintStartF, text = "")
 
             self.sprintDueF = tk.Frame(self)
-            self.sprintDueT = tk.Label(self.sprintDueF, text="Due Date: ")
-            self.sprintDue = tk.Label(self.sprintDueF, text="")
+            self.sprintDueT = tk.Label(self.sprintDueF, text = "Due Date: ")
+            self.sprintDue = tk.Label(self.sprintDueF, text = "")
 
-            self.sprintStartT.pack(side=tk.LEFT)
-            self.sprintStart.pack(side=tk.LEFT)
-            self.sprintDueT.pack(side=tk.LEFT)
-            self.sprintDue.pack(side=tk.LEFT)
+            # progress bar
+            s = ttk.Style()
+            s.theme_use('clam')
+            s.configure("scrumbles.Horizontal.TProgressbar",
+                        troughcolor = 'gray',
+                        background = style.scrumbles_green_fg)
 
-            self.sprintStartF.pack(side=tk.TOP)
-            self.sprintDueF.pack(side=tk.TOP)
+            progressBarStyle = "scrumbles.Horizontal.TProgressbar"
+
+            self.sprintProgressBar = ttk.Progressbar(self,
+                                                     style = progressBarStyle,
+                                                     length = 200,
+                                                     orient = "horizontal",
+                                                     mode = "determinate")
+
+            self.sprintStartT.pack(side = tk.LEFT)
+            self.sprintStart.pack(side = tk.LEFT)
+            self.sprintDueT.pack(side = tk.LEFT)
+            self.sprintDue.pack(side = tk.LEFT)
+
+            self.sprintStartF.pack(side = tk.TOP)
+            self.sprintDueF.pack(side = tk.TOP)
+            self.sprintProgressBar.pack(side = tk.TOP)
 
         def repack(self):
             self.sprintStartT.pack_forget()
@@ -575,21 +584,22 @@ class SCardDescription(tk.Frame):
 
             self.sprintStartF.pack_forget()
             self.sprintDueF.pack_forget()
+            self.sprintProgressBar.pack_forget()
 
-            self.sprintStartT.pack(side=tk.LEFT)
-            self.sprintStart.pack(side=tk.LEFT)
-            self.sprintDueT.pack(side=tk.LEFT)
-            self.sprintDue.pack(side=tk.LEFT)
+            self.sprintStartT.pack(side = tk.LEFT)
+            self.sprintStart.pack(side = tk.LEFT)
+            self.sprintDueT.pack(side = tk.LEFT)
+            self.sprintDue.pack(side = tk.LEFT)
 
-            self.sprintStartF.pack(side=tk.TOP)
-            self.sprintDueF.pack(side=tk.TOP)
+            self.sprintStartF.pack(side = tk.TOP)
+            self.sprintDueF.pack(side = tk.TOP)
+            self.sprintProgressBar.pack(side=tk.TOP)
 
     def repack(self):
-        self.title.pack(fill=tk.X)
-        self.cardDescriptions['Active'].pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+        self.title.pack(fill = tk.X)
+        self.cardDescriptions['Active'].pack(side = tk.TOP, expand = True, fill = tk.BOTH)
         self.canvas.pack_forget()
-        self.canvas.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
-
+        self.canvas.pack(side = tk.TOP, expand = True, fill = tk.BOTH)
 
     def changeDescription(self, event):
         widget = event.widget
@@ -600,11 +610,9 @@ class SCardDescription(tk.Frame):
     def setTitle(self, title):
         self.titleText.set(title)
 
-
     def eventSetTitle(self, widget):
         selection = widget.get(tk.ANCHOR)
         self.setTitle(selection)
-
 
     def generateAdditionalFields(self, widget):
         match = None
@@ -639,57 +647,95 @@ class SCardDescription(tk.Frame):
                 self.generateSprintFields(match)
 
     def generateUserFields(self, selectedUser):
-        self.cardDescriptions["User"].userRole.configure(text=selectedUser.userRole, justify=tk.LEFT, wraplength=self.master.w_rat*300)
-        self.cardDescriptions["User"].userEmail.configure(text=selectedUser.userEmailAddress, justify=tk.LEFT,
-                                                          wraplength=self.master.w_rat*300)
-
+        self.cardDescriptions["User"].userRole.configure(text = selectedUser.userRole,
+                                                         justify = tk.LEFT,
+                                                         wraplength = self.master.w_rat*300)
+        self.cardDescriptions["User"].userEmail.configure(text = selectedUser.userEmailAddress,
+                                                          justify = tk.LEFT,
+                                                          wraplength = self.master.w_rat*300)
         self.cardDescriptions["User"].repack()
-
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions["User"]
 
     def generateItemFields(self, selectedItem):
-        self.cardDescriptions["Item"].itemType.configure(text=selectedItem.itemType, justify=tk.LEFT, wraplength=self.master.w_rat*300)
-        if selectedItem.itemPriority is not None and selectedItem.itemPriority != 0:
-            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.getPriorityString(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
+        self.cardDescriptions["Item"].itemType.configure(text = selectedItem.itemType,
+                                                         justify = tk.LEFT,
+                                                         wraplength = self.master.w_rat*300)
+        if selectedItem.itemPriority is not None:
+            self.cardDescriptions["Item"].itemPriority.configure(text = selectedItem.getPriorityString(),
+                                                                 justify = tk.LEFT,
+                                                                 wraplength = self.master.w_rat*300)
         else:
-            self.cardDescriptions["Item"].itemPriority.configure(text=selectedItem.itemPriority, justify=tk.LEFT, wraplength=self.master.w_rat*300)
+            self.cardDescriptions["Item"].itemPriority.configure(text = selectedItem.itemPriority,
+                                                                 justify = tk.LEFT,
+                                                                 wraplength = self.master.w_rat*300)
         if selectedItem.itemDueDate is not None:
-            self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.getFormattedDueDate(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
+            self.cardDescriptions["Item"].itemDueDate.configure(text = selectedItem.getFormattedDueDate(),
+                                                                justify = tk.LEFT,
+                                                                wraplength = self.master.w_rat*300)
         else:
-            self.cardDescriptions["Item"].itemDueDate.configure(text=selectedItem.itemDueDate, justify=tk.LEFT, wraplength=self.master.w_rat*300)
-        self.cardDescriptions["Item"].itemStatus.configure(text=selectedItem.getStatus(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
-        self.cardDescriptions["Item"].itemDescription.configure(text=selectedItem.itemDescription, justify=tk.LEFT, wraplength=self.master.w_rat*300)
-        if selectedItem.itemCodeLink is not None and selectedItem.itemCodeLink != '' :
-            self.cardDescriptions["Item"].itemCodeLink.configure(text=selectedItem.itemCodeLink,justify=tk.LEFT,wraplength=self.master.w_rat*300,fg='blue',underline=1,cursor='gumby')
+            self.cardDescriptions["Item"].itemDueDate.configure(text = selectedItem.itemDueDate,
+                                                                justify = tk.LEFT,
+                                                                wraplength = self.master.w_rat*300)
+
+        self.cardDescriptions["Item"].itemStatus.configure(text = selectedItem.getStatus(),
+                                                           justify = tk.LEFT,
+                                                           wraplength = self.master.w_rat*300)
+        self.cardDescriptions["Item"].itemDescription.configure(text = selectedItem.itemDescription,
+                                                                justify = tk.LEFT,
+                                                                wraplength = self.master.w_rat*300)
+
+        if selectedItem.itemCodeLink is not None and selectedItem.itemCodeLink != '':
+            self.cardDescriptions["Item"].itemCodeLink.configure(text = selectedItem.itemCodeLink,
+                                                                 justify = tk.LEFT,
+                                                                 wraplength = self.master.w_rat*300,
+                                                                 fg = 'blue',
+                                                                 underline = 1,
+                                                                 cursor = 'gumby')
             self.cardDescriptions["Item"].itemCodeLink.bind('<Button-1>', lambda event: self.open(event))
         else:
-            self.cardDescriptions["Item"].itemCodeLink.configure(text=u'None Set', justify=tk.LEFT,
-
-                                                                 wraplength=self.master.w_rat*300,fg='red',underline=-1,cursor='X_cursor')
+            self.cardDescriptions["Item"].itemCodeLink.configure(text = u'None Set',
+                                                                 justify = tk.LEFT,
+                                                                 wraplength = self.master.w_rat*300,
+                                                                 fg = 'red',
+                                                                 underline = -1,
+                                                                 cursor = 'X_cursor')
             
             self.cardDescriptions['Item'].itemCodeLink.unbind('<Button 1>')
+
         sprintName = ""
         for sprint in self.master.dataBlock.sprints:
             if sprint.sprintID == selectedItem.itemSprintID:
                 sprintName = sprint.sprintName
-        self.cardDescriptions["Item"].itemSprint.configure(text=sprintName, justify=tk.LEFT, wraplength=self.master.w_rat*300)
+        self.cardDescriptions["Item"].itemSprint.configure(text = sprintName,
+                                                           justify = tk.LEFT,
+                                                           wraplength = self.master.w_rat*300)
+
         userName = ""
         for user in self.master.dataBlock.users:
             if user.userID == selectedItem.itemUserID:
                 userName = user.userName
-        self.cardDescriptions["Item"].itemUser.configure(text=userName, justify=tk.LEFT, wraplength=self.master.w_rat*300)
-
+        self.cardDescriptions["Item"].itemUser.configure(text = userName,
+                                                         justify = tk.LEFT,
+                                                         wraplength = self.master.w_rat*300)
         self.cardDescriptions["Item"].repack()
 
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions["Item"]
 
-
-
     def generateSprintFields(self, selectedSprint):
-        self.cardDescriptions["Sprint"].sprintStart.configure(text=selectedSprint.getFormattedStartDate(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
-        self.cardDescriptions["Sprint"].sprintDue.configure(text=selectedSprint.getFormattedDueDate(), justify=tk.LEFT, wraplength=self.master.w_rat*300)
+        self.cardDescriptions["Sprint"].sprintStart.configure(text = selectedSprint.getFormattedStartDate(),
+                                                              justify = tk.LEFT,
+                                                              wraplength = self.master.w_rat*300)
+        self.cardDescriptions["Sprint"].sprintDue.configure(text = selectedSprint.getFormattedDueDate(),
+                                                            justify = tk.LEFT,
+                                                            wraplength = self.master.w_rat*300)
+        self.completedTasks = 0
+        for item in selectedSprint.listOfAssignedItems:
+            if item.itemStatus == 4:
+                self.completedTasks += 1
+        self.cardDescriptions["Sprint"].sprintProgressBar["value"] = self.completedTasks
+        self.cardDescriptions["Sprint"].sprintProgressBar["maximum"] = len(selectedSprint.listOfAssignedItems)
 
         self.cardDescriptions["Sprint"].repack()
 
@@ -700,11 +746,12 @@ class SCardDescription(tk.Frame):
         self.titleText.set("Item Description")
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions['Start']
-        self.cardDescriptions['Active'].pack(side=tk.TOP)
+        self.cardDescriptions['Active'].pack(side = tk.TOP)
 
     def open(self, event):
         link = event.widget.cget('text')
         print(link)
+
         webbrowser.open(link)
 
 class SUserItemInspection(tk.Frame):
@@ -717,15 +764,15 @@ class SUserItemInspection(tk.Frame):
 
         self.textbox = tk.Frame(self)
 
-        self.nametag = tk.Frame(self.textbox, relief=tk.SOLID, borderwidth=1)
-        self.nameLabel = tk.Label(self.nametag, text="Name")
+        self.nametag = tk.Frame(self.textbox, relief = tk.SOLID, borderwidth = 1)
+        self.nameLabel = tk.Label(self.nametag, text = "Name")
         self.nameString = tk.StringVar()
-        self.nameText = tk.Label(self.nametag, textvariable=self.nameString, cursor = "hand2")
+        self.nameText = tk.Label(self.nametag, textvariable = self.nameString, cursor = "hand2")
 
-        self.roletag = tk.Frame(self.textbox, relief=tk.SOLID, borderwidth=1)
-        self.roleLabel = tk.Label(self.roletag, text="Role")
+        self.roletag = tk.Frame(self.textbox, relief = tk.SOLID, borderwidth = 1)
+        self.roleLabel = tk.Label(self.roletag, text = "Role")
         self.roleString = tk.StringVar()
-        self.roleText = tk.Label(self.roletag, textvariable=self.roleString, cursor = "hand2")
+        self.roleText = tk.Label(self.roletag, textvariable = self.roleString, cursor = "hand2")
 
         self.itembox = tk.Frame(self)
         self.assignedItemsList = SList(self.itembox, "Assigned Items")
@@ -733,21 +780,21 @@ class SUserItemInspection(tk.Frame):
         self.submittedItemsList = SList(self.itembox, "Submitted Items")
         self.completedItemsList = SList(self.itembox, "Completed Items")
 
-        self.nameLabel.pack(fill=tk.X)
-        self.nameText.pack(fill=tk.X)
-        self.roleLabel.pack(fill=tk.X)
-        self.roleText.pack(fill=tk.X)
+        self.nameLabel.pack(fill = tk.X)
+        self.nameText.pack(fill = tk.X)
+        self.roleLabel.pack(fill = tk.X)
+        self.roleText.pack(fill = tk.X)
 
-        self.nametag.pack(side=tk.LEFT, fill=tk.X, expand=1)
-        self.roletag.pack(side=tk.LEFT, fill=tk.X, expand=1)
+        self.nametag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
+        self.roletag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
 
-        self.assignedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.inProgressItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.submittedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.completedItemsList.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.assignedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+        self.inProgressItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+        self.submittedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+        self.completedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
 
-        self.textbox.pack(side=tk.TOP, fill=tk.X)
-        self.itembox.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.textbox.pack(side = tk.TOP, fill = tk.X)
+        self.itembox.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
 
     def update(self, user):
         self.nameString.set(user.userName)
@@ -771,14 +818,14 @@ class SUserItemInspection(tk.Frame):
                     completedItems.append(item)
 
         self.updateAssignedItems(assignedItems)
-        self.updateInProgessItems(inProgressItems)
+        self.updateInProgressItems(inProgressItems)
         self.updateSubmittedItems(submittedItems)
         self.updateCompletedItems(completedItems)
 
     def updateAssignedItems(self, assignedItems):
         self.assignedItemsList.importItemList(assignedItems)
 
-    def updateInProgessItems(self, inProgressItems):
+    def updateInProgressItems(self, inProgressItems):
         self.inProgressItemsList.importItemList(inProgressItems)
 
     def updateSubmittedItems(self, submittedItems):
@@ -788,7 +835,10 @@ class SUserItemInspection(tk.Frame):
         self.completedItemsList.importItemList(completedItems)
 
     def getSCardDescriptionExport(self):
-        return [self.assignedItemsList.listbox, self.inProgressItemsList.listbox, self.submittedItemsList.listbox, self.completedItemsList.listbox], \
+        return [self.assignedItemsList.listbox, 
+                self.inProgressItemsList.listbox, 
+                self.submittedItemsList.listbox, 
+                self.completedItemsList.listbox], \
                ['Item', 'Item', 'Item', 'Item']
 
 class STabs(tk.Frame):
@@ -803,17 +853,32 @@ class STabs(tk.Frame):
     class viewButton(tk.Button):
         def __init__(self, controller, viewName, view, event):
             if viewName == controller.viewName:
-                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_offwhite, relief=tk.SOLID, borderwidth=1, cursor = "hand2")
+                tk.Button.__init__(self, 
+                                   controller, 
+                                   text = str(viewName), 
+                                   command = lambda: event(view), 
+                                   bg = style.scrumbles_offwhite, 
+                                   relief = tk.SOLID, 
+                                   borderwidth = 1, 
+                                   cursor = "hand2")
             else:
-                tk.Button.__init__(self, controller, text=str(viewName), command=lambda: event(view), bg=style.scrumbles_grey, relief=tk.SOLID, borderwidth=1, cursor = "hand2")
+                tk.Button.__init__(self, 
+                                   controller, 
+                                   text = str(viewName), 
+                                   command = lambda: event(view), 
+                                   bg = style.scrumbles_grey, 
+                                   relief = tk.SOLID, 
+                                   borderwidth = 1, 
+                                   cursor = "hand2")
 
     def generateButtons(self):
         self.buttonList.clear()
         views, viewNames = self.master.getViews()
+        
         for view, viewName in zip(views, viewNames):
             viewButton = self.viewButton(self, viewName, view, self.tabEvent)
             self.buttonList.append(viewButton)
-            viewButton.pack(side=tk.LEFT)
+            viewButton.pack(side = tk.LEFT)
 
     def tabEvent(self, selectedView):
         self.master.show_frame(selectedView)
