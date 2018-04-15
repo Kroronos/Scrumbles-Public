@@ -2,6 +2,7 @@ import logging
 import tkinter as tk
 from views import developerHomeView, mainView, teamManagerView, loginView, analyticsView
 import matplotlib.pyplot as plt
+from tkinter import messagebox
 import platform
 import webbrowser
 from data import DataBlock
@@ -101,8 +102,7 @@ class masterView(tk.Tk):
 
         viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
         viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
-
-       
+        
         viewMenu.add_command(label="Analytics", command = lambda: self.show_frame(analyticsView))
 
 
@@ -330,6 +330,7 @@ def getGeometryFromFile(file):
         h = int(h)
         geometryFile.close()
     except:
+        print("EXCEPTION ALERTTTT")
         w = 1280
         h = 720
 

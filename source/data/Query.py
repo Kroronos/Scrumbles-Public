@@ -215,7 +215,6 @@ class CardQuery(Query):
         itemDict['Type'] =  item.itemType
         itemDict['Priority'] = item.itemPriority
         itemDict['Title'] = item.itemTitle
-        itemDict['Descr'] =  item.itemDescription
         itemDict['DueDate'] = None
         if item.itemDueDate is not None:
             itemDict['DueDate'] = item.itemDueDate
