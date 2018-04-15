@@ -1,6 +1,9 @@
 import logging
 import tkinter as tk
-from views import developerHomeView, mainView, teamManagerView, loginView, analyticsView
+import matplotlib.pyplot as plt
+
+from tkinter import messagebox
+from views import splashView, developerHomeView, mainView, teamManagerView, loginView, analyticsView
 
 import platform
 import webbrowser
@@ -18,12 +21,12 @@ class masterView(tk.Tk):
 
         self.w_rat, self.h_rat = getGeometryFromFile("geometry.txt")
         self.w_rat /= 1280
-        self.h_rat/= 720
+        self.h_rat /= 720
         w = 1280*self.w_rat
         h = 720*self.h_rat
         print("Width: " + str(w))
         print("Height: " + str(h))
-        ws =self.winfo_screenwidth()  # width of the screen
+        ws = self.winfo_screenwidth()  # width of the screen
         hs = self.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
@@ -34,24 +37,26 @@ class masterView(tk.Tk):
 
         self.frames = {}
 
-        self.protocol('WM_DELETE_WINDOW', lambda s=self: exitProgram(s))
+        self.protocol('WM_DELETE_WINDOW', lambda s = self: exitProgram(s))
         self.container = tk.Frame(self)
 
-        self.container.pack(side="top", fill="both", expand=True)
+        self.container.pack(side = "top", fill = "both", expand = True)
 
-        self.container.grid_rowconfigure(0, weight=1)
-        self.container.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight = 1)
+        self.container.grid_columnconfigure(0, weight = 1)
 
         self.menuBar = None
         self.hiddenMenu = tk.Menu(self)
 
         loginFrame = loginView.loginView(self.container, self)
-        
         self.add_frame(loginFrame, loginView)
 
-        self.show_frame(loginView)
-        self.dataConnection = None
+        self.splashFrame = splashView.splashView(self.container, self)
+        self.add_frame(self.splashFrame, splashView)
 
+        self.show_frame(loginView)
+
+        self.dataConnection = None
         self.activeUser = None
 
         try:
@@ -85,21 +90,22 @@ class masterView(tk.Tk):
         print("Switching Views")
         frame.tkraise()
 
-        if(cont!= loginView):
+        if cont != (loginView or splashView):
             self.raiseMenuBar()
         else:
             self.hideMenuBar()
 
     def add_frame(self, addedFrame, addedFrameClass):
-        logging.info('Packing Frame %s'% str(addedFrame))
+        logging.info('Packing Frame %s' % str(addedFrame))
         self.frames[addedFrameClass] = addedFrame
-        addedFrame.grid(row=0, column=0, sticky="nsew")
+        addedFrame.grid(row = 0, column = 0, sticky = "nsew")
 
     def generateMenuBar(self):
         menuBar = tk.Menu(self, cursor = "hand2")
 
-        fileMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
+        fileMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
         self.fileMenu = fileMenu
+
         if (self.activeUser.userRole == "Admin"):
             fileMenu.add_command(label="Create New Project \t \t \t \t \t \t CTRL+P", command=self.showCreateProjectDialog)
         self.setOpenProjectsMenu(fileMenu)
@@ -148,29 +154,37 @@ class masterView(tk.Tk):
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
 
+        menuBar.add_cascade(label = "File", menu = fileMenu)
+        menuBar.add_cascade(label = "Edit", menu = editMenu)
+        menuBar.add_cascade(label = "Profile", menu = profileMenu)
+        menuBar.add_cascade(label = "View", menu = viewMenu)
+        menuBar.add_cascade(label = "Help", menu = helpMenu)
+
         self.menuBar = menuBar
         self.menuBar.config(cursor = "hand2")
+
     def colorHelp(self):
-        Dialogs.AboutDialog(self, master=self).show()
+        Dialogs.AboutDialog(self, master = self).show()
 
     def raiseMenuBar(self):
-        self.configure(menu=self.menuBar)
+        self.configure(menu = self.menuBar)
 
     def hideMenuBar(self):
-        self.configure(menu=self.hiddenMenu)
+        self.configure(menu = self.hiddenMenu)
 
     def getViews(self):
         views = []
         viewNames = []
-        if (self.activeUser.userRole == "Admin"):
+
+        if self.activeUser.userRole == "Admin":
             views.append(mainView)
             viewNames.append("Admin Main")
 
-        elif (self.activeUser.userRole == "Scrum Master"):
+        elif self.activeUser.userRole == "Scrum Master":
             views.append(mainView)
             viewNames.append("Scrum Master Main")
 
-        elif (self.activeUser.userRole == "Developer"):
+        elif self.activeUser.userRole == "Developer":
             views.append(mainView)
             viewNames.append("Developer Main")
 
@@ -185,6 +199,7 @@ class masterView(tk.Tk):
 
         return views, viewNames
 
+
     def showCreateProjectDialog(self,event):
 
         Dialogs.CreateProjectDialog(self, master=self, dataBlock=self.dataBlock).show()
@@ -198,6 +213,7 @@ class masterView(tk.Tk):
 
     def showCreateItemDialog(self,event):
         Dialogs.CreateItemDialog(self, master=self, dataBlock=self.dataBlock).show()
+
 
 
     def windowMin(self, event):
@@ -219,60 +235,59 @@ class masterView(tk.Tk):
         self.show_frame(analyticsView)
 
     def generateViews(self, loggedInUser):
-        self.withdraw()
-        self.splash = Dialogs.SplashScreen(self, self)
-
 
         self.dataBlock = DataBlock.DataBlock()
 
+        if self.dataBlock.isLoading is True:
+            self.show_frame(splashView)
+
         while self.dataBlock.isLoading:
-            self.splash.step_progressBar(1)
+            self.splashFrame.stepProgressBar(1)
 
         self.activeProject = self.dataBlock.projects[0]
 
         #todo
-        threading.Thread(target=self.dataBlock.onConnectionLoss,args=(self.connectionLosshandler,)).start()
+        threading.Thread(target = self.dataBlock.onConnectionLoss, args = (self.connectionLossHandler,)).start()
 
-        print('Logged in %s'%loggedInUser)
+        print('Logged in %s' % loggedInUser)
 
         for user in self.dataBlock.users:
-             if loggedInUser == user.userName:
-                 loggedInUser = user
+            if loggedInUser == user.userName:
+                loggedInUser = user
+
         self.activeUser = loggedInUser
-        print('%s Loggin in'%loggedInUser.userName)
+        print('%s Loggin in' % loggedInUser.userName)
+
+        if not self.activeUser.listOfProjects:
+            messagebox.showinfo('No Assigned Projects', 'You are not currently assigned to any projects '
+                                                        '\nPlease contact an administrator or team leader')
+            logOut(self)
+            return
+
         self.dataBlock.packCallback(self.repointActiveObjects)
 
-
-        HomeFrame = mainView.mainView(self.container, self, loggedInUser)
+        homeFrame = mainView.mainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
         teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
-
         analyticsFrame = analyticsView.analyticsView(self.container, self)
 
-
-
-        self.add_frame(HomeFrame, mainView)
+        self.add_frame(homeFrame, mainView)
         self.add_frame(developerHomeFrame, developerHomeView)
         self.add_frame(teamManagerFrame, teamManagerView)
-
         self.add_frame(analyticsFrame, analyticsView)
 
-
         self.generateMenuBar()
-        self.splash.kill()
-        self.deiconify()
 
-
-        if (self.activeUser.userRole == "Admin"):
+        if self.activeUser.userRole == "Admin":
             self.show_frame(mainView)
 
-        elif (self.activeUser.userRole == "Scrum Master"):
+        elif self.activeUser.userRole == "Scrum Master":
             self.show_frame(mainView)
 
-        elif (self.activeUser.userRole == "Developer"):
+        elif self.activeUser.userRole == "Developer":
             self.show_frame(developerHomeView)
 
-        self.title("Scrumbles"+" - "+self.activeProject.projectName)
+        self.title("Scrumbles" + " - " + self.activeProject.projectName)
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
 
@@ -280,7 +295,7 @@ class masterView(tk.Tk):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/User-Guide')
 
 
-    def connectionLosshandler(self):
+    def connectionLossHandler(self):
         messagebox.showerror('Loss of Connection','Network Connection Lost, Logging Out of App')
         logOut(self)
 
@@ -293,32 +308,33 @@ class masterView(tk.Tk):
     def updateOpenProjectsMenu(self):
         self.setOpenProjectsMenu(self.fileMenu)
 
-    def setOpenProjectsMenu(self,menu):
+    def setOpenProjectsMenu(self, menu):
         listOfProjects = [P.projectName for P in self.dataBlock.projects]
-
 
         try:
             menu.delete('Open Project')
         except Exception:
             logging.exception('Failed to delete menu')
 
-        self.popMenu = tk.Menu(menu,tearoff=0)
-        if(self.activeUser != None and (self.activeUser.userRole == "Scrum Master" or self.activeUser.userRole == "Developer")):
+        self.popMenu = tk.Menu(menu, tearoff = 0)
+        if self.activeUser is None and (self.activeUser.userRole == "Scrum Master" or
+                                        self.activeUser.userRole == "Developer"):
             for text in listOfProjects:
                 for project in self.activeUser.listOfProjects:
-                    if(project.projectName == text):
-                        self.popMenu.add_command(label=project.projectName, command=lambda t=project.projectName: self.setActiveProject(t))
+                    if project.projectName == text:
+                        self.popMenu.add_command(label = project.projectName,
+                                                 command = lambda t = project.projectName: self.setActiveProject(t))
         else:
             for text in listOfProjects:
-                self.popMenu.add_command(label=text, command=lambda t=text: self.setActiveProject(t))
+                self.popMenu.add_command(label = text, command = lambda t = text: self.setActiveProject(t))
 
         menu.insert_cascade(index=1, label='Open Project', menu=self.popMenu)
 
-    def setActiveProject(self,projectName):
+    def setActiveProject(self, projectName):
         for P in self.dataBlock.projects:
             if P.projectName == projectName:
                 self.activeProject = P
-        self.title("Scrumbles"+" - "+self.activeProject.projectName)
+        self.title("Scrumbles" + " - " + self.activeProject.projectName)
         logging.info('Active Project set to %s' % self.activeProject.projectName)
         self.dataBlock.executeUpdaterCallbacks()
 
@@ -338,9 +354,9 @@ class masterView(tk.Tk):
         return 'Scrumbles Master View Controller'
 
 def logOut(controller):
-    logging.info('%s logged out'%controller.activeUser.userID)
+    logging.info('%s logged out' % controller.activeUser.userID)
     controller.dataBlock.shutdown()
-    messagebox.showinfo('Logout','Shutting Down Active Threads')
+    messagebox.showinfo('Logout', 'Shutting Down Active Threads')
     time.sleep(3)
     del controller.dataBlock
     #Do Some Stuff Here To Clear States
@@ -349,17 +365,18 @@ def logOut(controller):
     controller.show_frame(loginView)
     controller.title("Scrumbles")
 
-def exitProgram(mainwindow):
-    setGeometryFile(mainwindow)
+def exitProgram(mainWindow):
+    setGeometryFile(mainWindow)
+    plt.close('all')
     try:
-        mainwindow.dataBlock.shutdown()
+        mainWindow.dataBlock.shutdown()
     except:
         logging.exception('Shutdown Failure')
     try:
 
-        del mainwindow.dataBlock
+        del mainWindow.dataBlock
 
-        mainwindow.destroy()
+        mainWindow.destroy()
     except:
         logging.exception('Shutdown Failure')
     finally:
@@ -377,18 +394,18 @@ def showGettingStartedText():
 
 def getGeometryFromFile(file):
     try:
-        geometryFile = open(file,'r')
+        geometryFile = open(file, 'r')
         w = processFile(geometryFile)
         h = processFile(geometryFile)
         w = int(w)
         h = int(h)
         geometryFile.close()
     except:
-        print("EXCEPTION ALERTTTT")
+        print("EXCEPTION ALERT")
         w = 1280
         h = 720
 
-    return w,h
+    return w, h
 
 def processFile(openFile):
     item = openFile.readline()
@@ -399,6 +416,6 @@ def setGeometryFile(window):
     w = window.winfo_width()
     h = window.winfo_height()
     f = open("geometry.txt", "w+")
-    f.write(str(w)+"\n")
-    f.write(str(h)+"\n")
+    f.write(str(w) + "\n")
+    f.write(str(h) + "\n")
     f.close()

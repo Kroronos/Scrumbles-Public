@@ -122,6 +122,7 @@ class DataBlock:
                 self.executeUpdaterCallbacks()
                 self.lock.release()
                 self.lock.acquire(timeout=2)
+                print('changing listener flag back to False')
                 self.listener.isDBChanged = False
                 self.lock.release()
 
@@ -143,7 +144,7 @@ class DataBlock:
                 try:
                     func()
                 except Exception as e:
-                    logging.exception('Excepition is funciton %s\n'%str(func),str(e))
+                    logging.exception('Function {} failed to update'.format(str(func)))
 
     def shutdown(self):
 
@@ -431,7 +432,7 @@ class DataBlock:
     def assignItemToSprint(self,item,sprint):
         logging.info('Assigning Item %s to Sprint %s.'%(item.itemTitle,sprint.sprintName))
         item.itemSprintID = sprint.sprintID
-        item.itemDescription = sprint.sprintDueDate
+        item.itemDueDate = sprint.sprintDueDate
         self.conn.setData(Query.updateObject(item))
         self.conn.setData(TimeLineQuery.stampItemToSprint(item))
 
