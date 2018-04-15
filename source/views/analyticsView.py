@@ -532,9 +532,10 @@ class analyticsView(tk.Frame):
                 newLabels.append(labels[i])
             else:
                 if xvalues[i]-lastStoredValue >= int((xvalues[0] - xvalues[-1])/5): #about a month off
-                    lastStoredValue = xvalues[i]
-                    labelsPositions.append(xvalues[i])
-                    newLabels.append(labels[i])
+                    if xvalues[i]-lastStoredValue > 2: #3 day min
+                        lastStoredValue = xvalues[i]
+                        labelsPositions.append(xvalues[i])
+                        newLabels.append(labels[i])
 
 
         internalSprintLineGraph = ScrumblesFrames.SLine(controller)
