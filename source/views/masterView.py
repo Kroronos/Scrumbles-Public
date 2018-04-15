@@ -6,7 +6,7 @@ import platform
 import webbrowser
 from data import DataBlock
 from frames import Dialogs
-
+from tkinter import messagebox
 import time
 import threading
 
@@ -97,17 +97,17 @@ class masterView(tk.Tk):
         fileMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
         self.fileMenu = fileMenu
         if (self.activeUser.userRole == "Admin"):
-            fileMenu.add_command(label="Create New Project        Ctrl+p", command=self.showCreateProjectDialog)
+            fileMenu.add_command(label="Create New Project            Ctrl+p", command=self.showCreateProjectDialog)
         self.setOpenProjectsMenu(fileMenu)
         self.dataBlock.packCallback(self.updateOpenProjectsMenu)
-        fileMenu.add_command(label="Exit", command=lambda:exitProgram(self))
+        fileMenu.add_command(label="Exit                                      Ctrl+q", command=lambda:exitProgram(self))
 
         editMenu = tk.Menu(menuBar, tearoff=0)
         if (self.activeUser.userRole == "Admin"):
-            editMenu.add_command(label="Create New User    Ctrl+u", underline= 11, command=self.showCreateUserDialog)
+            editMenu.add_command(label="Create New User                  Ctrl+u", underline= 11, command=self.showCreateUserDialog)
         if (self.activeUser.userRole == "Admin" or self.activeUser.userRole == "Scrum Master"):
-            editMenu.add_command(label="Create New Sprint    Ctrl+s", underline=11, command=self.showCreateSprintDialog)
-        editMenu.add_command(label="Create New Item    Ctrl+i",  underline=11,command=self.showCreateItemDialog)
+            editMenu.add_command(label="Create New Sprint                Ctrl+s", underline=11, command=self.showCreateSprintDialog)
+        editMenu.add_command(label="Create New Item                  Ctrl+i",  underline=11,command=self.showCreateItemDialog)
 
         profileMenu = tk.Menu(menuBar, tearoff=0)
         profileMenu.add_command(label=self.activeUser.userName)
@@ -125,9 +125,9 @@ class masterView(tk.Tk):
 
 
 
-        viewMenu.add_command(label="Developer Home    Ctrl+h", underline=11, command=lambda: self.show_frame(developerHomeView))
-        viewMenu.add_command(label="Team Manager    Ctrl+T", underline=0, command=lambda: self.show_frame(teamManagerView))
-        viewMenu.add_command(label="Analytics View    Ctrl+a", underline=0, command = lambda: self.show_frame(analyticsView))
+        viewMenu.add_command(label="Developer Home          Ctrl+h", underline=11, command=lambda: self.show_frame(developerHomeView))
+        viewMenu.add_command(label="Team Manager             Ctrl+t", underline=0, command=lambda: self.show_frame(teamManagerView))
+        viewMenu.add_command(label="Analytics View              Ctrl+a", underline=0, command = lambda: self.show_frame(analyticsView))
 
 
         helpMenu = tk.Menu(menuBar, tearoff=0, cursor = "hand2")
