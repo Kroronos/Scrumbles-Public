@@ -281,8 +281,12 @@ class analyticsView(tk.Frame):
         tasksCompletedLabel = tk.Label(performanceFrame, text="Tasks Completed: " + str(tasksCompleted))
         pointsEarnedLabel = tk.Label(performanceFrame, text="Points Earned: " + str(pointsEarned))
         sprintFrame = tk.Frame(statisticsFrame,  relief=tk.SOLID, borderwidth=1)
-        bestSprintLabel = tk.Label(sprintFrame, text="User performed best on sprint " + bestSprint + " earning " + str(bestSprintPoints) + " points.")
-        worstSprintLabel = tk.Label(sprintFrame, text="User performed worst on sprint " + worstSprint + " earning " + str(worstSprintPoints) + " points.")
+        if tasksCompleted == 0:
+            bestSprintLabel = tk.Label(sprintFrame, text="User hasn't completed any task in any sprint, so they have no best sprint.")
+            worstSprintLabel = tk.Label(sprintFrame, text="User hasn't completed any task in any sprint, so they have no worst sprint.")
+        else:
+            bestSprintLabel = tk.Label(sprintFrame, text="User performed best on sprint " + bestSprint + " earning " + str(bestSprintPoints) + " points.")
+            worstSprintLabel = tk.Label(sprintFrame, text="User performed worst on sprint " + worstSprint + " earning " + str(worstSprintPoints) + " points.")
 
         tasksCompletedLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
         pointsEarnedLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
@@ -414,12 +418,18 @@ class analyticsView(tk.Frame):
 
     def generateSprintTaskBarGraph(self, sprintNames, sprintTaskValues):
         sprintBarGraph = ScrumblesFrames.SBar(self.sprintGraphFrame)
-        sprintBarGraph.generateGraph(sprintNames, sprintTaskValues, "Sprints", "Tasks Completed")
+        tickValue = int((max(sprintTaskValues)-min(sprintTaskValues))/10)
+        if tickValue <= 0:
+            tickValue = 1
+        sprintBarGraph.generateGraph(sprintNames, sprintTaskValues, "Sprints", "Tasks Completed", tickValue=tickValue)
         sprintBarGraph.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def generateSprintPointBarGraph(self, sprintNames, sprintPointValues):
         sprintBarGraph = ScrumblesFrames.SBar(self.sprintGraphFrame)
-        sprintBarGraph.generateGraph(sprintNames, sprintPointValues, "Sprints", "Points Earned", isOrange=True, tickValue=5)
+        tickValue = int((max(sprintPointValues)-min(sprintPointValues))/10)
+        if tickValue <= 0:
+            tickValue = 1
+        sprintBarGraph.generateGraph(sprintNames, sprintPointValues, "Sprints", "Points Earned", isOrange=True, tickValue=tickValue)
         sprintBarGraph.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def generateInternalSprintFrame(self, event=None, sprintEventName=None):
@@ -525,6 +535,8 @@ class analyticsView(tk.Frame):
         newLabels = list()
         labelsPositions = list()
         lastStoredValue = 0
+
+        xvalues, yvalues, labels = (list(t) for t in zip(*sorted(zip(xvalues, yvalues, labels)))) #sort for proper behavior
         for i in range(0, len(xvalues)): #this fixes overlapping labels on x axis
             if i == 0:
                 lastStoredValue = xvalues[i]
@@ -532,11 +544,10 @@ class analyticsView(tk.Frame):
                 newLabels.append(labels[i])
             else:
                 if xvalues[i]-lastStoredValue >= int((xvalues[0] - xvalues[-1])/5): #about a month off
-                    if xvalues[i]-lastStoredValue > 1: #2 day min
+                    if xvalues[i]-lastStoredValue > 5: #5 day min
                         lastStoredValue = xvalues[i]
                         labelsPositions.append(xvalues[i])
                         newLabels.append(labels[i])
-
 
         internalSprintLineGraph = ScrumblesFrames.SLine(controller)
         internalSprintLineGraph.generateGraph(xvalues, yvalues, labelsPositions, newLabels, "Date of Completion","Completed Tasks")
@@ -904,46 +915,66 @@ class analyticsView(tk.Frame):
         if inspectedItem.itemStatus >= 1:
             beginningPoints.append(int(inspectedItem.itemCreationDate.strftime("%y%m%d")))
             pointNames.append(inspectedItem.itemCreationDate.strftime("%m/%d/%y"))
+            pointPoints.append(int(inspectedItem.itemCreationDate.strftime("%y%m%d")))
             endingPoints.append(int(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%y%m%d")))
             pointNames.append(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%m/%d/%y"))
-            pointPoints.append(int(inspectedItem.itemCreationDate.strftime("%y%m%d")))
-            pointPoints.append(int(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%y%m%d")))
+            pointPoints.append(int(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%y%m%d"))
+                               + pointPoints[-1])
             statusLabels.append("Assignment")
         if inspectedItem.itemStatus >= 2:
-            beginningPoints.append(int(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%y%m%d")))
+            beginningPoints.append(int(inspectedItem.itemTimeLine["AssignedToUser"].strftime("%y%m%d"))
+                                   + pointPoints[-2])
             endingPoints.append(int(inspectedItem.itemTimeLine["WorkStarted"].strftime("%y%m%d")))
             pointNames.append(inspectedItem.itemTimeLine["WorkStarted"].strftime("%m/%d/%y"))
-            pointPoints.append(int(inspectedItem.itemTimeLine["WorkStarted"].strftime("%y%m%d")))
+            pointPoints.append(int(inspectedItem.itemTimeLine["WorkStarted"].strftime("%y%m%d"))
+                               + pointPoints[-1])
             statusLabels.append("Waiting To Be Started")
         if inspectedItem.itemStatus >= 3:
-            beginningPoints.append(int(inspectedItem.itemTimeLine["WorkStarted"].strftime("%y%m%d")))
+            beginningPoints.append(int(inspectedItem.itemTimeLine["WorkStarted"].strftime("%y%m%d"))
+                                   + pointPoints[-2])
             endingPoints.append(int(inspectedItem.itemTimeLine["Submitted"].strftime("%y%m%d")))
             pointNames.append(inspectedItem.itemTimeLine["Submitted"].strftime("%m/%d/%y"))
-            pointPoints.append(int(inspectedItem.itemTimeLine["Submitted"].strftime("%y%m%d")))
+            pointPoints.append(int(inspectedItem.itemTimeLine["Submitted"].strftime("%y%m%d"))
+                               + pointPoints[-1])
             statusLabels.append("Work")
         if inspectedItem.itemStatus == 4:
-            beginningPoints.append(int(inspectedItem.itemTimeLine["Submitted"].strftime("%y%m%d")))
+            beginningPoints.append(int(inspectedItem.itemTimeLine["Submitted"].strftime("%y%m%d"))
+                                   + pointPoints[-2])
             endingPoints.append(int(inspectedItem.itemTimeLine["Completed"].strftime("%y%m%d")))
             pointNames.append(inspectedItem.itemTimeLine["Completed"].strftime("%m/%d/%y"))
-            pointPoints.append(int(inspectedItem.itemTimeLine["Completed"].strftime("%y%m%d")))
+            pointPoints.append(int(inspectedItem.itemTimeLine["Completed"].strftime("%y%m%d"))
+                               + pointPoints[-1])
             statusLabels.append("Submission")
 
         #remove duplicates
-        pointPoints = list(set(pointPoints))
-        pointNames = list(set(pointNames))
+        prevPoint = 0
+        if len(pointPoints) != 0:
+            for index, point in enumerate(pointPoints):
+                if prevPoint == 0:
+                    prevPoint = point
+                else:
+                    if point == prevPoint:
+                        del pointNames[index]
+                        del pointPoints[index]
 
         #remove times too close together
         oldPoint = None
-        for index, point in enumerate(pointPoints):
-            if oldPoint is None:
-                oldPoint = point
-                continue
-            if point - oldPoint > 2: #3 days minimum between events
-                oldPoint = point
-            else:
-                del pointNames[index]
-                del pointPoints[index]
+        if len(pointPoints) != 0:
+            for index, point in enumerate(pointPoints):
+                if oldPoint is None:
+                    oldPoint = point
+                    continue
+                if len(pointPoints) > 2:
+
+                    if int(point - oldPoint) > int((pointPoints[-1]-pointPoints[0])/5): #quarter of difference between start and endpoint
+                        oldPoint = point
+                    else:
+                        del pointNames[index]
+                        del pointPoints[index]
+
         taskGanttChart = ScrumblesFrames.SGantt(controller)
+        print(pointPoints)
+        print(pointNames)
         taskGanttChart.generateGraph(beginningPoints, endingPoints, statusLabels, pointPoints, pointNames,
                                          "Status of Task", "Dates")
         taskGanttChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
