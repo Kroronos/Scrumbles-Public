@@ -1,7 +1,9 @@
 import tkinter as tk
 import webbrowser
+import numpy as np
 import matplotlib
 matplotlib.use("TKAgg")
+from matplotlib import colors
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -17,69 +19,152 @@ from frames.SLists import *
 from styling import styling as style
 from tkinter import ttk
 
-class SLineGraph(tk.Frame):
+class SLine(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
 
-        self.x = [1,2,3,4,5,6,7,8,9,10]
-        self.y = [1,4,2,5,1,4,2,5,1,4]
-        self.label = None
+    def generateGraph(self, x, y, labelsPosition=None, labels=None, xtitle=None, ytitle=None):
+        self.graphInitialization()
+        self.showGraph(x, y, labelsPosition, labels, xtitle, ytitle)
 
-        self.figure = Figure(figsize=(4, 4), dpi=100)
-        self.graph = self.figure.add_subplot(1,1,1)
+    def graphInitialization(self):
+        self.f = plt.figure(figsize=(4, 4), dpi=100)
+        #self.ax = self.figure.add_subplot(1,1,1)
 
+    def showGraph(self, x, y, labelsPosition, labels, xtitle, ytitle):
 
-    def setTitle(self, title):
-        self.label = tk.Label(self, text=title)
+        self.p = plt.plot(x,y)
+        plt.xlabel(xtitle)
+        plt.ylabel(ytitle)
+        plt.xticks(labelsPosition, labels, rotation=65)
+        #self.ax.set_xticklabels(labels)
 
-    def setAxes(self, xAxis, yAxis):
-        self.graph.set_xlabel(xAxis)
-        self.graph.set_ylabel(yAxis)
-        self.figure.subplots_adjust(left=.15)
-        self.figure.subplots_adjust(bottom=.15)
+        self.canvas = FigureCanvasTkAgg(self.f, self)
+        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        self.canvas.draw()
 
-    def importDataFromCSV(self, fileName, delimeter):
-        with open(fileName, 'r') as file:
-            plots = csv.reader(file, delimeter)
-            for row in plots:
-                self.x.append(int(row[0]))
-                self.y.append(int(row[1]))
+class SBar(tk.Frame):
+    def __init__(self, controller):
+        tk.Frame.__init__(self,controller)
 
-    def displayGraph(self):
-        self.graph.plot(self.x, self.y)
-        canvas = FigureCanvasTkAgg(self.figure, self)
+    def generateGraph(self, titles, values, xtitle, ytitle, isOrange=False, tickValue=1, isGantt=False):
+        self.graphInitialization()
+        if isGantt is False:
+            self.showGraph(titles, values, xtitle, ytitle, isOrange, tickValue)
+    def graphInitialization(self):
+        self.f = Figure(figsize=(4,5), dpi=100)
+        self.ax = self.f.add_subplot(111)
+    def showGraph(self, titles, values, xtitle, ytitle, isOrange=False, tickValue=1):
+        ind = np.arange(len(values))
+        width = .5
+        bars = self.ax.bar(ind, values, width)
+        self.ax.set_ylabel(ytitle)
+        self.ax.set_xlabel(xtitle)
+        loc = matplotlib.ticker.MultipleLocator(base=tickValue)  # this locator puts ticks at regular intervals
+        self.ax.yaxis.set_major_locator(loc) #we don't want to count freq to determine y max
+        self.ax.set_xticks(ind)
+        self.ax.set_xticklabels(titles)
+        #pretty colors
+        children = self.ax.get_children()
+        barlist = filter(lambda x: isinstance(x, matplotlib.patches.Rectangle), children)
+        itera = 0
+        for bar in barlist:
+            itera += 1
+            if isOrange is True:
+                bar.set_color(style.scrumbles_orange)
+                isOrange = False
+            else:
+                bar.set_color(style.scrumbles_blue)
+                isOrange = True
+        barlist = filter(lambda x: isinstance(x, matplotlib.patches.Rectangle), children)
+        for i in range(0, itera):
+            item = next(barlist)
+            if i == itera-1:
+                item.set_color('w')
+        canvas = FigureCanvasTkAgg(self.f, self)
         canvas.draw()
-        if self.label is not None:
-            self.label.pack(side=tk.TOP, fill=tk.X)
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=1, pady=1)
+class SGantt(tk.Frame):
+    def __init__(self, controller):
+        tk.Frame.__init__(self,controller)
 
-    def changeBackgroundColor(self, color):
-        self.graph.set_facecolor(facecolor=color)
+    def generateGraph(self, bottoms, tops, xlabels, yticks, ylabels, xtitle, ytitle):
+        self.graphInitialization()
+        self.showGraph(bottoms, tops, xlabels, yticks, ylabels, xtitle, ytitle)
+
+    def graphInitialization(self):
+        self.f = Figure(figsize=(4,5), dpi=100)
+        self.ax = self.f.add_subplot(111)
+    def showGraph(self, bottoms, tops, xlabels, yticks, ylabels, xtitle, ytitle, isOrange=False):
+        ind = np.arange(len(xlabels))
+        width = .50
+        bars = self.ax.barh(ind, tops, width, bottoms)
+        self.ax.set_xlabel(ytitle)
+        self.ax.set_ylabel(xtitle)
+
+        self.ax.set_yticks(ind)
+        self.ax.set_yticklabels(xlabels)
+
+        self.ax.set_xticks(yticks)
+        self.ax.set_xticklabels(ylabels)
+
+        # pretty colors
+        children = self.ax.get_children()
+        barlist = filter(lambda x: isinstance(x, matplotlib.patches.Rectangle), children)
+        itera = 0
+        for bar in barlist:
+            itera += 1
+            if isOrange is True:
+                bar.set_color(style.scrumbles_orange)
+                isOrange = False
+            else:
+                bar.set_color(style.scrumbles_blue)
+                isOrange = True
+        barlist = filter(lambda x: isinstance(x, matplotlib.patches.Rectangle), children)
+        for i in range(0, itera):
+            item = next(barlist)
+            if i == itera - 1:
+                item.set_color('w')
+
+        #make labels rotate
+        for tick in self.ax.get_xticklabels():
+            tick.set_rotation(65)
+        canvas = FigureCanvasTkAgg(self.f, self)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 
 class SHistogram(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
 
-    def generateGraph(self, x, y, xAxis, yAxis):
+    def generateGraph(self, x, y, xAxis, yAxis, xticks=1):
         self.graphInitialization()
-        self.showGraph(x, y, xAxis, yAxis)
-
+        self.showGraph(x, y, xAxis, yAxis, xticks)
+        
     def graphInitialization(self):
         self.f = Figure(figsize=(4,5), dpi=100)
         self.canvas = FigureCanvasTkAgg(self.f, self)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
 
-    def showGraph(self, bins, y, xAxis, yAxis):
+    def showGraph(self, bins, y, xAxis, yAxis, xticks=1):
         self.p = self.f.gca()
-        self.p.hist(y, bins)
+        oldBins = bins
+        N, bins, patches = self.p.hist(y, bins=bins)
+        fracs = N/N.max()
+        norm = colors.Normalize(fracs.min(), fracs.max())
+        for thisfrac, thispatch in zip(fracs,patches):
+            color = plt.cm.viridis(norm(thisfrac))
+            thispatch.set_facecolor(color)
+
+
         self.p.set_xlabel(xAxis, fontsize=15)
         self.p.set_ylabel(yAxis, fontsize=15)
-        self.p.set_xticks(range(0,bins))
+        self.p.set_xticks(range(0, oldBins, int(xticks)))
 
-        loc = matplotlib.ticker.MultipleLocator(base=1.0)  # this locator puts ticks at regular intervals
+        loc = matplotlib.ticker.MultipleLocator(base=1)  # this locator puts ticks at regular intervals
         self.p.yaxis.set_major_locator(loc) #we don't want to count freq to determine y max
 
 

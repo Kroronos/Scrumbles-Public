@@ -727,6 +727,7 @@ class SCardDescription(tk.Frame):
     def open(self, event):
         link = event.widget.cget('text')
         print(link)
+
         webbrowser.open(link)
 
 class SUserItemInspection(tk.Frame):
