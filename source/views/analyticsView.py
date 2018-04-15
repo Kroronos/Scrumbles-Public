@@ -849,8 +849,12 @@ class analyticsView(tk.Frame):
         creationUserAssignmentLabel = tk.Label(labelFrame,
                                            text=creationUserAssignmentString)
         numberOfPointsLabel = tk.Label(labelFrame,
-                                       text="The average number of points assigned to each task is "
+                                       text="The number of points assigned to this task is "
                                             + str("%.2f"%numberOfPoints) + ".")
+
+        statisticsFrame = tk.Frame(internalTaskFrame,  relief=tk.SOLID, borderwidth=1)
+        self.generateTaskGanttChart(statisticsFrame, taskName)
+        statisticsFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         if trueItem.itemStatus == 4:
             creationCompletionLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
@@ -867,9 +871,6 @@ class analyticsView(tk.Frame):
         numberOfPointsLabel.pack(side=tk.TOP, fill=tk.X, expand=True)
 
         labelFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        statisticsFrame = tk.Frame(internalTaskFrame,  relief=tk.SOLID, borderwidth=1)
-        self.generateTaskGanttChart(statisticsFrame, taskName)
-        statisticsFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.taskAnalyticsContents.pack_forget()
         if len(self.taskAnalyticsContentsOptions) == 1:
@@ -919,6 +920,21 @@ class analyticsView(tk.Frame):
             pointPoints.append(int(inspectedItem.itemTimeLine["Completed"].strftime("%y%m%d")))
             statusLabels.append("Submission")
 
+        #remove duplicates
+        pointPoints = list(set(pointPoints))
+        pointNames = list(set(pointNames))
+
+        #remove times too close together
+        oldPoint = None
+        for index, point in enumerate(pointPoints):
+            if oldPoint is None:
+                oldPoint = point
+                continue
+            if point - oldPoint > 2: #3 days minimum between events
+                oldPoint = point
+            else:
+                del pointNames[index]
+                del pointPoints[index]
         taskGanttChart = ScrumblesFrames.SGantt(controller)
         taskGanttChart.generateGraph(beginningPoints, endingPoints, statusLabels, pointPoints, pointNames,
                                          "Status of Task", "Dates")

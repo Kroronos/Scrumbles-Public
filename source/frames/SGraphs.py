@@ -128,6 +128,10 @@ class SGantt(tk.Frame):
             item = next(barlist)
             if i == itera - 1:
                 item.set_color('w')
+
+        #make labels rotate
+        for tick in self.ax.get_xticklabels():
+            tick.set_rotation(65)
         canvas = FigureCanvasTkAgg(self.f, self)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
