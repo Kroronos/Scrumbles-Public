@@ -345,8 +345,9 @@ class SCardDescription(tk.Frame):
         self.controller = controller
         self.dataBlock = master.dataBlock
         self.config(relief = tk.SUNKEN, borderwidth = 5)
+        self.dataTypeText = datatype[0]
 
-        self.canvas = tk.Canvas(self, bd = 1, scrollregion = (0,0,1000,1000), height = 100)
+        self.canvas = tk.Canvas(self, bd = 1, scrollregion = (0, 0, 1000, 1000), height = 100)
         self.scrollbar = tk.Scrollbar(self, command = self.canvas.yview, cursor = "hand2")
         self.canvas.config(yscrollcommand = self.scrollbar.set)
 
@@ -356,8 +357,9 @@ class SCardDescription(tk.Frame):
         self.internals = tk.Frame(self.canvas)
         self.canvasFrame = self.canvas.create_window(0, 0, window = self.internals, anchor = tk.NW)
         self.titleText = tk.StringVar()
-        self.titleText.set(str(datatype[0]) + " Description")
-        self.title = tk.Label(self.internals, textvariable = self.titleText,
+        self.titleText.set(self.dataTypeText + " Description")
+        self.title = tk.Label(self.internals,
+                              textvariable = self.titleText,
                               font = (style.header_family, style.header_size, style.header_weight))
         self.title.pack(fill = tk.BOTH)
         self.internals.bind("<Configure>", self.OnFrameConfigure)
@@ -366,7 +368,7 @@ class SCardDescription(tk.Frame):
         self.datatype = dict((source, table) for source, table in zip(sources, datatype))
 
         self.cardDescriptions = {}
-        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self.internals)
+        self.cardDescriptions['Start'] = self.cardDescriptionStartFrame(self.internals, self.dataTypeText)
         self.cardDescriptions['Item'] = self.cardDescriptionItemFrame(self.internals)
         self.cardDescriptions['User'] = self.cardDescriptionUserFrame(self.internals)
         self.cardDescriptions['Sprint'] = self.cardDescriptionSprintFrame(self.internals)
@@ -382,9 +384,9 @@ class SCardDescription(tk.Frame):
         self.canvas.configure(scrollregion = self.canvas.bbox("all"))
 
     class cardDescriptionStartFrame(tk.Frame):
-        def __init__(self, controller):
+        def __init__(self, controller, dataTypeText):
             tk.Frame.__init__(self, controller)
-            tk.helpMeLabel = tk.Label(self, text = "Click on a card to obtain information about it!")
+            tk.helpMeLabel = tk.Label(self, text = "Click on any " + dataTypeText.lower() + " to obtain information about it!")
             tk.helpMeLabel.pack()
 
     class cardDescriptionItemFrame(tk.Frame):
@@ -704,8 +706,12 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Active"] = self.cardDescriptions["Item"]
 
     def generateSprintFields(self, selectedSprint):
-        self.cardDescriptions["Sprint"].sprintStart.configure(text = selectedSprint.getFormattedStartDate(), justify = tk.LEFT, wraplength = self.master.w_rat*300)
-        self.cardDescriptions["Sprint"].sprintDue.configure(text = selectedSprint.getFormattedDueDate(), justify = tk.LEFT, wraplength = self.master.w_rat*300)
+        self.cardDescriptions["Sprint"].sprintStart.configure(text = selectedSprint.getFormattedStartDate(),
+                                                              justify = tk.LEFT,
+                                                              wraplength = self.master.w_rat*300)
+        self.cardDescriptions["Sprint"].sprintDue.configure(text = selectedSprint.getFormattedDueDate(),
+                                                            justify = tk.LEFT,
+                                                            wraplength = self.master.w_rat*300)
 
         self.cardDescriptions["Sprint"].repack()
 
