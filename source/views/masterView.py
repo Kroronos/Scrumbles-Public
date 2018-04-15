@@ -189,8 +189,16 @@ class masterView(tk.Tk):
         for user in self.dataBlock.users:
             if loggedInUser == user.userName:
                 loggedInUser = user
+
         self.activeUser = loggedInUser
         print('%s Loggin in' % loggedInUser.userName)
+
+        if not self.activeUser.listOfProjects:
+            logOut(self)
+            messagebox.showinfo('No Assigned Projects', 'You are not currently assigned to any projects '
+                                                        '\nPlease contact an administrator or team leader')
+            return
+
         self.dataBlock.packCallback(self.repointActiveObjects)
 
         homeFrame = mainView.mainView(self.container, self, loggedInUser)
