@@ -197,9 +197,9 @@ class masterView(tk.Tk):
         print('%s Loggin in' % loggedInUser.userName)
 
         if not self.activeUser.listOfProjects:
-            logOut(self)
             messagebox.showinfo('No Assigned Projects', 'You are not currently assigned to any projects '
                                                         '\nPlease contact an administrator or team leader')
+            logOut(self)
             return
 
         self.dataBlock.packCallback(self.repointActiveObjects)
