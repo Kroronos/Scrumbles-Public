@@ -973,8 +973,6 @@ class analyticsView(tk.Frame):
                         del pointPoints[index]
 
         taskGanttChart = ScrumblesFrames.SGantt(controller)
-        print(pointPoints)
-        print(pointNames)
         taskGanttChart.generateGraph(beginningPoints, endingPoints, statusLabels, pointPoints, pointNames,
                                          "Status of Task", "Dates")
         taskGanttChart.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
