@@ -1,5 +1,7 @@
 import logging
 import tkinter as tk
+import matplotlib.pyplot as plt
+
 from tkinter import messagebox
 from views import splashView, developerHomeView, mainView, teamManagerView, loginView, analyticsView
 
@@ -102,9 +104,10 @@ class masterView(tk.Tk):
         elif self.activeUser.userRole == "Developer":
             viewMenu.add_command(label = "Developer Main", command = lambda: self.show_frame(mainView))
 
-        viewMenu.add_command(label = "Developer Home", command = lambda: self.show_frame(developerHomeView))
-        viewMenu.add_command(label = "Team Manager", command = lambda: self.show_frame(teamManagerView))
-        viewMenu.add_command(label = "Item Manager", command = lambda: self.show_frame(analyticsView))
+        viewMenu.add_command(label="Developer Home", command=lambda: self.show_frame(developerHomeView))
+        viewMenu.add_command(label="Team Manager", command=lambda: self.show_frame(teamManagerView))
+
+        viewMenu.add_command(label="Analytics", command = lambda: self.show_frame(analyticsView))
 
         helpMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
@@ -159,7 +162,7 @@ class masterView(tk.Tk):
 
     def showCreateProjectDialog(self):
         Dialogs.CreateProjectDialog(self, master = self, dataBlock=self.dataBlock).show()
-        
+
     def showCreateUserDialog(self):
         Dialogs.CreateUserDialog(self, master = self, dataBlock=self.dataBlock).show()
 
@@ -240,12 +243,12 @@ class masterView(tk.Tk):
             logging.exception('Failed to delete menu')
 
         self.popMenu = tk.Menu(menu, tearoff = 0)
-        if self.activeUser is None and (self.activeUser.userRole == "Scrum Master" or 
+        if self.activeUser is None and (self.activeUser.userRole == "Scrum Master" or
                                         self.activeUser.userRole == "Developer"):
             for text in listOfProjects:
                 for project in self.activeUser.listOfProjects:
                     if project.projectName == text:
-                        self.popMenu.add_command(label = project.projectName, 
+                        self.popMenu.add_command(label = project.projectName,
                                                  command = lambda t = project.projectName: self.setActiveProject(t))
         else:
             for text in listOfProjects:
@@ -290,6 +293,7 @@ def logOut(controller):
 
 def exitProgram(mainWindow):
     setGeometryFile(mainWindow)
+    plt.close('all')
     try:
         mainWindow.dataBlock.shutdown()
     except:
