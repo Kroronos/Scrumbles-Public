@@ -6,7 +6,7 @@ import tkinter as tk
 
 
 class mainViewPopup(SPopMenu.GenericPopupMenu):
-    def __init__(self,root, Master, isSubItem):
+    def __init__(self, root, Master, isSubItem):
         super().__init__(root, Master)
         self.isAssignDeleted = False
         self.isSubItem = isSubItem
@@ -14,56 +14,71 @@ class mainViewPopup(SPopMenu.GenericPopupMenu):
     def context_menu(self, event, menu):
         self.widget = event.widget
         self.event = event
+
         index = self.widget.nearest(event.y)
         _, yOffSet, _, height = self.widget.bbox(index)
+
         if event.y > height + yOffSet + 5:
             return
         self.selectedObject = self.widget.get(index)
-
         self.selectedObject = self.findSelectedObject(self.selectedObject)
+
         try:
             self.root.selectedItem = self.selectedObject
         except:
             pass
-        # for i in range(5):
-        #     print('index %i = %s'%(i,str(self.index(i))))
+
         try:
             self.delete(u'Approve Item')
         except Exception as e:
             pass
+
         if self.root.roleMap[self.root.activeRole] > 0:
             if self.index(0) is None:
                 self.usersMenu = tk.Menu(self, tearoff = 0)
                 self.usersMenuEpic = tk.Menu(self, tearoff = 0)
                 self.usersMenuSprint = tk.Menu(self, tearoff = 0)
 
-                self.add_cascade(label = u'Assign to User', menu = self.usersMenu)
+                self.add_cascade(label = u'Assign to User',
+                                 menu = self.usersMenu)
 
                 for name in [U.userName for U in self.master.activeProject.listOfAssignedUsers]:
-                    self.usersMenu.add_command(label = name, command = lambda n = name: self.root.assignToUser(n))
+                    self.usersMenu.add_command(label = name,
+                                               command = lambda n = name: self.root.assignToUser(n))
 
                 self.listOfSprints = [S for S in self.master.activeProject.listOfAssignedSprints]
-                self.add_cascade(label = u'Assign to Sprint', menu = self.usersMenuSprint)
+                self.add_cascade(label = u'Assign to Sprint',
+                                 menu = self.usersMenuSprint)
 
                 for name in [S.sprintName for S in self.listOfSprints]:
-                    self.usersMenuSprint.add_command(label = name, command = lambda n = name: self.root.assignToSprint(n))
+                    self.usersMenuSprint.add_command(label = name,
+                                                     command = lambda n = name: self.root.assignToSprint(n))
 
-                self.listOfEpics = [I for I in self.master.activeProject.listOfAssignedItems if I.itemType == 'Epic']
-                self.add_cascade(label = u'Assign to Epic', menu = self.usersMenuEpic)
+                self.listOfEpics = [I for I in self.master.activeProject.listOfAssignedItems if
+                                    (I.itemType == 'Epic' and self.root.selectedItem.itemSprintID == I.itemSprintID)]
+
+                self.add_cascade(label = u'Assign to Epic',
+                                 menu = self.usersMenuEpic)
 
                 for name in [I.itemTitle for I in self.listOfEpics]:
-                    self.usersMenuEpic.add_command(label = name, command = lambda n = name: self.root.assignToEpic(n))
+                    self.usersMenuEpic.add_command(label = name,
+                                                   command = lambda n = name: self.root.assignToEpic(n))
 
-                self.add_command(label = u'Edit Item', command = self.root.updateItem)
-                self.add_command(label = u'Delete Item', command = self.root.deleteItem)
+                self.add_command(label = u'Edit Item',
+                                 command = self.root.updateItem)
+                self.add_command(label = u'Delete Item',
+                                 command = self.root.deleteItem)
                 if self.isSubItem:
-                    self.add_command(label = u'Remove Subitem', command = self.root.removeFromEpic)
+                    self.add_command(label = u'Remove Subitem',
+                                     command = self.root.removeFromEpic)
                     
             if self.selectedObject.itemStatus == 3:
-                self.add_command(label = u'Approve Item', command = self.root.approveItem)
+                self.add_command(label = u'Approve Item',
+                                 command = self.root.approveItem)
 
             if self.selectedObject.itemStatus == 3:
-                self.add_command(label = u'Reject Item', command = self.root.rejectItem)
+                self.add_command(label = u'Reject Item',
+                                 command = self.root.rejectItem)
 
         self.widget.selection_clear(0, tk.END)
         self.widget.selection_set(index)
@@ -132,8 +147,8 @@ class mainView(tk.Frame):
 
         self.fullBacklogList.listbox.bind('<2>' if self.aqua else '<3>',
                                           lambda event: (self.generatePopupThing(),
-                                                     self.FBPopMenu.context_menu(event,
-                                                     self.FBPopMenu)))
+                                                         self.FBPopMenu.context_menu(event,
+                                                         self.FBPopMenu)))
         self.sprintList.listbox.bind('<2>' if self.aqua else '<3>',
                                      lambda event: (self.generatePopupThing(),
                                                     self.sprintPopMenu.context_menu(event,
@@ -163,10 +178,10 @@ class mainView(tk.Frame):
         self.FBPopMenu = mainViewPopup(self, self.controller, False)
         self.sprintPopMenu = SPopMenu.GenericPopupMenu(self, self.controller)
         if self.roleMap[self.activeRole] > 0:
-            self.sprintPopMenu.add_command(label=u'Edit Sprint',
-                                           command=self.editSprint)
-            self.sprintPopMenu.add_command(label=u'Delete Sprint',
-                                           command=self.deleteSprint)
+            self.sprintPopMenu.add_command(label = u'Edit Sprint',
+                                           command = self.editSprint)
+            self.sprintPopMenu.add_command(label = u'Delete Sprint',
+                                           command = self.deleteSprint)
 
         self.itemPopMenu = mainViewPopup(self, self.controller, False)
         self.subItemPopMenu = mainViewPopup(self, self.controller, True)
@@ -188,7 +203,7 @@ class mainView(tk.Frame):
 
         except Exception as e:
             logging.exception('Could not assign item to Complete')
-            messagebox.showerror('Error',str(e))
+            messagebox.showerror('Error', str(e))
 
         messagebox.showinfo('Success','Item Approved')
 
@@ -258,13 +273,13 @@ class mainView(tk.Frame):
                     self.controller.dataBlock.addNewScrumblesObject(comment)
                 except Exception as e:
                     messagebox.showerror('Error', str(e))
-                    logging.exception('Error assigning user %s to item'%username)
+                    logging.exception('Error assigning user %s to item' % username)
                     return
-                messagebox.showinfo('Success', 'Item Assigned to User %s'%user.userName)
+                messagebox.showinfo('Success', 'Item Assigned to User %s' % user.userName)
 
             else:
                 messagebox.showerror('Error', 'User not found in DataBlock')
-                logging.error('User %s not found in dataBlock'%username)
+                logging.error('User %s not found in dataBlock' % username)
 
     def assignToSprint(self, inSprint):
         sprint = None
@@ -323,7 +338,6 @@ class mainView(tk.Frame):
                     return
                 messagebox.showinfo('Success', 'Item Assigned Item to Epic, %s' % epic.itemTitle)
 
-
             else:
                 messagebox.showerror('Error', 'Epic not found in DataBlock')
                 logging.error('Epic not found in dataBlock')
@@ -361,7 +375,7 @@ class mainView(tk.Frame):
             raise Exception('Error Loading item from title')
         try:
             if messagebox.askyesno('Warning', 'Are you sure you want to delete %s\nThis action cannot be reversed' % str(item)):
-                self.controller.dataBlock.deleteScrumblesObject(item,self.controller.activeProject)
+                self.controller.dataBlock.deleteScrumblesObject(item, self.controller.activeProject)
                 messagebox.showinfo('Success', 'Item %s deleted from database' % item.itemTitle)
         except Exception as e:
             logging.exception('Failed to delete item %s' % str(item))
@@ -440,15 +454,6 @@ class mainView(tk.Frame):
         del self.itemPopMenu
         self.itemPopMenu = mainViewPopup(self, self.controller, False)
         self.generatePopupThing()
-
-        # self.sprints = []
-        # self.sprintItems = []
-        # self.sprintItemSubItems = []
-        #
-        # self.selectedFB = None
-        # self.selectedSprint = None
-        # self.selectedItem = None
-        # self.selectedSubItem = None
 
     def assignedFullBacklogEvent(self, event):
         for item in self.controller.activeProject.listOfAssignedItems:
