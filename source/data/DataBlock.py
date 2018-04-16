@@ -394,11 +394,12 @@ class DataBlock:
         elif type(obj) == ScrumblesObjects.Sprint:
             self.conn.setMulti(Query.deleteObject(obj))
         elif type(obj) == ScrumblesObjects.Project:
-            self.conn.setMulti(ProjectQuery.deleteProject(obj,self.enumerateSprints(obj)))
+            sprintsInProject = self.getSprintsInProject(obj)
+            self.conn.setMulti(ProjectQuery.deleteProject(obj,sprintsInProject))
         else:
             self.conn.setData(Query.deleteObject(obj))
 
-    def enumerateSprints(self,project):
+    def getSprintsInProject(self, project):
         sprintList = []
         for S in self.sprints:
             if S.projectID == project.projectID:
