@@ -185,38 +185,38 @@ class masterView(tk.Tk):
 
         return views, viewNames
 
-    def showCreateProjectDialog(self,event=None):
+    def showCreateProjectDialog(self, event = None):
         Dialogs.CreateProjectDialog(self, master = self, dataBlock = self.dataBlock).show()
    
-    def showCreateUserDialog(self,even=None):
+    def showCreateUserDialog(self, even = None):
         Dialogs.CreateUserDialog(self, master = self, dataBlock = self.dataBlock).show()
 
-    def showCreateSprintDialog(self,event=None):
+    def showCreateSprintDialog(self, event = None):
         Dialogs.CreateSprintDialog(self, master = self, dataBlock = self.dataBlock).show()
 
-    def showCreateItemDialog(self,event=None):
+    def showCreateItemDialog(self, event = None):
         Dialogs.CreateItemDialog(self, master = self, dataBlock = self.dataBlock).show()
 
-    def windowMin(self, event=None):
+    def windowMin(self, event = None):
         minimize(self)
 
-    def windowQuit(self, event=None):
+    def windowQuit(self, event = None):
         exitProgram(self)
 
-    def showSplashView(self, event=None):
+    def showSplashView(self, event = None):
         self.show_frame(splashView)
 
-    def showTeamManagerView(self, event=None):
+    def showTeamManagerView(self, event = None):
         if self.activeUser.userRole == "Admin":
             self.show_frame(teamManagerView)
 
-    def showMainView(self, event=None):
+    def showMainView(self, event = None):
         self.show_frame(mainView)
 
-    def showDeveloperHomeView(self, event=None):
+    def showDeveloperHomeView(self, event = None):
         self.show_frame(developerHomeView)
 
-    def showAnalyticsView(self, event=None):
+    def showAnalyticsView(self, event = None):
         self.show_frame(analyticsView)
 
     def generateViews(self, loggedInUser):
