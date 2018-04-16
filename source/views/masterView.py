@@ -135,7 +135,7 @@ class masterView(tk.Tk):
         viewMenu.add_command(label = "Analytics View", underline = 0, command = lambda: self.show_frame(analyticsView), accelerator="CTRL+A")
 
         helpMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
-        helpMenu.add_command(label = "User Guide", command = self.openUserGuide)
+        helpMenu.add_command(label = "User Guide", command =self.openUserGuide)
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
         helpMenu.add_command(label = "What's With The Colors", command = self.colorHelp)
@@ -186,38 +186,38 @@ class masterView(tk.Tk):
 
         return views, viewNames
 
-    def showCreateProjectDialog(self,event):
+    def showCreateProjectDialog(self,event=None):
         Dialogs.CreateProjectDialog(self, master = self, dataBlock = self.dataBlock).show()
    
-    def showCreateUserDialog(self,event):
+    def showCreateUserDialog(self,even=None):
         Dialogs.CreateUserDialog(self, master = self, dataBlock = self.dataBlock).show()
 
-    def showCreateSprintDialog(self,event):
+    def showCreateSprintDialog(self,event=None):
         Dialogs.CreateSprintDialog(self, master = self, dataBlock = self.dataBlock).show()
 
-    def showCreateItemDialog(self,event):
+    def showCreateItemDialog(self,event=None):
         Dialogs.CreateItemDialog(self, master = self, dataBlock = self.dataBlock).show()
 
-    def windowMin(self, event):
+    def windowMin(self, event=None):
         minimize(self)
 
-    def windowQuit(self, event):
+    def windowQuit(self, event=None):
         exitProgram(self)
 
-    def showSplashView(self, event):
+    def showSplashView(self, event=None):
         self.show_frame(splashView)
 
-    def showTeamManagerView(self, event):
+    def showTeamManagerView(self, event=None):
         if self.activeUser.userRole == "Admin":
             self.show_frame(teamManagerView)
 
-    def showMainView(self, event):
+    def showMainView(self, event=None):
         self.show_frame(mainView)
 
-    def showDeveloperHomeView(self, event):
+    def showDeveloperHomeView(self, event=None):
         self.show_frame(developerHomeView)
 
-    def showAnalyticsView(self, event):
+    def showAnalyticsView(self, event=None):
         self.show_frame(analyticsView)
 
     def generateViews(self, loggedInUser):
@@ -274,7 +274,7 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
 
-    def openUserGuide(self, event):
+    def openUserGuide(self,event=None):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/User-Guide')
 
     def connectionLossHandler(self):
@@ -330,7 +330,7 @@ class masterView(tk.Tk):
             if U.userName == self.activeUser.userName:
                 self.activeUser = U
 
-    def refreshData(self, event):
+    def refreshData(self,event=None):
         self.dataBlock.updateAllObjects()
         self.dataBlock.executeUpdaterCallbacks()
 
