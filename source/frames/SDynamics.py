@@ -272,7 +272,11 @@ class commentsField(tk.Frame):
         if searchParamsSpec is None:
             self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate = True)
         else:
-            self.updateFromListOfCommentsObject([searchParamsSpec], searchParamsSpec.userName)
+            if type(searchParamsSpec) is ScrumblesObjects.User:
+                self.updateFromListOfCommentsObject([searchParamsSpec], searchParamsSpec.userName)
+            else:
+                self.updateFromListOfCommentsObject([searchParamsSpec], searchParamsSpec.itemTitle)
+
 
     def renderCommentField(self, initializedComments = False):
         if initializedComments is True:
