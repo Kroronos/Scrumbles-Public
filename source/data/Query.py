@@ -100,10 +100,25 @@ class ProjectQuery(Query):
         return query, (project.projectID,project.projectName)
 
     @staticmethod
-    def deleteProject(project):
+    def deleteProject(project,sprintList):
         assert project is not None
-        query = 'DELETE FROM ProjectsTable WHERE ProjectID=%s'
-        return query , (project.projectID,)
+        sql = ''
+        params = {}
+        next = 0
+        for i, sprint in enumerate(sprintList):
+            sql += 'UPDATE SprintTable SET ProjectID = %s WHERE SprintID=%s\n'
+            params[i+1] = (None,sprint.sprintID)
+            next = i
+
+        sql += 'DELETE FROM ProjectsTable WHERE ProjectID=%s\n'
+        params[next+1] = (project.projectID,)
+        next += 1
+        sql += 'DELETE FROM ProjectItemTable WHERE ProjectID=%s\n'
+        params[next+1] = (project.projectID,)
+        next += 1
+        sql += 'DELETE FROM ProjectUserTable WHERE ProjectDI=%s\n'
+        params[next+1] = (project.projectID,)
+        return sql,params
 
     @staticmethod
     def updateProject(project):

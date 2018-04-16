@@ -393,8 +393,17 @@ class DataBlock:
             self.conn.setMulti(Query.deleteObject(obj))
         elif type(obj) == ScrumblesObjects.Sprint:
             self.conn.setMulti(Query.deleteObject(obj))
+        elif type(obj) == ScrumblesObjects.Project:
+            self.conn.setMulti(ProjectQuery.deleteProject(obj,self.enumerateSprints(obj)))
         else:
             self.conn.setData(Query.deleteObject(obj))
+
+    def enumerateSprints(self,project):
+        sprintList = []
+        for S in self.sprints:
+            if S.projectID == project.projectID:
+                sprintList.append(S)
+        return sprintList
 
     @dbWrap
     def removeItemFromComments(self,item):
