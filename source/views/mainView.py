@@ -368,10 +368,6 @@ class mainView(tk.Frame):
                 item = i
 
         if item is None:
-            print('Item Title:', title)
-            print('backlogData:')
-            for i in self.controller.activeProject.listOfAssignedItems:
-                print(i.itemTitle)
             raise Exception('Error Loading item from title')
         try:
             if messagebox.askyesno('Warning', 'Are you sure you want to delete %s\nThis action cannot be reversed' % str(item)):
@@ -391,10 +387,6 @@ class mainView(tk.Frame):
                 item = i
 
         if item is None:
-            print('Item Title:', title)
-            print('backlogData:')
-            for i in self.controller.activeProject.listOfAssignedItems:
-                print(i.itemTitle)
             raise Exception('Error Loading item from title')
 
         Dialogs.EditItemDialog(self.controller,
@@ -461,8 +453,11 @@ class mainView(tk.Frame):
                 self.selectedFullBacklogItem = item
                 self.selectedItem = item
                 if self.selectedItem.itemSprintID is not None:
-                    self.selectedSprint = self.controller.dataBlock.sprintMap[self.selectedFullBacklogItem.itemSprintID]
-                    print(self.selectedSprint.sprintName)
+                    try:
+                        self.selectedSprint = self.controller.dataBlock.sprintMap[self.selectedFullBacklogItem.itemSprintID]
+                    except KeyError:
+                        pass
+
                     self.sprintItems = self.selectedSprint.listOfAssignedItems
                     self.itemList.importItemList(self.sprintItems)
                     self.itemList.colorCodeListboxes()
@@ -486,8 +481,6 @@ class mainView(tk.Frame):
     def assignedItemEvent(self, event):
         for item in self.controller.activeProject.listOfAssignedItems:
             if item.itemTitle == event.widget.get(tk.ANCHOR):
-
-                print(item.itemTitle)
                 self.selectedItem = item
                 self.subItemList.clearList()
                 self.subItemList.importItemList(item.subItemList)

@@ -52,8 +52,6 @@ class GenericDialog(Tk.Toplevel):
         master=MasterView
         dataBlock=DataBlock
         """
-        print('SUPER arg[0]', args[0])
-        print('SUPER kwargs', kwargs )
 
         self.isTest = False
         self.isTest = kwargs.pop('test', None)
@@ -66,8 +64,6 @@ class GenericDialog(Tk.Toplevel):
         self.master = kwargs.pop('master', None)
         if self.master is not None:
             assert type(self.master) is masterView.masterView, 'Key: master must be the Scrumbles masterView'
-
-        print('Popped master from kwargs, self.master is:',self.master)
 
         Tk.Toplevel.__init__(self, *args, **kwargs)
         self.parent = args[0]
@@ -373,7 +369,7 @@ class DeleteSprintDialog(GenericDialog):
                 self.dataBlock.deleteScrumblesObject(self.sprint)
                 self.exit()
             else:
-                print('TESTMODE: self.dataBlock.addNewScrumblesObject(%s)'%repr(project))
+                print('TESTMODE: self.dataBlock.addNewScrumblesObject(%s)'%repr(self.sprint))
         except IntegrityError:
             logging.exception('ID Collision')
 
@@ -399,14 +395,9 @@ class DeleteSprintDialog(GenericDialog):
 
 class CreateItemDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
-        print('SELF', type(self))
-        print('CREATE arg[0]', args[0])
-        print('CREATE kwargs', kwargs)
-        print("Colling Super Init")
         super().__init__(*args, **kwargs)
         self.item = None
         if not self.isTest:
-            print('Super __init__ Complete, self.master=',self.master)
             self.geometry('%dx%d'%(600*self.master.w_rat, 640*self.master.h_rat))
         self.title('Create a New Item')
         self.createWidgets()
@@ -502,17 +493,10 @@ class CreateItemDialog(GenericDialog):
 class EditItemDialog(CreateItemDialog):
 
     def __init__(self, *args, **kwargs):
-        print('SELF',type(self))
-        print('EDIT arg[0]', args[0])
-        print('EDIT kwargs', kwargs)
-        print('CALLING Create _init_')
-
-
         item = kwargs.pop('item',None)
         assert type(item) is ScrumblesObjects.Item
         super().__init__(*args, **kwargs)
 
-        print('Create _init_complete: self.master =', self.master)
         self.item = item
         assert type(item) is ScrumblesObjects.Item
         if not self.isTest:

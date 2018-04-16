@@ -141,7 +141,7 @@ class Item:
         return self.itemCreationDate.strftime("%I:%M %p, %m/%d/%y")
 
     def __str__(self):
-        return 'Item Object\nTitle:%s\nType:%s,'%(self.itemTitle,self.itemType)
+        return self.itemTitle
 
 class Sprint:
     sprintID = None
