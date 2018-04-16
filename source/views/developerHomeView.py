@@ -13,6 +13,7 @@ class developerHomeView(tk.Frame):
 
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
+        self.firstRun = True
 
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
@@ -25,30 +26,32 @@ class developerHomeView(tk.Frame):
         self.backlogPopMenu.add_command(label=u'Assign To me', command=self.assignItemToActiveUser)
 
         self.itemColumnFrame = tk.Frame(self)
-        self.userItemList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "MY ITEMS", controller)
+        self.userItemList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "MY ITEMS", controller, canAdd=False)
         self.userItemList.listbox.bind('<2>' if self.aqua else '<3>',
                                         lambda event: self.myItemsPopMenu.context_menu(event, self.myItemsPopMenu))
 
         self.productBacklogList = ScrumblesFrames.SBacklogListColor(self.itemColumnFrame, "BACKLOG", controller)
 
         self.productBacklogList.listbox.bind('<2>' if self.aqua else '<3>',
-                                        lambda event: self.backlogPopMenu.context_menu(event, self.backlogPopMenu) )
-
-
+                                        lambda event: self.backlogPopMenu.context_menu(event, self.backlogPopMenu))
 
         self.commentFeed = ScrumblesFrames.commentsField(self, self.controller)
 
         # progress bar
         s = ttk.Style()
         s.theme_use('clam')
-        s.configure("scrumbles.Horizontal.TProgressbar", troughcolor=style.scrumbles_blue, background=style.scrumbles_orange)
+        s.configure("scrumbles.Horizontal.TProgressbar",
+                    troughcolor = 'gray',
+                    background = style.scrumbles_green_fg)
 
         progressBarStyle = "scrumbles.Horizontal.TProgressbar"
 
-        self.progressBar = ttk.Progressbar(self.itemColumnFrame, style=progressBarStyle, orient="horizontal", mode="determinate")
+        self.progressBar = ttk.Progressbar(self.itemColumnFrame,
+                                           style = progressBarStyle,
+                                           orient = "horizontal",
+                                           mode = "determinate")
 
         self.teamMemberList = ScrumblesFrames.SList(self, "TEAM MEMBERS")
-
 
         self.backlog = []
         self.teamMembers = []
@@ -111,7 +114,9 @@ class developerHomeView(tk.Frame):
         self.userItemList.colorCodeListboxes()
         self.updateProgressBar()
         self.commentFeed.updateComments()
-
+        if self.firstRun is False:
+            self.descriptionManager.resetToStart()
+        self.firstRun = False
 
     def listboxEvents(self, event):
         if event.widget is self.userItemList.listbox:

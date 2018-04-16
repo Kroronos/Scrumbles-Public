@@ -52,8 +52,6 @@ class GenericDialog(Tk.Toplevel):
         master=MasterView
         dataBlock=DataBlock
         """
-        print('SUPER arg[0]', args[0])
-        print('SUPER kwargs', kwargs )
 
         self.isTest = False
         self.isTest = kwargs.pop('test', None)
@@ -66,8 +64,6 @@ class GenericDialog(Tk.Toplevel):
         self.master = kwargs.pop('master', None)
         if self.master is not None:
             assert type(self.master) is masterView.masterView, 'Key: master must be the Scrumbles masterView'
-
-        print('Popped master from kwargs, self.master is:',self.master)
 
         Tk.Toplevel.__init__(self, *args, **kwargs)
         self.parent = args[0]
@@ -373,7 +369,7 @@ class DeleteSprintDialog(GenericDialog):
                 self.dataBlock.deleteScrumblesObject(self.sprint)
                 self.exit()
             else:
-                print('TESTMODE: self.dataBlock.addNewScrumblesObject(%s)'%repr(project))
+                print('TESTMODE: self.dataBlock.addNewScrumblesObject(%s)'%repr(self.sprint))
         except IntegrityError:
             logging.exception('ID Collision')
 
@@ -399,14 +395,9 @@ class DeleteSprintDialog(GenericDialog):
 
 class CreateItemDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
-        print('SELF', type(self))
-        print('CREATE arg[0]', args[0])
-        print('CREATE kwargs', kwargs)
-        print("Colling Super Init")
         super().__init__(*args, **kwargs)
         self.item = None
         if not self.isTest:
-            print('Super __init__ Complete, self.master=',self.master)
             self.geometry('%dx%d'%(600*self.master.w_rat, 640*self.master.h_rat))
         self.title('Create a New Item')
         self.createWidgets()
@@ -502,17 +493,10 @@ class CreateItemDialog(GenericDialog):
 class EditItemDialog(CreateItemDialog):
 
     def __init__(self, *args, **kwargs):
-        print('SELF',type(self))
-        print('EDIT arg[0]', args[0])
-        print('EDIT kwargs', kwargs)
-        print('CALLING Create _init_')
-
-
         item = kwargs.pop('item',None)
         assert type(item) is ScrumblesObjects.Item
         super().__init__(*args, **kwargs)
 
-        print('Create _init_complete: self.master =', self.master)
         self.item = item
         assert type(item) is ScrumblesObjects.Item
         if not self.isTest:
@@ -770,7 +754,6 @@ class codeLinkDialog(GenericDialog):
             self.dataBlock.updateScrumblesObject(self.Item)
         self.exit()
 
-
     def exit(self):
         self.top.destroy()
 
@@ -778,56 +761,10 @@ class codeLinkDialog(GenericDialog):
         self.executeSuccess = False
         self.exit()
 
+# THE FOLLOWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
 
-
-
-
-class SplashScreen(Tk.Toplevel):
-    def __init__(self,parent, master):
-        Tk.Toplevel.__init__(self,parent,cursor="watch")
-        print('Init Splash')
-
-        self.wm_overrideredirect(True)
-        self.title('Welcome To Scrumbles')
-        w = 1280*master.w_rat
-        h = 800*master.h_rat
-        ws = parent.winfo_screenwidth()  # width of the screen
-        hs = parent.winfo_screenheight()  # height of the screen
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-        self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.waitLabel = Tk.Label(self,text='Please wait while Scrumbles Loads')
-        self.waitLabel.pack()
-        self.isAlive = True
-
-        self.pbarList = []
-        for i in range(30):
-            pbar = None
-            pbar= ttk.Progressbar(self,length=1000,maximum=10*(i),mode='indeterminate')
-            pbar.pack()
-            #pbar.start(10)
-            self.pbarList.append(pbar)
-
-
-        self.update()
-        #self.start_progressBar()
-    def kill(self):
-        print('destroying Splash')
-        self.isAlive = False
-        self.destroy()
-
-    def step_progressBar(self,interval):
-        for pbar in self.pbarList:
-            pbar.step(interval)
-            self.update()
-
-
-
-
-## THE FOLLWING CODE WILL ALLOW STANDALONE EXECUTION OF DIALOGS INDEPENDENT OF SCRUMBLES APP
-
-##  UNCOMMENT ONLY FOR TESTING.
-##  KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
+# UNCOMMENT ONLY FOR TESTING.
+# KEEP CODE BLOCK COMMENTED OUT FOR PRODUCTION TESTING
 # dbLoginInfo = ScrumblesData.DataBaseLoginInfo('login.txt')
 # #
 # dataConnection = ScrumblesData.ScrumblesData(dbLoginInfo)
@@ -856,10 +793,8 @@ class SplashScreen(Tk.Toplevel):
 # edit = EditItemDialog(root, dataConnection, items[0])
 #
 # root.wait_window(edit.top)
-
-
-
 # root.wait_window(p.top)
+
 if __name__ == '__main__':
     TSprint = ScrumblesObjects.Sprint()
     TSprint.sprintName = 'Test Sprint'

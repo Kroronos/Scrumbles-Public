@@ -12,17 +12,10 @@ class ColorSchemes:
     completedItemColorScheme = {'bg': style.scrumbles_green_bg, 'fg': style.scrumbles_green_fg}
 
 
-class BaseList(tk.Frame,tk.Listbox):
+class BaseList(tk.Frame, tk.Listbox):
     def __init__(self, controller):
         self.fullList = []
         self.controller = controller
-
-    # def get(self,*args,**kwargs):
-    #     return self.listbox.get(*args,**kwargs)
-    #
-    # def curselection(self,*args,**kwargs):
-    #     print('debug curselection',self.listbox.curselection(*args,**kwargs))
-    #     return self.listbox.curselection(*args,**kwargs)
 
     def showPartialList(self, list):
         self.clearList()
@@ -36,7 +29,6 @@ class BaseList(tk.Frame,tk.Listbox):
             self.listbox.insert(tk.END, item)
         self.enforceSort()
 
-
     def importList(self, list):
         self.deleteList()
         self.fullList = list
@@ -44,38 +36,35 @@ class BaseList(tk.Frame,tk.Listbox):
             self.listbox.insert(tk.END, item)
         self.enforceSort()
 
-
     def importItemList(self, items):
         self.deleteList()
-        listofnames = []
+        listOfNames = []
         for item in items:
-            listofnames.append(item.itemTitle)
-        self.fullList = listofnames
+            listOfNames.append(item.itemTitle)
+        self.fullList = listOfNames
         for item in self.fullList:
             self.listbox.insert(tk.END, item)
         self.enforceSort()
 
     def importProjectList(self, projects):
         self.deleteList()
-        listOfnames = []
+        listOfNames = []
         for project in projects:
-            listOfnames.append(project.projectName)
-        self.fullList = listOfnames
+            listOfNames.append(project.projectName)
+        self.fullList = listOfNames
         for item in self.fullList:
             self.listbox.insert(tk.END, item)
         self.enforceSort()
 
     def importSprintsList(self, sprints):
         self.deleteList()
-        listOfnames = []
+        listOfNames = []
         for sprint in sprints:
-            listOfnames.append(sprint.sprintName)
-        self.fullList = listOfnames
+            listOfNames.append(sprint.sprintName)
+        self.fullList = listOfNames
         for item in self.fullList:
             self.listbox.insert(tk.END, item)
         self.enforceSort()
-
-
 
     def importListSorted(self, list):
         self.deleteList()
@@ -116,10 +105,6 @@ class BaseList(tk.Frame,tk.Listbox):
 
     def deleteSelectedItem(self):
 
-        # deleteIndex = self.listbox.get(0, tk.END).index(tk.ANCHOR)
-        # del self.fullList[deleteIndex]
-        # self.listbox.delete(tk.ANCHOR)
-
         selection = self.listbox.curselection()
         self.listbox.delete(selection[0])
         val = self.listbox.get(selection[0])
@@ -151,7 +136,7 @@ class BaseList(tk.Frame,tk.Listbox):
             self.sortReverse()
 
     def search(self, str):
-        def fulfillsCondition(item,str):
+        def fulfillsCondition(item, str):
             return item[:len(str)].lower() == str.lower()
 
         matches = [x for x in self.fullList if fulfillsCondition(x, str)]
@@ -164,34 +149,47 @@ class SComboList(BaseList):
         tk.Frame.__init__(self, controller)
 
         self.box_value = tk.StringVar()
-        self.box = ttk.Combobox(self, textvariable=self.box_value, cursor = "hand2")
+        self.box = ttk.Combobox(self, textvariable = self.box_value, cursor = "hand2")
         self.box['values'] = (products)
         self.box.current(0)
         self.box.pack(fill = tk.X)
 
         self.listFrame = tk.Frame(self)
         self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL, cursor = "hand2")
-        self.listbox = tk.Listbox(self.listFrame, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set, cursor = "hand2")
-        self.listScrollbar.config(command=self.listbox.yview)
+        self.listbox = tk.Listbox(self.listFrame,
+                                  selectmode = tk.BROWSE,
+                                  yscrollcommand=self.listScrollbar.set,
+                                  cursor = "hand2")
+        self.listScrollbar.config(command = self.listbox.yview)
 
         self.typeSort = "none"
-        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.listScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.listbox.pack(side = tk.LEFT, fill = tk.BOTH)
+        self.listScrollbar.pack(side = tk.RIGHT, fill = tk.Y)
 
-        self.listFrame.pack(fill=tk.BOTH, expand=True)
+        self.listFrame.pack(fill = tk.BOTH, expand = True)
 
 class SBacklogList(BaseList):
-    def __init__(self, controller, title,MasterView=None):
+    def __init__(self, controller, title, MasterView=None, canAdd=True):
         BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
         self.MasterView = MasterView
-        self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)
-        self.searchFrame = tk.Frame(self.titleFrame, relief=tk.SOLID, bg=style.scrumbles_blue)
+        self.titleFrame = tk.Frame(self, bg = style.scrumbles_blue, relief = tk.SOLID, borderwidth = 1)
+        self.searchFrame = tk.Frame(self.titleFrame, relief = tk.SOLID, bg = style.scrumbles_blue)
 
-        self.searchLabel = tk.Label(self.searchFrame, text="Search:", bg=style.scrumbles_blue)
+        self.searchLabel = tk.Label(self.searchFrame, text = "Search:", bg = style.scrumbles_blue)
         self.searchEntry = tk.Entry(self.searchFrame, cursor = "hand2")
-        self.searchButton = tk.Button(self.searchFrame, text=style.right_enter_arrow, bg=style.scrumbles_blue, command=lambda: self.search(self.searchEntry.get()), relief=tk.FLAT, cursor = "hand2")
-        self.undoSearchButton = tk.Button(self.searchFrame, text=style.cancel_button, bg=style.scrumbles_blue, command=lambda: self.clearSearchEntry(), relief=tk.FLAT, cursor = "hand2")
+        self.searchButton = tk.Button(self.searchFrame,
+                                      text = style.right_enter_arrow,
+                                      bg = style.scrumbles_blue,
+                                      command = lambda: self.search(self.searchEntry.get()),
+                                      relief = tk.FLAT,
+                                      cursor = "hand2")
+        self.undoSearchButton = tk.Button(self.searchFrame,
+                                          text = style.cancel_button,
+                                          bg = style.scrumbles_blue,
+                                          command = lambda: self.clearSearchEntry(),
+                                          relief = tk.FLAT,
+                                          cursor = "hand2")
 
         self.searchEntry.bind('<Return>', lambda event: self.search(self.searchEntry.get()))
         self.undoSearchButton.pack(side = tk.RIGHT)
@@ -199,25 +197,39 @@ class SBacklogList(BaseList):
         self.searchEntry.pack(side = tk.RIGHT)
         self.searchLabel.pack(side = tk.RIGHT)
 
-
-        self.titleLabel = tk.Label(self.titleFrame, text=title, bg=style.scrumbles_blue, relief=tk.FLAT)
-        self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT, cursor = "hand2")
+        self.titleLabel = tk.Label(self.titleFrame,
+                                   text = title,
+                                   bg = style.scrumbles_blue,
+                                   relief = tk.FLAT)
+        self.sortButton = tk.Button(self.titleFrame,
+                                    text = style.updown_arrow,
+                                    bg = style.scrumbles_blue,
+                                    command = lambda: self.decideSort(),
+                                    relief = tk.FLAT,
+                                    cursor = "hand2")
 
         self.titleLabel.pack(side = tk.LEFT)
+        if MasterView is not None and canAdd is True:
+            self.addButton = tk.Button(self.titleFrame, text=style.big_plus, font='Helvetica 14', bg=style.scrumbles_blue,
+                                       command=lambda: MasterView.showCreateItemDialog(), relief=tk.FLAT,cursor="hand2")
+            self.addButton.pack(side=tk.LEFT, fill=tk.BOTH)
         self.sortButton.pack(side = tk.RIGHT)
         self.searchFrame.pack(side = tk.RIGHT)
 
         self.listFrame = tk.Frame(self)
-        self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL, cursor = "hand2")
-        self.listbox = tk.Listbox(self.listFrame, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set, cursor = "hand2")
-        self.listScrollbar.config(command=self.listbox.yview)
+        self.listScrollbar = tk.Scrollbar(self.listFrame, orient = tk.VERTICAL, cursor = "hand2")
+        self.listbox = tk.Listbox(self.listFrame,
+                                  selectmode = tk.BROWSE,
+                                  yscrollcommand = self.listScrollbar.set,
+                                  cursor = "hand2")
+        self.listScrollbar.config(command = self.listbox.yview)
 
         self.typeSort = "none"
-        self.titleFrame.pack(fill=tk.X, expand=False)
-        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.listScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.titleFrame.pack(fill = tk.X, expand = False)
+        self.listbox.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+        self.listScrollbar.pack(side = tk.RIGHT, fill = tk.Y)
 
-        self.listFrame.pack(fill=tk.BOTH, expand=True)
+        self.listFrame.pack(fill = tk.BOTH, expand = True)
 
     def clearSearchEntry(self):
         self.showFullList()
@@ -228,9 +240,6 @@ class SBacklogList(BaseList):
         itemTitleMap = {}
         if self.MasterView is not None:
             itemList = self.MasterView.activeProject.listOfAssignedItems
-            print('Master is Sent')
-            print(self.controller)
-            print(len(itemList))
         else:
             itemList = self.controller.controller.activeProject.listOfAssignedItems
 
@@ -253,45 +262,13 @@ class SBacklogList(BaseList):
             else:
               self.listbox.itemconfig(i, ColorSchemes.incompleteAssignmentColorScheme)
 
-            # if  itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is None:
-            #     self.listbox.itemconfig(i, ColorSchemes.incompleteAssignmentColorScheme)
-            # elif itemTitleMap[title].itemStatus == 4:
-            #     self.listbox.itemconfig(i, ColorSchemes.completedItemColorScheme)
-            #
-            # elif itemTitleMap[title].itemStatus == 3:
-            #     self.listbox.itemconfig(i, ColorSchemes.submittedColorScheme)
-            #
-            # elif itemTitleMap[title].itemStatus == 2:
-            #     self.listbox.itemconfig(i, ColorSchemes.inProgressColorScheme)
-            #
-            # elif itemTitleMap[title].itemStatus == 1:
-            #     self.listbox.itemconfig(i, ColorSchemes.assignedScheme)
-            #
-            # elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is not None:
-            #     self.listbox.itemconfig(i, ColorSchemes.assignedScheme)
-            #
-            # elif itemTitleMap[title].itemUserID is not None and itemTitleMap[title].itemSprintID is None:
-            #     self.listbox.itemconfig(i, ColorSchemes.incompleteAssignmentColorScheme)
-            #
-            #
-            #
-            # elif itemTitleMap[title].itemUserID is None and itemTitleMap[title].itemSprintID is not None:
-            #     self.listbox.itemconfig(i, ColorSchemes.assignedScheme)
-            #
-            #
-            #
-            #
-            #
-            # else:
-            #     pass
-
             if itemTitleMap[title].itemType == 'Epic':
                 self.listbox.itemconfig(i, ColorSchemes.epicItemColorScheme)
             i += 1
 
 class SBacklogListColor(SBacklogList):
-    def __init__(self, controller, title, MasterView=None):
-        SBacklogList.__init__(self, controller, title, MasterView)
+    def __init__(self, controller, title, MasterView=None, canAdd=True):
+        SBacklogList.__init__(self, controller, title, MasterView, canAdd)
 
     def sortForward(self):
         super().sortForward()
@@ -300,9 +277,6 @@ class SBacklogListColor(SBacklogList):
     def sortRevers(self):
         super().sortReverse()
         self.colorCodeListboxes()
-
-
-
 
     def importListSorted(self, list):
         self.deleteList()
@@ -316,7 +290,6 @@ class SBacklogListColor(SBacklogList):
         self.searchEntry.delete(0,tk.END)
         self.colorCodeListboxes()
 
-
     def search(self, str):
         def fulfillsCondition(item,str):
             return item[:len(str)].lower() == str.lower()
@@ -326,26 +299,42 @@ class SBacklogListColor(SBacklogList):
         self.showPartialList(matches)
         self.colorCodeListboxes()
 
-
 class SList(BaseList):
     def __init__(self, controller, title):
         BaseList.__init__(self, controller)
         tk.Frame.__init__(self, controller)
 
-        self.titleFrame = tk.Frame(self, bg=style.scrumbles_blue, relief=tk.SOLID, borderwidth=1)
-        self.titleLabel = tk.Label(self.titleFrame, text=title, bg=style.scrumbles_blue, relief=tk.FLAT)
+        self.titleFrame = tk.Frame(self,
+                                   bg = style.scrumbles_blue,
+                                   relief = tk.SOLID,
+                                   borderwidth = 1)
+        self.titleLabel = tk.Label(self.titleFrame,
+                                   text = title,
+                                   bg = style.scrumbles_blue,
+                                   relief = tk.FLAT)
         self.listFrame = tk.Frame(self)
-        self.listScrollbar = tk.Scrollbar(self.listFrame, orient=tk.VERTICAL, cursor = "hand2")
-        self.listbox = tk.Listbox(self.listFrame, selectmode=tk.BROWSE, yscrollcommand=self.listScrollbar.set, cursor = "hand2")
+        self.listScrollbar = tk.Scrollbar(self.listFrame,
+                                          orient = tk.VERTICAL,
+                                          cursor = "hand2")
+        self.listbox = tk.Listbox(self.listFrame,
+                                  selectmode = tk.BROWSE,
+                                  yscrollcommand = self.listScrollbar.set,
+                                  cursor = "hand2")
         self.listScrollbar.config(command=self.listbox.yview)
 
         self.typeSort = "none"
 
-        self.sortButton = tk.Button(self.titleFrame, text=style.updown_arrow, bg=style.scrumbles_blue, command=lambda: self.decideSort(), relief=tk.FLAT, cursor = "hand2")
-        self.titleLabel.pack(side=tk.LEFT)
-        self.sortButton.pack(side=tk.RIGHT)
-        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH,expand=True)
-        self.listScrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.sortButton = tk.Button(self.titleFrame,
+                                    text = style.updown_arrow,
+                                    bg = style.scrumbles_blue,
+                                    command = lambda: self.decideSort(),
+                                    relief = tk.FLAT,
+                                    cursor = "hand2")
 
-        self.titleFrame.pack(fill=tk.X, expand=False)
-        self.listFrame.pack(fill=tk.BOTH, expand=True)
+        self.titleLabel.pack(side = tk.LEFT)
+        self.sortButton.pack(side = tk.RIGHT)
+        self.listbox.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
+        self.listScrollbar.pack(side = tk.RIGHT, fill = tk.Y)
+
+        self.titleFrame.pack(fill = tk.X, expand = False)
+        self.listFrame.pack(fill = tk.BOTH, expand = True)

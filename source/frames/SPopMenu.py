@@ -78,10 +78,6 @@ class BacklogManPopMenu(GenericPopupMenu):
         item = self.getSelectedObject()
 
         if item is None:
-            print('Item %s'% str(item))
-            print('backlogData:')
-            for i in self.master.activeProject.listOfAssignedItems:
-                print(i.itemTitle)
             raise Exception('Error Loading item from title')
 
         self.dataBlock.promoteItemToEpic(item)
@@ -93,7 +89,7 @@ class BacklogManPopMenu(GenericPopupMenu):
     def setEpicsMenu(self):
 
         listOfEpics = [E.itemTitle for E in self.root.listOfEpics]
-        print(listOfEpics)
+
         try:
             self.delete('Assign To Epic')
         except Exception:
@@ -130,7 +126,7 @@ class BacklogManPopMenu(GenericPopupMenu):
         listOfItemsInAnEpic = []
         for I in self.dataBlock.items:
             if I.itemType == 'Epic':
-                print(I.itemTitle)
+
                 for subItem in I.subItemList:
                     listOfItemsInAnEpic.append(subItem)
         return item in listOfItemsInAnEpic

@@ -215,7 +215,7 @@ class CardQuery(Query):
         itemDict['Type'] =  item.itemType
         itemDict['Priority'] = item.itemPriority
         itemDict['Title'] = item.itemTitle
-        itemDict['Descr'] =  item.itemDescription
+        itemDict['Descr'] = item.itemDescription
         itemDict['DueDate'] = None
         if item.itemDueDate is not None:
             itemDict['DueDate'] = item.itemDueDate
@@ -243,6 +243,18 @@ class CardQuery(Query):
             itemDict['Points'],
             item.itemID
         )
+
+    @staticmethod
+    def removeUserFromListOfCards(itemList):
+        sql = ''
+        params = {}
+        for i, item in enumerate(itemList):
+            sql+= 'UPDATE CardTable SET UserID=%s WHERE CardID=%s\n'
+            params[i+1] = (None,item.itemID)
+
+        return sql,params
+
+
 
 
     @staticmethod
