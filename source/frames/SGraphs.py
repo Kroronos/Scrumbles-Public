@@ -48,10 +48,9 @@ class SBar(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self,controller)
 
-    def generateGraph(self, titles, values, xtitle, ytitle, isOrange=False, tickValue=1, isGantt=False):
+    def generateGraph(self, titles, values, xtitle, ytitle, isOrange=False, tickValue=1):
         self.graphInitialization()
-        if isGantt is False:
-            self.showGraph(titles, values, xtitle, ytitle, isOrange, tickValue)
+        self.showGraph(titles, values, xtitle, ytitle, isOrange, tickValue)
     def graphInitialization(self):
         self.f = Figure(figsize=(4,5), dpi=100)
         self.ax = self.f.add_subplot(111)
