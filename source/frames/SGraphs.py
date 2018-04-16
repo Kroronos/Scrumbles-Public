@@ -64,6 +64,7 @@ class SBar(tk.Frame):
         loc = matplotlib.ticker.MultipleLocator(base=tickValue)  # this locator puts ticks at regular intervals
         self.ax.yaxis.set_major_locator(loc) #we don't want to count freq to determine y max
         self.ax.set_xticks(ind)
+        self.ax.set_xticklabels(titles)
         #pretty colors
         children = self.ax.get_children()
         barlist = filter(lambda x: isinstance(x, matplotlib.patches.Rectangle), children)
