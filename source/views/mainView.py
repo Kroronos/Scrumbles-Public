@@ -441,22 +441,16 @@ class mainView(tk.Frame):
         self.itemPopMenu = mainViewPopup(self, self.controller, False)
         self.generatePopupThing()
 
-        # self.sprints = []
-        # self.sprintItems = []
-        # self.sprintItemSubItems = []
-        #
-        # self.selectedFB = None
-        # self.selectedSprint = None
-        # self.selectedItem = None
-        # self.selectedSubItem = None
-
     def assignedFullBacklogEvent(self, event):
         for item in self.controller.activeProject.listOfAssignedItems:
             if item.itemTitle == event.widget.get(tk.ANCHOR):
                 self.selectedFullBacklogItem = item
                 self.selectedItem = item
                 if self.selectedItem.itemSprintID is not None:
-                    self.selectedSprint = self.controller.dataBlock.sprintMap[self.selectedFullBacklogItem.itemSprintID]
+                    try:
+                        self.selectedSprint = self.controller.dataBlock.sprintMap[self.selectedFullBacklogItem.itemSprintID]
+                    except KeyError:
+                        pass
                     print(self.selectedSprint.sprintName)
                     self.sprintItems = self.selectedSprint.listOfAssignedItems
                     self.itemList.importItemList(self.sprintItems)
