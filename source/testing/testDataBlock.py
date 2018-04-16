@@ -1,5 +1,5 @@
 import tkinter as tk
-from data import ScrumblesData
+from data import DataBlock
 
 root = tk.Tk()
 
@@ -37,7 +37,7 @@ def updateItemList():
 
 
 
-dataBlock = ScrumblesData.DataBlock()
+dataBlock = DataBlock.DataBlock()
 dataBlock.packCallback(updateUserList)
 dataBlock.packCallback(updateItemList)
 

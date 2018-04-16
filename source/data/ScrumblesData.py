@@ -75,13 +75,14 @@ class ScrumblesData:
                 try:
                     cursor.execute(line,params[i])
                 except Exception as e:
-                    logging.exception('failed to execute query')
+                    logging.exception('failed to execute query {} : {}'.format(line,params[i]))
                     raise(e)
                 cursor.close()
             self.dbConnection.commit()
-        except Exception:
-            logging.exception('Multi Line SQL did not commit')
+        except Exception as e:
+            logging.exception('Multi Line SQL did not commit:\n{} {}'.format(sql,params))
             self.dbConnection.rollback()
+            raise(e)
 
     def setData(self, query):
         assert self.dbConnection is not None
@@ -93,10 +94,10 @@ class ScrumblesData:
 
                 self.cursor.execute(query[0],query[1])
                 self.dbConnection.commit()
-        except:
-            logging.exception('Query did not execute')
+        except Exception as e:
+            logging.exception('Query {} did not execute'.format(query))
             self.dbConnection.rollback()
-
+            raise(e)
 
     def close(self):
         assert self.dbConnection is not None
