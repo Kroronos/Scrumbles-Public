@@ -438,6 +438,8 @@ class mainView(tk.Frame):
         del self.itemPopMenu
         self.itemPopMenu = mainViewPopup(self, self.controller, False)
         self.generatePopupThing()
+        self.sprintDescriptionManager.resetToStart()
+        self.itemDescriptionManager.resetToStart()
 
     def assignedFBEvent(self, event):
         for item in self.controller.activeProject.listOfAssignedItems:

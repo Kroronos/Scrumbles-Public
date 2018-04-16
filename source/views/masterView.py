@@ -19,7 +19,7 @@ class masterView(tk.Tk):
         print('Init masterView')
         tk.Tk.__init__(self)
 
-        self.w_rat, self.h_rat = getGeometryFromFile("geometry.txt")
+        self.w_rat, self.h_rat, full = getGeometryFromFile("geometry.txt")
         self.w_rat /= 1280
         self.h_rat /= 720
         w = 1280*self.w_rat
@@ -34,7 +34,8 @@ class masterView(tk.Tk):
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
+        if full == 1:
+            self.state('zoomed')
         self.frames = {}
 
         self.protocol('WM_DELETE_WINDOW', lambda s = self: exitProgram(s))
@@ -237,13 +238,11 @@ class masterView(tk.Tk):
         while self.dataBlock.isLoading:
             self.splashFrame.stepProgressBar(1)
 
-        self.activeProject = self.dataBlock.projects[0]
-
         #todo
         threading.Thread(target = self.dataBlock.onConnectionLoss, args = (self.connectionLossHandler,)).start()
 
         print('Logged in %s' % loggedInUser)
-
+        self.activeProject = getProjectFromFile("project.txt", self.dataBlock)
         for user in self.dataBlock.users:
             if loggedInUser == user.userName:
                 loggedInUser = user
@@ -359,6 +358,7 @@ def logOut(controller):
     controller.title("Scrumbles")
 
 def exitProgram(mainWindow):
+    setProjectFile(mainWindow.activeProject)
     setGeometryFile(mainWindow)
     plt.close('all')
     try:
@@ -385,20 +385,40 @@ def minimize(mainwindow):
 def showGettingStartedText():
     print("Get Started By Adding Creating A Project!")
 
+
 def getGeometryFromFile(file):
     try:
         geometryFile = open(file, 'r')
         w = processFile(geometryFile)
         h = processFile(geometryFile)
+        full = processFile(geometryFile)
         w = int(w)
         h = int(h)
+        full = int(full)
         geometryFile.close()
     except:
-        print("EXCEPTION ALERT")
         w = 1280
         h = 720
+        full = 0
 
-    return w, h
+    return w, h, full
+
+
+def getProjectFromFile(file, dataBlock):
+    print("Entered")
+    try:
+        projectFile = open(file, 'r')
+        projectID = processFile(projectFile)
+        projectID = int(projectID)
+        projectFile.close()
+    except:
+        return dataBlock.projects[0]
+
+    for project in dataBlock.projects:
+        if project.projectID == projectID:
+            return project
+
+    return dataBlock.projects[0]
 
 def processFile(openFile):
     item = openFile.readline()
@@ -406,9 +426,21 @@ def processFile(openFile):
     return item
 
 def setGeometryFile(window):
+    window.update()
     w = window.winfo_width()
     h = window.winfo_height()
+    full = window.wm_state()
+    if full == "zoomed":
+        full = 1
+    else:
+        full = 0
     f = open("geometry.txt", "w+")
     f.write(str(w) + "\n")
     f.write(str(h) + "\n")
+    f.write(str(full)+"\n")
+    f.close()
+
+def setProjectFile(activeProject):
+    f = open("project.txt", "w+")
+    f.write(str(activeProject.projectID) + "\n")
     f.close()
