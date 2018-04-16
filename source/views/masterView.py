@@ -203,26 +203,27 @@ class masterView(tk.Tk):
     def windowQuit(self, event):
         exitProgram(self)
 
-    def showSplashView(self):
+    def showSplashView(self, event):
         self.show_frame(splashView)
 
-    def showTeamManagerView(self):
-        self.show_frame(teamManagerView)
+    def showTeamManagerView(self, event):
+        if self.activeUser.userRole == "Admin":
+            self.show_frame(teamManagerView)
 
-    def showMainView(self):
+    def showMainView(self, event):
         self.show_frame(mainView)
 
-    def showDeveloperHomeView(self):
+    def showDeveloperHomeView(self, event):
         self.show_frame(developerHomeView)
 
-    def showAnalyticsView(self):
+    def showAnalyticsView(self, event):
         self.show_frame(analyticsView)
 
     def generateViews(self, loggedInUser):
         self.dataBlock = DataBlock.DataBlock()
 
         if self.dataBlock.isLoading is True:
-            self.showSplashView()
+            self.showSplashView(None)
 
         while self.dataBlock.isLoading:
             self.splashFrame.stepProgressBar(1)
@@ -261,13 +262,13 @@ class masterView(tk.Tk):
         self.generateMenuBar()
 
         if self.activeUser.userRole == "Admin":
-            self.showTeamManagerView()
+            self.showTeamManagerView(None)
 
         elif self.activeUser.userRole == "Scrum Master":
-            self.showMainView()
+            self.showMainView(None)
 
         elif self.activeUser.userRole == "Developer":
-            self.showDeveloperHomeView()
+            self.showDeveloperHomeView(None)
 
         self.title("Scrumbles" + " - " + self.activeProject.projectName)
         if platform.system() == "Windows":
