@@ -130,12 +130,11 @@ class masterView(tk.Tk):
             viewMenu.add_command(label = "Developer Main", underline = 0, command = lambda: self.show_frame(mainView), accelerator = "CTRL+M")
 
         viewMenu.add_command(label = "Developer Home", underline = 0, command = lambda: self.show_frame(developerHomeView), accelerator="CTRL+H")
-
-
+        
         viewMenu.add_command(label = "Analytics View", underline = 0, command = lambda: self.show_frame(analyticsView), accelerator="CTRL+A")
 
         helpMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
-        helpMenu.add_command(label = "User Guide", command =self.openUserGuide)
+        helpMenu.add_command(label = "User Guide", command = self.openUserGuide)
         helpMenu.add_command(label = "Scrumbles's API", command = self.openAPI)
         helpMenu.add_command(label = "Scrumbles's Current Status", command = self.openStatus)
         helpMenu.add_command(label = "What's With The Colors", command = self.colorHelp)
