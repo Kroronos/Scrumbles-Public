@@ -105,10 +105,19 @@ class commentsField(tk.Frame):
                 for comment in self.inspection.listOfComments:
                     self.comments.append(comment)
 
+            else:
+                self.titleText.set("Comments")
             self.renderCommentField()
 
-    def updateComments(self):
-        self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate = True)
+    def updateComments(self, searchParamsSpec = None):
+        if searchParamsSpec is None:
+            self.updateFromListOfCommentsObject(self.source, self.searchParams, isUpdate = True)
+        else:
+            if type(searchParamsSpec) is ScrumblesObjects.User:
+                self.updateFromListOfCommentsObject([searchParamsSpec], searchParamsSpec.userName)
+            else:
+                self.updateFromListOfCommentsObject([searchParamsSpec], searchParamsSpec.itemTitle)
+
 
     def renderCommentField(self, initializedComments = False):
         if initializedComments is True:
@@ -584,7 +593,7 @@ class SCardDescription(tk.Frame):
         self.cardDescriptions["Active"] = self.cardDescriptions["Sprint"]
 
     def resetToStart(self):
-        self.titleText.set("Item Description")
+        self.titleText.set(self.dataTypeText + " Description")
         self.cardDescriptions["Active"].pack_forget()
         self.cardDescriptions["Active"] = self.cardDescriptions['Start']
         self.cardDescriptions['Active'].pack(side = tk.TOP)
@@ -637,9 +646,24 @@ class SUserItemInspection(tk.Frame):
         self.itemBox.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
 
     def update(self, user):
-        self.nameString.set(user.userName)
-        self.roleString.set(user.userRole)
-        self.updateItems(user.listOfAssignedItems)
+        if user is None:
+            return
+        matchFound = False
+        for userP in self.master.activeProject.listOfAssignedUsers:
+            if user.userID == userP.userID:
+                matchFound = True
+                break
+        if matchFound == True:
+            self.nameString.set(user.userName)
+            self.roleString.set(user.userRole)
+            self.updateItems(user.listOfAssignedItems)
+        else:
+            self.resetToStart()
+
+    def resetToStart(self):
+        self.nameString.set("")
+        self.roleString.set("")
+        self.updateItems([])
 
     def updateItems(self, items):
         assignedItems = []

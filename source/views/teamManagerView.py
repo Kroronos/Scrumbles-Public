@@ -6,7 +6,7 @@ class teamManagerView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
+        self.selectedUser = None
         self.tabButtons = ScrumblesFrames.STabs(self, controller, "Team Manager")
         self.tabButtons.pack(side = tk.TOP, fill = tk.X)
 
@@ -58,8 +58,9 @@ class teamManagerView(tk.Frame):
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
         self.userList.importList(self.allUsers)
         self.memberList.importList(self.teamMembers)
-
-        self.recentComments.updateComments()
+        self.descriptionManager.resetToStart()
+        self.assignedItemInspect.update(self.selectedUser)
+        self.recentComments.updateComments(self.selectedUser)
 
     def generateMemberMenus(self):
         self.memberPopupMenu = tk.Menu(self, tearoff = 0)
@@ -105,6 +106,7 @@ class teamManagerView(tk.Frame):
             for user in self.controller.dataBlock.users:
                 if user.userName == event.widget.get(tk.ANCHOR):
                     self.assignedItemInspect.update(user)
+                    self.selectedUser = user
 
         for source in self.dynamicSources:
             if event.widget is source:

@@ -23,21 +23,22 @@ class SLine(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self, controller)
 
-    def generateGraph(self, x, y, labelsPosition=None, labels=None, xtitle=None, ytitle=None):
+    def generateGraph(self, x, y, labelsPosition=None, labels=None, xtitle=None, ytitle=None, yticks=1):
         self.graphInitialization()
-        self.showGraph(x, y, labelsPosition, labels, xtitle, ytitle)
+        self.showGraph(x, y, labelsPosition, labels, xtitle, ytitle, yticks)
 
     def graphInitialization(self):
         self.f = plt.figure(figsize=(4, 4), dpi=100)
         #self.ax = self.figure.add_subplot(1,1,1)
 
-    def showGraph(self, x, y, labelsPosition, labels, xtitle, ytitle):
-
+    def showGraph(self, x, y, labelsPosition, labels, xtitle, ytitle, yticks=1):
         self.p = plt.plot(x,y)
         plt.xlabel(xtitle)
         plt.ylabel(ytitle)
         plt.xticks(labelsPosition, labels, rotation=65)
-        #self.ax.set_xticklabels(labels)
+        if yticks == 0:
+            yticks +=1
+        plt.yticks(range(0,max(y)+1, yticks))
 
         self.canvas = FigureCanvasTkAgg(self.f, self)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -47,10 +48,9 @@ class SBar(tk.Frame):
     def __init__(self, controller):
         tk.Frame.__init__(self,controller)
 
-    def generateGraph(self, titles, values, xtitle, ytitle, isOrange=False, tickValue=1, isGantt=False):
+    def generateGraph(self, titles, values, xtitle, ytitle, isOrange=False, tickValue=1):
         self.graphInitialization()
-        if isGantt is False:
-            self.showGraph(titles, values, xtitle, ytitle, isOrange, tickValue)
+        self.showGraph(titles, values, xtitle, ytitle, isOrange, tickValue)
     def graphInitialization(self):
         self.f = Figure(figsize=(4,5), dpi=100)
         self.ax = self.f.add_subplot(111)

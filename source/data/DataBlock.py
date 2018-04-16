@@ -325,13 +325,14 @@ class DataBlock:
     @dbWrap
     def removeUserFromProject(self,project,user):
         logging.info('Removing User %s from project %s' %(user.userName,project.projectName) )
+        itemList = []
         for item in self.items:
             if item in project.listOfAssignedItems:
                 if item.itemUserID == user.userID:
-                    item.itemUserID = 0
+                    itemList.append(item)
 
-            self.conn.setData(Query.updateObject(item))
 
+        self.conn.setMulti(CardQuery.removeUserFromListOfCards(itemList))
         self.conn.setData(ProjectQuery.removeUser(project,user))
 
 
