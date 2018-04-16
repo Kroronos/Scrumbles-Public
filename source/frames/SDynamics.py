@@ -716,9 +716,12 @@ class STabs(tk.Frame):
         views, viewNames = self.master.getViews()
         
         for view, viewName in zip(views, viewNames):
-            viewButton = self.viewButton(self, viewName, view, self.tabEvent)
-            self.buttonList.append(viewButton)
-            viewButton.pack(side = tk.LEFT)
+            if viewName == "Team Manager" and self.master.activeUser.userRole != "Admin":
+                continue
+            else:
+                viewButton = self.viewButton(self, viewName, view, self.tabEvent)
+                self.buttonList.append(viewButton)
+                viewButton.pack(side = tk.LEFT)
 
     def tabEvent(self, selectedView):
         self.master.show_frame(selectedView)
