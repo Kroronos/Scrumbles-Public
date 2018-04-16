@@ -434,7 +434,7 @@ class SCardDescription(tk.Frame):
 
             self.sprintStartF.pack(side = tk.TOP)
             self.sprintDueF.pack(side = tk.TOP)
-            self.sprintProgressBar.pack(side=tk.TOP)
+            self.sprintProgressBar.pack(side = tk.TOP)
 
     def repack(self):
         self.title.pack(fill = tk.X)
@@ -602,39 +602,39 @@ class SUserItemInspection(tk.Frame):
         self.controller = controller
         self.dataBlock = self.master.dataBlock
 
-        self.textbox = tk.Frame(self)
+        self.textBox = tk.Frame(self)
 
-        self.nametag = tk.Frame(self.textbox, relief = tk.SOLID, borderwidth = 1)
-        self.nameLabel = tk.Label(self.nametag, text = "Name")
+        self.nameTag = tk.Frame(self.textBox, relief = tk.SOLID, borderwidth = 1)
+        self.nameLabel = tk.Label(self.nameTag, text ="Name")
         self.nameString = tk.StringVar()
-        self.nameText = tk.Label(self.nametag, textvariable = self.nameString, cursor = "hand2")
+        self.nameText = tk.Label(self.nameTag, textvariable = self.nameString, cursor ="hand2")
 
-        self.roletag = tk.Frame(self.textbox, relief = tk.SOLID, borderwidth = 1)
-        self.roleLabel = tk.Label(self.roletag, text = "Role")
+        self.roleTag = tk.Frame(self.textBox, relief = tk.SOLID, borderwidth = 1)
+        self.roleLabel = tk.Label(self.roleTag, text ="Role")
         self.roleString = tk.StringVar()
-        self.roleText = tk.Label(self.roletag, textvariable = self.roleString, cursor = "hand2")
+        self.roleText = tk.Label(self.roleTag, textvariable = self.roleString, cursor ="hand2")
 
-        self.itembox = tk.Frame(self)
-        self.assignedItemsList = SList(self.itembox, "Assigned Items")
-        self.inProgressItemsList = SList(self.itembox, "In Progress Items")
-        self.submittedItemsList = SList(self.itembox, "Submitted Items")
-        self.completedItemsList = SList(self.itembox, "Completed Items")
+        self.itemBox = tk.Frame(self)
+        self.assignedItemsList = SList(self.itemBox, "Assigned Items")
+        self.inProgressItemsList = SList(self.itemBox, "In Progress Items")
+        self.submittedItemsList = SList(self.itemBox, "Submitted Items")
+        self.completedItemsList = SList(self.itemBox, "Completed Items")
 
         self.nameLabel.pack(fill = tk.X)
         self.nameText.pack(fill = tk.X)
         self.roleLabel.pack(fill = tk.X)
         self.roleText.pack(fill = tk.X)
 
-        self.nametag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
-        self.roletag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
+        self.nameTag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
+        self.roleTag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
 
         self.assignedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
         self.inProgressItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
         self.submittedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
         self.completedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
 
-        self.textbox.pack(side = tk.TOP, fill = tk.X)
-        self.itembox.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
+        self.textBox.pack(side = tk.TOP, fill = tk.X)
+        self.itemBox.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
 
     def update(self, user):
         self.nameString.set(user.userName)
@@ -725,5 +725,3 @@ class STabs(tk.Frame):
 
     def tabEvent(self, selectedView):
         self.master.show_frame(selectedView)
-
-
