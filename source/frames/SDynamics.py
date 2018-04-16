@@ -12,165 +12,6 @@ from frames.SLists import *
 from styling import styling as style
 from tkinter import ttk
 
-class itemPicker(tk.Frame):
-
-    def __init__(self, controller, master):
-        tk.Frame.__init__(self, controller, relief = tk.SOLID, borderwidth = 1)
-        self.controller = controller
-        self.master = master
-        self.top = None
-
-        self.itemEditorLabel = tk.Label(self, text = "Item Editor", anchor = 'w').grid(row = 0, column = 0)
-
-        self.itemNameLabel = tk.Label(self, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
-        self.itemNameEntryText = tk.StringVar()
-        self.itemNameEntry = tk.Entry(self, textvariable = self.itemNameEntryText, cursor = "hand2").grid(row = 1, column = 1)
-
-        self.itemDescriptionLabel = tk.Label(self, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
-        self.itemDescriptionEntryText = tk.StringVar()
-        self.itemDescriptionEntry = tk.Entry(self, textvariable = self.itemDescriptionEntryText, cursor = "hand2").grid(row = 2, column = 1)
-
-        self.itemPriorityLabel = tk.Label( self, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
-        self.itemPriorityValue = tk.StringVar()
-        self.priorities = ("Low Priority", "Medium Priority", "High Priority")
-        self.itemPrioritySelector = ttk.Combobox(self, textvariable = self.itemPriorityValue, values = self.priorities, state = "readonly", cursor = "hand2").grid(row = 3, column = 1)
-
-        self.itemStatusLabel = tk.Label(self, text = "Status: ", anchor = 'w').grid(row = 4)
-        self.itemStatusValue = tk.StringVar()
-        self.statuses = ("Not started", "In Progress", "Done")
-        self.itemStatusSelector = ttk.Combobox(self, textvariable = self.itemStatusValue, values = self.statuses, state = "readonly", cursor = "hand2").grid(row = 4, column = 1)
-
-        self.itemTypeLabel = tk.Label(self, text = "Item Type: ", anchor = 'w').grid(row = 5)
-        self.itemTypeValue = tk.StringVar()
-        self.itemTypeEntry = tk.Entry(self, textvariable = self.itemTypeValue, cursor = "hand2").grid(row = 5, column = 1)
-
-        self.itemUserLabel = tk.Label(self, text = "User: ", anchor = 'w').grid(row = 6)
-        self.itemUserValue = tk.StringVar()
-
-        #generate list of usernames
-        self.listOfUsers = []
-        for user in self.master.dataBlock.users:
-            self.listOfUsers.append(user.userName)
-
-        self.itemUserSelector = ttk.Combobox(self, textvariable = self.itemUserValue, values = self.listOfUsers, state = "readonly", cursor = "hand2").grid(row = 6, column = 1)
-
-        self.submitButton = tk.Button(self, text = "Submit Changes", command = self.update_item, cursor = "hand2").grid(column = 2)
-
-        self.addButton = tk.Button(self, text = "Add Item", command = self.add_item, cursor = "hand2").grid(column = 2)
-
-    def selectItem(text):
-        print("Item Selected")
-
-    def load_items(self, name, description, status, priority, itemType, user):
-        #do things
-        print("Items Loaded")
-        self.itemNameEntryText.set(name)
-        self.itemDescriptionEntryText.set(description)
-        self.itemStatusValue.set(status)
-        self.itemPriorityValue.set(priority)
-        self.itemTypeValue.set(itemType)
-        self.itemUserValue.set(user)
-
-    def add_item(self):
-        self.top = tk.Toplevel()
-        self.top.title("New Item")
-        self.top.itemAdditionLabel = tk.Label(self.top, text = "New Item Information", anchor = 'w', cursor = "hand2").grid(row = 0, column = 0)
-
-        self.top.itemAdditionNameLabel = tk.Label(self.top, text = "Name: ", anchor = 'w').grid(row = 1, column = 0)
-        self.top.itemAdditionNameEntryText = tk.StringVar()
-        self.top.itemAdditionNameEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionNameEntryText, cursor = "hand2").grid(row = 1, column = 1)
-
-        self.top.itemAdditionDescriptionLabel = tk.Label(self.top, text = "Description: ", anchor = 'w').grid(row = 2, column = 0)
-        self.top.itemAdditionDescriptionEntryText = tk.StringVar()
-        self.top.itemAdditionDescriptionEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionDescriptionEntryText, cursor = "hand2").grid(row = 2, column = 1)
-
-        self.top.itemAdditionPriorityLabel = tk.Label(self.top, text = "Priority: ", anchor = 'w').grid(row = 3, column = 0)
-        self.top.itemAdditionPriorityValue = tk.StringVar()
-        self.top.itemAdditionPrioritySelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionPriorityValue, values = self.priorities, state = "readonly", cursor = "hand2").grid(row = 3, column = 1)
-
-        self.top.itemAdditionStatusLabel = tk.Label(self.top, text = "Status: ", anchor = 'w').grid(row = 4)
-        self.top.itemAdditionStatusValue = tk.StringVar()
-        self.top.itemAdditionStatusSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionStatusValue, values = self.statuses, state = "readonly", cursor = "hand2").grid(row = 4, column = 1)
-
-        self.top.itemAdditionTypeLabel = tk.Label(self.top, text = "Item Type: ", anchor = 'w').grid(row = 5, column = 0)
-        self.top.itemAdditionTypeText = tk.StringVar()
-        self.top.itemAdditionTypeEntry = tk.Entry(self.top, textvariable = self.top.itemAdditionTypeText, cursor = "hand2").grid(row = 5, column = 1)
-
-        self.top.itemAdditionUserLabel = tk.Label(self.top, text = "User: ", anchor = 'w').grid(row = 6)
-        self.top.itemAdditionUserValue = tk.StringVar()
-        self.top.itemAdditionUserSelector = ttk.Combobox(self.top, textvariable = self.top.itemAdditionUserValue, values = self.listOfUsers, state = "readonly", cursor = "hand2").grid(row = 6, column = 1)
-
-        self.top.submitButton = tk.Button(self.top, text="Submit", command = self.add_item_to_database, cursor = "hand2").grid(column = 2)
-
-    def add_item_to_database(self):
-
-        itemToAdd = ScrumblesObjects.Item()
-
-        itemToAdd.itemTitle = self.top.itemAdditionNameEntryText.get()
-        itemToAdd.itemDescription = self.top.itemAdditionDescriptionEntryText.get()
-
-        #encode priority
-        if self.top.itemAdditionPriorityValue.get() == self.priorities[0]:
-            itemToAdd.itemPriority = 0
-        elif self.top.itemAdditionPriorityValue.get() == self.priorities[1]:
-            itemToAdd.itemPriority = 1
-        elif self.top.itemAdditionPriorityValue.get() == self.priorities[2]:
-            itemToAdd.itemPriority = 2
-
-        #encode status
-        if self.top.itemAdditionStatusValue.get() == self.statuses[0]:
-            itemToAdd.itemStatus = 0
-        elif self.top.itemAdditionStatusValue.get() == self.statuses[1]:
-            itemToAdd.itemStatus = 1
-        elif self.top.itemAdditionStatusValue.get() == self.statuses[2]:
-            itemToAdd.itemStatus = 2
-
-        itemToAdd.itemType = self.top.itemAdditionTypeText.get()
-
-        for user in self.master.dataBlock.users:
-            if user.userName == self.top.itemAdditionUserValue.get():
-                itemToAdd.itemUserID = user.userID
-
-        self.master.dataBlock.addNewScrumblesObject(itemToAdd)
-
-        self.top.destroy()
-
-    def remove_item(self):
-        #do things
-        print("Items remove")
-
-    def update_item(self, item):
-
-        item.itemTitle = self.itemNameEntryText.get()
-        item.itemDescription = self.itemDescriptionEntryText.get()
-        
-        # ScrumblesData.DataBlock.updateScrumblesObject()
-
-        #encode priority
-        if self.itemPriorityValue.get() == self.priorities[0]:
-            item.itemPriority = 0
-        elif self.itemPriorityValue.get() == self.priorities[1]:
-            item.itemPriority = 1
-        elif self.itemPriorityValue.get() == self.priorities[2]:
-            item.itemPriority = 2
-
-        #encode status
-        if self.itemStatusValue.get() == self.statuses[0]:
-            item.itemStatus = 0
-        elif self.itemStatusValue.get() == self.statuses[1]:
-            item.itemStatus = 1
-        elif self.itemStatusValue.get() == self.statuses[2]:
-            item.itemStatus = 2
-
-        item.itemType = self.itemTypeValue.get()
-
-        for user in self.master.dataBlock.users:
-            if user.userName == self.itemUserValue.get():
-                item.itemUserID = user.userID
-
-        self.master.dataBlock.updateScrumblesObject(item)
-
-
 class commentsField(tk.Frame):
     def __init__(self, controller, master):
         tk.Frame.__init__(self, controller, relief = tk.SOLID, borderwidth = 1)
@@ -602,7 +443,7 @@ class SCardDescription(tk.Frame):
 
             self.sprintStartF.pack(side = tk.TOP)
             self.sprintDueF.pack(side = tk.TOP)
-            self.sprintProgressBar.pack(side=tk.TOP)
+            self.sprintProgressBar.pack(side = tk.TOP)
 
     def repack(self):
         self.title.pack(fill = tk.X)
@@ -759,7 +600,6 @@ class SCardDescription(tk.Frame):
 
     def open(self, event):
         link = event.widget.cget('text')
-        print(link)
 
         webbrowser.open(link)
 
@@ -771,39 +611,39 @@ class SUserItemInspection(tk.Frame):
         self.controller = controller
         self.dataBlock = self.master.dataBlock
 
-        self.textbox = tk.Frame(self)
+        self.textBox = tk.Frame(self)
 
-        self.nametag = tk.Frame(self.textbox, relief = tk.SOLID, borderwidth = 1)
-        self.nameLabel = tk.Label(self.nametag, text = "Name")
+        self.nameTag = tk.Frame(self.textBox, relief = tk.SOLID, borderwidth = 1)
+        self.nameLabel = tk.Label(self.nameTag, text ="Name")
         self.nameString = tk.StringVar()
-        self.nameText = tk.Label(self.nametag, textvariable = self.nameString, cursor = "hand2")
+        self.nameText = tk.Label(self.nameTag, textvariable = self.nameString, cursor ="hand2")
 
-        self.roletag = tk.Frame(self.textbox, relief = tk.SOLID, borderwidth = 1)
-        self.roleLabel = tk.Label(self.roletag, text = "Role")
+        self.roleTag = tk.Frame(self.textBox, relief = tk.SOLID, borderwidth = 1)
+        self.roleLabel = tk.Label(self.roleTag, text ="Role")
         self.roleString = tk.StringVar()
-        self.roleText = tk.Label(self.roletag, textvariable = self.roleString, cursor = "hand2")
+        self.roleText = tk.Label(self.roleTag, textvariable = self.roleString, cursor ="hand2")
 
-        self.itembox = tk.Frame(self)
-        self.assignedItemsList = SList(self.itembox, "Assigned Items")
-        self.inProgressItemsList = SList(self.itembox, "In Progress Items")
-        self.submittedItemsList = SList(self.itembox, "Submitted Items")
-        self.completedItemsList = SList(self.itembox, "Completed Items")
+        self.itemBox = tk.Frame(self)
+        self.assignedItemsList = SList(self.itemBox, "Assigned Items")
+        self.inProgressItemsList = SList(self.itemBox, "In Progress Items")
+        self.submittedItemsList = SList(self.itemBox, "Submitted Items")
+        self.completedItemsList = SList(self.itemBox, "Completed Items")
 
         self.nameLabel.pack(fill = tk.X)
         self.nameText.pack(fill = tk.X)
         self.roleLabel.pack(fill = tk.X)
         self.roleText.pack(fill = tk.X)
 
-        self.nametag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
-        self.roletag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
+        self.nameTag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
+        self.roleTag.pack(side = tk.LEFT, fill = tk.X, expand = 1)
 
         self.assignedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
         self.inProgressItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
         self.submittedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
         self.completedItemsList.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
 
-        self.textbox.pack(side = tk.TOP, fill = tk.X)
-        self.itembox.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
+        self.textBox.pack(side = tk.TOP, fill = tk.X)
+        self.itemBox.pack(side = tk.TOP, fill = tk.BOTH, expand = True)
 
     def update(self, user):
         if user is None:
@@ -900,11 +740,12 @@ class STabs(tk.Frame):
         views, viewNames = self.master.getViews()
         
         for view, viewName in zip(views, viewNames):
-            viewButton = self.viewButton(self, viewName, view, self.tabEvent)
-            self.buttonList.append(viewButton)
-            viewButton.pack(side = tk.LEFT)
+            if viewName == "Team Manager" and self.master.activeUser.userRole != "Admin":
+                continue
+            else:
+                viewButton = self.viewButton(self, viewName, view, self.tabEvent)
+                self.buttonList.append(viewButton)
+                viewButton.pack(side = tk.LEFT)
 
     def tabEvent(self, selectedView):
         self.master.show_frame(selectedView)
-
-

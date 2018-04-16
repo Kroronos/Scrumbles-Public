@@ -23,18 +23,6 @@ def authenticateUser(username, password, dbLoginInfo):
     return user
 
 
-def viewSprintWindow():
-    print("View Sprint Called")
-
-
-def viewBacklogWindow():
-    print("View Backlog Called")
-
-
-def viewUserWindow():
-    print("View user called")
-
-
 class loginView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -107,7 +95,6 @@ class loginView(tk.Frame):
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUserName
 
-        print('Successful login')
         self.destroy()
         return loggedInUserName
 
@@ -118,7 +105,7 @@ class loginView(tk.Frame):
     def loginProcessBypassAdmin(self):
         loggedInUser = self.loginButtonClickedBypassAdmin()
         if (loggedInUser is not None):
-            print('loginProcessBypassAdmin')
+
 
             self.controller.generateViews(loggedInUser)
 
@@ -141,7 +128,7 @@ class loginView(tk.Frame):
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUserName
 
-        print('Successful login')
+
         self.destroy()
         return loggedInUserName
         ##################################################
@@ -170,7 +157,7 @@ class loginView(tk.Frame):
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUserName
 
-        print('Successful login')
+
         self.destroy()
         return loggedInUserName
         ##################################################
@@ -199,7 +186,7 @@ class loginView(tk.Frame):
             messagebox.showerror('Invalid Login', 'Username and Password do not match')
             return loggedInUserName
 
-        print('Successful login')
+
         self.destroy()
         return loggedInUserName
         ##################################################

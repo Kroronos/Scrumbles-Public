@@ -122,7 +122,6 @@ class DataBlock:
                 self.executeUpdaterCallbacks()
                 self.lock.release()
                 self.lock.acquire(timeout=2)
-                print('changing listener flag back to False')
                 self.listener.isDBChanged = False
                 self.lock.release()
 
@@ -139,7 +138,7 @@ class DataBlock:
         if len(self.updaterCallbacks) > 0:
             for func in self.updaterCallbacks:
                 logging.info('Thread %s Executing Updater Func %s' % ( threading.get_ident(), str(func) ) )
-                print('There are %i active threads'%threading.active_count())
+
 
                 try:
                     func()
@@ -162,7 +161,7 @@ class DataBlock:
             time.sleep(1)
         self.isLoading = True
         funcStartTime = time.clock()
-        #print('connecting')
+
         self.conn.connect()
         self.users.clear()
         self.items.clear()
@@ -288,7 +287,7 @@ class DataBlock:
             Item.itemTimeLine = timeLineMap[Item.itemID]
         except KeyError as e:
             time.sleep(1)
-            print(str(e))
+            logging.exception('Error applying item TimeLine')
 
             self.applyItemLine( Item, self.reloadTimeLineMap() )
         return

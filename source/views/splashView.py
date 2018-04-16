@@ -5,7 +5,7 @@ class splashView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent, cursor = "watch")
         self.controller = controller
-        print('Init Splash')
+
 
         self.waitLabel = tk.Label(self, text = 'Please wait while Scrumbles Loads')
         self.waitLabel.pack()
@@ -15,7 +15,6 @@ class splashView(tk.Frame):
         s.theme_use('clam')
         s.configure("green.Horizontal.TProgressbar",
                     troughcolor = 'white',
-                    foreground = 'lime green',
                     background = 'lime green')
 
         self.pbarList = []
@@ -24,7 +23,7 @@ class splashView(tk.Frame):
             pbar = ttk.Progressbar(self,
                                    style = "green.Horizontal.TProgressbar",
                                    length = 1000,
-                                   maximum = 10 * i,
+                                   maximum = 10 * (i+1),
                                    mode = 'indeterminate')
             pbar.pack()
             self.pbarList.append(pbar)
