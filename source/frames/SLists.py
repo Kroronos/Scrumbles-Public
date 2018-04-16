@@ -240,9 +240,6 @@ class SBacklogList(BaseList):
         itemTitleMap = {}
         if self.MasterView is not None:
             itemList = self.MasterView.activeProject.listOfAssignedItems
-            print('Master is Sent')
-            print(self.controller)
-            print(len(itemList))
         else:
             itemList = self.controller.controller.activeProject.listOfAssignedItems
 

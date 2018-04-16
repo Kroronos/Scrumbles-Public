@@ -16,7 +16,7 @@ import threading
 class masterView(tk.Tk):
     def __init__(self):
 
-        print('Init masterView')
+
         tk.Tk.__init__(self)
 
         self.w_rat, self.h_rat = getGeometryFromFile("geometry.txt")
@@ -24,8 +24,7 @@ class masterView(tk.Tk):
         self.h_rat /= 720
         w = 1280*self.w_rat
         h = 720*self.h_rat
-        print("Width: " + str(w))
-        print("Height: " + str(h))
+
         ws = self.winfo_screenwidth()  # width of the screen
         hs = self.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (w / 2)
@@ -72,8 +71,8 @@ class masterView(tk.Tk):
 
             self.bind('<Control-r>', self.refreshData)
 
-        except Exception as inst:
-            print("User is not logged in")
+        except Exception as e:
+            logging.exception("User is not logged in")
 
         self.bind('<F1>', self.openUserGuide)
 
@@ -87,7 +86,6 @@ class masterView(tk.Tk):
   
     def show_frame(self, cont):
         frame = self.frames[cont]
-        print("Switching Views")
         frame.tkraise()
 
         if cont != (loginView or splashView):
@@ -242,14 +240,14 @@ class masterView(tk.Tk):
         #todo
         threading.Thread(target = self.dataBlock.onConnectionLoss, args = (self.connectionLossHandler,)).start()
 
-        print('Logged in %s' % loggedInUser)
+
 
         for user in self.dataBlock.users:
             if loggedInUser == user.userName:
                 loggedInUser = user
 
         self.activeUser = loggedInUser
-        print('%s Loggin in' % loggedInUser.userName)
+
 
         if not self.activeUser.listOfProjects:
             messagebox.showinfo('No Assigned Projects', 'You are not currently assigned to any projects '
@@ -382,8 +380,6 @@ def exitProgram(mainWindow):
 def minimize(mainwindow):
     mainwindow.iconify()
 
-def showGettingStartedText():
-    print("Get Started By Adding Creating A Project!")
 
 def getGeometryFromFile(file):
     try:
@@ -394,7 +390,6 @@ def getGeometryFromFile(file):
         h = int(h)
         geometryFile.close()
     except:
-        print("EXCEPTION ALERT")
         w = 1280
         h = 720
 

@@ -5,7 +5,7 @@ class splashView(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent, cursor = "watch")
         self.controller = controller
-        print('Init Splash')
+
 
         self.waitLabel = tk.Label(self, text = 'Please wait while Scrumbles Loads')
         self.waitLabel.pack()
