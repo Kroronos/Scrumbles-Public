@@ -39,7 +39,8 @@ class GenericPopupMenu(Tk.Menu):
         if self.selectedObject is None:
             raise Exception('PopMenu Selected Item is None')
         else:
-            return self.findSelectedObject(self.selectedObject)
+            obj = self.findSelectedObject(self.selectedObject)
+            return obj
 
     def findSelectedObject(self,name):
         for I in self.dataBlock.items:
