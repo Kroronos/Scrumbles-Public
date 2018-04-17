@@ -14,6 +14,7 @@ from frames.SLists import ColorSchemes
 def tryExcept(f):
     def wrapper(self):
         try:
+
             f(self)
 
         except IntegrityError as e:
@@ -83,6 +84,23 @@ class GenericDialog(Tk.Toplevel):
         self.wait_window()
         return self.executeSuccess
 
+    def validateName(self,objName):
+        isGood = True
+        for title in [I.itemTitle for I in self.dataBlock.items]:
+            if objName == title:
+                isGood = False
+        for name in [U.userName for U in self.dataBlock.users]:
+            if objName == name:
+                isGood = False
+        for name in [P.projectName for P in self.dataBlock.projects]:
+            if objName == name:
+                isGood = False
+        for name in [S.sprintName for S in self.dataBlock.sprints]:
+            if objName == name:
+                isGood = False
+        if not isGood:
+            raise Exception('Object Name Must Be Unique')
+
 class CreateProjectDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
@@ -110,6 +128,7 @@ class CreateProjectDialog(GenericDialog):
     def ok(self):
         project = ScrumblesObjects.Project()
         project.projectName = self.projectTitleEntry.get()
+        self.validateName(project.projectName)
         try:
             if not self.isTest:
                 self.dataBlock.addNewScrumblesObject(project)
@@ -181,7 +200,7 @@ class CreateUserDialog(GenericDialog):
         user.userPassword = self.passwordEntry.get()
         user.userEmailAddress = self.emailEntry.get()
         user.userRole = self.roleCombobox.get()
-
+        self.validateName(user.userName)
         try:
             if not self.isTest:
                 self.dataBlock.addNewScrumblesObject(user)
@@ -197,6 +216,7 @@ class CreateSprintDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.sprint = None
+        self.oldSprintName = None
         self.month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Nov','Dec']
         self.day = [str(d) for d in range(1,32)]
         self.year = [str(y) for y in range(2018,2100)]
@@ -296,9 +316,15 @@ class CreateSprintDialog(GenericDialog):
             sprint = ScrumblesObjects.Sprint()
         else:
             sprint = self.sprint
+
+
         sprint.sprintName = self.sprintNameEntry.get()
         sprint.sprintStartDate = self.getDate('start')
         sprint.sprintDueDate = self.getDate('due')
+
+        if self.oldSprintName is None or self.oldSprintName != sprint.sprintName:
+            self.validateName(sprint.sprintName)
+
         if not self.isTest:
             projectName = self.assignSprintToObject.get()
             for P in self.dataBlock.projects:
@@ -369,7 +395,7 @@ class DeleteSprintDialog(GenericDialog):
                 self.dataBlock.deleteScrumblesObject(self.sprint)
                 self.exit()
             else:
-                print('TESTMODE: self.dataBlock.addNewScrumblesObject(%s)'%repr(self.sprint))
+                print('TESTMODE: self.dataBlock.deleteScrumblesObject(%s)'%repr(self.sprint))
         except IntegrityError:
             logging.exception('ID Collision')
 
@@ -452,7 +478,7 @@ class CreateItemDialog(GenericDialog):
             item.itemType = self.ItemTypebox.get()
             item.itemPoints = self.pointsEntry.get()
             item.itemPriority = item.priorityTextToNumberMap[self.itemPriorityCombobox.get()]
-
+            self.validateName(item.itemTitle)
             comment = ScrumblesObjects.Comment()
             comment.commentContent = self.commentTextBox.get('1.0','end-1c')
             if not self.isTest:
@@ -498,6 +524,7 @@ class EditItemDialog(CreateItemDialog):
         super().__init__(*args, **kwargs)
 
         self.item = item
+        self.oldItemName = item.itemTitle
         assert type(item) is ScrumblesObjects.Item
         if not self.isTest:
             self.listOfSprints = self.master.activeProject.listOfAssignedSprints
@@ -602,7 +629,8 @@ class EditItemDialog(CreateItemDialog):
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
             selectedSprint = None
             selectedUser = None
-
+            if item.itemTitle != self.oldItemName:
+                self.validateName(item.itemTitle)
             comment = ScrumblesObjects.Comment()
             comment.commentContent = self.commentTextBox.get('1.0', 'end-1c')
             comment.commentUserID = self.master.activeUser.userID

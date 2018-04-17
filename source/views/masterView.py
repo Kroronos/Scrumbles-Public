@@ -349,7 +349,10 @@ def logOut(controller):
     controller.title("Scrumbles")
 
 def exitProgram(mainWindow):
-    setProjectFile(mainWindow.activeProject)
+    try:
+        setProjectFile(mainWindow.activeProject)
+    except:
+        pass
     setGeometryFile(mainWindow)
     plt.close('all')
     try:
