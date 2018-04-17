@@ -138,12 +138,12 @@ class DataBlock:
         if len(self.updaterCallbacks) > 0:
             for func in self.updaterCallbacks:
                 logging.info('Thread %s Executing Updater Func %s' % ( threading.get_ident(), str(func) ) )
-                print('There are %i active threads'%threading.active_count())
+
 
                 try:
                     func()
                 except Exception as e:
-                    logging.exception('Excepition is funciton %s\n'%str(func),str(e))
+                    logging.exception('Function {} failed to update'.format(str(func)))
 
     def shutdown(self):
 
@@ -161,7 +161,7 @@ class DataBlock:
             time.sleep(1)
         self.isLoading = True
         funcStartTime = time.clock()
-        #print('connecting')
+
         self.conn.connect()
         self.users.clear()
         self.items.clear()
@@ -287,7 +287,7 @@ class DataBlock:
             Item.itemTimeLine = timeLineMap[Item.itemID]
         except KeyError as e:
             time.sleep(1)
-            print(str(e))
+            logging.exception('Error applying item TimeLine')
 
             self.applyItemLine( Item, self.reloadTimeLineMap() )
         return
@@ -325,13 +325,14 @@ class DataBlock:
     @dbWrap
     def removeUserFromProject(self,project,user):
         logging.info('Removing User %s from project %s' %(user.userName,project.projectName) )
+        itemList = []
         for item in self.items:
             if item in project.listOfAssignedItems:
                 if item.itemUserID == user.userID:
-                    item.itemUserID = 0
+                    itemList.append(item)
 
-            self.conn.setData(Query.updateObject(item))
 
+        self.conn.setMulti(CardQuery.removeUserFromListOfCards(itemList))
         self.conn.setData(ProjectQuery.removeUser(project,user))
 
 
@@ -431,7 +432,7 @@ class DataBlock:
     def assignItemToSprint(self,item,sprint):
         logging.info('Assigning Item %s to Sprint %s.'%(item.itemTitle,sprint.sprintName))
         item.itemSprintID = sprint.sprintID
-        item.itemDescription = sprint.sprintDueDate
+        item.itemDueDate = sprint.sprintDueDate
         self.conn.setData(Query.updateObject(item))
         self.conn.setData(TimeLineQuery.stampItemToSprint(item))
 

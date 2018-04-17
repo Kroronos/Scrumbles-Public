@@ -75,7 +75,7 @@ class ScrumblesData:
                 try:
                     cursor.execute(line,params[i])
                 except Exception as e:
-                    print(line, params[i],"Failed to execute\n",str(e))
+                    logging.exception('failed to execute query')
                     raise(e)
                 cursor.close()
             self.dbConnection.commit()
