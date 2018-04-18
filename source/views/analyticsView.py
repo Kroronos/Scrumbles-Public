@@ -75,7 +75,7 @@ class analyticsView(tk.Frame):
         self.selectionNotebook.enable_traversal() #Allows tabbing through ctrl+tab if notebook tabs are selected
         self.selectionNotebook.pack(fill=tk.BOTH, expand=True)
         self.updateFrame()
-        #self.controller.dataBlock.packCallback(self.updateFrame) # plt.close calls a tk.destroy which is not allowed outside of main thread
+
 
     def updateFrame(self):
         plt.close('all')
