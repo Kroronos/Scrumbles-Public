@@ -63,15 +63,14 @@ class masterView(tk.Tk):
             self.bind('<Control-s>', self.showCreateSprintDialog)
             self.bind('<Control-p>', self.showCreateProjectDialog)
 
-            if self.activeUser.userRole == "Admin":
-                self.bind('<Control-m>', self.showAdminMainView)
-            elif self.activeUser.userRole == "Scrum Master":
-                self.bind('<Control-m'), self.showScrumMasterMainView()
             self.bind('<Control-h>', self.showDeveloperHomeView)
             self.bind('<Control-b>', self.showBacklogView)
             self.bind('<Control-a>', self.showAnalyticsView)
 
             self.bind('<Control-r>', self.refreshData)
+
+            self.bind('<Control-m>', self.showMainView)
+        
 
         except Exception as e:
             logging.exception("User is not logged in")
@@ -198,6 +197,12 @@ class masterView(tk.Tk):
 
     def showSplashView(self, event = None):
         self.show_frame(splashView)
+
+    def showMainView(self, event):
+        if self.activeUser.userRole == "Admin":
+            self.show_frame(adminMainView)
+        elif self.activeUser.userRole == "Scrum Master":
+            self.show_frame(scrumMasterMainView)
 
     def showAdminMainView(self, event = None):
         if self.activeUser.userRole == "Admin":
