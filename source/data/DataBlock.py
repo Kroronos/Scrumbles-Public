@@ -1,6 +1,7 @@
 from data.ScrumblesData import DataBaseLoginInfo, ScrumblesData, debug_ObjectdumpList
 from data.Query import *
 from data import RemoteUpdate, ScrumblesObjects
+import data
 import logging, threading, time
 
 def dbWrap(func):
@@ -373,25 +374,41 @@ class DataBlock:
 
     @dbWrap
     def addNewScrumblesObject(self,obj):
-        if type(obj) == ScrumblesObjects.Item:
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>":
             self.conn.setData(TimeLineQuery.newItem(obj))
         logging.info('Adding new object %s to database' % repr(obj))
         self.conn.setData(Query.createObject(obj))
 
-    @dbWrap
-    def updateScrumblesObject(self,obj):
-        logging.info('Updating object %s to database' % repr(obj))
+    def printQ(self,Q):
+        sql = Q[0].splitlines()
+        params = Q[1]
+        for index, line in enumerate(sql):
+            print('Line:{}\n{}\n{}'.format(index+1,line,params[index+1]))
 
-        self.conn.setData(Query.updateObject(obj))
-        if type(obj) is ScrumblesObjects.Item:
-            self.conn.setData(TimeLineQuery.updateObject(obj))
+
+    @dbWrap
+    def updateScrumblesObject(self,obj,oldObj=None,comment=None):
+        logging.info('Updating object %s to database' % repr(obj))
+        print(obj)
+        print(repr(obj))
+
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>":
+            assert oldObj is not None, 'old object cannot be none'
+            assert comment is not None, 'Comment cannot be none'
+            Q = CardQuery.updateCard(obj,oldObj,comment)
+            self.printQ(Q)
+            #self.conn.setMulti(CardQuery.updateCard(obj,oldObj,comment))
+            #self.conn.setData(TimeLineQuery.updateObject(obj))
+        else:
+            print('Not an Item')
+            # self.conn.setData(Query.updateObject(obj))
 
     @dbWrap
     def deleteScrumblesObject(self,obj,project=None):
         logging.info('Deleting object %s from database' % repr(obj))
-        if type(obj) == ScrumblesObjects.Item:
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>":
             self.conn.setMulti(Query.deleteObject(obj))
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
             self.conn.setMulti(Query.deleteObject(obj))
         else:
             self.conn.setData(Query.deleteObject(obj))
@@ -400,6 +417,7 @@ class DataBlock:
     def removeItemFromComments(self,item):
         logging.info('Removing item from comments database')
         self.conn.setData(CommentQuery.deleteItemFromComments(item))
+
 
     @dbWrap
     def modifiyItemPriority(self,item,priority):

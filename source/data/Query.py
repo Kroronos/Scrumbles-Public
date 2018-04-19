@@ -206,43 +206,74 @@ class CardQuery(Query):
                 )
 
     @staticmethod
-    def updateCard(item):
-
+    def updateCard(item,oldItem,comment):
+        maxDate = datetime(9999, 12, 31, 23, 59, 59)
+        sql = ''
+        params = {}
         assert item is not None
         assert item.itemID is not None
         assert item.itemType in Query.validItemTypes
-        itemDict = {}
-        itemDict['Type'] =  item.itemType
-        itemDict['Priority'] = item.itemPriority
-        itemDict['Title'] = item.itemTitle
-        itemDict['Descr'] = item.itemDescription
-        itemDict['DueDate'] = None
-        if item.itemDueDate is not None:
-            itemDict['DueDate'] = item.itemDueDate
-        itemDict['Sprint'] = item.itemSprintID
-        itemDict['User'] = item.itemUserID
-        itemDict['Status'] = item.itemStatus
-        itemDict['CodeLink'] = None
-        if item.itemCodeLink is not None:
-            itemDict['CodeLink'] = item.itemCodeLink
-        itemDict['Points'] = item.itemPoints
+        assert item.itemPriority in range(0, 3)
 
-        query = '''UPDATE CardTable SET  CardType=%s, CardPriority=%s, CardTitle=%s,CardDescription=%s, CardDueDate=%s,
-                CardCodeLink=%s, SprintID=%s, UserID=%s, Status=%s, CardPoints=%s  WHERE CardID=%s'''
+        sql += 'UPDATE CardTable SET  CardType=%s, CardPriority=%s, CardTitle=%s,CardDescription=%s, CardDueDate=%s,CardCodeLink=%s, SprintID=%s, UserID=%s, Status=%s, CardPoints=%s  WHERE CardID=%s\n'
+        params[1] = (item.itemType,item.itemPriority,item.itemTitle,item.itemDescription,item.itemDueDate,item.itemCodeLink,item.itemSprintID,item.itemUserID,item.itemStatus,item.itemPoints,item.itemID)
+        sql += 'INSERT INTO CommentTable (CommentID, CommentTimeStamp,CommentContent,CardID,UserID) VALUES ( %s,NOW(), %s,%s,%s)\n'
+        params[2] = (comment.commentID,comment.commentContent,comment.commentItemID,comment.commentUserID)
 
-        return query , (
-            itemDict['Type'],
-            itemDict['Priority'],
-            itemDict['Title'],
-            itemDict['Descr'],
-            itemDict['DueDate'],
-            itemDict['CodeLink'],
-            itemDict['Sprint'],
-            itemDict['User'],
-            itemDict['Status'],
-            itemDict['Points'],
-            item.itemID
-        )
+        nextParam = 3
+
+        if oldItem.itemSprintID == item.itemSprintID:
+            pass
+
+        elif oldItem.itemSprintID is None and item.itemSprintID is not None:
+            sql +='UPDATE CardTimeLine SET AssignedToSprint=NOW() WHERE CardID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+
+        elif oldItem.itemSprintID is not None and item.itemSprintID is None:
+            sql +='UPDATE CardTimeLine SET AssignedToSprint=%s WHERE CardID=%s\n'
+            params[nextParam] = (maxDate,item.itemID)
+            nextParam += 1
+
+        elif oldItem.itemSprintID != item.itemSprintID:
+            sql +='UPDATE CardTimeLine SET AssignedToSprint=NOW() WHERE CardID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+
+        if oldItem.itemUserID == item.itemUserID:
+            pass
+
+        elif oldItem.itemUserID is None and item.itemUserID is not None:
+            sql +='UPDATE CardTimeLine SET  AssignedToUser=NOW() WHERE CardID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+
+        elif oldItem.itemUserID is not None and item.itemUserID is None:
+            sql += 'UPDATE CardTimeLine SET  AssignedToUser=%s WHERE CardID=%s\n'
+            params[nextParam] = (maxDate, item.itemID)
+            nextParam += 1
+
+        elif oldItem.itemUserID != item.itemUserID:
+            sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW() WHERE CardID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+
+        if oldItem.itemType == item.itemType:
+            pass
+
+        elif oldItem.itemType == 'Epic' and item.itemType != 'Epic':
+            sql += 'DELETE FROM EpicTable WHERE EpicID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+            pass
+
+        elif oldItem.itemType != 'Epic' and item.itemType == 'Epic':
+            pass
+
+
+
+        return sql,params
+
 
     @staticmethod
     def removeUserFromListOfCards(itemList):
