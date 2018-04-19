@@ -42,15 +42,15 @@ class Query:
     @staticmethod
     def createObject(obj):
         query = ''
-        if type(obj) == ScrumblesObjects.User:
+        if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
             query = UserQuery.createUser(obj)
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
             query = SprintQuery.createSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.createCard(obj)
-        elif type(obj) == ScrumblesObjects.Comment:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
             query = CommentQuery.createComment(obj)
-        elif type(obj) == ScrumblesObjects.Project:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>":
             query = ProjectQuery.createProject(obj)
 
         else:
@@ -60,15 +60,15 @@ class Query:
     @staticmethod
     def deleteObject(obj):
         query = ''
-        if type(obj) == ScrumblesObjects.User:
+        if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
             query = UserQuery.deleteUser(obj)
-        elif type(obj) == ScrumblesObjects.Comment:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
             query = CommentQuery.deleteComment(obj)
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
             query = SprintQuery.deleteSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.deleteCard(obj)
-        elif type(obj) == ScrumblesObjects.Project:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>":
             query = ProjectQuery.deleteProject(obj)
         else:
             raise Exception('Invalid Object Type')
@@ -77,15 +77,15 @@ class Query:
     @staticmethod
     def updateObject(obj):
         query = ''
-        if type(obj) == ScrumblesObjects.User:
+        if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
             query = UserQuery.updateUser(obj)
-        elif type(obj) == ScrumblesObjects.Comment:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
             query = CommentQuery.updateComment(obj)
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
             query = SprintQuery.updateSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.updateCard(obj)
-        elif type(obj) == ScrumblesObjects.Project:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>":
             query = ProjectQuery.updateProject(obj)
         else:
             raise Exception('Invalid Object Type')
@@ -473,15 +473,15 @@ class Password:
 class ObjectValidator:
     @staticmethod
     def validate(obj):
-        if type(obj) == ScrumblesObjects.User:
+        if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
             ObjectValidator.validateUser(obj)
         elif type(obj) == ScrumblesObjects.Item:
             ObjectValidator.validateCard(obj)
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
             ObjectValidator.validateSprint(obj)
-        elif type(obj) == ScrumblesObjects.Comment:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
             ObjectValidator.validateComment(obj)
-        elif type(obj) == ScrumblesObjects.Project:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>":
             ObjectValidator.validateProject(obj)
         else:
             raise Exception('Invalid Object')
