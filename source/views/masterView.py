@@ -346,6 +346,7 @@ def logOut(controller):
     controller.title("Scrumbles")
 
 def exitProgram(mainWindow):
+    mainWindow.showSplashView()
     try:
         setProjectFile(mainWindow.activeProject)
     except:
@@ -355,6 +356,10 @@ def exitProgram(mainWindow):
 
     try:
         mainWindow.dataBlock.shutdown()
+        while (mainWindow.dataBlock.updaterThread.is_alive() &
+               mainWindow.dataBlock.listenerThread.is_alive() &
+               mainWindow.dataBlock.listener.keepAliveThread.is_alive()):
+            mainWindow.splashFrame.stepProgressBar(1)
     except:
         logging.exception('Shutdown Failure')
     try:
