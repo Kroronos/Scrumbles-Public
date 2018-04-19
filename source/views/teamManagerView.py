@@ -71,7 +71,9 @@ class teamManagerView(tk.Frame):
         projectOptions = tk.Menu(self.memberPopupMenu, 
                                  tearoff = 0, 
                                  cursor = "hand2")
-        
+        if len(self.controller.dataBlock.projects) == len(self.inspectedItem.listOfProjects):
+            projectOptions.add_command(label = "[Empty]",
+                                       state = "disabled")
         for project in self.controller.dataBlock.projects:
             if project not in self.inspectedItem.listOfProjects:
                 projectOptions.add_command(label = project.projectName, 
