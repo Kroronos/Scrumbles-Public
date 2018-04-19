@@ -111,7 +111,6 @@ class EditItemDialog(CreateItemDialog):
         super().__init__(*args, **kwargs)
 
         self.item = item
-        self.oldItemName = item.itemTitle
         assert type(item) is ScrumblesObjects.Item
         if not self.isTest:
             self.listOfSprints = self.master.activeProject.listOfAssignedSprints
@@ -138,7 +137,6 @@ class EditItemDialog(CreateItemDialog):
     def updateWidgets(self):
 
         self.commentTextBox.grid_forget()
-        #self.pointsEntryLabel.grid_forget()
         self.pointsEntry.grid_forget()
         self.createButton.grid_forget()
         self.cancelButton.grid_forget()
@@ -210,56 +208,75 @@ class EditItemDialog(CreateItemDialog):
 
     @tryExcept
     def ok(self):
-            item = self.item
-            oldItemType = item.itemType
+            item = ScrumblesObjects.Item
+            oldItem = self.item
+            item.itemID = oldItem.itemID
             item.itemTitle = self.itemTitleEntry.get()
             item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
             selectedSprint = None
             selectedUser = None
-            if item.itemTitle != self.oldItemName:
+            if item.itemTitle != oldItem.itemTitle:
                 self.validateName(item.itemTitle)
             comment = ScrumblesObjects.Comment()
             comment.commentContent = self.commentTextBox.get('1.0', 'end-1c')
             comment.commentUserID = self.master.activeUser.userID
             comment.commentItemID = item.itemID
 
-            if len(comment.commentContent) > 0:
-                try:
-                    self.dataBlock.addNewScrumblesObject(comment)
-                except IntegrityError:
-                    comment.commentID = ScrumblesObjects.generateRowID()
-                    self.dataBlock.addNewScrumblesObject(comment)
-            else:
+            if len(comment.commentContent) <= 0:
                 raise Exception('Comment box cannot be blank\nPlease enter a change reason.')
+                #todo add comment as parameter to updateObject
+                # try:
+                #     self.dataBlock.addNewScrumblesObject(comment)
+                # except IntegrityError:
+                #     comment.commentID = ScrumblesObjects.generateRowID()
+                #     self.dataBlock.addNewScrumblesObject(comment)
+            # else:
+            #     raise Exception('Comment box cannot be blank\nPlease enter a change reason.')
 
             for sprint in self.listOfSprints:
                 if sprint.sprintName == self.sprintsComboBox.get():
                     selectedSprint = sprint
                     if selectedSprint.sprintDueDate is None:
                         raise Exception('Corrupted Sprint Data, contact your database admin')
+
             for user in self.listOfUsers:
                 if user.userName == self.usersComboBox.get():
                     selectedUser = user
 
             if self.sprintsComboBox.get() != 'None':
-                self.dataBlock.removeItemFromSprint(item)
-                self.dataBlock.assignItemToSprint(item, selectedSprint)
+                item.itemSprintID = selectedSprint.sprintID
             else:
                 item.itemSprintID = None
                 item.itemDueDate = None
 
+            #todo add logic below to query, compare old item to new item
+            # if self.sprintsComboBox.get() != 'None':
+            #     self.dataBlock.removeItemFromSprint(item)
+            #     self.dataBlock.assignItemToSprint(item, selectedSprint)
+            # else:
+            #     item.itemSprintID = None
+            #     item.itemDueDate = None
+
             item.itemType = self.ItemTypebox.get()
-            self.dataBlock.assignUserToItem(selectedUser, item)
+
+            #todo add login to query
+            #self.dataBlock.assignUserToItem(selectedUser, item)
+
+            item.itemUserID = selectedUser.userID
 
             item.itemCodeLink = self.itemCodeLinkEntry.get()
-            if self.itemPriorityCombobox.get() == '':
-                item.itemPriority = 0
-            else:
-                self.dataBlock.modifiyItemPriority(item, item.priorityTextToNumberMap[self.itemPriorityCombobox.get()])
+            item.itemPriority = item.priorityTextToNumberMap[self.itemPriorityCombobox.get()]
 
-            if oldItemType == 'Epic' and item.itemType != 'Epic':
-                self.dataBlock.deleteEpic(item)
-            self.dataBlock.updateScrumblesObject(item)
+            #todo add logic to query
+            # if self.itemPriorityCombobox.get() == '':
+            #     item.itemPriority = 0
+            # else:
+            #     self.dataBlock.modifiyItemPriority(item, item.priorityTextToNumberMap[self.itemPriorityCombobox.get()])
+
+            #todo add logic to query
+            # if oldItemType == 'Epic' and item.itemType != 'Epic':
+            #     self.dataBlock.deleteEpic(item)
+            # self.dataBlock.updateScrumblesObject(item)
 
 
             messagebox.showinfo('Info', "Item '%s' Successfully Updated" % item.itemTitle)
