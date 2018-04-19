@@ -1,7 +1,7 @@
 import MySQLdb, logging
 from data import ScrumblesObjects
 import base64
-
+import time
 
 class DataBaseLoginInfo:
     def __init__(self,file):
@@ -56,12 +56,23 @@ class ScrumblesData:
         self.dbConnection = MySQLdb.connect(self.ipaddress, self.userID, self.password, self.defaultDB)
         self.cursor = self.dbConnection.cursor()
     def getData(self, query):
-        assert self.dbConnection is not None
-        self.dbConnection.query(query)
-        queryResult = self.dbConnection.store_result()
         maxRows = 0
         how = 1
-        return queryResult.fetch_row(maxRows, how)
+        assert self.dbConnection is not None
+        self.dbConnection.query(query)
+        try:
+            queryResult = self.dbConnection.store_result()
+            returnVal = queryResult.fetch_row(maxRows, how)
+        except AttributeError as e:
+            logging.exception('Query {} failed to execute, attempting again in 2 seconds'.format(query))
+            time.sleep(2)
+            try:
+                queryResult = self.dbConnection.store_result()
+                returnVal = queryResult.fetch_row(maxRows, how)
+            except AttributeError as e:
+                logging.exception('Query failed to execute second time, giving up')
+                return
+        return returnVal
 
     def setMulti(self,query):
         sql = query[0]

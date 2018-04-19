@@ -88,13 +88,13 @@ class mainViewPopup(SPopMenu.GenericPopupMenu):
     def getSelectedObject(self):
         return self.selectedObject
 
-class mainView(tk.Frame):
+class backlogView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
 
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, user.userRole + " Main")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Backlog")
         self.tabButtons.pack(side = tk.TOP, fill = tk.X)
 
         self.activeProject = controller.activeProject
@@ -205,7 +205,7 @@ class mainView(tk.Frame):
             logging.exception('Could not assign item to Complete')
             messagebox.showerror('Error', str(e))
 
-        messagebox.showinfo('Success','Item Approved')
+        messagebox.showinfo('Success', 'Item Approved')
 
     def removeFromEpic(self):
         item = None
@@ -506,4 +506,4 @@ class mainView(tk.Frame):
         self.generatePopupThing()
 
     def __str__(self):
-        return 'Scrumbles Home View'
+        return 'Backlog View'

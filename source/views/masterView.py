@@ -3,7 +3,7 @@ import tkinter as tk
 import matplotlib.pyplot as plt
 
 from tkinter import messagebox
-from views import splashView, developerHomeView, mainView, teamManagerView, loginView, analyticsView
+from views import splashView, loginView, adminMainView, scrumMasterMainView, developerHomeView, backlogView, analyticsView
 
 import platform
 import webbrowser
@@ -62,13 +62,15 @@ class masterView(tk.Tk):
             self.bind('<Control-i>', self.showCreateItemDialog)
             self.bind('<Control-s>', self.showCreateSprintDialog)
             self.bind('<Control-p>', self.showCreateProjectDialog)
-            
-            self.bind('<Control-m>', self.showMainView)
+
             self.bind('<Control-h>', self.showDeveloperHomeView)
-            self.bind('<Control-t>', self.showTeamManagerView)
+            self.bind('<Control-b>', self.showBacklogView)
             self.bind('<Control-a>', self.showAnalyticsView)
 
             self.bind('<Control-r>', self.refreshData)
+
+            self.bind('<Control-m>', self.showMainView)
+        
 
         except Exception as e:
             logging.exception("User is not logged in")
@@ -98,7 +100,7 @@ class masterView(tk.Tk):
         fileMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
         self.fileMenu = fileMenu
 
-        if (self.activeUser.userRole == "Admin"):
+        if self.activeUser.userRole == "Admin":
             fileMenu.add_command(label = "Create New Project", command = self.showCreateProjectDialog, accelerator = "CTRL+P")
         self.setOpenProjectsMenu(fileMenu)
         self.dataBlock.packCallback(self.updateOpenProjectsMenu)
@@ -117,21 +119,15 @@ class masterView(tk.Tk):
         profileMenu.add_command(label = "Log Out", command = lambda: logOut(self))
 
         viewMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
-        if self.activeUser.userRole =="Admin":
-            viewMenu.add_command(label = "Team Manager", underline = 0, command = lambda: self.show_frame(teamManagerView), accelerator="CTRL+T")
-
         if self.activeUser.userRole == "Admin":
-            viewMenu.add_command(label = "Administrator Main", underline = 0, command = lambda: self.show_frame(mainView), accelerator = "CTRL+M")
+            viewMenu.add_command(label = "Main", underline = 0, command = lambda: self.show_frame(adminMainView), accelerator = "CTRL+M")
         
-        if self.activeUser.userRole == "Scrum Master":
-            viewMenu.add_command(label = "Scrum Master Main", underline = 0, command = lambda: self.show_frame(mainView), accelerator = "CTRL+M")
-        
-        elif self.activeUser.userRole == "Developer":
-            viewMenu.add_command(label = "Developer Main", underline = 0, command = lambda: self.show_frame(mainView), accelerator = "CTRL+M")
+        elif self.activeUser.userRole == "Scrum Master":
+            viewMenu.add_command(label = "Main", underline = 0, command = lambda: self.show_frame(scrumMasterMainView), accelerator = "CTRL+M")
 
-        viewMenu.add_command(label = "Developer Home", underline = 0, command = lambda: self.show_frame(developerHomeView), accelerator="CTRL+H")
-        
-        viewMenu.add_command(label = "Analytics View", underline = 0, command = lambda: self.show_frame(analyticsView), accelerator="CTRL+A")
+        viewMenu.add_command(label = "Home", underline = 0, command = lambda: self.show_frame(developerHomeView), accelerator = "CTRL+H")
+        viewMenu.add_command(label = "Backlog", underline = 0, command = lambda: self.show_frame(backlogView), accelerator = "CTRL+B")
+        viewMenu.add_command(label = "Analytics", underline = 0, command = lambda: self.show_frame(analyticsView), accelerator = "CTRL+A")
 
         helpMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
         helpMenu.add_command(label = "User Guide", command = self.openUserGuide)
@@ -162,23 +158,19 @@ class masterView(tk.Tk):
         views = []
         viewNames = []
 
-        views.append(teamManagerView)
-        viewNames.append("Team Manager")
-
         if self.activeUser.userRole == "Admin":
-            views.append(mainView)
-            viewNames.append("Admin Main")
+            views.append(adminMainView)
+            viewNames.append("Main")
 
         elif self.activeUser.userRole == "Scrum Master":
-            views.append(mainView)
-            viewNames.append("Scrum Master Main")
-
-        elif self.activeUser.userRole == "Developer":
-            views.append(mainView)
-            viewNames.append("Developer Main")
+            views.append(scrumMasterMainView)
+            viewNames.append("Main")
 
         views.append(developerHomeView)
-        viewNames.append("Developer Home")
+        viewNames.append("Home")
+
+        views.append(backlogView)
+        viewNames.append("Backlog")
 
         views.append(analyticsView)
         viewNames.append("Analytics")
@@ -206,15 +198,17 @@ class masterView(tk.Tk):
     def showSplashView(self, event = None):
         self.show_frame(splashView)
 
-    def showTeamManagerView(self, event = None):
-        if self.activeUser.userRole == "Admin":
-            self.show_frame(teamManagerView)
-
     def showMainView(self, event = None):
-        self.show_frame(mainView)
+        if self.activeUser.userRole == "Admin":
+            self.show_frame(adminMainView)
+        elif self.activeUser.userRole == "Scrum Master":
+            self.show_frame(scrumMasterMainView)
 
     def showDeveloperHomeView(self, event = None):
         self.show_frame(developerHomeView)
+
+    def showBacklogView(self, event = None):
+        self.show_frame(backlogView)
 
     def showAnalyticsView(self, event = None):
         self.show_frame(analyticsView)
@@ -223,7 +217,7 @@ class masterView(tk.Tk):
         self.dataBlock = DataBlock.DataBlock()
 
         if self.dataBlock.isLoading is True:
-            self.showSplashView(None)
+            self.showSplashView()
 
         while self.dataBlock.isLoading:
             self.splashFrame.stepProgressBar(1)
@@ -247,37 +241,37 @@ class masterView(tk.Tk):
         self.dataBlock.packCallback(self.repointActiveObjects)
 
         if self.activeUser.userRole == "Admin":
-            teamManagerFrame = teamManagerView.teamManagerView(self.container, self, loggedInUser)
-        homeFrame = mainView.mainView(self.container, self, loggedInUser)
+            adminMainFrame = adminMainView.adminMainView(self.container, self, loggedInUser)
+        elif self.activeUser.userRole == "Scrum Master":
+            scrumMasterMainFrame = scrumMasterMainView.scrumMasterMainView(self.container, self, loggedInUser)
         developerHomeFrame = developerHomeView.developerHomeView(self.container, self, loggedInUser)
+        backlogFrame = backlogView.backlogView(self.container, self, loggedInUser)
         analyticsFrame = analyticsView.analyticsView(self.container, self)
 
         if self.activeUser.userRole == "Admin":
-            self.add_frame(teamManagerFrame, teamManagerView)
-        self.add_frame(homeFrame, mainView)
+            self.add_frame(adminMainFrame, adminMainView)
+        elif self.activeUser.userRole == "Scrum Master":
+            self.add_frame(scrumMasterMainFrame, scrumMasterMainView)
         self.add_frame(developerHomeFrame, developerHomeView)
+        self.add_frame(backlogFrame, backlogView)
         self.add_frame(analyticsFrame, analyticsView)
 
         self.generateMenuBar()
 
-        if self.activeUser.userRole == "Admin":
-            self.showTeamManagerView(None)
+        self.showMainView()
 
-        elif self.activeUser.userRole == "Scrum Master":
-            self.showMainView(None)
-
-        elif self.activeUser.userRole == "Developer":
-            self.showDeveloperHomeView(None)
+        if self.activeUser.userRole == "Developer":
+            self.showDeveloperHomeView()
 
         self.title("Scrumbles" + " - " + self.activeProject.projectName)
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
 
-    def openUserGuide(self,event=None):
+    def openUserGuide(self, event = None):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/User-Guide')
 
     def connectionLossHandler(self):
-        messagebox.showerror('Loss of Connection','Network Connection Lost, Logging Out of App')
+        messagebox.showerror('Loss of Connection', 'Network Connection Lost, Logging Out of App')
         logOut(self)
 
     def openAPI(self):
@@ -329,7 +323,7 @@ class masterView(tk.Tk):
             if U.userName == self.activeUser.userName:
                 self.activeUser = U
 
-    def refreshData(self,event=None):
+    def refreshData(self, event = None):
         self.dataBlock.updateAllObjects()
         self.dataBlock.executeUpdaterCallbacks()
 
@@ -338,9 +332,12 @@ class masterView(tk.Tk):
 
 def logOut(controller):
     logging.info('%s logged out' % controller.activeUser.userID)
+    controller.showSplashView()
     controller.dataBlock.shutdown()
-    messagebox.showinfo('Logout', 'Shutting Down Active Threads')
-    time.sleep(3)
+    while (controller.dataBlock.updaterThread.is_alive() &
+           controller.dataBlock.listenerThread.is_alive() &
+           controller.dataBlock.listener.keepAliveThread.is_alive()):
+            controller.splashFrame.stepProgressBar(1)
     del controller.dataBlock
     #Do Some Stuff Here To Clear States
     loginFrame = loginView.loginView(controller.container, controller)
@@ -349,23 +346,29 @@ def logOut(controller):
     controller.title("Scrumbles")
 
 def exitProgram(mainWindow):
+    mainWindow.showSplashView()
     try:
         setProjectFile(mainWindow.activeProject)
     except:
         pass
     setGeometryFile(mainWindow)
     plt.close('all')
+
     try:
         mainWindow.dataBlock.shutdown()
+        while (mainWindow.dataBlock.updaterThread.is_alive() &
+               mainWindow.dataBlock.listenerThread.is_alive() &
+               mainWindow.dataBlock.listener.keepAliveThread.is_alive()):
+            mainWindow.splashFrame.stepProgressBar(1)
     except:
         logging.exception('Shutdown Failure')
     try:
-
         del mainWindow.dataBlock
 
         mainWindow.destroy()
     except:
         logging.exception('Shutdown Failure')
+
     finally:
         exit()
     logging.info("Shutting down gracefully")
