@@ -276,30 +276,5 @@ class EditItemDialog(CreateItemDialog):
             messagebox.showinfo('Info', "Item '%s' Successfully Updated" % item.itemTitle)
             self.exit()
 
-            #todo add logic below to query, compare old item to new item
-            # if self.sprintsComboBox.get() != 'None':
-            #     self.dataBlock.removeItemFromSprint(item)
-            #     self.dataBlock.assignItemToSprint(item, selectedSprint)
-            # else:
-            #     item.itemSprintID = None
-            #     item.itemDueDate = None
-
-
-            #todo add logic to query
-            #self.dataBlock.assignUserToItem(selectedUser, item)
-
-            #todo add logic to query
-            # if self.itemPriorityCombobox.get() == '':
-            #     item.itemPriority = 0
-            # else:
-            #     self.dataBlock.modifiyItemPriority(item, item.priorityTextToNumberMap[self.itemPriorityCombobox.get()])
-
-            #todo add logic to query
-            # if oldItemType == 'Epic' and item.itemType != 'Epic':
-            #     self.dataBlock.deleteEpic(item)
-            # self.dataBlock.updateScrumblesObject(item)
-
-
-
     def exit(self):
         self.top.destroy()
