@@ -402,9 +402,9 @@ class DataBlock:
     def deleteScrumblesObject(self,obj,project=None):
         logging.info('Deleting object %s from database' % repr(obj))
         if repr(obj) == "<class 'data.ScrumblesObjects.Item'>":
-            self.conn.setMulti(Query.deleteObject(obj))
+            self.conn.setMulti(CardQuery.deleteCard(obj))
         elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
-            self.conn.setMulti(Query.deleteObject(obj))
+            self.conn.setMulti(SprintQuery.deleteSprint(obj))
         else:
             self.conn.setData(Query.deleteObject(obj))
 
