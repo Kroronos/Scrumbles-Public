@@ -1,7 +1,6 @@
 from data.ScrumblesData import DataBaseLoginInfo, ScrumblesData, debug_ObjectdumpList
 from data.Query import *
 from data import RemoteUpdate, ScrumblesObjects
-import data
 import logging, threading, time
 
 def dbWrap(func):
@@ -389,19 +388,15 @@ class DataBlock:
     @dbWrap
     def updateScrumblesObject(self,obj,oldObj=None,comment=None):
         logging.info('Updating object %s to database' % repr(obj))
-        print(obj)
-        print(repr(obj))
-
         if repr(obj) == "<class 'data.ScrumblesObjects.Item'>":
             assert oldObj is not None, 'old object cannot be none'
             assert comment is not None, 'Comment cannot be none'
             Q = CardQuery.updateCard(obj,oldObj,comment)
-            self.printQ(Q)
-            #self.conn.setMulti(CardQuery.updateCard(obj,oldObj,comment))
-            #self.conn.setData(TimeLineQuery.updateObject(obj))
+            self.conn.setMulti(Q)
+
         else:
             print('Not an Item')
-            # self.conn.setData(Query.updateObject(obj))
+            self.conn.setData(Query.updateObject(obj))
 
     @dbWrap
     def deleteScrumblesObject(self,obj,project=None):
