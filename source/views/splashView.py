@@ -6,8 +6,7 @@ class splashView(tk.Frame):
         tk.Frame.__init__(self, parent, cursor = "watch")
         self.controller = controller
 
-
-        self.waitLabel = tk.Label(self, text = 'Please wait while Scrumbles Loads')
+        self.waitLabel = tk.Label(self, text = 'Scrumbles is Busy')
         self.waitLabel.pack()
         self.isAlive = True
 
@@ -28,7 +27,7 @@ class splashView(tk.Frame):
             pbar.pack()
             self.pbarList.append(pbar)
 
-        self.update
+        self.update_idletasks()
 
     def stepProgressBar(self, interval):
         for pbar in self.pbarList:

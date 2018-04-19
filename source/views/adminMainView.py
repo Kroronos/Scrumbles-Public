@@ -2,12 +2,12 @@ import tkinter as tk
 from frames import ScrumblesFrames, listboxEventHandler
 
 
-class teamManagerView(tk.Frame):
+class adminMainView(tk.Frame):
     def __init__(self, parent, controller, user):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.selectedUser = None
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Team Manager")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Main")
         self.tabButtons.pack(side = tk.TOP, fill = tk.X)
 
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'

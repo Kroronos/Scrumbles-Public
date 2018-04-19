@@ -112,7 +112,7 @@ class DataBlock:
 
             if self.listener.isDBChanged:
 
-                #time.sleep(2)   # <<--- This is the thread timing tweak.
+                time.sleep(2)   # <<--- This is the thread timing tweak.
                 # with self.cv:
                 #     self.cv.wait_for(self.updateAllObjects)
                 self.lock.acquire(timeout=2)
@@ -345,6 +345,7 @@ class DataBlock:
 
     @dbWrap
     def assignUserToItem(self,user,item):
+        oldItem = item
         if user is not None:
             logging.info('Assigning User %s to item %s.'%(user.userName,item.itemTitle))
             item.itemUserID = user.userID
@@ -354,8 +355,11 @@ class DataBlock:
             item.itemUserID = None
             item.itemStatus = item.statusTextToNumberMap['Not Assigned']
 
-        self.conn.setData(Query.updateObject(item))
-        self.conn.setData(TimeLineQuery.timeStampItem(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'Assign user to item'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def addItemToProject(self,project,item):
@@ -373,26 +377,38 @@ class DataBlock:
 
     @dbWrap
     def addNewScrumblesObject(self,obj):
-        if type(obj) == ScrumblesObjects.Item:
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>" or type(obj) == ScrumblesObjects.Item:
             self.conn.setData(TimeLineQuery.newItem(obj))
         logging.info('Adding new object %s to database' % repr(obj))
         self.conn.setData(Query.createObject(obj))
 
-    @dbWrap
-    def updateScrumblesObject(self,obj):
-        logging.info('Updating object %s to database' % repr(obj))
+    def printQ(self,Q):
+        sql = Q[0].splitlines()
+        params = Q[1]
+        for index, line in enumerate(sql):
+            print('Line:{}\n{}\n{}'.format(index+1,line,params[index+1]))
 
-        self.conn.setData(Query.updateObject(obj))
-        if type(obj) is ScrumblesObjects.Item:
-            self.conn.setData(TimeLineQuery.updateObject(obj))
+
+    @dbWrap
+    def updateScrumblesObject(self,obj,oldObj=None,comment=None):
+        logging.info('Updating object %s to database' % repr(obj))
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>" or type(obj) == ScrumblesObjects.Item:
+            assert oldObj is not None, 'old object cannot be none'
+            assert comment is not None, 'Comment cannot be none'
+            Q = CardQuery.updateCard(obj,oldObj,comment)
+            self.conn.setMulti(Q)
+
+        else:
+            print('Not an Item')
+            self.conn.setData(Query.updateObject(obj))
 
     @dbWrap
     def deleteScrumblesObject(self,obj,project=None):
         logging.info('Deleting object %s from database' % repr(obj))
-        if type(obj) == ScrumblesObjects.Item:
-            self.conn.setMulti(Query.deleteObject(obj))
-        elif type(obj) == ScrumblesObjects.Sprint:
-            self.conn.setMulti(Query.deleteObject(obj))
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>" or type(obj) == ScrumblesObjects.Item:
+            self.conn.setMulti(CardQuery.deleteCard(obj))
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>" or type(obj) == ScrumblesObjects.Sprint:
+            self.conn.setMulti(SprintQuery.deleteSprint(obj))
         else:
             self.conn.setData(Query.deleteObject(obj))
 
@@ -401,53 +417,82 @@ class DataBlock:
         logging.info('Removing item from comments database')
         self.conn.setData(CommentQuery.deleteItemFromComments(item))
 
+
     @dbWrap
     def modifiyItemPriority(self,item,priority):
         logging.info('Modifying item %s priority to %s' % (item.itemTitle,item.priorityNumberToTextMap[priority]))
         assert priority in range(0,3)
+        oldItem = item
         item.itemPriority = priority
-        self.conn.setData(Query.updateObject(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'item priority changed'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def modifyItemStatus(self,item,status):
         logging.info('Modifying item %s status to %s' % (item.itemTitle,item.statusNumberToTextMap[status]))
         assert status in range(0,5)
-        oldStatus = item.itemStatus
-        item.itemStatus = status
+        oldItem = item
+        item.itemStatus = item.statusNumberToTextMap[status]
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'modify item status'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+
         try:
-            self.conn.setData(TimeLineQuery.timeStampItem(item))
-            self.conn.setData(Query.updateObject(item))
+            self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
         except Exception as e:
-            item.itemStatus = oldStatus
+            item.itemStatus = oldItem.itemStaus
             raise e
 
     @dbWrap
     def modifyItemStatusByString(self,item,status):
         logging.info('Modifying item %s to status %s.' % (item.itemTitle,status))
+        oldItem = item
         item.itemStatus = item.statusTextToNumberMap[status]
-        self.conn.setData(TimeLineQuery.timeStampItem(item))
-        self.conn.setData(Query.updateObject(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'Modify Item Status'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def assignItemToSprint(self,item,sprint):
         logging.info('Assigning Item %s to Sprint %s.'%(item.itemTitle,sprint.sprintName))
+        oldItem = item
         item.itemSprintID = sprint.sprintID
         item.itemDueDate = sprint.sprintDueDate
-        self.conn.setData(Query.updateObject(item))
-        self.conn.setData(TimeLineQuery.stampItemToSprint(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'item assigned to sprint'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setMulti(CardQuery.updateCard(item,oldItem,comment))
+
 
     @dbWrap
     def removeItemFromSprint(self,item):
 
         logging.info('Removing Item %s from sprint %s.'%(item.itemTitle,str(item.itemSprintID)))
+        oldItem = item
         item.itemSprintID = 0
-        self.conn.setData(Query.updateObject(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'item removed from sprint'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def promoteItemToEpic(self,item):
         logging.info('Promoting Item %s to Epic'% item.itemTitle)
+        oldItem = item
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'promoted item to epic'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
         item.itemType = 'Epic'
-        self.conn.setData(Query.updateObject(item))
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def addItemToEpic(self,item,epic):

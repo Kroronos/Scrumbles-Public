@@ -2,10 +2,11 @@ from data import DataBlock, ScrumblesObjects
 from datetime import datetime
 import time
 import logging
+import data
 
 PASS = '\033[92m'
 FAIL = '\033[91m'
-SLEEP = 8
+SLEEP = 3
 
 logging.basicConfig(format='%(levelname)s:  %(asctime)s:  %(message)s', filename='ScrumblesTest.log',level=logging.DEBUG)
 logging.info('Application starting')
@@ -13,14 +14,20 @@ logging.info('Application starting')
 
 testRun = {}
 
-db = DataBlock.DataBlock()
+db = DataBlock.DataBlock(mode='test')
+db.updateAllObjects()
+
 
 Tsprint = ScrumblesObjects.Sprint()
-Tsprint.sprintName = 'Test Sprint for deletion'
+Tsprint.sprintName = 'TUnit Test'
 Tsprint.sprintStartDate = datetime.now()
 Tsprint.sprintDueDate = datetime.now()
 Tsprint.projectID = 0
 
+print(type(Tsprint))
+print(repr(Tsprint))
+print( type(Tsprint) is ScrumblesObjects.Sprint )
+print( type(Tsprint) is data.ScrumblesObjects.Sprint)
 
 TItem = ScrumblesObjects.Item()
 TItem.itemTitle = "Test Item to add to Test Sprint"
@@ -34,25 +41,28 @@ TItem.itemType = 'User Story'
 print('adding sprint')
 try:
     db.addNewScrumblesObject(Tsprint)
-    time.sleep(SLEEP)
     testRun['Add Sprint'] = (True,'Pass')
 except Exception as e:
     test = 'Failed to add Sprint to DB\n'+str(e)
     testRun['Add Sprint'] = (False, test)
+
+db.updateAllObjects()
+time.sleep(SLEEP*3)
 
 
 
 try:
     TSprint = db.sprintMap[Tsprint.sprintID]
     testRun['Add to sprint Map'] = (True, 'Pass')
-except KeyError:
-    test = 'Failed to add Sprint %i to MAP'%Tsprint.sprintID
-    testRun['Add to sprint Map'] = (False, test)
+except Exception as e :
+    test = 'Failed to add Sprint %i to MAP\n'%Tsprint.sprintID
+    testRun['Add to sprint Map'] = (False, test+str(e))
 
 
 print('adding item')
 try:
     db.addNewScrumblesObject(TItem)
+    db.updateAllObjects()
     time.sleep(SLEEP)
     testRun['Add Item'] = (True, 'pass')
 except Exception as e:
@@ -74,11 +84,13 @@ if testRun['Add Item'][0]:
     try:
         db.assignItemToSprint(TItem,Tsprint)
         time.sleep(SLEEP)
+        db.updateAllObjects()
+
         testRun['Assign To Sprint'] = (True,'Pass')
     except Exception as e:
         test = 'Failed to assign item to Sprint\n'+ str(e)
         testRun['Assign to Sprint'] = (False, test)
-    
+
 
     try:
         assert TItem.itemSprintID == Tsprint.sprintID, 'Item.sprintID did not get to Sprint.sprintID'
@@ -92,6 +104,8 @@ print('deleting sprint')
 try:
     db.deleteScrumblesObject(Tsprint)
     time.sleep(SLEEP)
+    db.updateAllObjects()
+
     testRun['Delete Sprint'] = (True,'Pass')
 except Exception as e:
     test = 'Failed to delete Sprint from database\n'+str(e)
@@ -118,6 +132,8 @@ print('Deleting Item')
 try:
     db.deleteScrumblesObject(TItem)
     time.sleep(SLEEP)
+    db.updateAllObjects()
+
     testRun['Delete Item'] = (True,'pass')
 except Exception as e:
     test = 'Failed to delete Item from database\n'+str(e)
@@ -164,6 +180,8 @@ for key in testRun:
         print('%s failed because:--------\/'%key)
         print(FAIL)
         print( '%s'%key,testRun[key][1])
+
+db.deleteScrumblesObject(TItem)
 
 try:
     db.shutdown()

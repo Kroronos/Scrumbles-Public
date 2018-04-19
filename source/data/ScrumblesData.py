@@ -1,7 +1,7 @@
 import MySQLdb, logging
 from data import ScrumblesObjects
 import base64
-
+import time
 
 class DataBaseLoginInfo:
     def __init__(self,file):
@@ -56,14 +56,26 @@ class ScrumblesData:
         self.dbConnection = MySQLdb.connect(self.ipaddress, self.userID, self.password, self.defaultDB)
         self.cursor = self.dbConnection.cursor()
     def getData(self, query):
-        assert self.dbConnection is not None
-        self.dbConnection.query(query)
-        queryResult = self.dbConnection.store_result()
         maxRows = 0
         how = 1
-        return queryResult.fetch_row(maxRows, how)
+        assert self.dbConnection is not None
+        self.dbConnection.query(query)
+        try:
+            queryResult = self.dbConnection.store_result()
+            returnVal = queryResult.fetch_row(maxRows, how)
+        except AttributeError as e:
+            logging.exception('Query {} failed to execute, attempting again in 2 seconds'.format(query))
+            time.sleep(2)
+            try:
+                queryResult = self.dbConnection.store_result()
+                returnVal = queryResult.fetch_row(maxRows, how)
+            except AttributeError as e:
+                logging.exception('Query failed to execute second time, giving up')
+                return
+        return returnVal
 
     def setMulti(self,query):
+        #self.printQ(query)
         sql = query[0]
         i = 0
         params = query[1]
@@ -75,7 +87,7 @@ class ScrumblesData:
                 try:
                     cursor.execute(line,params[i])
                 except Exception as e:
-                    logging.exception('failed to execute query')
+                    logging.exception('failed to execute query\n{}\n{}'.format(query[0],query[1]))
                     raise(e)
                 cursor.close()
             self.dbConnection.commit()
@@ -84,17 +96,21 @@ class ScrumblesData:
             self.dbConnection.rollback()
 
     def setData(self, query):
+        #self.printQ(query,multi=False)
         assert self.dbConnection is not None
+        cursor = self.dbConnection.cursor()
         try:
             if type(query) is not tuple:
-                self.cursor.execute(query)
+                cursor.execute(query)
                 self.dbConnection.commit()
+                cursor.close()
             else:
 
-                self.cursor.execute(query[0],query[1])
+                cursor.execute(query[0],query[1])
                 self.dbConnection.commit()
+                cursor.close()
         except:
-            logging.exception('Query did not execute')
+            logging.exception('failed to execute query\n{}\n{}'.format(query[0], query[1]))
             self.dbConnection.rollback()
 
 
@@ -106,8 +122,16 @@ class ScrumblesData:
     def isConnected(self):
         return self.dbConnection.open == 1
 
-
-
-
+    def printQ(self,Q,multi=True):
+        if multi:
+            sql = Q[0].splitlines()
+            params = Q[1]
+            for index, line in enumerate(sql):
+                print('Line:{}\n{}\n{}'.format(index+1,line,params[index+1]))
+        else:
+            sql = Q[0].splitlines()
+            params = Q[1]
+            print(sql)
+            print(params)
 
 

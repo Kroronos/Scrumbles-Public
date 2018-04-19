@@ -70,6 +70,7 @@ class Item:
     itemUserID = None
     itemStatus = None
     itemTimeLine = None
+    itemPoints = None
 
     priorityNumberToTextMap = {0: "Low Priority", 1: "Medium Priority", 2: "High Priority"}
     priorityTextToNumberMap = {"Low Priority":0, "Medium Priority":1, "High Priority":2}
