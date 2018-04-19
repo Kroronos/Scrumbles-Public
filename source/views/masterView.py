@@ -332,9 +332,12 @@ class masterView(tk.Tk):
 
 def logOut(controller):
     logging.info('%s logged out' % controller.activeUser.userID)
+    controller.showSplashView()
     controller.dataBlock.shutdown()
-    messagebox.showinfo('Logout', 'Shutting Down Active Threads')
-    time.sleep(3)
+    while (controller.dataBlock.updaterThread.is_alive() &
+           controller.dataBlock.listenerThread.is_alive() &
+           controller.dataBlock.listener.keepAliveThread.is_alive()):
+            controller.splashFrame.stepProgressBar(1)
     del controller.dataBlock
     #Do Some Stuff Here To Clear States
     loginFrame = loginView.loginView(controller.container, controller)
@@ -349,17 +352,18 @@ def exitProgram(mainWindow):
         pass
     setGeometryFile(mainWindow)
     plt.close('all')
+
     try:
         mainWindow.dataBlock.shutdown()
     except:
         logging.exception('Shutdown Failure')
     try:
-
         del mainWindow.dataBlock
 
         mainWindow.destroy()
     except:
         logging.exception('Shutdown Failure')
+
     finally:
         exit()
     logging.info("Shutting down gracefully")
