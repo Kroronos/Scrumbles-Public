@@ -154,7 +154,7 @@ class commentsField(tk.Frame):
                             if item.itemID == comment.commentItemID:
                                 itemName = item.itemTitle
                                 comment.commentSignature = itemName + "\n" + commentUserName + " " + comment.commentTimeStamp.strftime("%I:%M %p, %m/%d/%y")
-                    commentSignatureLabel = tk.Label(commentFrame,
+                commentSignatureLabel = tk.Label(commentFrame,
                                                      anchor = tk.W, 
                                                      text = comment.commentSignature,
                                                      justify = tk.LEFT, 
