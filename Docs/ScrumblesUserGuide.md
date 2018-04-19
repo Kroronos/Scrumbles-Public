@@ -166,8 +166,15 @@ While the Scrum Master Main View might seem very similar to the Developer Main V
    * Assign to User
    * Assign to Sprint
    * Assign to Epic
-   *
- ![Scrum Master Item Editing](https://github.com/CEN3031-group16/GroupProject/blob/UserGuidePatch/Docs/UserGuideImages/ScrumMasterItemEditing.png)
+   * Edit Item
+   * Delete Item
+
+ ![Scrum Master Item Editing](https://github.com/CEN3031-group16/GroupProject/blob/UserGuidePatch/Docs/UserGuideImages/ScrumMasterItemEditing.gif)
+
+ If an item has been submitted to the Scrum Master for approval, two additional options become available:
+   * Approve Item
+   * Reject Item
+
 ## <a name = "AdminWorkFlow"></a>Admin Work Flow
 
 Like a Scrum Master, an admin can <em>also</em> be a developer on a project. Technically an admin can also be a Scrum Master as well. 
