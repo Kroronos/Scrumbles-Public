@@ -198,18 +198,10 @@ class masterView(tk.Tk):
     def showSplashView(self, event = None):
         self.show_frame(splashView)
 
-    def showMainView(self, event):
+    def showMainView(self, event = None):
         if self.activeUser.userRole == "Admin":
             self.show_frame(adminMainView)
         elif self.activeUser.userRole == "Scrum Master":
-            self.show_frame(scrumMasterMainView)
-
-    def showAdminMainView(self, event = None):
-        if self.activeUser.userRole == "Admin":
-            self.show_frame(adminMainView)
-
-    def showScrumMasterMainView(self, event = None):
-        if self.activeUser.userRole == "Scrum Master":
             self.show_frame(scrumMasterMainView)
 
     def showDeveloperHomeView(self, event = None):
@@ -225,7 +217,7 @@ class masterView(tk.Tk):
         self.dataBlock = DataBlock.DataBlock()
 
         if self.dataBlock.isLoading is True:
-            self.showSplashView(None)
+            self.showSplashView()
 
         while self.dataBlock.isLoading:
             self.splashFrame.stepProgressBar(1)
@@ -266,24 +258,20 @@ class masterView(tk.Tk):
 
         self.generateMenuBar()
 
-        if self.activeUser.userRole == "Admin":
-            self.showAdminMainView(None)
+        self.showMainView()
 
-        elif self.activeUser.userRole == "Scrum Master":
-            self.showScrumMasterMainView(None)
-
-        elif self.activeUser.userRole == "Developer":
-            self.showDeveloperHomeView(None)
+        if self.activeUser.userRole == "Developer":
+            self.showDeveloperHomeView()
 
         self.title("Scrumbles" + " - " + self.activeProject.projectName)
         if platform.system() == "Windows":
             self.iconbitmap("logo.ico")
 
-    def openUserGuide(self,event=None):
+    def openUserGuide(self, event = None):
         webbrowser.open_new_tab('https://github.com/CEN3031-group16/GroupProject/wiki/User-Guide')
 
     def connectionLossHandler(self):
-        messagebox.showerror('Loss of Connection','Network Connection Lost, Logging Out of App')
+        messagebox.showerror('Loss of Connection', 'Network Connection Lost, Logging Out of App')
         logOut(self)
 
     def openAPI(self):
@@ -335,7 +323,7 @@ class masterView(tk.Tk):
             if U.userName == self.activeUser.userName:
                 self.activeUser = U
 
-    def refreshData(self,event=None):
+    def refreshData(self, event = None):
         self.dataBlock.updateAllObjects()
         self.dataBlock.executeUpdaterCallbacks()
 
