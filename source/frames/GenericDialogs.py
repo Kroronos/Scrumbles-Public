@@ -8,7 +8,7 @@ from data import DataBlock
 import sys, traceback
 import logging
 from frames.SLists import ColorSchemes
-
+from data import ScrumblesObjects
 
 
 
@@ -192,9 +192,16 @@ class codeLinkDialog(GenericDialog):
     @tryExcept
     def ok(self):
         self.executeSuccess = True
+        oldItem = self.Item
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'modify code link'
+        comment.commentItemID = self.Item.itemID
+        comment.commentUserID = 0
+
         self.Item.itemCodeLink = self.codeLinkEntry.get()
         if not self.isTest:
-            self.dataBlock.updateScrumblesObject(self.Item)
+            self.dataBlock.updateScrumblesObject(self.Item, oldItem, comment)
+
         self.exit()
 
     def exit(self):

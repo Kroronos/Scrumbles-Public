@@ -359,7 +359,7 @@ class DataBlock:
         comment.commentContent = 'Assign user to item'
         comment.commentItemID = item.itemID
         comment.commentUserID = 0
-        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def addItemToProject(self,project,item):
@@ -428,20 +428,21 @@ class DataBlock:
         comment.commentContent = 'item priority changed'
         comment.commentItemID = item.itemID
         comment.commentUserID = 0
-        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def modifyItemStatus(self,item,status):
         logging.info('Modifying item %s status to %s' % (item.itemTitle,item.statusNumberToTextMap[status]))
         assert status in range(0,5)
         oldItem = item
+        item.itemStatus = item.statusNumberToTextMap[status]
         comment = ScrumblesObjects.Comment()
         comment.commentContent = 'modify item status'
         comment.commentItemID = item.itemID
         comment.commentUserID = 0
 
         try:
-            self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
+            self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
         except Exception as e:
             item.itemStatus = oldItem.itemStaus
             raise e
@@ -455,7 +456,7 @@ class DataBlock:
         comment.commentContent = 'Modify Item Status'
         comment.commentItemID = item.itemID
         comment.commentUserID = 0
-        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def assignItemToSprint(self,item,sprint):
@@ -467,7 +468,7 @@ class DataBlock:
         comment.commentContent = 'item assigned to sprint'
         comment.commentItemID = item.itemID
         comment.commentUserID = 0
-        self.conn.setData(CardQuery.updateCard(item,oldItem,comment))
+        self.conn.setMulti(CardQuery.updateCard(item,oldItem,comment))
 
 
     @dbWrap
@@ -480,7 +481,7 @@ class DataBlock:
         comment.commentContent = 'item removed from sprint'
         comment.commentItemID = item.itemID
         comment.commentUserID = 0
-        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def promoteItemToEpic(self,item):
@@ -491,7 +492,7 @@ class DataBlock:
         comment.commentItemID = item.itemID
         comment.commentUserID = 0
         item.itemType = 'Epic'
-        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
+        self.conn.setMulti(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def addItemToEpic(self,item,epic):

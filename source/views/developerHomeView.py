@@ -131,30 +131,32 @@ class developerHomeView(tk.Frame):
 
     def setItemToInprogress(self):
         Item = self.myItemsPopMenu.getSelectedObject()
-        Comment = ScrumblesObjects.Comment()
-        Comment.commentItemID = Item.itemID
-        Comment.commentUserID = self.controller.activeUser.userID
-        Comment.commentContent = 'Set to In Progress by menu action'
+        # Comment = ScrumblesObjects.Comment()
+        # Comment.commentItemID = Item.itemID
+        # Comment.commentUserID = self.controller.activeUser.userID
+        # Comment.commentContent = 'Set to In Progress by menu action'
         result = messagebox.askyesno('Get to Work','Are you ready to begin work on this item?')
         if result:
             try:
                 self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['In Progress'])
-                self.controller.dataBlock.addNewScrumblesObject(Comment)
+                # self.controller.dataBlock.addNewScrumblesObject(Comment)
                 messagebox.showinfo('Success','Item Status changed to In-Progress')
             except Exception as e:
                 logging.exception('Error Setting Item to In progress')
                 messagebox.showerror('Error', str(e))
     def setItemToSubmitted(self):
         Item = self.myItemsPopMenu.getSelectedObject()
-        Comment = ScrumblesObjects.Comment()
-        Comment.commentItemID = Item.itemID
-        Comment.commentUserID = self.controller.activeUser.userID
-        Comment.commentContent = 'Set to Submitted by menu action'
+        assert Item is not None, ' myItemsPopMenu failed to send Item'
+        # Comment = ScrumblesObjects.Comment()
+        # Comment.commentItemID = Item.itemID
+        # Comment.commentUserID = self.controller.activeUser.userID
+        # Comment.commentContent = 'Set to Submitted by menu action'
         updated = Dialogs.codeLinkDialog(self, master=self.controller, dataBlock=self.controller.dataBlock, item=Item).show()
         if updated:
             try:
+                print(Item)
                 self.controller.dataBlock.modifyItemStatus(Item, Item.statusTextToNumberMap['Submitted'])
-                self.controller.dataBlock.addNewScrumblesObject(Comment)
+                # self.controller.dataBlock.addNewScrumblesObject(Comment)
                 messagebox.showinfo('Success','Item Submitted to Scrum Master for review')
             except Exception as e:
                 logging.exception('Error Assigning Submitting item for review')

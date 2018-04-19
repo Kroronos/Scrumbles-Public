@@ -221,6 +221,17 @@ INSERT INTO CardTable (
         assert item.itemID is not None
         assert item.itemType in Query.validItemTypes
         assert item.itemPriority in range(0, 3)
+        statusAssignmentMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+        try:
+            status = int(item.itemStatus)
+
+        except:
+            item.itemStatus = statusAssignmentMap[item.itemStatus]
+
+        try:
+            status = int(oldItem.itemStatus)
+        except:
+            oldItem.itemStatus = statusAssignmentMap[oldItem.itemStatus]
 
         sql += 'UPDATE CardTable SET  CardType=%s, CardPriority=%s, CardTitle=%s,CardDescription=%s, CardDueDate=%s,CardCodeLink=%s, SprintID=%s, UserID=%s, Status=%s, CardPoints=%s  WHERE CardID=%s\n'
         params[1] = (item.itemType,item.itemPriority,item.itemTitle,item.itemDescription,item.itemDueDate,item.itemCodeLink,item.itemSprintID,item.itemUserID,item.itemStatus,item.itemPoints,item.itemID)
@@ -278,6 +289,103 @@ INSERT INTO CardTable (
             pass
 
 
+
+        if oldItem.itemStatus == item.itemStatus:
+            pass
+        if oldItem.itemStatus != item.itemStatus:
+            if oldItem.itemStatus == statusAssignmentMap['Not Assigned']:
+                sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                params[nextParam] = (item.itemID,)
+                nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Assigned']:
+                    pass
+                if item.itemStatus == statusAssignmentMap['In Progress']:
+                    sql += 'UPDATE CardTimeLine SET  WordStarted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Submitted']:
+                    sql += 'UPDATE CardTimeLine SET  Submitted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Complete']:
+                    sql += 'UPDATE CardTimeLine SET  Completed=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+            if oldItem.itemStaus == statusAssignmentMap['Assigned']:
+                if item.itemStatus == statusAssignmentMap['Not Assigned']:
+                    sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['In Progress']:
+                    sql += 'UPDATE CardTimeLine SET  WordStarted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Submitted']:
+                    sql += 'UPDATE CardTimeLine SET  Submitted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Complete']:
+                    sql += 'UPDATE CardTimeLine SET  Completed=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+            if oldItem.itemStaus == statusAssignmentMap['In Progress']:
+                sql += 'UPDATE CardTimeLine SET  WordStarted=%s WHERE CardID=%s\n'
+                params[nextParam] = (maxDate,item.itemID)
+                nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Not Assigned']:
+                    sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Assigned']:
+                    pass
+                if item.itemStatus == statusAssignmentMap['Submitted']:
+                    sql += 'UPDATE CardTimeLine SET  Submitted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Complete']:
+                    sql += 'UPDATE CardTimeLine SET  Completed=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+            if oldItem.itemStaus == statusAssignmentMap['Submitted']:
+                sql += 'UPDATE CardTimeLine SET  Submitted=%s) WHERE CardID=%s\n'
+                params[nextParam] = (maxDate,item.itemID)
+                nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Not Assigned']:
+                    sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Assigned']:
+                    pass
+                if item.itemStatus == statusAssignmentMap['In Progress']:
+                    sql += 'UPDATE CardTimeLine SET  WordStarted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Complete']:
+                    sql += 'UPDATE CardTimeLine SET  Completed=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+            if oldItem.itemStaus == statusAssignmentMap['Complete']:
+                sql += 'UPDATE CardTimeLine SET  Completed=%s WHERE CardID=%s\n'
+                params[nextParam] = (maxDate,item.itemID)
+                nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Not Assigned']:
+                    sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Assigned']:
+                    pass
+                if item.itemStatus == statusAssignmentMap['In Progress']:
+                    sql += 'UPDATE CardTimeLine SET  WordStarted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Submitted']:
+                    sql += 'UPDATE CardTimeLine SET  Submitted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
 
         return sql,params
 
