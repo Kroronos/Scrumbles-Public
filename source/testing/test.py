@@ -3,7 +3,7 @@ def deleteObject(obj):
     query = ''
     if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
         query = UserQuery.deleteUser(obj)
-    elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
+    elif repr(THingaMaJew) == "<class 'data.ScrumblesObjects.Comment'>":
         query = CommentQuery.deleteComment(obj)
     elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
         query = SprintQuery.deleteSprint(obj)
