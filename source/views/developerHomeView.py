@@ -15,7 +15,7 @@ class developerHomeView(tk.Frame):
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
         self.firstRun = True
 
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Developer Home")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Home")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.myItemsPopMenu = SPopMenu.GenericPopupMenu(self, self.controller)

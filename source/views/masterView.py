@@ -120,14 +120,14 @@ class masterView(tk.Tk):
 
         viewMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
         if self.activeUser.userRole == "Admin":
-            viewMenu.add_command(label = "Administrator Main", underline = 0, command = lambda: self.show_frame(adminMainView), accelerator = "CTRL+M")
+            viewMenu.add_command(label = "Main", underline = 0, command = lambda: self.show_frame(adminMainView), accelerator = "CTRL+M")
         
         elif self.activeUser.userRole == "Scrum Master":
-            viewMenu.add_command(label = "Scrum Master Main", underline = 0, command = lambda: self.show_frame(scrumMasterMainView), accelerator = "CTRL+M")
+            viewMenu.add_command(label = "Main", underline = 0, command = lambda: self.show_frame(scrumMasterMainView), accelerator = "CTRL+M")
 
-        viewMenu.add_command(label = "Developer Home", underline = 0, command = lambda: self.show_frame(developerHomeView), accelerator = "CTRL+H")
+        viewMenu.add_command(label = "Home", underline = 0, command = lambda: self.show_frame(developerHomeView), accelerator = "CTRL+H")
         viewMenu.add_command(label = "Backlog", underline = 0, command = lambda: self.show_frame(backlogView), accelerator = "CTRL+B")
-        viewMenu.add_command(label = "Analytics View", underline = 0, command = lambda: self.show_frame(analyticsView), accelerator = "CTRL+A")
+        viewMenu.add_command(label = "Analytics", underline = 0, command = lambda: self.show_frame(analyticsView), accelerator = "CTRL+A")
 
         helpMenu = tk.Menu(menuBar, tearoff = 0, cursor = "hand2")
         helpMenu.add_command(label = "User Guide", command = self.openUserGuide)
@@ -160,14 +160,14 @@ class masterView(tk.Tk):
 
         if self.activeUser.userRole == "Admin":
             views.append(adminMainView)
-            viewNames.append("Admin Main")
+            viewNames.append("Main")
 
         elif self.activeUser.userRole == "Scrum Master":
             views.append(scrumMasterMainView)
-            viewNames.append("Scrum Master Main")
+            viewNames.append("Main")
 
         views.append(developerHomeView)
-        viewNames.append("Developer Home")
+        viewNames.append("Home")
 
         views.append(backlogView)
         viewNames.append("Backlog")

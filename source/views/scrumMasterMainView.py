@@ -7,7 +7,7 @@ class scrumMasterMainView(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.selectedUser = None
-        self.tabButtons = ScrumblesFrames.STabs(self, controller, user.userRole + " Main")
+        self.tabButtons = ScrumblesFrames.STabs(self, controller, "Main")
         self.tabButtons.pack(side=tk.TOP, fill=tk.X)
 
         self.aqua = parent.tk.call('tk', 'windowingsystem') == 'aqua'
