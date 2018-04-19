@@ -18,11 +18,6 @@ class Query:
     getAllProjectItem = 'SELECT * FROM ProjectItemTable'
     validItemTypes = ['User Story', 'Epic', 'Bug','Chore','Feature']
 
-    def printQ(self,Q):
-        sql = Q[0].splitlines()
-        params = Q[1]
-        for index, line in enumerate(sql):
-            print('Line:{}\n{}\n{}'.format(index+1,line,params[index+1]))
 
     @staticmethod
     def getUserByUsernameAndPassword(username, password):
@@ -48,7 +43,7 @@ class Query:
 
     @staticmethod
     def createObject(obj):
-        print('\n\tFUNC CREATE OBJ OBJ TYPE=',type(obj),'\n')
+
         query = ''
         if type(obj) is ScrumblesObjects.User:
             query = UserQuery.createUser(obj)
@@ -62,7 +57,7 @@ class Query:
             query = ProjectQuery.createProject(obj)
 
         else:
-            print('\n\tFUNC CREATE OBJ REJECTED OBJ TYPE=', type(obj),'\n')
+
             raise Exception('Invalid Object Type')
 
         return query

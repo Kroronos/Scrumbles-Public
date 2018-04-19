@@ -75,7 +75,7 @@ class ScrumblesData:
         return returnVal
 
     def setMulti(self,query):
-        self.printQ(query)
+        #self.printQ(query)
         sql = query[0]
         i = 0
         params = query[1]
@@ -96,7 +96,7 @@ class ScrumblesData:
             self.dbConnection.rollback()
 
     def setData(self, query):
-        self.printQ(query,multi=False)
+        #self.printQ(query,multi=False)
         assert self.dbConnection is not None
         cursor = self.dbConnection.cursor()
         try:
