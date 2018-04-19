@@ -312,7 +312,7 @@ INSERT INTO CardTable (
                     params[nextParam] = (item.itemID,)
                     nextParam += 1
 
-            if oldItem.itemStaus == statusAssignmentMap['Assigned']:
+            if oldItem.itemStatus == statusAssignmentMap['Assigned']:
                 if item.itemStatus == statusAssignmentMap['Not Assigned']:
                     sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
                     params[nextParam] = (item.itemID,)
@@ -330,7 +330,7 @@ INSERT INTO CardTable (
                     params[nextParam] = (item.itemID,)
                     nextParam += 1
 
-            if oldItem.itemStaus == statusAssignmentMap['In Progress']:
+            if oldItem.itemStatus == statusAssignmentMap['In Progress']:
                 sql += 'UPDATE CardTimeLine SET  WordStarted=%s WHERE CardID=%s\n'
                 params[nextParam] = (maxDate,item.itemID)
                 nextParam += 1
@@ -349,7 +349,7 @@ INSERT INTO CardTable (
                     params[nextParam] = (item.itemID,)
                     nextParam += 1
 
-            if oldItem.itemStaus == statusAssignmentMap['Submitted']:
+            if oldItem.itemStatus == statusAssignmentMap['Submitted']:
                 sql += 'UPDATE CardTimeLine SET  Submitted=%s) WHERE CardID=%s\n'
                 params[nextParam] = (maxDate,item.itemID)
                 nextParam += 1
@@ -368,7 +368,7 @@ INSERT INTO CardTable (
                     params[nextParam] = (item.itemID,)
                     nextParam += 1
 
-            if oldItem.itemStaus == statusAssignmentMap['Complete']:
+            if oldItem.itemStatus == statusAssignmentMap['Complete']:
                 sql += 'UPDATE CardTimeLine SET  Completed=%s WHERE CardID=%s\n'
                 params[nextParam] = (maxDate,item.itemID)
                 nextParam += 1
