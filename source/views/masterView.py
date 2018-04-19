@@ -125,7 +125,7 @@ class masterView(tk.Tk):
         elif self.activeUser.userRole == "Scrum Master":
             viewMenu.add_command(label = "Scrum Master Main", underline = 0, command = lambda: self.show_frame(scrumMasterMainView), accelerator = "CTRL+M")
 
-        viewMenu.add_command(label = "Developer Main", underline = 0, command = lambda: self.show_frame(developerHomeView), accelerator = "CTRL+H")
+        viewMenu.add_command(label = "Developer Home", underline = 0, command = lambda: self.show_frame(developerHomeView), accelerator = "CTRL+H")
         viewMenu.add_command(label = "Backlog", underline = 0, command = lambda: self.show_frame(backlogView), accelerator = "CTRL+B")
         viewMenu.add_command(label = "Analytics View", underline = 0, command = lambda: self.show_frame(analyticsView), accelerator = "CTRL+A")
 
