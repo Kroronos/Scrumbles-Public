@@ -206,24 +206,62 @@ class EditItemDialog(CreateItemDialog):
         cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
         cancelButton.grid(row=12, column=1, pady=5)
 
+    def getSelectedUserID(self):
+        selectedUser = None
+        for user in self.listOfUsers:
+            if user.userName == self.usersComboBox.get():
+                selectedUser = user
+        if selectedUser is None:
+            raise Exception('User Not Found in Database')
+        return selectedUser.userID
+
+    def getSelectedSprintID(self):
+        selectedSprint = None
+        for sprint in self.listOfSprints:
+            if sprint.sprintName == self.sprintsComboBox.get():
+                selectedSprint = sprint
+                if selectedSprint.sprintDueDate is None:
+                    raise Exception('Corrupted Sprint Data, contact your database admin')
+        if selectedSprint is None:
+            sprintID = None
+        else:
+            sprintID = selectedSprint.sprintID
+        return sprintID
+
     @tryExcept
     def ok(self):
             item = ScrumblesObjects.Item
             oldItem = self.item
             item.itemID = oldItem.itemID
             item.itemTitle = self.itemTitleEntry.get()
-            item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
-            selectedSprint = None
-            selectedUser = None
             if item.itemTitle != oldItem.itemTitle:
                 self.validateName(item.itemTitle)
+            item.itemDescription = self.itemDescriptionEntry.get('1.0', 'end-1c')
+            item.itemType = self.ItemTypebox.get()
+            item.itemUserID = self.getSelectedUserID()
+            item.itemSprintID = self.getSelectedSprintID()
+            if item.itemSprintID is None:
+                item.itemDueDate = None
+            item.itemPriority = item.priorityTextToNumberMap[self.itemPriorityCombobox.get()]
+            item.itemCodeLink = self.itemCodeLinkEntry.get()
+
             comment = ScrumblesObjects.Comment()
             comment.commentContent = self.commentTextBox.get('1.0', 'end-1c')
             comment.commentUserID = self.master.activeUser.userID
             comment.commentItemID = item.itemID
-
             if len(comment.commentContent) <= 0:
                 raise Exception('Comment box cannot be blank\nPlease enter a change reason.')
+
+
+            try:
+                self.dataBlock.updateScrumblesObject(item,oldItem,comment)
+            except IntegrityError:
+                comment.commentID = ScrumblesObjects.generateRowID()
+                self.dataBlock.updateScrumblesObject(item, oldItem, comment)
+
+            messagebox.showinfo('Info', "Item '%s' Successfully Updated" % item.itemTitle)
+            self.exit()
+
                 #todo add comment as parameter to updateObject
                 # try:
                 #     self.dataBlock.addNewScrumblesObject(comment)
@@ -233,21 +271,6 @@ class EditItemDialog(CreateItemDialog):
             # else:
             #     raise Exception('Comment box cannot be blank\nPlease enter a change reason.')
 
-            for sprint in self.listOfSprints:
-                if sprint.sprintName == self.sprintsComboBox.get():
-                    selectedSprint = sprint
-                    if selectedSprint.sprintDueDate is None:
-                        raise Exception('Corrupted Sprint Data, contact your database admin')
-
-            for user in self.listOfUsers:
-                if user.userName == self.usersComboBox.get():
-                    selectedUser = user
-
-            if self.sprintsComboBox.get() != 'None':
-                item.itemSprintID = selectedSprint.sprintID
-            else:
-                item.itemSprintID = None
-                item.itemDueDate = None
 
             #todo add logic below to query, compare old item to new item
             # if self.sprintsComboBox.get() != 'None':
@@ -257,15 +280,9 @@ class EditItemDialog(CreateItemDialog):
             #     item.itemSprintID = None
             #     item.itemDueDate = None
 
-            item.itemType = self.ItemTypebox.get()
 
             #todo add login to query
             #self.dataBlock.assignUserToItem(selectedUser, item)
-
-            item.itemUserID = selectedUser.userID
-
-            item.itemCodeLink = self.itemCodeLinkEntry.get()
-            item.itemPriority = item.priorityTextToNumberMap[self.itemPriorityCombobox.get()]
 
             #todo add logic to query
             # if self.itemPriorityCombobox.get() == '':
@@ -279,9 +296,6 @@ class EditItemDialog(CreateItemDialog):
             # self.dataBlock.updateScrumblesObject(item)
 
 
-            messagebox.showinfo('Info', "Item '%s' Successfully Updated" % item.itemTitle)
-            self.exit()
 
     def exit(self):
-
         self.top.destroy()
