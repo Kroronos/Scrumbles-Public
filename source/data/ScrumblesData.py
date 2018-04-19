@@ -75,6 +75,7 @@ class ScrumblesData:
         return returnVal
 
     def setMulti(self,query):
+        self.printQ(query)
         sql = query[0]
         i = 0
         params = query[1]
@@ -86,7 +87,7 @@ class ScrumblesData:
                 try:
                     cursor.execute(line,params[i])
                 except Exception as e:
-                    logging.exception('failed to execute query')
+                    logging.exception('failed to execute query\n{}\n{}'.format(query[0],query[1]))
                     raise(e)
                 cursor.close()
             self.dbConnection.commit()
@@ -95,17 +96,21 @@ class ScrumblesData:
             self.dbConnection.rollback()
 
     def setData(self, query):
+        self.printQ(query,multi=False)
         assert self.dbConnection is not None
+        cursor = self.dbConnection.cursor()
         try:
             if type(query) is not tuple:
-                self.cursor.execute(query)
+                cursor.execute(query)
                 self.dbConnection.commit()
+                cursor.close()
             else:
 
-                self.cursor.execute(query[0],query[1])
+                cursor.execute(query[0],query[1])
                 self.dbConnection.commit()
+                cursor.close()
         except:
-            logging.exception('Query did not execute')
+            logging.exception('failed to execute query\n{}\n{}'.format(query[0], query[1]))
             self.dbConnection.rollback()
 
 
@@ -117,8 +122,16 @@ class ScrumblesData:
     def isConnected(self):
         return self.dbConnection.open == 1
 
-
-
-
+    def printQ(self,Q,multi=True):
+        if multi:
+            sql = Q[0].splitlines()
+            params = Q[1]
+            for index, line in enumerate(sql):
+                print('Line:{}\n{}\n{}'.format(index+1,line,params[index+1]))
+        else:
+            sql = Q[0].splitlines()
+            params = Q[1]
+            print(sql)
+            print(params)
 
 

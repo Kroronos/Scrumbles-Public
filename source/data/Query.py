@@ -17,6 +17,13 @@ class Query:
     getAllUserProject = 'SELECT * FROM ProjectUserTable'
     getAllProjectItem = 'SELECT * FROM ProjectItemTable'
     validItemTypes = ['User Story', 'Epic', 'Bug','Chore','Feature']
+
+    def printQ(self,Q):
+        sql = Q[0].splitlines()
+        params = Q[1]
+        for index, line in enumerate(sql):
+            print('Line:{}\n{}\n{}'.format(index+1,line,params[index+1]))
+
     @staticmethod
     def getUserByUsernameAndPassword(username, password):
         hashedPassword = Password(password)
@@ -41,34 +48,37 @@ class Query:
 
     @staticmethod
     def createObject(obj):
+        print('\n\tFUNC CREATE OBJ OBJ TYPE=',type(obj),'\n')
         query = ''
-        if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
+        if type(obj) is ScrumblesObjects.User:
             query = UserQuery.createUser(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
+        elif type(obj) is ScrumblesObjects.Sprint:
             query = SprintQuery.createSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.createCard(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
+        elif type(obj) is ScrumblesObjects.Comment:
             query = CommentQuery.createComment(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>":
+        elif type(obj) is ScrumblesObjects.Project:
             query = ProjectQuery.createProject(obj)
 
         else:
+            print('\n\tFUNC CREATE OBJ REJECTED OBJ TYPE=', type(obj),'\n')
             raise Exception('Invalid Object Type')
+
         return query
 
     @staticmethod
     def deleteObject(obj):
         query = ''
-        if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
+        if type(obj) is ScrumblesObjects.User:
             query = UserQuery.deleteUser(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
-            query = CommentQuery.deleteComment(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
+        elif type(obj) is ScrumblesObjects.Sprint:
             query = SprintQuery.deleteSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.deleteCard(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>":
+        elif type(obj) is ScrumblesObjects.Comment:
+            query = CommentQuery.deleteComment(obj)
+        elif type(obj) is ScrumblesObjects.Project:
             query = ProjectQuery.deleteProject(obj)
         else:
             raise Exception('Invalid Object Type')
@@ -77,15 +87,15 @@ class Query:
     @staticmethod
     def updateObject(obj):
         query = ''
-        if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
+        if type(obj) is ScrumblesObjects.User:
             query = UserQuery.updateUser(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
-            query = CommentQuery.updateComment(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
+        elif type(obj) is ScrumblesObjects.Sprint:
             query = SprintQuery.updateSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.updateCard(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>":
+        elif type(obj) is ScrumblesObjects.Comment:
+            query = CommentQuery.updateComment(obj)
+        elif type(obj) is ScrumblesObjects.Project:
             query = ProjectQuery.updateProject(obj)
         else:
             raise Exception('Invalid Object Type')
@@ -184,17 +194,19 @@ class CardQuery(Query):
     @staticmethod
     def createCard(item):
         ObjectValidator.validate(item)
-        query = '''INSERT INTO CardTable ( 
-                CardId, 
-                CardType,
-                CardPriority, 
-                CardTitle, 
-                CardDescription,
-                CardCreatedDate, 
-                CardPoints,
-                Status) VALUES (
-                %s,%s,%s,%s,%s,
-                NOW(),%s,0) '''
+        query = '''
+INSERT INTO CardTable ( 
+    CardId, 
+    CardType,
+    CardPriority, 
+    CardTitle, 
+    CardDescription,
+    CardCreatedDate, 
+    CardPoints,
+    Status) VALUES (
+    %s,%s,%s,%s,%s,
+    NOW(),%s,0) 
+'''
 
         return query , (
                     item.itemID,
@@ -298,8 +310,9 @@ class CardQuery(Query):
         DELETE FROM CardTimeLine WHERE CardID=%s;
         DELETE FROM CommentTable WHERE CardID=%s;
         DELETE FROM ProjectItemTable WHERE ItemID=%s'''
-        parameterMap = {1: (ID,), 2:(ID,), 3:(ID,), 4:(ID,),5:(ID,),6:(ID,)}
+        parameterMap = { 1: (ID,) , 2:(ID,) , 3:(ID,) , 4:(ID,) ,5:(ID,) ,6:(ID,) }
         return query,parameterMap
+
     @staticmethod
     def getEpicSubitems(item):
         assert item is not None
@@ -473,15 +486,15 @@ class Password:
 class ObjectValidator:
     @staticmethod
     def validate(obj):
-        if repr(obj) == "<class 'data.ScrumblesObjects.User'>":
+        if repr(obj) == "<class 'data.ScrumblesObjects.User'>" or type(obj) == ScrumblesObjects.User:
             ObjectValidator.validateUser(obj)
-        elif type(obj) == ScrumblesObjects.Item:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Item'>" or type(obj) == ScrumblesObjects.Item:
             ObjectValidator.validateCard(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>" or type(obj) == ScrumblesObjects.Sprint:
             ObjectValidator.validateSprint(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>":
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>" or type(obj) == ScrumblesObjects.Comment:
             ObjectValidator.validateComment(obj)
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>":
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>" or type(obj) == ScrumblesObjects.Project:
             ObjectValidator.validateProject(obj)
         else:
             raise Exception('Invalid Object')

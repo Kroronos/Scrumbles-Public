@@ -345,6 +345,7 @@ class DataBlock:
 
     @dbWrap
     def assignUserToItem(self,user,item):
+        oldItem = item
         if user is not None:
             logging.info('Assigning User %s to item %s.'%(user.userName,item.itemTitle))
             item.itemUserID = user.userID
@@ -354,8 +355,11 @@ class DataBlock:
             item.itemUserID = None
             item.itemStatus = item.statusTextToNumberMap['Not Assigned']
 
-        self.conn.setData(Query.updateObject(item))
-        self.conn.setData(TimeLineQuery.timeStampItem(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'Assign user to item'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def addItemToProject(self,project,item):
@@ -373,7 +377,7 @@ class DataBlock:
 
     @dbWrap
     def addNewScrumblesObject(self,obj):
-        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>":
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>" or type(obj) == ScrumblesObjects.Item:
             self.conn.setData(TimeLineQuery.newItem(obj))
         logging.info('Adding new object %s to database' % repr(obj))
         self.conn.setData(Query.createObject(obj))
@@ -388,7 +392,7 @@ class DataBlock:
     @dbWrap
     def updateScrumblesObject(self,obj,oldObj=None,comment=None):
         logging.info('Updating object %s to database' % repr(obj))
-        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>":
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>" or type(obj) == ScrumblesObjects.Item:
             assert oldObj is not None, 'old object cannot be none'
             assert comment is not None, 'Comment cannot be none'
             Q = CardQuery.updateCard(obj,oldObj,comment)
@@ -401,9 +405,9 @@ class DataBlock:
     @dbWrap
     def deleteScrumblesObject(self,obj,project=None):
         logging.info('Deleting object %s from database' % repr(obj))
-        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>":
+        if repr(obj) == "<class 'data.ScrumblesObjects.Item'>" or type(obj) == ScrumblesObjects.Item:
             self.conn.setMulti(CardQuery.deleteCard(obj))
-        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>":
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>" or type(obj) == ScrumblesObjects.Sprint:
             self.conn.setMulti(SprintQuery.deleteSprint(obj))
         else:
             self.conn.setData(Query.deleteObject(obj))
@@ -418,49 +422,76 @@ class DataBlock:
     def modifiyItemPriority(self,item,priority):
         logging.info('Modifying item %s priority to %s' % (item.itemTitle,item.priorityNumberToTextMap[priority]))
         assert priority in range(0,3)
+        oldItem = item
         item.itemPriority = priority
-        self.conn.setData(Query.updateObject(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'item priority changed'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def modifyItemStatus(self,item,status):
         logging.info('Modifying item %s status to %s' % (item.itemTitle,item.statusNumberToTextMap[status]))
         assert status in range(0,5)
-        oldStatus = item.itemStatus
-        item.itemStatus = status
+        oldItem = item
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'modify item status'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+
         try:
-            self.conn.setData(TimeLineQuery.timeStampItem(item))
-            self.conn.setData(Query.updateObject(item))
+            self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
         except Exception as e:
-            item.itemStatus = oldStatus
+            item.itemStatus = oldItem.itemStaus
             raise e
 
     @dbWrap
     def modifyItemStatusByString(self,item,status):
         logging.info('Modifying item %s to status %s.' % (item.itemTitle,status))
+        oldItem = item
         item.itemStatus = item.statusTextToNumberMap[status]
-        self.conn.setData(TimeLineQuery.timeStampItem(item))
-        self.conn.setData(Query.updateObject(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'Modify Item Status'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def assignItemToSprint(self,item,sprint):
         logging.info('Assigning Item %s to Sprint %s.'%(item.itemTitle,sprint.sprintName))
+        oldItem = item
         item.itemSprintID = sprint.sprintID
         item.itemDueDate = sprint.sprintDueDate
-        self.conn.setData(Query.updateObject(item))
-        self.conn.setData(TimeLineQuery.stampItemToSprint(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'item assigned to sprint'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setData(CardQuery.updateCard(item,oldItem,comment))
+
 
     @dbWrap
     def removeItemFromSprint(self,item):
 
         logging.info('Removing Item %s from sprint %s.'%(item.itemTitle,str(item.itemSprintID)))
+        oldItem = item
         item.itemSprintID = 0
-        self.conn.setData(Query.updateObject(item))
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'item removed from sprint'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
+        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def promoteItemToEpic(self,item):
         logging.info('Promoting Item %s to Epic'% item.itemTitle)
+        oldItem = item
+        comment = ScrumblesObjects.Comment()
+        comment.commentContent = 'promoted item to epic'
+        comment.commentItemID = item.itemID
+        comment.commentUserID = 0
         item.itemType = 'Epic'
-        self.conn.setData(Query.updateObject(item))
+        self.conn.setData(CardQuery.updateCard(item, oldItem, comment))
 
     @dbWrap
     def addItemToEpic(self,item,epic):
