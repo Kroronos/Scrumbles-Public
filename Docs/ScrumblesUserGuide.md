@@ -116,6 +116,21 @@ When a developer is ready to begin assigning and submitting items for review the
 * Green
    * Complete 
 
+<em>To add an item, use the plus on top of the backlog list while in developer home view.</em>
+
+Right clicking an item on the lists will yield the following drop down menus:
+   * My Items
+      * <em>As the items assigned to the user under My Items are completed, the progress bar on the top of the list will change accordingly.</em>
+      * Begin Work
+         * When you are ready to begin working on an item select begin work to let the scrum manager on the project know.
+      * Submit for review
+         * When you are done working on an item submit it for review so the scrum master on the project can check it.
+   * Backlog
+      * Assign to Me
+         * Click this to assign an item to yourself from the backlog.
+
+
+
 ### <a name="AnalyticsView"></a>Analytics View
 
 * The Analytics view provides users with statistics on:
@@ -144,11 +159,18 @@ When a developer is ready to begin assigning and submitting items for review the
 
 ## <a name = "ScrumMasterWorkFlow"></a>Scrum Master Work Flow
 
-Technically a Scrum master can be a developer on a project as well, so their workflows are very similar.
+Technically a Scrum Master can be a developer on a project as well, so their workflows are very similar. While the developer level user focuses on the creation and completion of items, the Scrum Master level user focuses on the <em>organization and flow</em> of items. 
 
+While the Scrum Master Main View might seem very similar to the Developer Main View, the difference lies in the drop down menus. Depending on an item's status, the options in the right click drop down will change. The standard options are:
+   
+   * Assign to User
+   * Assign to Sprint
+   * Assign to Epic
+   *
+ ![Scrum Master Item Editing](https://github.com/CEN3031-group16/GroupProject/blob/UserGuidePatch/Docs/UserGuideImages/ScrumMasterItemEditing.png)
 ## <a name = "AdminWorkFlow"></a>Admin Work Flow
 
-Like a Scrum Master, an admin can also be a developer on a project.
+Like a Scrum Master, an admin can <em>also</em> be a developer on a project. Technically an admin can also be a Scrum Master as well. 
 
 ## <a name="Hotkeys"></a>Hot-Keys
 
@@ -212,3 +234,5 @@ The main terms to know in Scrumbles are:
 
    * Once a project is created,
 
+* <a name = "EpicDefintiEpic
+   * E
