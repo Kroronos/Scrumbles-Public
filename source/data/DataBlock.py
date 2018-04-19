@@ -112,7 +112,7 @@ class DataBlock:
 
             if self.listener.isDBChanged:
 
-                #time.sleep(2)   # <<--- This is the thread timing tweak.
+                time.sleep(2)   # <<--- This is the thread timing tweak.
                 # with self.cv:
                 #     self.cv.wait_for(self.updateAllObjects)
                 self.lock.acquire(timeout=2)
