@@ -113,7 +113,7 @@ class ProjectQuery(Query):
         for i, sprint in enumerate(sprintList):
             sql += 'UPDATE SprintTable SET ProjectID = %s WHERE SprintID=%s\n'
             params[i+1] = (None,sprint.sprintID)
-            next = i
+            next = i+1
 
         sql += 'DELETE FROM ProjectsTable WHERE ProjectID=%s\n'
         params[next+1] = (project.projectID,)
@@ -121,7 +121,7 @@ class ProjectQuery(Query):
         sql += 'DELETE FROM ProjectItemTable WHERE ProjectID=%s\n'
         params[next+1] = (project.projectID,)
         next += 1
-        sql += 'DELETE FROM ProjectUserTable WHERE ProjectDI=%s\n'
+        sql += 'DELETE FROM ProjectUserTable WHERE ProjectID=%s\n'
         params[next+1] = (project.projectID,)
         return sql,params
 
