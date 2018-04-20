@@ -177,23 +177,38 @@ While the Scrum Master Main View might seem very similar to the Developer Main V
 
 A Scrum Master can also create sprints with the create sprint dialog available through <kbd>CTRL</kbd>+<kbd>S</kbd> or Edit > Create Sprint:
 
- ![Scrum Master Item Editing](https://github.com/CEN3031-group16/GroupProject/blob/UserGuidePatch/Docs/UserGuideImages/SprintCreation.gif)
+ ![Sprint Creation](https://github.com/CEN3031-group16/GroupProject/blob/UserGuidePatch/Docs/UserGuideImages/SprintCreation.gif)
 
-## <a name = "AdminWorkFlow"></a>Admin Work Flow 
+### <a name = "MainView"></a>Main View
 
-Like a Scrum Master, an admin can <em>also</em> be a developer on a project. Technically an admin can also be a Scrum Master as well. Admins have more views and more permissions, so their work flow is a bit more expansive. For example, only admins have access to team manager view.
-
-### <a name = "TeamManagerView"></a>Team Manager View
-
-The Team Manager View allows the admin to view:
+The Main View allows the user to view:
    * All the users in the system
    * All the users on the current team
    * The various items associated with each user and their statuses
    * The item description
    * Comments on each selected item
 
-![Team Manager View](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/TeamManagerView.png)
+![Main View](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/MainView.png)
 
+
+## <a name = "AdminWorkFlow"></a>Admin Work Flow 
+
+Like a Scrum Master, an admin can <em>also</em> be a developer on a project. Technically an admin can also be a Scrum Master as well. Admins have more views and more permissions, so their work flow is a bit more expansive. 
+
+Admins have the ability to create users and projects. To create a user you can either use <kbd>CTRL</kbd>+<kbd>U</kbd> or Edit > Create User.
+
+![User Creation](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/UserCreation.gif)
+
+The user creation dialgoue has the following fields:
+   * User Name
+   * User Password
+   * Re-enter User Password
+   * User Email Address
+   * User Role
+
+To create a project you can either user <kbd>CTRL</kbd>+<kbd>P</kbd> or File > Create New Project.
+
+![Project Creation](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/ProjectCreation.gif)
 
 
 
