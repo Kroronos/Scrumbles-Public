@@ -175,9 +175,23 @@ While the Scrum Master Main View might seem very similar to the Developer Main V
    * Approve Item
    * Reject Item
 
-## <a name = "AdminWorkFlow"></a>Admin Work Flow
+## <a name = "AdminWorkFlow"></a>Admin Work Flow 
 
-Like a Scrum Master, an admin can <em>also</em> be a developer on a project. Technically an admin can also be a Scrum Master as well. 
+Like a Scrum Master, an admin can <em>also</em> be a developer on a project. Technically an admin can also be a Scrum Master as well. Admins have more views and more permissions, so their work flow is a bit more expansive. For example, only admins have access to team manager view.
+
+### <a name = "TeamManagerView"></a>Team Manager View
+
+The Team Manager View allows the admin to view:
+   * All the users in the system
+   * All the users on the current team
+   * The various items associated with each user and their statuses
+   * The item description
+   * Comments on each selected item
+
+![Team Manager View](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/TeamManagerView.png)
+
+
+
 
 ## <a name="Hotkeys"></a>Hot-Keys
 
@@ -201,6 +215,33 @@ Hot-keys are a great way to get around Scrumbles more quickly and efficiently. A
       * <kbd>CTRL</kbd>+<kbd>A</kbd>
 
 <em>Note: Hot key availability is determined by user level.</em>
+
+## <a name = "TroubleShooting"></a>Trouble Shooting
+
+
+## <a name = "FAQ"></a>FAQ
+
+1. What makes Scrumbles different from other agile project manager softwares?
+   
+   * Scrumbles integrates 
+
+2. <a name = "differences"></a>What are the differences between a Developer, Scrum Master, and Admin level user?
+   
+   * A Developer has the ability to:
+      * Create items
+      * Edit items
+      * Submit items for review to a Scrum Master
+      * View analytics
+
+   * A Scrum Master has:
+      * <em>All the abilities of a Developer</em>
+      * The ability to approve items submitted for review
+      * The ability to reject items submitted for review
+
+   * An Admin has:
+      * <em>All the abilities of a Scrum Master</em>
+      * Access to Team Manager View
+      * The ability to create usres 
 
 ## <a name="Glossary"></a>Glossary
 
