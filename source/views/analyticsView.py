@@ -23,6 +23,9 @@ class analyticsView(tk.Frame):
         self.eventHandler.setEventToHandle(self.listboxEvents)
 
         self.selectionNotebook = ttk.Notebook(self)
+        self.refreshButton = ttk.Button(self.selectionNotebook,text='Refresh',command=self.updateFrame)
+        self.refreshButton.pack(anchor=tk.E)
+
 
         self.sprintAnalyticsFrame = tk.Frame(self)
 
@@ -72,7 +75,7 @@ class analyticsView(tk.Frame):
         self.selectionNotebook.enable_traversal() #Allows tabbing through ctrl+tab if notebook tabs are selected
         self.selectionNotebook.pack(fill=tk.BOTH, expand=True)
         self.updateFrame()
-        self.controller.dataBlock.packCallback(self.updateFrame)
+
 
     def updateFrame(self):
         plt.close('all')
@@ -815,7 +818,7 @@ class analyticsView(tk.Frame):
             pointsDistribution.append(item.itemPoints)
 
         pointDistributionHistogram = ScrumblesFrames.SHistogram(self.taskPointDistributionFrame)
-        pointDistributionHistogram.generateGraph(max(pointsDistribution), pointsDistribution, "Point Value", "Number Of Tasks", max(pointsDistribution)/(max(pointsDistribution)/10))
+        pointDistributionHistogram.generateGraph(bins,max(pointsDistribution), "Point Value", "Number Of Tasks", max(pointsDistribution)/(max(pointsDistribution)/10))
         pointDistributionHistogram.pack(side=tk.TOP, fill=tk.X, expand=True)
         
     def generateTaskStatePieChart(self):

@@ -17,6 +17,8 @@ class Query:
     getAllUserProject = 'SELECT * FROM ProjectUserTable'
     getAllProjectItem = 'SELECT * FROM ProjectItemTable'
     validItemTypes = ['User Story', 'Epic', 'Bug','Chore','Feature']
+
+
     @staticmethod
     def getUserByUsernameAndPassword(username, password):
         hashedPassword = Password(password)
@@ -41,34 +43,37 @@ class Query:
 
     @staticmethod
     def createObject(obj):
+
         query = ''
-        if type(obj) == ScrumblesObjects.User:
+        if type(obj) is ScrumblesObjects.User:
             query = UserQuery.createUser(obj)
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif type(obj) is ScrumblesObjects.Sprint:
             query = SprintQuery.createSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.createCard(obj)
-        elif type(obj) == ScrumblesObjects.Comment:
+        elif type(obj) is ScrumblesObjects.Comment:
             query = CommentQuery.createComment(obj)
-        elif type(obj) == ScrumblesObjects.Project:
+        elif type(obj) is ScrumblesObjects.Project:
             query = ProjectQuery.createProject(obj)
 
         else:
+
             raise Exception('Invalid Object Type')
+
         return query
 
     @staticmethod
     def deleteObject(obj):
         query = ''
-        if type(obj) == ScrumblesObjects.User:
+        if type(obj) is ScrumblesObjects.User:
             query = UserQuery.deleteUser(obj)
-        elif type(obj) == ScrumblesObjects.Comment:
-            query = CommentQuery.deleteComment(obj)
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif type(obj) is ScrumblesObjects.Sprint:
             query = SprintQuery.deleteSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.deleteCard(obj)
-        elif type(obj) == ScrumblesObjects.Project:
+        elif type(obj) is ScrumblesObjects.Comment:
+            query = CommentQuery.deleteComment(obj)
+        elif type(obj) is ScrumblesObjects.Project:
             query = ProjectQuery.deleteProject(obj)
         else:
             raise Exception('Invalid Object Type')
@@ -77,15 +82,15 @@ class Query:
     @staticmethod
     def updateObject(obj):
         query = ''
-        if type(obj) == ScrumblesObjects.User:
+        if type(obj) is ScrumblesObjects.User:
             query = UserQuery.updateUser(obj)
-        elif type(obj) == ScrumblesObjects.Comment:
-            query = CommentQuery.updateComment(obj)
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif type(obj) is ScrumblesObjects.Sprint:
             query = SprintQuery.updateSprint(obj)
         elif type(obj) == ScrumblesObjects.Item:
             query = CardQuery.updateCard(obj)
-        elif type(obj) == ScrumblesObjects.Project:
+        elif type(obj) is ScrumblesObjects.Comment:
+            query = CommentQuery.updateComment(obj)
+        elif type(obj) is ScrumblesObjects.Project:
             query = ProjectQuery.updateProject(obj)
         else:
             raise Exception('Invalid Object Type')
@@ -199,17 +204,19 @@ class CardQuery(Query):
     @staticmethod
     def createCard(item):
         ObjectValidator.validate(item)
-        query = '''INSERT INTO CardTable ( 
-                CardId, 
-                CardType,
-                CardPriority, 
-                CardTitle, 
-                CardDescription,
-                CardCreatedDate, 
-                CardPoints,
-                Status) VALUES (
-                %s,%s,%s,%s,%s,
-                NOW(),%s,0) '''
+        query = '''
+INSERT INTO CardTable ( 
+    CardId, 
+    CardType,
+    CardPriority, 
+    CardTitle, 
+    CardDescription,
+    CardCreatedDate, 
+    CardPoints,
+    Status) VALUES (
+    %s,%s,%s,%s,%s,
+    NOW(),%s,0) 
+'''
 
         return query , (
                     item.itemID,
@@ -221,43 +228,182 @@ class CardQuery(Query):
                 )
 
     @staticmethod
-    def updateCard(item):
-
+    def updateCard(item,oldItem,comment):
+        maxDate = datetime(9999, 12, 31, 23, 59, 59)
+        sql = ''
+        params = {}
         assert item is not None
         assert item.itemID is not None
         assert item.itemType in Query.validItemTypes
-        itemDict = {}
-        itemDict['Type'] =  item.itemType
-        itemDict['Priority'] = item.itemPriority
-        itemDict['Title'] = item.itemTitle
-        itemDict['Descr'] = item.itemDescription
-        itemDict['DueDate'] = None
-        if item.itemDueDate is not None:
-            itemDict['DueDate'] = item.itemDueDate
-        itemDict['Sprint'] = item.itemSprintID
-        itemDict['User'] = item.itemUserID
-        itemDict['Status'] = item.itemStatus
-        itemDict['CodeLink'] = None
-        if item.itemCodeLink is not None:
-            itemDict['CodeLink'] = item.itemCodeLink
-        itemDict['Points'] = item.itemPoints
+        assert item.itemPriority in range(0, 3)
+        statusAssignmentMap = {'Not Assigned': 0, 'Assigned': 1, 'In Progress': 2, 'Submitted': 3, 'Complete': 4}
+        try:
+            status = int(item.itemStatus)
 
-        query = '''UPDATE CardTable SET  CardType=%s, CardPriority=%s, CardTitle=%s,CardDescription=%s, CardDueDate=%s,
-                CardCodeLink=%s, SprintID=%s, UserID=%s, Status=%s, CardPoints=%s  WHERE CardID=%s'''
+        except:
+            item.itemStatus = statusAssignmentMap[item.itemStatus]
 
-        return query , (
-            itemDict['Type'],
-            itemDict['Priority'],
-            itemDict['Title'],
-            itemDict['Descr'],
-            itemDict['DueDate'],
-            itemDict['CodeLink'],
-            itemDict['Sprint'],
-            itemDict['User'],
-            itemDict['Status'],
-            itemDict['Points'],
-            item.itemID
-        )
+        try:
+            status = int(oldItem.itemStatus)
+        except:
+            oldItem.itemStatus = statusAssignmentMap[oldItem.itemStatus]
+
+        sql += 'UPDATE CardTable SET  CardType=%s, CardPriority=%s, CardTitle=%s,CardDescription=%s, CardDueDate=%s,CardCodeLink=%s, SprintID=%s, UserID=%s, Status=%s, CardPoints=%s  WHERE CardID=%s\n'
+        params[1] = (item.itemType,item.itemPriority,item.itemTitle,item.itemDescription,item.itemDueDate,item.itemCodeLink,item.itemSprintID,item.itemUserID,item.itemStatus,item.itemPoints,item.itemID)
+        sql += 'INSERT INTO CommentTable (CommentID, CommentTimeStamp,CommentContent,CardID,UserID) VALUES ( %s,NOW(), %s,%s,%s)\n'
+        params[2] = (comment.commentID,comment.commentContent,comment.commentItemID,comment.commentUserID)
+
+        nextParam = 3
+
+        if oldItem.itemSprintID == item.itemSprintID:
+            pass
+
+        elif oldItem.itemSprintID is None and item.itemSprintID is not None:
+            sql +='UPDATE CardTimeLine SET AssignedToSprint=NOW() WHERE CardID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+
+        elif oldItem.itemSprintID is not None and item.itemSprintID is None:
+            sql +='UPDATE CardTimeLine SET AssignedToSprint=%s WHERE CardID=%s\n'
+            params[nextParam] = (maxDate,item.itemID)
+            nextParam += 1
+
+        elif oldItem.itemSprintID != item.itemSprintID:
+            sql +='UPDATE CardTimeLine SET AssignedToSprint=NOW() WHERE CardID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+
+        if oldItem.itemUserID == item.itemUserID:
+            pass
+
+        elif oldItem.itemUserID is None and item.itemUserID is not None:
+            sql +='UPDATE CardTimeLine SET  AssignedToUser=NOW() WHERE CardID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+
+        elif oldItem.itemUserID is not None and item.itemUserID is None:
+            sql += 'UPDATE CardTimeLine SET  AssignedToUser=%s WHERE CardID=%s\n'
+            params[nextParam] = (maxDate, item.itemID)
+            nextParam += 1
+
+        elif oldItem.itemUserID != item.itemUserID:
+            sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW() WHERE CardID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+
+        if oldItem.itemType == item.itemType:
+            pass
+
+        elif oldItem.itemType == 'Epic' and item.itemType != 'Epic':
+            sql += 'DELETE FROM EpicTable WHERE EpicID=%s\n'
+            params[nextParam] = (item.itemID,)
+            nextParam += 1
+            pass
+
+        elif oldItem.itemType != 'Epic' and item.itemType == 'Epic':
+            pass
+
+
+
+        if oldItem.itemStatus == item.itemStatus:
+            pass
+        if oldItem.itemStatus != item.itemStatus:
+            if oldItem.itemStatus == statusAssignmentMap['Not Assigned']:
+                sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                params[nextParam] = (item.itemID,)
+                nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Assigned']:
+                    pass
+                if item.itemStatus == statusAssignmentMap['In Progress']:
+                    sql += 'UPDATE CardTimeLine SET  WordStarted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Submitted']:
+                    sql += 'UPDATE CardTimeLine SET  Submitted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Complete']:
+                    sql += 'UPDATE CardTimeLine SET  Completed=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+            if oldItem.itemStatus == statusAssignmentMap['Assigned']:
+                if item.itemStatus == statusAssignmentMap['Not Assigned']:
+                    sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['In Progress']:
+                    sql += 'UPDATE CardTimeLine SET  WordStarted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Submitted']:
+                    sql += 'UPDATE CardTimeLine SET  Submitted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Complete']:
+                    sql += 'UPDATE CardTimeLine SET  Completed=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+            if oldItem.itemStatus == statusAssignmentMap['In Progress']:
+                sql += 'UPDATE CardTimeLine SET  WordStarted=%s WHERE CardID=%s\n'
+                params[nextParam] = (maxDate,item.itemID)
+                nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Not Assigned']:
+                    sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Assigned']:
+                    pass
+                if item.itemStatus == statusAssignmentMap['Submitted']:
+                    sql += 'UPDATE CardTimeLine SET  Submitted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Complete']:
+                    sql += 'UPDATE CardTimeLine SET  Completed=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+            if oldItem.itemStatus == statusAssignmentMap['Submitted']:
+                sql += 'UPDATE CardTimeLine SET  Submitted=%s) WHERE CardID=%s\n'
+                params[nextParam] = (maxDate,item.itemID)
+                nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Not Assigned']:
+                    sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Assigned']:
+                    pass
+                if item.itemStatus == statusAssignmentMap['In Progress']:
+                    sql += 'UPDATE CardTimeLine SET  WordStarted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Complete']:
+                    sql += 'UPDATE CardTimeLine SET  Completed=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+            if oldItem.itemStatus == statusAssignmentMap['Complete']:
+                sql += 'UPDATE CardTimeLine SET  Completed=%s WHERE CardID=%s\n'
+                params[nextParam] = (maxDate,item.itemID)
+                nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Not Assigned']:
+                    sql += 'UPDATE CardTimeLine SET  AssignedToUser=NOW(), AssignedToSprint=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Assigned']:
+                    pass
+                if item.itemStatus == statusAssignmentMap['In Progress']:
+                    sql += 'UPDATE CardTimeLine SET  WordStarted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+                if item.itemStatus == statusAssignmentMap['Submitted']:
+                    sql += 'UPDATE CardTimeLine SET  Submitted=NOW() WHERE CardID=%s\n'
+                    params[nextParam] = (item.itemID,)
+                    nextParam += 1
+
+        return sql,params
+
 
     @staticmethod
     def removeUserFromListOfCards(itemList):
@@ -282,8 +428,9 @@ class CardQuery(Query):
         DELETE FROM CardTimeLine WHERE CardID=%s;
         DELETE FROM CommentTable WHERE CardID=%s;
         DELETE FROM ProjectItemTable WHERE ItemID=%s'''
-        parameterMap = {1: (ID,), 2:(ID,), 3:(ID,), 4:(ID,),5:(ID,),6:(ID,)}
+        parameterMap = { 1: (ID,) , 2:(ID,) , 3:(ID,) , 4:(ID,) ,5:(ID,) ,6:(ID,) }
         return query,parameterMap
+
     @staticmethod
     def getEpicSubitems(item):
         assert item is not None
@@ -457,15 +604,15 @@ class Password:
 class ObjectValidator:
     @staticmethod
     def validate(obj):
-        if type(obj) == ScrumblesObjects.User:
+        if repr(obj) == "<class 'data.ScrumblesObjects.User'>" or type(obj) == ScrumblesObjects.User:
             ObjectValidator.validateUser(obj)
-        elif type(obj) == ScrumblesObjects.Item:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Item'>" or type(obj) == ScrumblesObjects.Item:
             ObjectValidator.validateCard(obj)
-        elif type(obj) == ScrumblesObjects.Sprint:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Sprint'>" or type(obj) == ScrumblesObjects.Sprint:
             ObjectValidator.validateSprint(obj)
-        elif type(obj) == ScrumblesObjects.Comment:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Comment'>" or type(obj) == ScrumblesObjects.Comment:
             ObjectValidator.validateComment(obj)
-        elif type(obj) == ScrumblesObjects.Project:
+        elif repr(obj) == "<class 'data.ScrumblesObjects.Project'>" or type(obj) == ScrumblesObjects.Project:
             ObjectValidator.validateProject(obj)
         else:
             raise Exception('Invalid Object')
