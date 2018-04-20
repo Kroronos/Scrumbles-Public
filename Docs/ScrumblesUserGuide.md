@@ -45,27 +45,27 @@ Each level user has the following permissions:
 * Admin
    * All the permissions of a Scrum Master
    * Can create and manage users
+   * Can create and manage projects
 
   
 ### <a name="Views"></a>Views
 Scrumbles is built to show each user all of what they need and none of what they don’t. Depending on a user’s permission levels what they see on the screen will physically change. The views that are available to each user are as follows:
 
 * Developer
-   * Customized Developer Home View
-   * Developer Main View
-   * Team Manager
+   * Home View
+   * Backlog View
    * Analytics View
 
 * Scrum Master
-   * Scrum Master Home View
-   * Developer Main View
-   * Team Manager
+   * Main View
+   * Home View
+   * Backlog View
    * Analytics View
 
 * Admin
-   * Admin Main View
-   * Developer Home View
-   * Team Manger
+   * Main View
+   * Home View
+   * Backlog View
    * Analytics View
 
  
@@ -175,6 +175,10 @@ While the Scrum Master Main View might seem very similar to the Developer Main V
    * Approve Item
    * Reject Item
 
+A Scrum Master can also create sprints with the create sprint dialog available through <kbd>CTRL</kbd>+<kbd>S</kbd> or Edit > Create Sprint:
+
+ ![Scrum Master Item Editing](https://github.com/CEN3031-group16/GroupProject/blob/UserGuidePatch/Docs/UserGuideImages/SprintCreation.gif)
+
 ## <a name = "AdminWorkFlow"></a>Admin Work Flow 
 
 Like a Scrum Master, an admin can <em>also</em> be a developer on a project. Technically an admin can also be a Scrum Master as well. Admins have more views and more permissions, so their work flow is a bit more expansive. For example, only admins have access to team manager view.
@@ -237,11 +241,14 @@ Hot-keys are a great way to get around Scrumbles more quickly and efficiently. A
       * <em>All the abilities of a Developer</em>
       * The ability to approve items submitted for review
       * The ability to reject items submitted for review
+      * The ability to create sprints
 
    * An Admin has:
       * <em>All the abilities of a Scrum Master</em>
-      * Access to Team Manager View
-      * The ability to create usres 
+      * Access to Admin Main View
+      * The ability to create users
+      * The ability to create projects
+
 
 ## <a name="Glossary"></a>Glossary
 
