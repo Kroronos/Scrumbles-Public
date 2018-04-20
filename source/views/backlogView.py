@@ -195,11 +195,11 @@ class backlogView(tk.Frame):
                 if i.itemTitle == title:
                     item = i
             self.controller.dataBlock.modifyItemStatus(item, item.statusTextToNumberMap['Complete'])
-            comment = ScrumblesObjects.Comment()
-            comment.commentContent = '%s Has Approved Item' % self.controller.activeUser.userName
-            comment.commentItemID = item.itemID
-            comment.commentUserID = self.controller.activeUser.userID
-            self.controller.dataBlock.addNewScrumblesObject(comment)
+            # comment = ScrumblesObjects.Comment()
+            # comment.commentContent = '%s Has Approved Item' % self.controller.activeUser.userName
+            # comment.commentItemID = item.itemID
+            # comment.commentUserID = self.controller.activeUser.userID
+            # self.controller.dataBlock.addNewScrumblesObject(comment)
 
         except Exception as e:
             logging.exception('Could not assign item to Complete')
@@ -237,11 +237,11 @@ class backlogView(tk.Frame):
                 if i.itemTitle == title:
                     item = i
             self.controller.dataBlock.modifyItemStatus(item, item.statusTextToNumberMap['In Progress'])
-            comment = ScrumblesObjects.Comment()
-            comment.commentContent = '%s Has Rejected Item' % self.controller.activeUser.userName
-            comment.commentItemID = item.itemID
-            comment.commentUserID = self.controller.activeUser.userID
-            self.controller.dataBlock.addNewScrumblesObject(comment)
+            # comment = ScrumblesObjects.Comment()
+            # comment.commentContent = '%s Has Rejected Item' % self.controller.activeUser.userName
+            # comment.commentItemID = item.itemID
+            # comment.commentUserID = self.controller.activeUser.userID
+            # self.controller.dataBlock.addNewScrumblesObject(comment)
         except Exception as e:
             logging.exception('Could not assign item to Complete')
             messagebox.showerror('Error', str(e))
@@ -266,11 +266,11 @@ class backlogView(tk.Frame):
 
                     assert item is not None
                     self.controller.dataBlock.assignUserToItem(user, item)
-                    comment = ScrumblesObjects.Comment()
-                    comment.commentContent = '%s Has Assigned User %s to Item' % (self.controller.activeUser.userName, user.userName)
-                    comment.commentItemID = item.itemID
-                    comment.commentUserID = self.controller.activeUser.userID
-                    self.controller.dataBlock.addNewScrumblesObject(comment)
+                    # comment = ScrumblesObjects.Comment()
+                    # comment.commentContent = '%s Has Assigned User %s to Item' % (self.controller.activeUser.userName, user.userName)
+                    # comment.commentItemID = item.itemID
+                    # comment.commentUserID = self.controller.activeUser.userID
+                    # self.controller.dataBlock.addNewScrumblesObject(comment)
                 except Exception as e:
                     messagebox.showerror('Error', str(e))
                     logging.exception('Error assigning user %s to item' % username)
