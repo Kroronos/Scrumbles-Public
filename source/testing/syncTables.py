@@ -63,6 +63,17 @@ cardsInBlock = [I.itemID for I in db.items]
 print(len(idList))
 print(len(cardsInBlock))
 
+for item in idList:
+    if item in cardsInBlock:
+        pass
+    else:
+        print(item,'Not in in cardsInBlock')
+
+for item in cardsInBlock:
+    if item in idList:
+        pass
+    else:
+        print(item,'Not in timeline')
 # for id in cardsInBlock:
 #     if id not in idList:
 #         db.conn.setData( ('INSERT INTO CardTimeLine (CardID) VALUES (%s)' , (id,) ) )
@@ -71,18 +82,18 @@ print(len(cardsInBlock))
 
 
 
-
-timelineResult = db.conn.getData('SELECT * FROM CardTimeLine')
-template = timelineResult[0]
-cardIDs = [ card['CardID'] for card in timelineResult ]
-
-for stamp in timelineResult:
-    id = stamp['CardID']
-    db.conn.setData( ('UPDATE CardTimeLine SET Created=(SELECT CardCreatedDate FROM CardTable WHERE CardID=%s) WHERE CardID=%s' , (id ,id) ) )
-    for name in stamp:
-        if stamp[name] is None:
-            update = 'UPDATE CardTimeLine SET %s' % name
-            db.conn.setData( ( update + '=%s WHERE CardID=%s' ,('9999-12-31 23:59:59',id ) ) )
+#
+# timelineResult = db.conn.getData('SELECT * FROM CardTimeLine')
+# template = timelineResult[0]
+# cardIDs = [ card['CardID'] for card in timelineResult ]
+#
+# for stamp in timelineResult:
+#     id = stamp['CardID']
+#     db.conn.setData( ('UPDATE CardTimeLine SET Created=(SELECT CardCreatedDate FROM CardTable WHERE CardID=%s) WHERE CardID=%s' , (id ,id) ) )
+#     for name in stamp:
+#         if stamp[name] is None:
+#             update = 'UPDATE CardTimeLine SET %s' % name
+#             db.conn.setData( ( update + '=%s WHERE CardID=%s' ,('9999-12-31 23:59:59',id ) ) )
 
 
 
