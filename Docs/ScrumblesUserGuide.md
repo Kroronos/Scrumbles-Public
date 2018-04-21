@@ -305,7 +305,7 @@ Hot-keys are a great way to get around Scrumbles more quickly and efficiently. A
       * The ability to create users
       * The ability to create projects
 
-3. <a name "ColorsMean"></a>What do all the colors mean?
+3. <a name = "ColorsMean"></a>What do all the colors mean?
 
    * Please refer to either the "What do all the colors mean?" tab under the Help menu or the [colors](#Colors) section of the user guide.
 
