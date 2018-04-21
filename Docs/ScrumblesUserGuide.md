@@ -15,17 +15,39 @@
 
 # Table of Contents
    * [User Levels](#UserLevels)
-      * [Views](#Views)
       * [Permissions](#Permissions)
-   
+      * [Views](#Views)
+
+
    * [Work Flow](#WorkFlow)
       * [Developer Work Flow](#DeveloperWorkFlow)
-   
+         * [Home View](#HomeView)
+         * [Backlog View](#BacklogView)
+            * [What's with the colors?](#Colors)
+         * [Analytics View](#AnalyticsView)
+      * [Scrum Master Work Flow](#ScrumMasterWorkFlow)
+         * [Main View](#MainView)
+      * [Admin Work Flow](#AdminWorkFlow)
+
+   * [Hotkeys](#Hotkeys)
+
+   * [Touble Shooting](#TroubleShooting)
+      * [How do I delete a project?](#DeleteProject)
+      * [I made a change but it hasn't shown up on the screen yet, what should I do?](#Change)
+      * [The application has stalled, what should I do?](#Stalled)
+      * [I found a bug, what should I do? Is there anywhere to report it?](#Bug)
+
+   * [FAQ](#FAQ)
+      * [I forgot my password, what should I do?](#Password)
+      * [What are the differences between a Developer, Scrum Master, and Admin level user?](#Differences)
+      * [What do all the colors mean?](#ColorsMean)
+      
    * [Glossary](#Glossary)
       * [Item](#ItemDefinition)
       * [Sprint](#SprintDefinition)
+      * [Comment](#CommentDefinition)
       * [Project](#ProjectDefinition)
-      * [Comment](#CommentDefintion)
+      * [Epic](#EpicDefintion)
 
 
 
@@ -70,6 +92,7 @@ Scrumbles is built to show each user all of what they need and none of what they
 
  
 ## <a name="WorkFlow"></a>Work Flow
+
 ### <a name="DeveloperWorkFlow"></a>Developer
 The developer work flow is built around the creation and completion of items. As a developer the user is able to see what other members of the team is working on but only able to assign items to themselves then work on them to completion.
 
@@ -89,18 +112,18 @@ To create an item, the user can either click on the create item tab under the ed
 ![CreateItemDialogue](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/ItemCreationDialog.png)
 
 
+### <a name = "HomeView"></a>Home View
+When a developer is ready to begin assigning and submitting items for review they should switch to the Home View. From within the Home View users can see the items that are on the backlog and assign themselves items from this list by through a right-click dropdown menu. When an item is selected, its information will be displayed on in the center screen. Users can add and view comments in the same manner as they would in the main view.
 
-### <a name="DeveloperMainView"></a>Developer Main View
-The Developer main view allows the user to see which items are on the backlog, the sprints that have been created, and the items that need to be completed during each sprint. The timestamped comments on each item are available on the right side of the screen. Users can view comments using the field on the bottom of the comment box.
+![](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/MainView.png)
 
-![](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/DeveloperMainView.png)
 
-### <a name = "DeveloperHomeView"></a>Developer Home View
-When a developer is ready to begin assigning and submitting items for review they should switch to the Developer Home View. From within the Developer Home view users can see the items that are on the backlog and assign themselves items from this list by through a right-click dropdown menu. When an item is selected, its information will be displayed on in the center screen. Users can add and view comments in the same manner as they would in the main view.
+### <a name="BacklogView"></a>Backlog View
+The Backlog view allows the user to see which items are on the backlog, the sprints that have been created, and the items that need to be completed during each sprint. The timestamped comments on each item are available on the right side of the screen. Users can view comments using the field on the bottom of the comment box.
 
-![](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/DeveloperHomeView.png)
+![](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/BacklogView.png)
 
-<em>Items are color coded to show to their status:</em>
+<a name = "Colors"></a><em>Items are color coded to show to their status:</em>
 * Red
    * Not assigned to anything
    * Assigned to a sprint but not to a user
@@ -116,7 +139,7 @@ When a developer is ready to begin assigning and submitting items for review the
 * Green
    * Complete 
 
-<em>To add an item, use the plus on top of the backlog list while in developer home view.</em>
+<em>To add an item, use the plus on top of the backlog list while in Backlog view.</em>
 
 Right clicking an item on the lists will yield the following drop down menus:
    * My Items
@@ -137,6 +160,7 @@ Right clicking an item on the lists will yield the following drop down menus:
    * Sprints
       * The Sprint tab provides charts with the percentage of tasks completed as a bar graph and a progress bar.
       * Users can select which sprint they want to view using the list box on the left of the screen.
+
 ![Analytics Sprint View](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/AnalyticsSprintView.png)
 
    * Users
@@ -169,7 +193,7 @@ While the Scrum Master Main View might seem very similar to the Developer Main V
    * Edit Item
    * Delete Item
 
- ![Scrum Master Item Editing](https://github.com/CEN3031-group16/GroupProject/blob/UserGuidePatch/Docs/UserGuideImages/ScrumMasterItemEditing.gif)
+ ![Scrum Master Item Editing](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/ScrumMasterItemEditing.gif)
 
  If an item has been submitted to the Scrum Master for approval, two additional options become available:
    * Approve Item
@@ -212,9 +236,10 @@ To create a project you can either user <kbd>CTRL</kbd>+<kbd>P</kbd> or File > C
 
 
 
-## <a name="Hotkeys"></a>Hot-Keys
+## <a name="HotKeys"></a>Hot-Keys
 
-Hot-keys are a great way to get around Scrumbles more quickly and efficiently. Available Hot-key combos are:
+Hot-keys are a great way to get around Scrumbles more quickly and efficiently. Available hot-key combos are:
+
 * Creation Shortcuts
    * Create User
       * <kbd>CTRL</kbd>+<kbd>U</kbd>
@@ -237,14 +262,30 @@ Hot-keys are a great way to get around Scrumbles more quickly and efficiently. A
 
 ## <a name = "TroubleShooting"></a>Trouble Shooting
 
+1. <a name = "DeleteProject"></a> I can't seem to figure out how to delete a project. How do I do it?
+   
+   * Unfortunately there is not feature available for deleting projects, but we're working on it! To check out our progress please reference [Isuee #314](https://github.com/CEN3031-group16/GroupProject/issues/314) in our Github Repo.
+
+2. <a name = "Change"></a>I made a change but it hasn't shown up on the screen yet, what should I do?
+   
+   * The database refreshes automatically, but to manually trigger a refresh user either <kbd>CTRL</kbd>+<kbd>R</kbd> or Help > Refresh Data
+
+3. <a name = "Stalled"></a>The application has stalled, what should I do?
+   
+   * Restart it! Exiting and restarting Scrumbles will usually fix a stall.
+
+4. <a name = "Bug"></a>I found a bug, what should I do? Is there anywhere to report it?
+   
+   * Yes! Feel free to make an [issue](https://github.com/CEN3031-group16/GroupProject/issues) on our Github repo!
+
 
 ## <a name = "FAQ"></a>FAQ
 
-1. What makes Scrumbles different from other agile project manager softwares?
+1. <a name = "Password">I forgot my password, what should I do?
    
-   * Scrumbles integrates 
+   * Please contact your system admin; they are in charge of user passwords and have the ability to change them.
 
-2. <a name = "differences"></a>What are the differences between a Developer, Scrum Master, and Admin level user?
+2. <a name = "Differences"></a>What are the differences between a Developer, Scrum Master, and Admin level user?
    
    * A Developer has the ability to:
       * Create items
@@ -264,6 +305,9 @@ Hot-keys are a great way to get around Scrumbles more quickly and efficiently. A
       * The ability to create users
       * The ability to create projects
 
+3. <a name "ColorsMean"></a>What do all the colors mean?
+
+   * Please refer to either the "What do all the colors mean?" tab under the Help menu or the [colors](#Colors) section of the user guide.
 
 ## <a name="Glossary"></a>Glossary
 
@@ -300,9 +344,12 @@ The main terms to know in Scrumbles are:
    ![](https://github.com/CEN3031-group16/GroupProject/blob/master/Docs/UserGuideImages/CommentBox.png)
 
 * <a name="ProjectDefinition"></a>Project
+   
    * Projects are the top level entity in Scrumbles. They contain within them sprints and the sprints contain items. 
 
-   * Once a project is created,
+ 
+* <a name = "EpicDefintion"></a>Epic
 
-* <a name = "EpicDefintiEpic
-   * E
+   * Epics are large features, usually containing several sub-features.
+
+      * In Scrumbles this can be thought of as one item with several sub-items.
