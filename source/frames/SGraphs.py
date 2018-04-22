@@ -162,7 +162,7 @@ class SHistogram(tk.Frame):
 
         self.p.set_xlabel(xAxis, fontsize=15)
         self.p.set_ylabel(yAxis, fontsize=15)
-        self.p.set_xticks(range(0, oldBins, int(xticks)))
+        self.p.set_xticks(range(0, max(y), int(xticks)))
 
         loc = matplotlib.ticker.MultipleLocator(base=1)  # this locator puts ticks at regular intervals
         self.p.yaxis.set_major_locator(loc) #we don't want to count freq to determine y max

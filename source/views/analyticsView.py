@@ -818,7 +818,7 @@ class analyticsView(tk.Frame):
             pointsDistribution.append(item.itemPoints)
 
         pointDistributionHistogram = ScrumblesFrames.SHistogram(self.taskPointDistributionFrame)
-        pointDistributionHistogram.generateGraph(bins,max(pointsDistribution), "Point Value", "Number Of Tasks", max(pointsDistribution)/(max(pointsDistribution)/10))
+        pointDistributionHistogram.generateGraph(bins+1, pointsDistribution, "Point Value", "Number Of Tasks", max(pointsDistribution)/10)
         pointDistributionHistogram.pack(side=tk.TOP, fill=tk.X, expand=True)
         
     def generateTaskStatePieChart(self):
