@@ -8,7 +8,7 @@ class CreateUserDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
         if not self.isTest:
-            self.geometry('%dx%d'%(300, 201.64))
+            self.geometry('%dx%d'%(300, 200))
         self.title('Create a New User')
         self.createWidgets()
 

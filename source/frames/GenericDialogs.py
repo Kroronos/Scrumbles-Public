@@ -107,8 +107,8 @@ class AboutDialog(GenericDialog):
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         if not self.isTest:
-            w = 547.5
-            h = 324.0625
+            w = 548
+            h = 324
             ws = 1920  # width of the screen
             hs = 1080  # height of the screen
             x = (ws / 2) - (w / 2)

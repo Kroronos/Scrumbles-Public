@@ -10,7 +10,7 @@ class CreateProjectDialog(GenericDialog):
         super().__init__(*args,**kwargs)
 
         if not self.isTest:
-            self.geometry('%dx%d'%(360, 72.014))
+            self.geometry('%dx%d'%(360, 70))
 
         self.title('Create a New Project')
         self.createWidgets()
