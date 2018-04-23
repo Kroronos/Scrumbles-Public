@@ -98,7 +98,8 @@ class developerHomeView(tk.Frame):
 
         for item in self.controller.activeProject.listOfAssignedItems:
             if item.itemStatus == 0:
-                self.backlog.append(item)
+                if item.itemUserID is None:
+                    self.backlog.append(item)
 
         self.teamMembers = [user.userName for user in self.controller.activeProject.listOfAssignedUsers]
         for item in self.controller.activeUser.listOfAssignedItems:
