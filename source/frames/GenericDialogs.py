@@ -107,10 +107,10 @@ class AboutDialog(GenericDialog):
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         if not self.isTest:
-            w = 365*self.master.w_rat
-            h = 225*self.master.h_rat
-            ws = self.parent.winfo_screenwidth()  # width of the screen
-            hs = self.parent.winfo_screenheight()  # height of the screen
+            w = 547.5
+            h = 324.0625
+            ws = 1920  # width of the screen
+            hs = 1080  # height of the screen
             x = (ws / 2) - (w / 2)
             y = (hs / 2) - (h / 2)
             self.geometry('%dx%d+%d+%d' % (w, h, x, y))

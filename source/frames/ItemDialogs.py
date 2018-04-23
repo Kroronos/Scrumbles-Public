@@ -9,8 +9,9 @@ class CreateItemDialog(GenericDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.item = None
+        print(self.master.w_rat, self.master.h_rat)
         if not self.isTest:
-            self.geometry('%dx%d'%(200*self.master.w_rat, 275*self.master.h_rat))
+            self.geometry('%dx%d'%(300, 396.0764))
         self.title('Create a New Item')
         self.createWidgets()
 

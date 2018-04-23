@@ -10,23 +10,22 @@ class CreateProjectDialog(GenericDialog):
         super().__init__(*args,**kwargs)
 
         if not self.isTest:
-            self.geometry('%dx%d'%(230*self.master.w_rat, 50*self.master.h_rat))
+            self.geometry('%dx%d'%(360, 72.014))
 
         self.title('Create a New Project')
         self.createWidgets()
 
     @tryExcept
     def createWidgets(self):
-        Tk.Label(self, text="Project Title").grid(row=2, column=1, pady=5, sticky='W')
+        Tk.Label(self, text="Project Title").grid(row=2, column=1, padx=5, pady=5, sticky='W')
 
         self.projectTitleEntry = Tk.Entry(self, width=43)
-        self.projectTitleEntry.grid(row=2, column=2, columnspan = 2, pady=5, sticky='W')
+        self.projectTitleEntry.grid(row=2, column=2, columnspan = 2, padx=5, pady=5, sticky='W')
 
         self.createButton = Tk.Button(self, text="Create Project", command=self.ok, cursor="hand2")
-        self.createButton.grid(row=8, column=2, columnspan=2, padx=15, pady=5, sticky='W')
+        self.createButton.grid(row=8, column=2, columnspan=2, padx=13, pady=5, sticky='W')
         self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor="hand2")
-        self.cancelButton.grid(row=8, column=3, columnspan=2, padx=15, pady=5, sticky='W')
-
+        self.cancelButton.grid(row=8, column=3, columnspan=2, padx=13, pady=5, sticky='W')
 
     @tryExcept
     def ok(self):

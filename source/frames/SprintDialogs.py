@@ -14,7 +14,7 @@ class CreateSprintDialog(GenericDialog):
         self.day = [str(d) for d in range(1,32)]
         self.year = [str(y) for y in range(2018,2100)]
         if not self.isTest:
-            self.geometry('%dx%d'%(185*self.master.w_rat, 120*self.master.h_rat))
+            self.geometry('%dx%d'%(277.5, 172.8333))
             self.projects = tuple([P.projectName for P in self.dataBlock.projects])
             self.projectIDmap = {}
             for P in self.dataBlock.projects:
