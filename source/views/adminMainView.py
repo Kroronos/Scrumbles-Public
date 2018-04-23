@@ -125,13 +125,17 @@ class adminMainView(tk.Frame):
         
         widget = event.widget
         index = widget.nearest(event.y)
-        _, yoffset, _, height = widget.bbox(index)
-        
+        try:
+            _, yoffset, _, height = widget.bbox(index)
+        except ValueError:
+            return
         if event.y > height + yoffset + 5:
             return
         
         self.inspectedItem = widget.get(index)
-        
+        widget.selection_clear(0, tk.END)
+        widget.selection_set(index)
+        widget.activate(index)
         for user in self.controller.dataBlock.users:
             if user.userName == self.inspectedItem:
                 self.inspectedItem = user

@@ -16,8 +16,10 @@ class mainViewPopup(SPopMenu.GenericPopupMenu):
         self.event = event
 
         index = self.widget.nearest(event.y)
-        _, yOffSet, _, height = self.widget.bbox(index)
-
+        try:
+            _, yOffSet, _, height = self.widget.bbox(index)
+        except TypeError:
+            return
         if event.y > height + yOffSet + 5:
             return
         self.selectedObject = self.widget.get(index)
