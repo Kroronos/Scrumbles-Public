@@ -10,29 +10,29 @@ class CreateItemDialog(GenericDialog):
         super().__init__(*args, **kwargs)
         self.item = None
         if not self.isTest:
-            self.geometry('%dx%d'%(190*self.master.w_rat, 260*self.master.h_rat))
+            self.geometry('%dx%d'%(200*self.master.w_rat, 280*self.master.h_rat))
         self.title('Create a New Item')
         self.createWidgets()
 
     @tryExcept
     def createWidgets(self):
 
-        Tk.Label(self, text="Item Title").grid(row=2, column=1, pady=5, sticky='W')
-        self.itemTitleEntry = Tk.Entry(self, width=27, cursor="hand2")
+        Tk.Label(self, text="Item Title").grid(row=2, column=1, padx=5, pady=5, sticky='W')
+        self.itemTitleEntry = Tk.Entry(self, width=29, cursor="hand2")
         self.itemTitleEntry.grid(row=2, column=2, pady=5, sticky='W')
 
-        Tk.Label(self, text="Item Description").grid(row=3, column=1, pady=5, sticky='W')
-        self.itemDescriptionEntry = Tk.Text(self, height=6, width=20, wrap=Tk.WORD, cursor="hand2")
+        Tk.Label(self, text="Item Description").grid(row=3, column=1, padx=5, pady=5, sticky='W')
+        self.itemDescriptionEntry = Tk.Text(self, height=6, width=22, wrap=Tk.WORD, cursor="hand2")
         self.itemDescriptionEntry.grid(row=3, column=2, pady=5, sticky='W')
 
-        Tk.Label(self, text="Item Type").grid(row=6, column=1, pady=5, sticky='W')
+        Tk.Label(self, text="Item Type").grid(row=6, column=1, padx=5, pady=5, sticky='W')
         self.ItemTypeVar = Tk.StringVar()
         self.itemTypes = ('User Story', 'Epic', 'Bug', 'Chore', 'Feature')
         self.ItemTypebox = ttk.Combobox(self, textvariable=self.ItemTypeVar, state='readonly', values=self.itemTypes, cursor="hand2")
         self.ItemTypebox.grid(row=6, column=2, sticky='W')
         self.ItemTypebox.current(0)
 
-        self.itemPriorityLabel = Tk.Label(self, text='Item Priority').grid(row=7, column=1, sticky='W')
+        self.itemPriorityLabel = Tk.Label(self, text='Item Priority').grid(row=7, column=1, padx=5, pady=5, sticky='W')
         self.itemPriorities = ( "Low Priority", "Medium Priority", "High Priority")
         self.itemPriorityVar = Tk.StringVar()
         self.itemPriorityCombobox = ttk.Combobox(self, textvariable=self.itemPriorityVar, state='readonly', cursor="hand2")
@@ -40,18 +40,18 @@ class CreateItemDialog(GenericDialog):
         self.itemPriorityCombobox.current(0)
         self.itemPriorityCombobox.grid(row=7, column=2, sticky='W')
 
-        self.pointsEntryLabel = Tk.Label(self, text="Points").grid(row=8, column=1, sticky='W')
-        self.pointsEntry = Tk.Entry(self, cursor = "hand2")
+        self.pointsEntryLabel = Tk.Label(self, text="Points").grid(row=8, column=1, padx=5, pady=5, sticky='W')
+        self.pointsEntry = Tk.Entry(self, width=10, cursor = "hand2")
         self.pointsEntry.grid(row=8, column=2, sticky='W')
 
-        self.commentTextBoxLabel = Tk.Label(self, text='Comment').grid(row=10, column=1, sticky='W')
-        self.commentTextBox = Tk.Text(self, height=6, width=20, wrap=Tk.WORD, cursor="hand2")
+        self.commentTextBoxLabel = Tk.Label(self, text='Comment').grid(row=10, column=1, padx=5, pady =5, sticky='W')
+        self.commentTextBox = Tk.Text(self, height=6, width=22, wrap=Tk.WORD, cursor="hand2")
         self.commentTextBox.grid(row=10, column=2, pady=5, sticky='W')
 
         self.createButton = Tk.Button(self, text="Create Item", command=self.ok, cursor="hand2")
-        self.createButton.grid(row=11,column=1, columnspan=2, padx=60, pady=5, sticky='W')
+        self.createButton.grid(row=11,column=1, columnspan=2, padx=60, pady=10, sticky='W')
         self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor="hand2")
-        self.cancelButton.grid(row=11,column=2, columnspan=2, padx=85, pady=5)
+        self.cancelButton.grid(row=11,column=2, columnspan=2, padx=85, pady=10)
 
     @tryExcept
     def ok(self):
