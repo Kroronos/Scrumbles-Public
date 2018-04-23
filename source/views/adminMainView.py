@@ -62,10 +62,10 @@ class adminMainView(tk.Frame):
         self.assignedItemInspect.update(self.selectedUser)
         self.recentComments.updateComments(self.selectedUser)
 
-    def generateMemberMenus(self):
+    def generateMemberMenus(self, widget):
         self.memberPopupMenu = tk.Menu(self, tearoff = 0)
         self.generateAddToProjectMenus()
-        self.generateRemoveFromProjectMenus()
+        self.generateRemoveFromProjectMenus(widget)
 
     def generateAddToProjectMenus(self):
         projectOptions = tk.Menu(self.memberPopupMenu, 
@@ -80,7 +80,7 @@ class adminMainView(tk.Frame):
 
         self.memberPopupMenu.add_cascade(label = "Assign User To Project", menu = projectOptions)
 
-    def generateRemoveFromProjectMenus(self):
+    def generateRemoveFromProjectMenus(self, widget):
         assignedProjects = tk.Menu(self.memberPopupMenu, 
                                    tearoff = 0, 
                                    cursor = "hand2")
@@ -88,13 +88,18 @@ class adminMainView(tk.Frame):
         if not self.inspectedItem.listOfProjects:
             assignedProjects.add_command(label = "[Empty]", 
                                          state = "disabled")
-            
-        for project in self.inspectedItem.listOfProjects:
-            assignedProjects.add_command(label = project.projectName, 
-                                         command = lambda project = project: 
+        if widget is self.userList.listbox:
+            for project in self.inspectedItem.listOfProjects:
+                assignedProjects.add_command(label = project.projectName,
+                                             command = lambda project = project:
+                                             self.controller.dataBlock.removeUserFromProject(project, self.inspectedItem))
+        else:
+            project = self.controller.activeProject
+            assignedProjects.add_command(label=project.projectName,
+                                         command=lambda project=project:
                                          self.controller.dataBlock.removeUserFromProject(project, self.inspectedItem))
 
-        self.memberPopupMenu.add_cascade(label = "Remove User From Project", 
+        self.memberPopupMenu.add_cascade(label = "Remove User From Project",
                                          menu = assignedProjects)
 
     def listboxEvents(self, event):
@@ -131,5 +136,5 @@ class adminMainView(tk.Frame):
             if user.userName == self.inspectedItem:
                 self.inspectedItem = user
                 
-        self.generateMemberMenus()
+        self.generateMemberMenus(widget)
         self.memberPopupMenu.post(event.x_root, event.y_root)
