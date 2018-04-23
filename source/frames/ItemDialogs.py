@@ -10,7 +10,7 @@ class CreateItemDialog(GenericDialog):
         super().__init__(*args, **kwargs)
         self.item = None
         if not self.isTest:
-            self.geometry('%dx%d'%(200*self.master.w_rat, 280*self.master.h_rat))
+            self.geometry('%dx%d'%(200*self.master.w_rat, 275*self.master.h_rat))
         self.title('Create a New Item')
         self.createWidgets()
 
@@ -49,9 +49,9 @@ class CreateItemDialog(GenericDialog):
         self.commentTextBox.grid(row=10, column=2, pady=5, sticky='W')
 
         self.createButton = Tk.Button(self, text="Create Item", command=self.ok, cursor="hand2")
-        self.createButton.grid(row=11,column=1, columnspan=2, padx=60, pady=10, sticky='W')
+        self.createButton.grid(row=11,column=1, columnspan=2, padx=75, pady=10, sticky='W')
         self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor="hand2")
-        self.cancelButton.grid(row=11,column=2, columnspan=2, padx=85, pady=10)
+        self.cancelButton.grid(row=11,column=2, columnspan=2, padx=75, pady=10, sticky='W')
 
     @tryExcept
     def ok(self):

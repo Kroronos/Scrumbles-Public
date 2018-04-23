@@ -23,9 +23,9 @@ class CreateProjectDialog(GenericDialog):
         self.projectTitleEntry.grid(row=2, column=2, columnspan = 2, pady=5, sticky='W')
 
         self.createButton = Tk.Button(self, text="Create Project", command=self.ok, cursor="hand2")
-        self.createButton.grid(row=8, column=2, columnspan=2, padx=20, pady=5, sticky='W')
+        self.createButton.grid(row=8, column=2, columnspan=2, padx=15, pady=5, sticky='W')
         self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor="hand2")
-        self.cancelButton.grid(row=8, column=3, columnspan=2, padx=20, pady=5, sticky='W')
+        self.cancelButton.grid(row=8, column=3, columnspan=2, padx=15, pady=5, sticky='W')
 
 
     @tryExcept

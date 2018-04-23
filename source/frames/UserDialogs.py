@@ -39,10 +39,10 @@ class CreateUserDialog(GenericDialog):
         self.roleCombobox.selection_clear()
 
         self.createButton = Tk.Button(self, text="Create User", command=self.ok, cursor="hand2")
-        self.createButton.grid(row=8, column=1, columnspan=2, padx=70, pady=5, sticky='W')
+        self.createButton.grid(row=8, column=1, columnspan=2, padx=70, pady=10, sticky='W')
 
         self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor="hand2")
-        self.cancelButton.grid(row=8, column=2, columnspan=2, padx=70, pady=5, sticky='W')
+        self.cancelButton.grid(row=8, column=2, columnspan=2, padx=70, pady=10, sticky='W')
 
 
     @staticmethod
