@@ -107,10 +107,10 @@ class AboutDialog(GenericDialog):
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         if not self.isTest:
-            w = 600*self.master.w_rat
-            h = 600*self.master.h_rat
-            ws = self.parent.winfo_screenwidth()  # width of the screen
-            hs = self.parent.winfo_screenheight()  # height of the screen
+            w = 548
+            h = 324
+            ws = 1920  # width of the screen
+            hs = 1080  # height of the screen
             x = (ws / 2) - (w / 2)
             y = (hs / 2) - (h / 2)
             self.geometry('%dx%d+%d+%d' % (w, h, x, y))
@@ -124,10 +124,10 @@ class AboutDialog(GenericDialog):
         linkLabel.grid(row=2,pady=5)
         linkLabel.bind('<Button-1>',self.openPage)
 
-        itemList = [ 'Not Assigned To Anything', 'Assigned to Sprint, no User', 'Assigned to User, No Sprint', 'Assigned to User and Sprint', 'In Progress', 'Submitted','Item Is Epic' ,'Complete']
+        itemList = ['Incomplete Assignment', 'Assigned to User and Sprint', 'In Progress', 'Submitted','Item Is Epic' ,'Complete']
         listBoxWidth=0
         self.itemListBox = Tk.Listbox(self, selectborderwidth=10)
-        self.itemListBox.grid(row=3)
+        self.itemListBox.grid(row=10)
         for item in itemList:
             self.itemListBox.insert(Tk.END,item)
             if len(item) > listBoxWidth:
@@ -138,14 +138,12 @@ class AboutDialog(GenericDialog):
         self.itemListBox['height'] = len(itemList)
 
 
-        self.itemListBox.itemconfig(0, ColorSchemes.incompleteAssignmentColorScheme) # Not Assigned To Anything
-        self.itemListBox.itemconfig(1, ColorSchemes.incompleteAssignmentColorScheme) #Assigned to Sprint, no User
-        self.itemListBox.itemconfig(2, ColorSchemes.incompleteAssignmentColorScheme) #Assigned to User, No Sprint
-        self.itemListBox.itemconfig(3, ColorSchemes.assignedScheme) # Assigned to User and Sprint
-        self.itemListBox.itemconfig(4, ColorSchemes.inProgressColorScheme) # In Progress
-        self.itemListBox.itemconfig(5, ColorSchemes.submittedColorScheme) # Submitted
-        self.itemListBox.itemconfig(6, ColorSchemes.epicItemColorScheme) # Item Is Epic
-        self.itemListBox.itemconfig(7, ColorSchemes.completedItemColorScheme) # Completed
+        self.itemListBox.itemconfig(0, ColorSchemes.incompleteAssignmentColorScheme) # Incomplete Assignment
+        self.itemListBox.itemconfig(1, ColorSchemes.assignedScheme) # Assigned to User and Sprint
+        self.itemListBox.itemconfig(2, ColorSchemes.inProgressColorScheme) # In Progress
+        self.itemListBox.itemconfig(3, ColorSchemes.submittedColorScheme) # Submitted
+        self.itemListBox.itemconfig(4, ColorSchemes.epicItemColorScheme) # Item Is Epic
+        self.itemListBox.itemconfig(5, ColorSchemes.completedItemColorScheme) # Completed
 
 
 

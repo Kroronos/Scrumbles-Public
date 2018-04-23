@@ -14,7 +14,7 @@ class CreateSprintDialog(GenericDialog):
         self.day = [str(d) for d in range(1,32)]
         self.year = [str(y) for y in range(2018,2100)]
         if not self.isTest:
-            self.geometry('%dx%d'%(900*self.master.w_rat, 500*self.master.h_rat))
+            self.geometry('%dx%d'%(280, 170))
             self.projects = tuple([P.projectName for P in self.dataBlock.projects])
             self.projectIDmap = {}
             for P in self.dataBlock.projects:
@@ -28,41 +28,41 @@ class CreateSprintDialog(GenericDialog):
         monthVar = Tk.StringVar()
         monthVar = 'Jan'
 
-        Tk.Label(self, text="Sprint Name").grid(row=2, column=1, pady=5, sticky='E')
-        self.sprintNameEntry = Tk.Entry(self, cursor = "hand2")
-        self.sprintNameEntry.grid(row=2, column=2, pady=5)
+        Tk.Label(self, text="Sprint Name").grid(row=2, column=1, padx=10, pady=5, sticky='W')
+        self.sprintNameEntry = Tk.Entry(self, width=27, cursor = "hand2")
+        self.sprintNameEntry.grid(row=2, column=2, pady=5, sticky='W')
         self.projectNameVar = Tk.StringVar()
 
         if not self.isTest:
-            Tk.Label(self, text="Project").grid(row=3, column=1, pady=5, sticky='E')
-            self.assignSprintToObject = ttk.Combobox(self,textvariable=self.projectNameVar,state='readonly',values=self.projects, cursor = "hand2")
-            self.assignSprintToObject.grid(row=3,column=2,pady=5)
+            Tk.Label(self, text="Project").grid(row=3, column=1, padx=10, pady=5, sticky='W')
+            self.assignSprintToObject = ttk.Combobox(self, textvariable=self.projectNameVar, state='readonly', values=self.projects, width=24, cursor="hand2")
+            self.assignSprintToObject.grid(row=3, column=2, pady=5, sticky='W')
 
-        Tk.Label(self, text="Start Date").grid(row=4, column=1, pady=5, sticky='E')
-        self.StartMonthCombo = ttk.Combobox(self,textvariable=monthVar,values=self.month,state='readonly',width=5, cursor = "hand2")
-        self.StartMonthCombo.grid(row=4,column=2)
+        Tk.Label(self, text="Start Date").grid(row=4, column=1, padx=10, pady=5, sticky='W')
+        self.StartMonthCombo = ttk.Combobox(self, textvariable=monthVar, values=self.month, state='readonly', width=5, cursor="hand2")
+        self.StartMonthCombo.grid(row=4, column=2, sticky='W')
 
-        self.StartDayCombo = ttk.Combobox(self,values=self.day,state='readonly',width=3, cursor = "hand2")
-        self.StartDayCombo.grid(row=4,column=3)
+        self.StartDayCombo = ttk.Combobox(self, values=self.day, state='readonly', width=3, cursor="hand2")
+        self.StartDayCombo.grid(row=4, column=2, columnspan=2, padx=63, sticky='W')
 
-        self.StartYearCombo = ttk.Combobox(self,values=self.year,state='readonly',width=5, cursor = "hand2")
-        self.StartYearCombo.grid(row=4,column=4)
+        self.StartYearCombo = ttk.Combobox(self, values=self.year, state='readonly', width=5, cursor="hand2")
+        self.StartYearCombo.grid(row=4, column=2, columnspan=2, padx=115, sticky='W')
 
-        Tk.Label(self, text="Due Date").grid(row=5, column=1, pady=5, sticky='E')
-        self.DueMonthCombo = ttk.Combobox(self, values=self.month, state='readonly',width=5, cursor = "hand2")
-        self.DueMonthCombo.grid(row=5, column=2)
+        Tk.Label(self, text="Due Date").grid(row=5, column=1, padx=10, pady=5, sticky='W')
+        self.DueMonthCombo = ttk.Combobox(self, values=self.month, state='readonly', width=5, cursor="hand2")
+        self.DueMonthCombo.grid(row=5, column=2, sticky='W')
 
-        self.DueDayCombo = ttk.Combobox(self, values=self.day, state='readonly',width=3, cursor = "hand2")
-        self.DueDayCombo.grid(row=5, column=3)
+        self.DueDayCombo = ttk.Combobox(self, values=self.day, state='readonly', width=3, cursor="hand2")
+        self.DueDayCombo.grid(row=5, column=2, columnspan=2, padx=63, sticky='W')
 
-        self.DueYearCombo = ttk.Combobox(self, values=self.year, state='readonly',width=5, cursor = "hand2")
-        self.DueYearCombo.grid(row=5, column=4)
+        self.DueYearCombo = ttk.Combobox(self, values=self.year, state='readonly', width=5, cursor="hand2")
+        self.DueYearCombo.grid(row=5, column=2, columnspan=2, padx=115, sticky='W')
 
-        self.createButton = Tk.Button(self, text="Create Sprint", command=self.ok, cursor = "hand2")
-        self.createButton.grid(row=8,column=2,pady=5)
+        self.createButton = Tk.Button(self, text="Create Sprint", command=self.ok, cursor="hand2")
+        self.createButton.grid(row=8, column=1, columnspan=2, padx=55, pady=10, sticky='W')
 
-        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor = "hand2")
-        self.cancelButton.grid(row=8,column=1,pady=5)
+        self.cancelButton = Tk.Button(self, text="Cancel", command=self.exit, cursor="hand2")
+        self.cancelButton.grid(row=8, column=2, columnspan=2, padx=80, pady=10, sticky='W')
 
     @staticmethod
     def getStartDate(dateblock):

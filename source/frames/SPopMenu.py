@@ -22,7 +22,10 @@ class GenericPopupMenu(Tk.Menu):
         self.widget = event.widget
         self.event = event
         index = self.widget.nearest(event.y)
-        _, yoffset, _, height = self.widget.bbox(index)
+        try:
+            _, yoffset, _, height = self.widget.bbox(index)
+        except TypeError:
+            return
         if event.y > height + yoffset + 5:
             return
         self.selectedObject = self.widget.get(index)
