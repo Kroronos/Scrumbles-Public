@@ -411,6 +411,7 @@ class analyticsView(tk.Frame):
         sprintNames = list()
         sprintTasks = list()
         sprintPoints = list()
+
         for sprint in self.controller.activeProject.listOfAssignedSprints:
             firstRun = True
             sprintNames.append(sprint.sprintName)
@@ -431,7 +432,10 @@ class analyticsView(tk.Frame):
 
     def generateSprintTaskBarGraph(self, sprintNames, sprintTaskValues):
         sprintBarGraph = ScrumblesFrames.SBar(self.sprintGraphFrame)
-        tickValue = int((max(sprintTaskValues)-min(sprintTaskValues))/10)
+        if len(sprintTaskValues) > 0:
+            tickValue = int((max(sprintTaskValues)-min(sprintTaskValues))/10)
+        else:
+            tickValue = 0
         if tickValue <= 0:
             tickValue = 1
         sprintBarGraph.generateGraph(sprintNames, sprintTaskValues, "Sprints", "Tasks Completed", tickValue=tickValue)
@@ -439,7 +443,10 @@ class analyticsView(tk.Frame):
 
     def generateSprintPointBarGraph(self, sprintNames, sprintPointValues):
         sprintBarGraph = ScrumblesFrames.SBar(self.sprintGraphFrame)
-        tickValue = int((max(sprintPointValues)-min(sprintPointValues))/10)
+        if len(sprintPointValues) > 0:
+            tickValue = int((max(sprintPointValues)-min(sprintPointValues))/10)
+        else:
+            tickValue = 0
         if tickValue <= 0:
             tickValue = 1
         sprintBarGraph.generateGraph(sprintNames, sprintPointValues, "Sprints", "Points Earned", isOrange=True, tickValue=tickValue)
@@ -711,7 +718,10 @@ class analyticsView(tk.Frame):
         averageCreationSubmission = totalCreationSubmission/totalCreationSubmissionTasks
         averageCreationProgress = totalCreationProgress/totalCreationProgressTasks
         averageCreationUserAssignment = totalCreationUserAssignment/totalCreationUserAssignmentTasks
-        averageNumberOfPoints = totalNumberOfPoints/numberOfItems
+        if numberOfItems > 0:
+            averageNumberOfPoints = totalNumberOfPoints/numberOfItems
+        else:
+            averageNumberOfPoints = 0
 
         averageCreationCompletionWeeks = int(averageCreationCompletion.days/7)
         averageCreationSubmissionWeeks = int(averageCreationSubmission.days/7)
@@ -818,7 +828,8 @@ class analyticsView(tk.Frame):
             pointsDistribution.append(item.itemPoints)
 
         pointDistributionHistogram = ScrumblesFrames.SHistogram(self.taskPointDistributionFrame)
-        pointDistributionHistogram.generateGraph(bins+1, pointsDistribution, "Point Value", "Number Of Tasks", max(pointsDistribution)/10)
+        if len(pointsDistribution) > 0:
+            pointDistributionHistogram.generateGraph(bins+1, pointsDistribution, "Point Value", "Number Of Tasks", max(pointsDistribution)/10)
         pointDistributionHistogram.pack(side=tk.TOP, fill=tk.X, expand=True)
         
     def generateTaskStatePieChart(self):
