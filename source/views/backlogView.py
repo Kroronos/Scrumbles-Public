@@ -461,9 +461,10 @@ class backlogView(tk.Frame):
                         self.selectedSprint = self.controller.dataBlock.sprintMap[self.selectedFullBacklogItem.itemSprintID]
                     except KeyError:
                         pass
+                    if self.selectedSprint is not None:
+                        self.sprintItems = self.selectedSprint.listOfAssignedItems
+                        self.itemList.importItemList(self.sprintItems)
 
-                    self.sprintItems = self.selectedSprint.listOfAssignedItems
-                    self.itemList.importItemList(self.sprintItems)
                     self.itemList.colorCodeListboxes()
 
                 if self.selectedItem.subItemList is not None:
