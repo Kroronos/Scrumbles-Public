@@ -5,11 +5,11 @@ from MySQLdb import IntegrityError
 from views import masterView
 import webbrowser
 from data import DataBlock
-import sys, traceback
+import sys
+import traceback
 import logging
 from frames.SLists import ColorSchemes
 from data import ScrumblesObjects
-
 
 
 def tryExcept(f):
@@ -31,9 +31,7 @@ def tryExcept(f):
                 self.executeSuccess = False
                 self.exit()
 
-
         except Exception as e:
-
             messagebox.showerror('Error', str(e))
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print("*** print_tb:")
@@ -45,13 +43,9 @@ def tryExcept(f):
             self.exit()
     return wrapper
 
+
 class GenericDialog(Tk.Toplevel):
     def __init__(self,*args, **kwargs):
-        """ Defines A Generic PopUp Dialog
-        First Param required to be root window
-        master=MasterView
-        dataBlock=DataBlock
-        """
 
         self.isTest = False
         self.isTest = kwargs.pop('test', None)
@@ -72,9 +66,9 @@ class GenericDialog(Tk.Toplevel):
         self.grab_set()
         self.executeSuccess = True
 
-
     def createWidgets(self):
         pass
+
     def exit(self):
         self.top.destroy()
 
@@ -107,22 +101,16 @@ class AboutDialog(GenericDialog):
         self.apiLink = 'https://github.com/CEN3031-group16/GroupProject/wiki'
 
         if not self.isTest:
-            w = 548
-            h = 324
-            ws = 1920  # width of the screen
-            hs = 1080  # height of the screen
-            x = (ws / 2) - (w / 2)
-            y = (hs / 2) - (h / 2)
-            self.geometry('%dx%d+%d+%d' % (w, h, x, y))
+            self.geometry('%dx%d' % (555, 325))
 
         self.title('About Scrumbles')
         self.createWidgets()
 
     def createWidgets(self):
-        Tk.Label(self, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, pady=5, sticky='E')
-        linkLabel = Tk.Label(self, text=self.apiLink,fg='blue',cursor='gumby')
-        linkLabel.grid(row=2,pady=5)
-        linkLabel.bind('<Button-1>',self.openPage)
+        Tk.Label(self, text="Scrumbles is an application designed to help you manage programming projects and teams efficiently").grid(row=1, padx=5, pady=5)
+        linkLabel = Tk.Label(self, text=self.apiLink, fg='blue', cursor='gumby')
+        linkLabel.grid(row=2, padx=5, pady=5)
+        linkLabel.bind('<Button-1>', self.openPage)
 
         itemList = ['Incomplete Assignment', 'Assigned to User and Sprint', 'In Progress', 'Submitted','Item Is Epic' ,'Complete']
         listBoxWidth=0
@@ -137,18 +125,15 @@ class AboutDialog(GenericDialog):
         self.itemListBox['activestyle'] = 'dotbox'
         self.itemListBox['height'] = len(itemList)
 
+        self.itemListBox.itemconfig(0, ColorSchemes.incompleteAssignmentColorScheme)    # Incomplete Assignment
+        self.itemListBox.itemconfig(1, ColorSchemes.assignedScheme)         # Assigned to User and Sprint
+        self.itemListBox.itemconfig(2, ColorSchemes.inProgressColorScheme)  # In Progress
+        self.itemListBox.itemconfig(3, ColorSchemes.submittedColorScheme)   # Submitted
+        self.itemListBox.itemconfig(4, ColorSchemes.epicItemColorScheme)    # Item Is Epic
+        self.itemListBox.itemconfig(5, ColorSchemes.completedItemColorScheme)   # Completed
 
-        self.itemListBox.itemconfig(0, ColorSchemes.incompleteAssignmentColorScheme) # Incomplete Assignment
-        self.itemListBox.itemconfig(1, ColorSchemes.assignedScheme) # Assigned to User and Sprint
-        self.itemListBox.itemconfig(2, ColorSchemes.inProgressColorScheme) # In Progress
-        self.itemListBox.itemconfig(3, ColorSchemes.submittedColorScheme) # Submitted
-        self.itemListBox.itemconfig(4, ColorSchemes.epicItemColorScheme) # Item Is Epic
-        self.itemListBox.itemconfig(5, ColorSchemes.completedItemColorScheme) # Completed
-
-
-
-        okayButton = Tk.Button(self, text="Okay", command=self.exit, cursor = "hand2")
-        okayButton.grid(row=20, pady=5)
+        okayButton = Tk.Button(self, text="Okay", command=self.exit, cursor="hand2")
+        okayButton.grid(row=20, pady=10)
 
     def openPage(self, *args, **kwargs):
         webbrowser.open(self.apiLink)
@@ -158,35 +143,31 @@ class AboutDialog(GenericDialog):
 
 
 class codeLinkDialog(GenericDialog):
-    def __init__(self,*args,**kwargs):
+    def __init__(self, *args, **kwargs):
         self.Item = kwargs.pop('item')
 
-        super().__init__(*args,**kwargs)
+        super().__init__(*args, **kwargs)
 
         self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
         if not self.isTest:
-            # w = 600*self.master.w_rat
-            # h = 80*self.master.h_rat
-            # ws = self.parent.winfo_screenwidth()  # width of the screen
-            # hs = self.parent.winfo_screenheight()  # height of the screen
-            # x = (ws / 2) - (w / 2)
-            # y = (hs / 2) - (h / 2)
-            # self.geometry('%dx%d+%d+%d'%(w,h,x,y))
             pass
+
         self.createWidgets()
+
     @tryExcept
     def createWidgets(self):
         self.title('Edit %s' % self.Item.itemTitle)
-        self.codeLinkLabel = ttk.Label(self,text='Please enter link to Code')
-        self.codeLinkLabel.grid(row=1,column=1)
-        self.codeLinkEntry = Tk.Entry(self,width=60)
-        self.codeLinkEntry.grid(row=2,column=1,sticky='W')
+        self.codeLinkLabel = Tk.Label(self, text='Please enter link to code')
+        self.codeLinkLabel.grid(row=1, column=1)
+        self.codeLinkEntry = Tk.Entry(self, width=60)
+        self.codeLinkEntry.grid(row=2, column=1, padx=5, pady=5)
         if self.Item.itemCodeLink is not None:
-            self.codeLinkEntry.insert(0,self.Item.itemCodeLink)
-        self.submitButton = Tk.Button(self, text="Update Item", command=self.ok, cursor = "hand2")
-        self.submitButton.grid(row=2, column=2, padx=3)
-        self.cancelButton = Tk.Button(self,text='Cancel',command=self.cancel, cursor = "hand2")
-        self.cancelButton.grid(row=2,column=3,pady=1)
+            self.codeLinkEntry.insert(0, self.Item.itemCodeLink)
+        self.submitButton = Tk.Button(self, text="Update Item", command=self.ok, cursor="hand2")
+        self.submitButton.grid(row=3, column=1, padx=100, pady=5, sticky='W')
+        self.cancelButton = Tk.Button(self, text='Cancel', command=self.cancel, cursor="hand2")
+        self.cancelButton.grid(row=3, column=1, padx=100, pady=5, sticky='E')
+
     @tryExcept
     def ok(self):
         self.executeSuccess = True
